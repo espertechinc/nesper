@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return ArrayAtIndex(exprSymbol.GetAddEPS(codegenMethodScope), Constant(streamNum));
+            return ArrayAtIndex(exprSymbol.GetAddEps(codegenMethodScope), Constant(streamNum));
         }
 
 

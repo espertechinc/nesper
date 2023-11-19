@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Permute () regular expression in a regex expression tree.
     /// </summary>
-    [Serializable]
     public class RowRecogExprNodePermute : RowRecogExprNode
     {
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.UNARY;

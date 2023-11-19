@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.type;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -255,6 +254,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
         public class MySupportBeanWidener : TypeWidenerSPI
         {
             public static RecordSchema supportBeanSchema;
+
+            public Type WidenResultType => typeof(GenericRecord);
 
             public object Widen(object input)
             {

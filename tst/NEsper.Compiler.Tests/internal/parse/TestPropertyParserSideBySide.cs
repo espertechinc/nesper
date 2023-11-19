@@ -42,9 +42,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        RunAssertion("prop?", new SimplePropAssertion("prop", true));
 	        RunAssertion("a[1]?", new IndexedPropAssertion("a", 1, true));
 	        RunAssertion("a('key')?", new MappedPropAssertion("a", "key", true));
-	        RunAssertion("Item?.Id", new NestedPropAssertion(new SimplePropAssertion("Item", true), new SimplePropAssertion("id", true)));
-	        RunAssertion("Item[0]?.Id", new NestedPropAssertion(new IndexedPropAssertion("Item", 0, true), new SimplePropAssertion("id")));
-	        RunAssertion("Item('a')?.Id", new NestedPropAssertion(new MappedPropAssertion("Item", "a", true), new SimplePropAssertion("id")));
+	        RunAssertion("Item?.Id", new NestedPropAssertion(new SimplePropAssertion("Item", true), new SimplePropAssertion("Id", true)));
+	        RunAssertion("Item[0]?.Id", new NestedPropAssertion(new IndexedPropAssertion("Item", 0, true), new SimplePropAssertion("Id")));
+	        RunAssertion("Item('a')?.Id", new NestedPropAssertion(new MappedPropAssertion("Item", "a", true), new SimplePropAssertion("Id")));
 	    }
 
 	    private void RunAssertion(
@@ -235,42 +235,42 @@ namespace com.espertech.esper.compiler.@internal.parse
 	    
 	    private class SimplePropAssertion : IPropAssertion
 	    {
-	        private readonly string name;
-	        private readonly bool dynamic;
+	        private readonly string _name;
+	        private readonly bool _dynamic;
 
 	        public SimplePropAssertion(string name) : this(name, false) {
 	        }
 
 	        public SimplePropAssertion(string name, bool dynamic) {
-	            this.name = name;
-	            this.dynamic = dynamic;
+	            this._name = name;
+	            this._dynamic = dynamic;
 	        }
 
 	        public void Accept(Property property) {
-	            if (dynamic) {
+	            if (_dynamic) {
 	                var dyn = (DynamicSimpleProperty) property;
-	                Assert.AreEqual(name, dyn.PropertyNameAtomic);
+	                Assert.AreEqual(_name, dyn.PropertyNameAtomic);
 	            } else {
 	                var prop = (SimpleProperty) property;
-	                Assert.AreEqual(name, prop.PropertyNameAtomic);
+	                Assert.AreEqual(_name, prop.PropertyNameAtomic);
 	            }
 	        }
 	    }
 
 	    private class IndexedPropAssertion : IPropAssertion
 	    {
-		    private readonly string name;
-		    private readonly int index;
-		    private readonly bool dynamic;
+		    private readonly string _name;
+		    private readonly int _index;
+		    private readonly bool _dynamic;
 
 		    public IndexedPropAssertion(
 			    string name,
 			    int index,
 			    bool dynamic)
 		    {
-			    this.name = name;
-			    this.index = index;
-			    this.dynamic = dynamic;
+			    this._name = name;
+			    this._index = index;
+			    this._dynamic = dynamic;
 		    }
 
 		    public IndexedPropAssertion(
@@ -281,33 +281,33 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		    public void Accept(Property property)
 		    {
-			    if (dynamic) {
+			    if (_dynamic) {
 				    var prop = (DynamicIndexedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(index, prop.Index);
+				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
+				    Assert.AreEqual(_index, prop.Index);
 			    }
 			    else {
 				    var prop = (IndexedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(index, prop.Index);
+				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
+				    Assert.AreEqual(_index, prop.Index);
 			    }
 		    }
 	    }
 
 	    private class MappedPropAssertion : IPropAssertion
 	    {
-		    private readonly string name;
-		    private readonly string key;
-		    private readonly bool dynamic;
+		    private readonly string _name;
+		    private readonly string _key;
+		    private readonly bool _dynamic;
 
 		    public MappedPropAssertion(
 			    string name,
 			    string key,
 			    bool dynamic)
 		    {
-			    this.name = name;
-			    this.key = key;
-			    this.dynamic = dynamic;
+			    this._name = name;
+			    this._key = key;
+			    this._dynamic = dynamic;
 		    }
 
 		    public MappedPropAssertion(
@@ -318,27 +318,26 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 		    public void Accept(Property property)
 		    {
-			    if (dynamic) {
+			    if (_dynamic) {
 				    var prop = (DynamicMappedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(key, prop.Key);
+				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
+				    Assert.AreEqual(_key, prop.Key);
 			    }
 			    else {
 				    var prop = (MappedProperty) property;
-				    Assert.AreEqual(name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(key, prop.Key);
+				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
+				    Assert.AreEqual(_key, prop.Key);
 			    }
 		    }
 	    }
 
 	    private class NestedPropAssertion : IPropAssertion
 	    {
-
-		    private readonly Consumer<Property>[] consumers;
+		    private readonly Consumer<Property>[] _consumers;
 
 		    public NestedPropAssertion(params IPropAssertion[] assertions)
 		    {
-			    this.consumers = assertions
+			    this._consumers = assertions
 				    .Select(v => new Consumer<Property>(v.Accept))
 				    .ToArray();
 		    }
@@ -346,9 +345,9 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    public void Accept(Property property)
 		    {
 			    var nested = (NestedProperty) property;
-			    Assert.AreEqual(consumers.Length, nested.Properties.Count);
+			    Assert.AreEqual(_consumers.Length, nested.Properties.Count);
 			    for (var i = 0; i < nested.Properties.Count; i++) {
-				    consumers[i].Invoke(nested.Properties[i]);
+				    _consumers[i].Invoke(nested.Properties[i]);
 			    }
 		    }
 	    }

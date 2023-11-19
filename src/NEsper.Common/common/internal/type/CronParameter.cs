@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     ///     Hold parameters for timer:at.
     /// </summary>
-    [Serializable]
     public class CronParameter
     {
         /// <summary>Ctor. </summary>

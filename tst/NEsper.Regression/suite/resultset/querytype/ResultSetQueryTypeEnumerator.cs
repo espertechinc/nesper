@@ -566,7 +566,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             {
                 var fields = new string[] { "Symbol", "msg" };
                 var stmtText = "@name('s0') insert into Cutoff " +
-                               "select Symbol, (String.valueOf(count(*)) || 'x1000.0') as msg " +
+                               "select Symbol, (Convert.ToString(count(*)) || 'x1000.0') as msg " +
                                "from SupportMarketDataBean#groupwin(Symbol)#length(1) " +
                                "where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
                 env.CompileDeploy(stmtText).AddListener("s0");

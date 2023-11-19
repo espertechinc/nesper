@@ -2628,7 +2628,7 @@ namespace com.espertech.esper.common.@internal.compile.stage1.specmapper
             }
             else if (expr is TimePeriodExpression tpe) {
                 return new ExprTimePeriodImpl(
-                    tpe.HasDays,
+                    tpe.HasYears,
                     tpe.HasMonths,
                     tpe.HasWeeks,
                     tpe.HasDays,

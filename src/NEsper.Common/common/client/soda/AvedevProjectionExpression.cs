@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Mean deviation of the (distinct) values returned by an expression.
     /// </summary>
-    [Serializable]
     public class AvedevProjectionExpression : ExpressionBase
     {
         private bool distinct;

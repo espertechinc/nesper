@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             // The root node expression may provide the input value:
-            //   Such as "window(*).doIt(...)" or "(select * from Window).doIt()" or "prevwindow(sb).doIt(...)", in which case the expression to act on is a child expression
+            //   Such as "window(*).DoIt(...)" or "(select * from Window).DoIt()" or "prevwindow(sb).DoIt(...)", in which case the expression to act on is a child expression
             //
             var streamTypeService = validationContext.StreamTypeService;
             if (ChildNodes.Length != 0) {
@@ -394,7 +394,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             // There no root node, in this case the classname or property name is provided as part of the chain.
-            // Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.doIt(...)"
+            // Such as "MyClass.myStaticLib(...)" or "mycollectionproperty.DoIt(...)"
             //
             IList<Chainable> modifiedChain = new List<Chainable>(_chainSpec);
             var firstItem = modifiedChain.DeleteAt(0);

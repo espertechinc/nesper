@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventBean),
                 GetType(),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block.DeclareVar<IDictionary<string, object>>(
                 "tuple",
                 NewInstance(typeof(HashMap<string, object>)));

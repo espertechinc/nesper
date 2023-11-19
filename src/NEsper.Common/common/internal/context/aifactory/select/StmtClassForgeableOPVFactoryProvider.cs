@@ -83,6 +83,13 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 IList<CodegenTypedParam> ctorParms = new List<CodegenTypedParam>();
                 ctorParms.Add(
                     new CodegenTypedParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref, false));
+                ctorParms.Add(
+                    new CodegenTypedParam(
+                        _namespaceScope.FieldsClassNameOptional,
+                        null,
+                        StmtClassForgeableStmtProvider.MEMBERNAME_STATEMENT_FIELDS,
+                        true,
+                        false));
                 var providerCtor = new CodegenCtor(
                     typeof(StmtClassForgeableOPVFactoryProvider),
                     includeDebugSymbols,

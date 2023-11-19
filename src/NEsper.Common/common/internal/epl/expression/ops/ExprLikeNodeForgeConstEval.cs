@@ -60,7 +60,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 typeof(LikeUtil),
                 forge.LikeUtilInit);
 
-
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(bool?),
                 typeof(ExprLikeNodeForgeConstEval),

@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification object representing a complete EPL statement including all EPL constructs.
     /// </summary>
-    [Serializable]
     public class StatementSpecRaw
     {
         /// <summary>

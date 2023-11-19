@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// <summary>
     /// Represents the INSTANCEOF(a,b,...) function is an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprInstanceofNode : ExprNodeBase
     {
         private readonly string[] classIdentifiers;

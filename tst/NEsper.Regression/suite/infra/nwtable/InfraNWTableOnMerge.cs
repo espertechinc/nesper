@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -32,8 +31,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
-
-// using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -444,7 +441,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var epl = "@name('merge') on OrderBean[Books] " +
                           "merge MyInfra mw " +
-                          "insert select BookId as c1, title as c2 ";
+                          "insert select BookId as c1, Title as c2 ";
                 env.CompileDeploy(epl, path).AddListener("merge");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -487,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     : "@name('create') @public create table MyInfra(p0 string primary key, p1 int)";
                 env.CompileDeploy(stmtTextCreateOne, path);
                 env.CompileDeploy(
-                    "on SupportBean_Container[beans] merge MyInfra where TheString=p0 " +
+                    "on SupportBean_Container[Beans] merge MyInfra where TheString=p0 " +
                     "when matched then update set p1 = IntPrimitive",
                     path);
 
@@ -722,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p0,p1,".SplitCsv();
+                var fields = "p0,p1".SplitCsv();
                 var path = new RegressionPath();
                 var createEPL = namedWindow
                     ? "@name('Window') @public create window InsertOnlyInfra#unique(p0) as (p0 string, p1 int)"
@@ -1456,11 +1453,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl += namedWindow
                     ? "@name('Create') create window WinOMIS#keepall as WinOMISSchema;\n"
                     : "@name('Create') create table WinOMIS as (v1 string primary key, v2 int);\n";
-                epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.key0 " +
+                epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.Key0 " +
                        "when not matched " +
                        "then insert into StreamOne select * " +
-                       "then insert into StreamTwo select st0.Id as Id, st0.key0 as key0 " +
-                       "then insert into StreamThree(Id, key0) select st0.Id, st0.key0 " +
+                       "then insert into StreamTwo select st0.Id as Id, st0.Key0 as key0 " +
+                       "then insert into StreamThree(Id, key0) select st0.Id, st0.Key0 " +
                        "then insert into StreamFour select Id, key0 where key0=\"K2\" " +
                        "then insert into WinOMIS select key0 as v1, P00 as v2;\n";
                 epl += "@name('s1') select * from StreamOne;\n";
@@ -1515,7 +1512,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("insert into WinMDU select TheString, IntPrimitive from SupportBean", path);
 
-                var epl = "@name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.key0=win.TheString " +
+                var epl = "@name('merge') on SupportBean_ST0 as st0 merge WinMDU as win where st0.Key0=win.TheString " +
                           "when matched " +
                           "then delete where IntPrimitive<0 " +
                           "then update set IntPrimitive=st0.P00 where IntPrimitive=3000 or P00=3000 " +
@@ -1728,7 +1725,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                           "on MyEvent as eme\n" +
                           "  merge MyInfraIOS as MyInfraIOS where MyInfraIOS.name = eme.name\n" +
                           "   when matched then\n" +
-                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.Value as status\n" +
+                          "      insert into OtherStreamOne select eme.name as event_name, MyInfraIOS.value as status\n" +
                           "   when not matched then\n" +
                           "      insert into OtherStreamOne select eme.name as event_name, 0d as status;\n" +
                           "@name('s0') select * from OtherStreamOne;\n";
@@ -1965,36 +1962,31 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             }
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEvent
+        public class MyLocalJsonProvidedMyEvent
         {
             public string name;
             public double value;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedInputEvent
+        public class MyLocalJsonProvidedInputEvent
         {
             public string col1;
             public double col2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyInnerSchema
+        public class MyLocalJsonProvidedMyInnerSchema
         {
             public string in1;
             public int in2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEventSchema
+        public class MyLocalJsonProvidedMyEventSchema
         {
             public string col1;
             public MyLocalJsonProvidedMyInnerSchema col2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyInfraITV
+        public class MyLocalJsonProvidedMyInfraITV
         {
             public string c1;
             public MyLocalJsonProvidedMyInnerSchema c2;

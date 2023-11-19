@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Connection factory settings for using a Apache DBCP or other provider DataSource factory.
     /// </summary>
-    [Serializable]
     public class DataSourceFactory : ConnectionFactoryDesc
     {
         /// <summary>

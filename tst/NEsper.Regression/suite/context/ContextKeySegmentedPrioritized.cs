@@ -9,8 +9,6 @@
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.context
 {
     public class ContextKeySegmentedPrioritized : RegressionExecution

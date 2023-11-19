@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     ///     Expression for use within crontab to specify a list of values.
     /// </summary>
-    [Serializable]
     public class ExprNumberSetList : ExprNodeBase,
         ExprForge,
         ExprEvaluator

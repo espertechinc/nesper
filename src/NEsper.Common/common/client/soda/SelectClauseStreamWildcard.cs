@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.client.soda
     /// For example: <pre>select streamOne.* from StreamOne as streamOne, StreamTwo as
     /// streamTwo</pre>
     /// </summary>
-    [Serializable]
     public class SelectClauseStreamWildcard : SelectClauseElement
     {
         /// <summary>

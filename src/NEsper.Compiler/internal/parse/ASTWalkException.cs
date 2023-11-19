@@ -16,7 +16,6 @@ namespace com.espertech.esper.compiler.@internal.parse
     /// <summary>
     ///     This exception is thrown to indicate a problem in statement creation.
     /// </summary>
-    [Serializable]
     public class ASTWalkException : Exception
     {
         /// <summary>

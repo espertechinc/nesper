@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An item in a for-clause for controlling delivery of result events to listeners and subscribers.
     /// </summary>
-    [Serializable]
     public class ForClauseItem
     {
         /// <summary>Ctor. <para /> Must set a keyword and optionally add expressions. </summary>

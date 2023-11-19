@@ -46,10 +46,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             WithMVELStatelessReturnPassArgs(execs);
             WithSubqueryParam(execs);
             WithReturnNullWhenNumeric(execs);
-            if (TEST_MVEL) {
-                WithMVELMultiUseWithDeclaredExpr(execs);
-            }
-
             WithGenericResultType(execs);
             return execs;
         }
@@ -58,14 +54,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLScriptGenericResultType());
-            return execs;
-        }
-
-        public static IList<RegressionExecution> WithMVELMultiUseWithDeclaredExpr(
-            IList<RegressionExecution> execs = null)
-        {
-            execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLScriptMVELMultiUseWithDeclaredExpr());
             return execs;
         }
 
@@ -154,22 +142,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLScriptScripts());
             return execs;
-        }
-
-        private class EPLScriptMVELMultiUseWithDeclaredExpr : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl = "create expression F1 {1};\n" +
-                          "create expression int mvel:F(T) [ return T];\n" +
-                          "@name('s0') select F(F1()) as c0, F(2) as c1 from SupportBean;\n";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBean());
-                env.AssertPropsNew("s0", "c0,c1".SplitCsv(), new object[] { 1, 2 });
-
-                env.UndeployAll();
-            }
         }
 
         private class EPLScriptReturnNullWhenNumeric : RegressionExecution
@@ -300,21 +272,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
 
-                if (TEST_MVEL) {
-                    epl = "@name('s0') expression mvel:printColors(colors) [" +
-                          "String c = null;" +
-                          "for (c : colors) {" +
-                          "   Console.WriteLine(c);" +
-                          "}" +
-                          "]" +
-                          "select printColors(colors) from SupportColorEvent";
-                    env.CompileDeploy(epl).AddListener("s0");
-                    env.SendEventBean(new SupportColorEvent());
-                    env.UndeployAll();
-                }
-
-                epl = "@name('s0') expression js:printColors(colorEvent) [" +
-                      "print(java.util.Arrays.toString(colorEvent.getColors()));" +
+                epl = "@Name('s0') expression js:printColors(colorEvent) [\n" +
+                      "  debug.Print(debug.Render(colorEvent.Colors));\n" +
                       "]" +
                       "select printColors(colorEvent) from SupportColorEvent as colorEvent";
 
@@ -722,7 +681,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     testData);
                 path.Clear();
 
-                expression = "a + Integer.toString(b)";
+                expression = "a + Convert.ToString(b)";
                 testData = new object[][] {
                     new object[] { new SupportBean("E1", 5), "E15" },
                     new object[] { new SupportBean("E1", 6), "E16" },
@@ -746,16 +705,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy("@name('type') @public create schema ItemEvent(Id string)", path);
 
             var script =
-                "@name('script') @public create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
-                "myScriptReturnsEvents();" +
+                "@name('script') create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
                 "function myScriptReturnsEvents() {" +
-                "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
-                "  var events = new EventBeanArray(3);\n" +
-                "  events[0] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id1\"), \"ItemEvent\");\n" +
-                "  events[1] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id2\"), \"ItemEvent\");\n" +
-                "  events[2] = epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"Id\", \"id3\"), \"ItemEvent\");\n" +
+                "  var eventBean = host.resolveType(\"com.espertech.esper.common.client.EventBean\");\n" +
+                "  var events = host.newArr(eventBean, 3);\n" +
+                "  events[0] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"Id\", \"id1\"), \"ItemEvent\");\n" +
+                "  events[1] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"Id\", \"id2\"), \"ItemEvent\");\n" +
+                "  events[2] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"Id\", \"id3\"), \"ItemEvent\");\n" +
                 "  return events;\n" +
-                "}]";
+                "};\n" +
+                "return myScriptReturnsEvents();" +
+                "]";
             env.CompileDeploy(soda, script, path);
             env.AssertStatement(
                 "script",
@@ -887,7 +847,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                              typeof(SupportBean).FullName +
                              "('E1', 10); ]";
             env.CompileDeploy(
-                    expression + " select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb")
+                    expression + " select callIt() as val0, callIt().TheString as val1 from SupportBean as sb")
                 .AddListener("s0");
             env.AssertStatement(
                 "s0",

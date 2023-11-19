@@ -6,12 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -47,10 +47,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.SendEventBean(@event, "LocalEvent");
             };
             var beanepl = "@public @buseventtype create schema LocalEvent as " +
-                          typeof(EventInfraGetterDynamicNested.LocalEvent).FullName +
+                          typeof(EventInfraGetterDynamicNested.LocalEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEventSubA as " +
-                          typeof(EventInfraGetterDynamicNested.LocalEventSubA).FullName +
+                          typeof(EventInfraGetterDynamicNested.LocalEventSubA).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -97,8 +97,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, GetEpl("json"), json);
 
             // Json-Class-Provided
-            var eplJsonProvided = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var eplJsonProvided = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, eplJsonProvided, json);
 
@@ -211,7 +211,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalLeafEvent
         {
             public LocalLeafEvent(string id)
@@ -222,7 +221,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Id { get; }
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
             public LocalInnerEvent(LocalLeafEvent leaf)
@@ -233,7 +231,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalLeafEvent Leaf { get; }
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
@@ -248,8 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent Property { get; }
         }
 
-        [Serializable]
-        private class Nullable2Lvl
+        public class Nullable2Lvl
         {
             public Nullable2Lvl(
                 bool nullAtRoot,
@@ -268,19 +264,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Id { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedInnerEvent property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
             public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedLeafEvent leaf;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedLeafEvent
         {
             public string id;

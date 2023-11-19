@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Supplies connection-level settings for a given database name.
     /// </summary>
-    [Serializable]
     public class ConnectionSettings
     {
         /// <summary>

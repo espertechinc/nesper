@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     ///     Filter parameter value defining the event property to filter, the filter operator, and the filter value.
     /// </summary>
-    [Serializable]
     public class FilterValueSetParamImpl : FilterValueSetParam
     {
         /// <summary>

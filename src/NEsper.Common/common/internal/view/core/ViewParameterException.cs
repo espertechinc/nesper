@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.view.core
     /// <summary>
     /// Thrown to indicate a validation error in view parameterization.
     /// </summary>
-    [Serializable]
     public class ViewParameterException : Exception
     {
         /// <summary>

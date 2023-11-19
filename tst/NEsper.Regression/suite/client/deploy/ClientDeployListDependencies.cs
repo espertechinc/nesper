@@ -15,8 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
-using NUnit.Framework; // assertNull
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsAnyOrder
+using NUnit.Framework;using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsAnyOrder
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -25,43 +24,43 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithiesObjectTypes(execs);
-            WithiesWModuleName(execs);
-            WithiesNoDependencies(execs);
-            WithyStar(execs);
-            WithiesInvalid(execs);
+            WithDependenciesObjectTypes(execs);
+            WithiesDependenciesWModuleName(execs);
+            WithDependenciesNoDependencies(execs);
+            WithDependencyStar(execs);
+            WithDependenciesInvalid(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithiesInvalid(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithDependenciesInvalid(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployListDependenciesInvalid());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithyStar(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithDependencyStar(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployListDependencyStar());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithiesNoDependencies(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithDependenciesNoDependencies(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployListDependenciesNoDependencies());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithiesWModuleName(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithiesDependenciesWModuleName(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployListDependenciesWModuleName());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithiesObjectTypes(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithDependenciesObjectTypes(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientDeployListDependenciesObjectTypes());
@@ -120,21 +119,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed("dummy"));
                 Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided("dummy"));
 
-                try {
-                    Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null));
-                    Assert.Fail();
-                }
-                catch (ArgumentException ex) {
-                    // expected
-                }
+                Assert.Throws<ArgumentException>(
+                    () => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null)); });
 
-                try {
-                    Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null));
-                    Assert.Fail();
-                }
-                catch (ArgumentException ex) {
-                    // expected
-                }
+                Assert.Throws<ArgumentException>(
+                    () => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null)); });
             }
 
             public ISet<RegressionFlag> Flags()
@@ -231,14 +220,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     "@public create expression double MyScript(stringvalue) [0];\n" +
                     "@public create index MyIndexA on MyWindow(IntPrimitive);\n" +
                     "@public create index MyIndexB on MyTable(value);\n" +
-                    "@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"abc\"; } }\"\"\";\n";
+                    "@public create inlined_class \"\"\" public class MyClass { public static stringDoIt() { return \"abc\"; } }\"\"\";\n";
                 env.CompileDeploy(eplProvide, path);
 
                 var eplConsume =
-                    "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].Value from MyWindow;\n" +
-                    "select MyExpression(), MyScript('a'), MyClass.doIt() from MyEventType;\n" +
+                    "@name('consume') context MyContext select MyVariable, count(*), MyTable['a'].value from MyWindow;\n" +
+                    "select MyExpression(), MyScript('a'), MyClass.DoIt() from MyEventType;\n" +
                     "on SupportBean as sb merge MyWindow as mw where sb.IntPrimitive=mw.IntPrimitive when matched then delete;\n" +
-                    "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.Value when matched then delete;\n";
+                    "on SupportBean as sb merge MyTable as mt where sb.TheString=mt.value when matched then delete;\n";
                 env.CompileDeploy(eplConsume, path);
 
                 var deploymentIdProvide = env.DeploymentId("provide");
@@ -305,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             return new EPDeploymentDependencyProvided.Item(
                 objectType,
                 objectName,
-                new HashSet<string>(Arrays.AsList(deploymentIds)));
+                new HashSet<string>(deploymentIds));
         }
 
         private static void AssertConsumed(

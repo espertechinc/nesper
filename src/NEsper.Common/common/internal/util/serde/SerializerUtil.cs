@@ -48,6 +48,18 @@ namespace com.espertech.esper.common.@internal.util.serde
             return serializerFactory.DefaultSerializer.DeserializeAny(bytes);
         }
 
+        /// <summary>
+        /// Deserializes a byte array in base 64 encoding to an object.  Assumes that the
+        /// caller has no "container" and just wants to use a barebones serializer factory.
+        /// </summary>
+        /// <param name="value"></param>
+        /// <returns></returns>
+        public static object ByteArrBase64ToObject(
+            string value)
+        {
+            return ByteArrBase64ToObject(SerializerFactory.Instance, value);
+        }
+
         public static object ByteArrBase64ToObject(
             SerializerFactory serializerFactory,
             string value)

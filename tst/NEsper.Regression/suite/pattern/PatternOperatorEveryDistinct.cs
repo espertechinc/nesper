@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select * from pattern[every-distinct(a.array) a=SupportEventWithIntArray]");
+                    "@name('s0') select * from pattern[every-distinct(a.Array) a=SupportEventWithIntArray]");
                 env.AddListener("s0");
 
                 SendAssertReceived(env, "E1", new int[] { 1, 2 }, true);

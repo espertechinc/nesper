@@ -13,7 +13,6 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
     /// <summary>
     /// This exception is thrown to indicate a problem with schedule parameters.
     /// </summary>
-    [Serializable]
     public class ScheduleParameterException : Exception
     {
         /// <summary>

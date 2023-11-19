@@ -345,9 +345,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 Assert.That(und.NativeCount, Is.Zero);
                 Assert.That(und.TryGetValue("x", out var result), Is.False);
                 AssertNoSuchElement(() => und.GetNativeValue(0));
-                AssertNoSuchElement(() => und.ContainsKey(0));
+                AssertNoSuchElement(() => und.GetNativeKeyName(0));
                 AssertNoSuchElement(() => und.GetNativeEntry(0));
-                Assert.That(und.TryGetNativeKeyIndex("x", out var index), Is.False);
+                Assert.That(und.TryGetNativeKey("x", out var index), Is.False);
                 Assert.IsTrue(und.JsonValues.IsEmpty());
 
                 SupportJsonEventTypeUtil.CompareDictionaries(new LinkedHashMap<string, object>(), und);
@@ -575,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             var split = csv.SplitCsv();
             for (var i = 0; i < split.Length; i++) {
                 Assert.IsTrue(und.ContainsKey(split[i]));
-                Assert.That(und.TryGetNativeKeyIndex(split[i], out var name), Is.True);
+                Assert.That(und.TryGetNativeKey(split[i], out var name), Is.True);
                 Assert.That(name, Is.EqualTo(split[i]));
             }
         }
@@ -599,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 runnable.Invoke();
                 Assert.Fail();
             }
-            catch (NoSuchElementException ex) {
+            catch (NoSuchElementException) {
                 // expected
             }
         }

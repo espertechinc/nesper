@@ -18,7 +18,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
-    [Serializable]
     public class ExprNamedParameterNodeImpl : ExprNodeBase,
         ExprNamedParameterNode,
         ExprForge,

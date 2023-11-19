@@ -44,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                         isNewData,
                         context) => {
                         if (enumcoll.IsEmpty()) {
-                            return enumcoll;
+                            //return enumcoll;
+                            return EmptyList<EventBean>.Instance;
                         }
 
                         var beans = (ICollection<EventBean>)enumcoll;
@@ -68,19 +69,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.Add(next);
                         }
 
-                        return FlexCollection.Of(result);
+                        //return FlexCollection.Of(result);
+                        return result;
                     });
             }
         }
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<EventBean>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<EventBean>), "Instance");
         }
 
         public override void InitBlock(
@@ -107,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
         }
     }
 } // end of namespace

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.view.derived
     ///     that can be reused by subclasses. The bean calculates standard deviation (sample and population), variance,
     ///     average and sum.
     /// </summary>
-    [Serializable]
     public class BaseStatisticsBean
     {
         /// <summary>

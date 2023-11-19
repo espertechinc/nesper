@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Parameter expression for use in crontab expressions and representing a range.
     /// </summary>
-    [Serializable]
     public class CrontabRangeExpression : ExpressionBase
     {
         /// <summary>

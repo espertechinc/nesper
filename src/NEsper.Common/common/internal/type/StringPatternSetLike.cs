@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.type
 {
-    [Serializable]
     public class StringPatternSetLike : StringPatternSet
     {
         private readonly string _likeString;

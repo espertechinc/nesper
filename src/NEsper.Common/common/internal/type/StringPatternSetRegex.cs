@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Regular expression matcher.
     /// </summary>
-    [Serializable]
     public class StringPatternSetRegex : StringPatternSet
     {
         private readonly string _patternText;

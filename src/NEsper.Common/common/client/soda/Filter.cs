@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// Filter defines the event type to be filtered for, and an optional expression that returns true if
     /// the filter should consider the event, or false to reject the event.
     /// </summary>
-    [Serializable]
     public class Filter
     {
         private string eventTypeName;

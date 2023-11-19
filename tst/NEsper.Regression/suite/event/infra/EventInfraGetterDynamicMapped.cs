@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -42,10 +41,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 }
             };
             var beanepl = "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEventSubA as " +
-                          typeof(LocalEventSubA).FullName +
+                          typeof(LocalEventSubA).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -55,15 +54,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventMap(Collections.EmptyDataMap, "LocalEvent");
                 }
                 else {
-                    env.SendEventMap(Collections.SingletonDataMap("mapped", nullable.Value), "LocalEvent");
+                    env.SendEventMap(Collections.SingletonDataMap("Mapped", nullable.Value), "LocalEvent");
                 }
             };
             var mapepl = "@public @buseventtype create schema LocalEvent();\n";
             RunAssertion(env, mapepl, map);
 
+            var mapType = "System.Collections.Generic.IDictionary<string, object>";
+            
             // Object-array
-            var oaepl = "@public @buseventtype create objectarray schema LocalEvent();\n" +
-                        "@public @buseventtype create objectarray schema LocalEventSubA (mapped java.util.Map) inherits LocalEvent;\n";
+            var oaepl =
+                $"@public @buseventtype create objectarray schema LocalEvent();\n" + 
+                $"@public @buseventtype create objectarray schema LocalEventSubA (Mapped `{mapType}`) inherits LocalEvent;\n";
             RunAssertion(env, oaepl, null);
 
             // Json
@@ -72,12 +74,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventJson("{}", "LocalEvent");
                 }
                 else if (nullable.Value == null) {
-                    env.SendEventJson(new JObject(new JProperty("mapped")).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Mapped")).ToString(), "LocalEvent");
                 }
                 else {
                     var @event = new JObject();
                     var mapped = new JObject();
-                    @event.Add("mapped", mapped);
+                    @event.Add("Mapped", mapped);
                     foreach (var entry in nullable.Value) {
                         mapped.Add(entry.Key, entry.Value);
                     }
@@ -87,14 +89,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
             RunAssertion(
                 env,
-                "@public @buseventtype @JsonSchema(dynamic=true) create json schema LocalEvent();\n",
+                "@public @buseventtype @JsonSchema(Dynamic=true) create json schema LocalEvent();\n",
                 json);
 
             // Json-Class-Provided
             RunAssertion(
                 env,
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvided).FullName +
+                "@JsonSchema(ClassName='" +
+                typeof(MyLocalJsonProvided).MaskTypeName() +
                 "') @public @buseventtype create json schema LocalEvent();\n",
                 json);
 
@@ -102,20 +104,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<NullableObject<IDictionary<string, string>>> avro = nullable => {
                 var schema = SchemaBuilder.Record(
                     "name",
-                    Field("mapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
+                    Field("Mapped", Map(StringType(Property(PROP_STRING_KEY, PROP_STRING_VALUE)))));
                 GenericRecord @event;
                 if (nullable == null) {
                     // no action
                     @event = new GenericRecord(schema);
-                    @event.Put("mapped", Collections.EmptyDataMap);
+                    @event.Put("Mapped", Collections.EmptyDataMap);
                 }
                 else if (nullable.Value == null) {
                     @event = new GenericRecord(schema);
-                    @event.Put("mapped", Collections.EmptyDataMap);
+                    @event.Put("Mapped", Collections.EmptyDataMap);
                 }
                 else {
                     @event = new GenericRecord(schema);
-                    @event.Put("mapped", nullable.Value);
+                    @event.Put("Mapped", nullable.Value);
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -146,10 +148,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.UndeployAll();
                 return;
             }
+            
+            var propepl =
+                "@Name('s1') select " +
+                "Mapped('a')? as c0, " + 
+                "Mapped('b')? as c1," +
+                "exists(Mapped('a')?) as c2, " +
+                "exists(Mapped('b')?) as c3, " +
+                "typeof(Mapped('a')?) as c4, " +
+                "typeof(Mapped('b')?) as c5 from LocalEvent;\n";
 
-            var propepl = "@name('s1') select mapped('a')? as c0, mapped('b')? as c1," +
-                          "exists(mapped('a')?) as c2, exists(mapped('b')?) as c3, " +
-                          "typeof(mapped('a')?) as c4, typeof(mapped('b')?) as c5 from LocalEvent;\n";
             env.CompileDeploy(propepl, path).AddListener("s1");
 
             IDictionary<string, string> values = new Dictionary<string, string>();
@@ -219,27 +227,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
 
         public class LocalEventSubA : LocalEvent
         {
-            private IDictionary<string, string> mapped;
-
             public LocalEventSubA(IDictionary<string, string> mapped)
             {
-                this.mapped = mapped;
+                this.Mapped = mapped;
             }
 
-            public IDictionary<string, string> Mapped => mapped;
+            public IDictionary<string, string> Mapped { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
-            public IDictionary<string, string> mapped;
+            public IDictionary<string, string> Mapped;
         }
     }
 } // end of namespace

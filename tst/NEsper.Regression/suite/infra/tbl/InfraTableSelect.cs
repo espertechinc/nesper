@@ -135,8 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var path = new RegressionPath();
                 var epl =
                     "@public create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
-                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(Id = 'I');\n" +
-                    "@name('s0') select t.Value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = intOne and k2 = intTwo;\n";
+                    "insert into MyTable select IntOne as k1, IntTwo as k2, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                    "@name('s0') select t.value as c0 from SupportEventWithManyArray(Id='Q'), MyTable as t where k1 = IntOne and k2 = IntTwo;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendManyArray(env, "I", new int[] { 1, 2 }, new int[] { 3, 4 }, 10);
@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var epl = "@public create table MyTable(k int[primitive] primary key, value int);\n" +
-                          "insert into MyTable select array as k, value from SupportEventWithIntArray;\n" +
-                          "@name('s0') select t.Value as c0 from SupportEventWithManyArray, MyTable as t where k = intOne;\n";
+                          "insert into MyTable select Array as k, Value as value from SupportEventWithIntArray;\n" +
+                          "@name('s0') select t.value as c0 from SupportEventWithManyArray, MyTable as t where k = IntOne;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendIntArray(env, "E1", new int[] { 1, 2 }, 10);
@@ -432,12 +432,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] rowValues)
         {
             // try join passing of params
-            var eplJoin = "@name('s0') select " +
-                          typeof(InfraTableSelect).FullName +
-                          ".myServiceEventBean(mt) as c0, " +
-                          typeof(InfraTableSelect).FullName +
-                          ".myServiceObjectArray(mt) as c1 " +
-                          "from SupportBean_S2, MyTable as mt";
+            var eplJoin =
+                $"@name('s0') select " +
+                $"{typeof(InfraTableSelect).FullName}.MyServiceEventBean(mt) as c0, " + 
+                $"{typeof(InfraTableSelect).FullName}.MyServiceObjectArray(mt) as c1 " +
+                "from SupportBean_S2, MyTable as mt";
             env.CompileDeploy(eplJoin, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S2(0));
@@ -450,8 +449,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.UndeployModuleContaining("s0");
 
             // try subquery
-            var eplSubquery = "@name('s0') select (select pluginServiceEventBean(mt) from MyTable as mt) as c0 " +
-                              "from SupportBean_S2";
+            var eplSubquery =
+                "@name('s0') select (select pluginServiceEventBean(mt) from MyTable as mt) as c0 " +
+                "from SupportBean_S2";
             env.CompileDeploy(eplSubquery, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S2(0));
@@ -469,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.CompileDeploy(epl, path).AddListener("s0");
 
             env.SendEventBean(new SupportBean_S2(0));
-            env.AssertEventNew("s0", @event => AssertEventUnd(@event.Get("arr"), rowValues));
+            env.AssertEventNew("s0", @event => AssertEventUnd(@event.Get("Arr"), rowValues));
 
             env.UndeployModuleContaining("s0");
         }
@@ -484,13 +484,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(ICollection<object>), statement.EventType.GetPropertyType("mt")));
+                statement => Assert.AreEqual(typeof(ICollection<object[]>), statement.EventType.GetPropertyType("mt")));
 
             env.SendEventBean(new SupportBean_S2(0));
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    var coll = @event.Get("mt").Unwrap<object>();
+                    var coll = @event.Get("mt").Unwrap<object[]>();
                     AssertEventUnd(coll.First(), rowValues);
                 });
 

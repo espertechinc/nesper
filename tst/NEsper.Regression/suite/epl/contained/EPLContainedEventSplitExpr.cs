@@ -74,10 +74,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var path = new RegressionPath();
                 var script = "@name('mystmt') @public create expression Object js:myGetScriptContext() [\n" +
-                             "myGetScriptContext();" +
                              "function myGetScriptContext() {" +
                              "  return epl;\n" +
-                             "}]";
+                             "}" + 
+                             "return myGetScriptContext();" +
+                             "]";
                 env.CompileDeploy(script, path);
 
                 env.CompileDeploy("@name('s0') select myGetScriptContext() as c0 from SupportBean", path)
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.AssertListener(
                     "s0",
                     listener => {
-                        var context = (EPLScriptContext)listener.AssertOneGetNewAndReset().Get("c0");
+                        var context = (EPLScriptContext) listener.AssertOneGetNewAndReset().Get("c0");
                         Assert.IsNotNull(context.EventBeanService);
                     });
 
@@ -98,28 +99,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
         {
             public void Run(RegressionEnvironment env)
             {
+                var collections = typeof(Collections).FullName;
                 var path = new RegressionPath();
-                var script =
-                    "@public create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
-                    "mySplitScriptReturnEventBeanArray(value);" +
-                    "function mySplitScriptReturnEventBeanArray(value) {" +
-                    "  var split = value.split(',');\n" +
-                    "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
-                    "  var events = new EventBeanArray(split.length);  " +
-                    "  for (var i = 0; i < split.length; i++) {\n" +
-                    "    var pvalue = split[i].substring(1);\n" +
-                    "    if (split[i].startsWith(\"A\")) {\n" +
-                    "      events[i] =  epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"p0\", pvalue), \"AEvent\");\n" +
-                    "    }\n" +
-                    "    else if (split[i].startsWith(\"B\")) {\n" +
-                    "      events[i] =  epl.getEventBeanService().adapterForMap(java.util.Collections.singletonMap(\"p1\", pvalue), \"BEvent\");\n" +
-                    "    }\n" +
-                    "    else {\n" +
-                    "      throw new UnsupportedOperationException(\"Unrecognized type\");\n" +
-                    "    }\n" +
-                    "  }\n" +
-                    "  return events;\n" +
-                    "}]";
+                var script = "create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
+                             "function mySplitScriptReturnEventBeanArray(value) {" +
+                             "  var split = value.split(',');\n" +
+                             "  var etype = host.resolveType('com.espertech.esper.common.client.EventBean');\n" +
+                             "  var events = host.newArr(etype, split.length);  " +
+                             "  for (var i = 0; i < split.length; i++) {\n" +
+                             "    var pvalue = split[i].substring(1);\n" +
+                             "    if (split[i].startsWith(\"A\")) {\n" +
+                             $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P0\", pvalue), \"AEvent\");\n" +
+                             "    }\n" +
+                             "    else if (split[i].startsWith(\"B\")) {\n" +
+                             $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P1\", pvalue), \"BEvent\");\n" +
+                             "    }\n" +
+                             "    else {\n" +
+                             "      xhost.throwException(\"UnsupportedOperationException\", \"Unrecognized type\");\n" +
+                             "    }\n" +
+                             "  }\n" +
+                             "  return events;\n" +
+                             "};" +
+                             "return mySplitScriptReturnEventBeanArray(value);" +
+                             "]";
                 env.CompileDeploy(script, path);
 
                 var epl = "@public create schema BaseEvent();\n" +
@@ -166,13 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    if (rep.IsAvroEvent()) {
-                        // Avro serialization to string UTF8
-                        env.AssertThat(() => TryAssertionSingleRowSplitAndType(env, rep));
-                    }
-                    else {
-                        TryAssertionSingleRowSplitAndType(env, rep);
-                    }
+                    TryAssertionSingleRowSplitAndType(env, rep);
                 }
             }
         }
@@ -290,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             // test property returning untyped collection
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @Name('s0') select * from SupportObjectArrayEvent[someObjectArray@type(WordEvent)]";
+                           " @Name('s0') select * from SupportObjectArrayEvent[SomeObjectArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
 
@@ -305,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
-                           " @Name('s0') select * from SupportCollectionEvent[someCollection@type(WordEvent)]";
+                           " @Name('s0') select * from SupportCollectionEvent[SomeCollection@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
                 env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
 
@@ -388,13 +384,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.TryInvalidCompile(
                     path,
                     "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type Object[] cannot be assigned a value of type");
+                    "Event type 'WordEvent' underlying type System.Object[] cannot be assigned a value of type");
             }
             else if (eventRepresentationEnum.IsMapEvent()) {
                 env.TryInvalidCompile(
                     path,
                     "select * from MySentenceEvent[invalidSentence(sentence)@type(WordEvent)]",
-                    "Event type 'WordEvent' underlying type System.Collections.Generic.IDictionary<String,Object> cannot be assigned a value of type");
+                    "Event type 'WordEvent' underlying type System.Collections.Generic.IDictionary<System.String, System.Object> cannot be assigned a value of type com.espertech.esper.common.internal.support.SupportBean[] [");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 env.TryInvalidCompile(

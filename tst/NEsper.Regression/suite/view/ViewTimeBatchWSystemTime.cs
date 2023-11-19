@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -144,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             try {
                 Thread.Sleep(msec);
             }
-            catch (ThreadInterruptedException e) {
+            catch (ThreadInterruptedException) {
             }
         }
     }

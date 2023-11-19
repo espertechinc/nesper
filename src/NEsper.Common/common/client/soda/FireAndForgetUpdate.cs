@@ -12,7 +12,6 @@ using System.Collections.Generic;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Fire-and-forget (on-demand) Update DML. </summary>
-    [Serializable]
     public class FireAndForgetUpdate : FireAndForgetClause
     {
         /// <summary>Returns the set-assignments. </summary>

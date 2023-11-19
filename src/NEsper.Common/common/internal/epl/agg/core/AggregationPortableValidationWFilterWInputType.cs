@@ -18,6 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public abstract class AggregationPortableValidationWFilterWInputType : AggregationPortableValidationBase
     {
+        private bool _hasFilter;
+        private Type _inputValueType;
+
         protected AggregationPortableValidationWFilterWInputType()
         {
         }
@@ -68,8 +71,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             ValidateIntoTableWFilterWInputType(tableExpression, intoTableAgg, intoExpression, factory);
         }
 
-        public virtual bool HasFilter { get; set; }
+        public virtual bool HasFilter {
+            get => _hasFilter;
+            set => _hasFilter = value;
+        }
 
-        public Type InputValueType { get; set; }
+        public virtual Type InputValueType {
+            get => _inputValueType;
+            set => _inputValueType = value;
+        }
     }
 } // end of namespace

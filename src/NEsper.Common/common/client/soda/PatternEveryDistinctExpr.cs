@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Every-Distinct construct for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternEveryDistinctExpr : PatternExprBase
     {
         /// <summary>

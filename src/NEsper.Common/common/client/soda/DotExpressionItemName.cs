@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Dot-expression item representing an identifier without parameters.
     /// </summary>
-    [Serializable]
     public class DotExpressionItemName : DotExpressionItem
     {
         /// <summary>

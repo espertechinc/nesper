@@ -920,7 +920,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		[Test]
 		public void TestComplexProperty()
 		{
-			var text = "select array [ 1 ],s0.map('a'),nested.Nested2, a[1].b as x, nested.abcdef? " +
+			var text = "select array [ 1 ],s0.map('a'),nested.nested2, a[1].b as x, nested.abcdef? " +
 			           " from SupportBean_N().win:lenght(10) as win1 " +
 			           " where a[1].b('a').Nested.c[0] = 4";
 			var walker = SupportParserHelper.ParseAndWalkEPL(container, text);
@@ -934,8 +934,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			Assert.AreEqual("s0", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 2).SelectExpression;
-			Assert.AreEqual("Nested2", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("Nested", identNode.StreamOrPropertyName);
+			Assert.AreEqual("nested2", identNode.UnresolvedPropertyName);
+			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 3).SelectExpression;
 			Assert.AreEqual("a[1].b", identNode.UnresolvedPropertyName);
@@ -943,7 +943,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 			identNode = (ExprIdentNode) GetSelectExprSpec(walker.StatementSpec, 4).SelectExpression;
 			Assert.AreEqual("abcdef?", identNode.UnresolvedPropertyName);
-			Assert.AreEqual("Nested", identNode.StreamOrPropertyName);
+			Assert.AreEqual("nested", identNode.StreamOrPropertyName);
 
 			identNode = (ExprIdentNode) walker.StatementSpec.WhereClause.ChildNodes[0];
 			Assert.AreEqual("a[1].b('a').Nested.c[0]", identNode.UnresolvedPropertyName);

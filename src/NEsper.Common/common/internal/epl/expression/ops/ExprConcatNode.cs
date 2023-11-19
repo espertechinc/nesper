@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents a string concatenation.
     /// </summary>
-    [Serializable]
     public class ExprConcatNode : ExprNodeBase
     {
         [JsonIgnore]

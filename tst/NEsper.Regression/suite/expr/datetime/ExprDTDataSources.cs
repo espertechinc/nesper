@@ -8,10 +8,8 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,9 +17,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-// THURSDAY
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTDataSources
@@ -102,8 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var startTime =
-                    "2002-05-30T09:01:02.003"; // use 2-digit hour, see https://bugs.openjdk.java.net/browse/JDK-8066806
+                var startTime = "2002-05-30T09:01:02.003";
                 env.AdvanceTime(DateTimeParsingFunctions.ParseDefaultMSec(startTime));
 
                 var fields = Collections.Array(
@@ -285,9 +280,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             string field,
             AtomicLong milestone)
         {
-            var methods =
-                "getMinuteOfHour,getMonthOfYear,getDayOfMonth,getDayOfWeek,getDayOfYear,getEra,gethourOfDay,getmillisOfSecond,getsecondOfMinute,getweekyear,getyear"
-                    .SplitCsv();
+            var methods = new string[] {
+                "getMinuteOfHour",
+                "getMonthOfYear", 
+                "getDayOfMonth",
+                "getDayOfWeek", 
+                "getDayOfYear",
+                "getHourOfDay",
+                "getMillisOfSecond",
+                "getSecondOfMinute",
+                "getWeekYear",
+                "getYear"
+            };
             var epl = new StringWriter();
             epl.Write("@name('s0') select ");
             var count = 0;

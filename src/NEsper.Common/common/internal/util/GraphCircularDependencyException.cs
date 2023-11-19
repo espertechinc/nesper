@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary>Exception to represent a circular dependency. </summary>
-    [Serializable]
     public class GraphCircularDependencyException : Exception
     {
         /// <summary>Ctor. </summary>

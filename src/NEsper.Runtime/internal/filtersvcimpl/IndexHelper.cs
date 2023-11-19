@@ -38,7 +38,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IList<FilterParamIndexBase> indizes)
         {
             foreach (var parameter in parameters) {
-                var lookupable = parameter.Lookupable;
+               var lookupable = parameter.Lookupable;
                 var @operator = parameter.FilterOperator;
 
                 foreach (var index in indizes) {

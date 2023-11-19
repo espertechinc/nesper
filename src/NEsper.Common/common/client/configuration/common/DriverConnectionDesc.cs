@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Connection factory settings for using a driver.
     /// </summary>
-    [Serializable]
     public class DriverConnectionFactoryDesc : ConnectionFactoryDesc
     {
         /// <summary>

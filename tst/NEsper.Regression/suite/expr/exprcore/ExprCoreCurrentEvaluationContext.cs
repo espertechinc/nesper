@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.support;
@@ -17,8 +16,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreCurrentEvaluationContext

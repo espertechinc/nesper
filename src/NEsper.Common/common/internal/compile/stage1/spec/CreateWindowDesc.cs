@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for creating a named window.
     /// </summary>
-    [Serializable]
     public class CreateWindowDesc
     {
         /// <summary>

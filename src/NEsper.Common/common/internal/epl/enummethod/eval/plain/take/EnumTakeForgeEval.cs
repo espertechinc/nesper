@@ -10,7 +10,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -22,7 +21,7 @@ using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take
 {
     public class EnumTakeForgeEval : EnumEval
     {
@@ -54,14 +53,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenClassScope codegenClassScope)
         {
             var scope = new ExprForgeCodegenSymbol(false, null);
-            var returnType = typeof(FlexCollection);
-            var paramTypes = EnumForgeCodegenNames.PARAMS;
+            // PREVIOUSLY: FlexCollection
+            var returnType = args.EnumcollType;
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(FlexCollection),
+                    returnType,
                     typeof(EnumTakeForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(paramTypes);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var sizeType = forge.SizeEval.EvaluationType;
             var block = methodNode.Block
@@ -81,52 +83,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
                     EnumForgeCodegenNames.REF_ENUMCOLL,
                     SimpleNumberCoercerFactory.CoercerInt.CodegenInt(Ref("size"), sizeType)));
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="enumcoll">collection</param>
-        /// <param name="size">size</param>
-        /// <returns>collection</returns>
-        public static FlexCollection EvaluateEnumTakeMethod(
-            FlexCollection enumcoll,
-            int size)
-        {
-            if (enumcoll.Count == 0) {
-                return FlexCollection.Empty;
-            }
-
-            if (size <= 0) {
-                return FlexCollection.Empty;
-            }
-
-            if (enumcoll.Count < size) {
-                return enumcoll;
-            }
-
-            if (size == 1) {
-                if (enumcoll.IsEventBeanCollection) {
-                    return FlexCollection.OfEvent(
-                        enumcoll.EventBeanCollection.First());
-                }
-                else {
-                    return FlexCollection.OfObject(
-                        enumcoll.ObjectCollection.First());
-                }
-            }
-
-            if (enumcoll.IsEventBeanCollection) {
-                return FlexCollection.Of(
-                    enumcoll.EventBeanCollection
-                        .Take(size)
-                        .ToList());
-            }
-
-            return FlexCollection.Of(
-                enumcoll.ObjectCollection
-                    .Take(size)
-                    .ToList());
         }
 
         /// <summary>

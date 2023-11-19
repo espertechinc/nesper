@@ -17,7 +17,6 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Create an index on a named window.</summary>
-    [Serializable]
     public class CreateIndexColumn
     {
         private IList<Expression> _columns;

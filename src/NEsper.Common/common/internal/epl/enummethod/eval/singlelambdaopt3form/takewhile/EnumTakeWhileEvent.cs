@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 {
     public class EnumTakeWhileEvent : ThreeFormEventPlain
     {
-        private CodegenExpression innerValue;
+        private CodegenExpression _innerValue;
 
         public EnumTakeWhileEvent(ExprDotEvalParamLambda lambda) : base(lambda)
         {
@@ -52,10 +52,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
                             if (pass == null || false.Equals(pass)) {
-                                return FlexCollection.Empty;
+                                return EmptyList<EventBean>.Instance;
                             }
 
-                            return FlexCollection.OfEvent(item);
+                            return Collections.SingletonList<EventBean>(item);
                         }
 
                         var result = new ArrayDeque<EventBean>();
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.Add(next);
                         }
 
-                        return FlexCollection.Of(result);
+                        return result;
                     }
                 };
             }
@@ -79,12 +79,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<EventBean>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<EventBean>), "Instance");
         }
 
         public override void InitBlock(
@@ -93,10 +94,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+            _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneEvent(
                 block,
-                innerValue,
+                _innerValue,
                 StreamNumLambda,
                 InnerExpression.EvaluationType);
         }
@@ -110,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,
                 InnerExpression.EvaluationType,
-                innerValue);
+                _innerValue);
             block.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
         }
 

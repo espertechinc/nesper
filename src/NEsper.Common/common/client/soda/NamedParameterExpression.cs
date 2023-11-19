@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Named parameter expression of the form "name:expression" or "name:(expression, expression...)"
     /// </summary>
-    [Serializable]
     public class NamedParameterExpression : ExpressionBase
     {
         private string name;

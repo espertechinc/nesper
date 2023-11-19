@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Script-expression is external scripting language expression such as JavaScript, for example.
     /// </summary>
-    [Serializable]
     public class ScriptExpression
     {
         private string _name;

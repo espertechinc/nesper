@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.filterspec;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
-    [Serializable]
     public class SupportFilterSpecParamRange : FilterSpecParam
     {
         /// <summary>

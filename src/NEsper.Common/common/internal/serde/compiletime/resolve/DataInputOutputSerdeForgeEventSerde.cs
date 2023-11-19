@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
             }
 
             return ExprDotMethodChain(optionalEventTypeResolver)
-                .Get(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
+                .Get(EventTypeResolverConstants.EVENTSERDEFACTORY)
                 .Add(this.method.GetName(), @params);
         }
     }

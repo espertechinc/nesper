@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Maximum of the (distinct) values returned by an expression.
     /// </summary>
-    [Serializable]
     public class MaxProjectionExpression : ExpressionBase
     {
         private bool distinct;

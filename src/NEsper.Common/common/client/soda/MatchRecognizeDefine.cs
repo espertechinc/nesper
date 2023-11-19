@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Define-clause in match-recognize expression.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeDefine
     {
         /// <summary>

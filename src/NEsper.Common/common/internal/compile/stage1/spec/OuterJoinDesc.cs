@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Contains the ON-clause criteria in an outer join.
     /// </summary>
-    [Serializable]
     public class OuterJoinDesc
     {
         public static readonly OuterJoinDesc[] EMPTY_OUTERJOIN_ARRAY = Array.Empty<OuterJoinDesc>();

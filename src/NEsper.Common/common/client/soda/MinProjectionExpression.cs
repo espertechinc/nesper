@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Minimum of the (distinct) values returned by an expression.
     /// </summary>
-    [Serializable]
     public class MinProjectionExpression : ExpressionBase
     {
         private bool distinct;

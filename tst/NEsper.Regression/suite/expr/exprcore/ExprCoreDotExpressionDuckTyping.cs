@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreDotExpressionDuckTyping : RegressionExecution
@@ -20,11 +18,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public void Run(RegressionEnvironment env)
         {
             var epl = "@name('s0') select " +
-                      "(dt).makeString() as strval, " +
-                      "(dt).makeInteger() as intval, " +
-                      "(dt).makeCommon().makeString() as commonstrval, " +
-                      "(dt).makeCommon().makeInteger() as commonintval, " +
-                      "(dt).returnDouble() as commondoubleval " +
+                      "(dt).MakeString() as strval, " +
+                      "(dt).MakeInteger() as intval, " +
+                      "(dt).MakeCommon().MakeString() as commonstrval, " +
+                      "(dt).MakeCommon().MakeInteger() as commonintval, " +
+                      "(dt).ReturnDouble() as commondoubleval " +
                       "from SupportBeanDuckType dt ";
             env.CompileDeploy(epl).AddListener("s0");
 

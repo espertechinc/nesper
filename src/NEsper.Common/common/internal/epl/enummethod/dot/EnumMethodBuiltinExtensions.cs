@@ -3,7 +3,9 @@
 using com.espertech.esper.common.@internal.epl.enummethod.eval;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.exceptintersectunion;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.noop;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.reverse;
+using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.sequenceequal;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf;

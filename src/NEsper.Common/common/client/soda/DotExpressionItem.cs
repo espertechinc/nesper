@@ -9,6 +9,9 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -24,6 +27,7 @@ namespace com.espertech.esper.common.client.soda
     /// </para>
     /// </summary>
     [Serializable]
+    [JsonConverter(typeof(JsonConverterAbstract<DotExpressionItem>))]
     public abstract class DotExpressionItem
     {
         /// <summary>Ctor. </summary>

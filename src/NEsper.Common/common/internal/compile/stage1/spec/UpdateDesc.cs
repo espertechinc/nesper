@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification for the update statement.
     /// </summary>
-    [Serializable]
     public class UpdateDesc
     {
         /// <summary>

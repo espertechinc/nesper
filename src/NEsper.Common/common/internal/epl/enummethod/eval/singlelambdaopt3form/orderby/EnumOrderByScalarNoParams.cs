@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprEvaluatorContext context)
         {
             if (enumcoll == null || enumcoll.IsEmpty()) {
-                return enumcoll;
+                return EmptyList<object>.Instance;
             }
 
             var list = new List<object>(enumcoll);
@@ -59,13 +60,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         {
             var block = codegenMethodScope
                 .MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
                 .IfCondition(
                     Or(
                         EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
                         ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
+                .BlockReturn(EnumValue(typeof(EmptyList<object>), "Instance"))
                 .DeclareVar<List<object>>(
                     "list",
                     NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));

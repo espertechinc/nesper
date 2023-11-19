@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     /// A view provides a projection upon a stream, such as a data window, grouping or unique.
     /// For views, the namespace is an optional value and can be null for any-namespace.
     /// </summary>
-    [Serializable]
     public class View : EPBaseNamedObject
     {
         /// <summary>

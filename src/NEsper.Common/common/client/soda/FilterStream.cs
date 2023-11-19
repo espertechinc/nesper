@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A stream upon which projections (views) can be added that selects events by name and filter expression.
     /// </summary>
-    [Serializable]
     public class FilterStream : ProjectedStream
     {
         private Filter filter;

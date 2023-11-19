@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+using static com.espertech.esper.common.@internal.compile.stage3.StmtClassForgeableAIFactoryProviderBase;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -31,26 +32,23 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         ExprForge,
         ExprNodeDeployTimeConst
     {
-        private readonly string _optionalName;
-        private readonly ClassDescriptor _optionalType;
-        private Type _type = typeof(object);
         private CodegenExpressionField _field;
 
         public ExprSubstitutionNode(
             string optionalName,
             ClassDescriptor optionalType)
         {
-            this._optionalName = optionalName;
-            this._optionalType = optionalType;
+            this.OptionalName = optionalName;
+            this.OptionalType = optionalType;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
-            if (_optionalType != null) {
+            if (OptionalType != null) {
                 Type clazz = null;
                 try {
                     clazz = TypeHelper.GetTypeForName(
-                        _optionalType.ClassIdentifier,
+                        OptionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
                 catch (TypeLoadException) {
@@ -58,20 +56,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
                 if (clazz == null) {
                     clazz = TypeHelper.GetTypeForSimpleName(
-                        _optionalType.ClassIdentifier,
+                        OptionalType.ClassIdentifier,
                         validationContext.ImportService.TypeResolver);
                 }
 
                 if (clazz == null) {
                     try {
                         clazz = validationContext.ImportService.ResolveType(
-                            _optionalType.ClassIdentifier,
+                            OptionalType.ClassIdentifier,
                             false,
                             validationContext.ClassProvidedExtension);
                     }
                     catch (ImportException e) {
                         throw new ExprValidationException(
-                            "Failed to resolve type '" + _optionalType.ClassIdentifier + "': " + e.Message,
+                            "Failed to resolve type '" + OptionalType.ClassIdentifier + "': " + e.Message,
                             e);
                     }
                 }
@@ -90,10 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                 }
 
-                _type = ImportTypeUtil.ParameterizeType(
+                ResolvedType = ImportTypeUtil.ParameterizeType(
                     true,
                     clazz,
-                    _optionalType,
+                    OptionalType,
                     validationContext.ImportService,
                     validationContext.ClassProvidedExtension);
             }
@@ -122,11 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode node,
             bool ignoreStreamPrefix)
         {
-            if (!(node is ExprSubstitutionNode)) {
-                return false;
-            }
-
-            return true;
+            return node is ExprSubstitutionNode;
         }
 
         public CodegenExpression EvaluateCodegen(
@@ -135,44 +129,45 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return AsField(codegenClassScope);
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(codegenClassScope).Field);
         }
 
         public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
         {
-            return AsField(classScope);
+            return InstanceField(Ref(MEMBERNAME_STATEMENT_FIELDS), AsField(classScope).Field);
         }
 
         public void RenderForFilterPlan(StringBuilder @out)
         {
             @out.Append("substitution parameter");
-            if (_optionalName != null) {
-                @out.Append(" name '").Append(_optionalName).Append("'");
+            if (OptionalName != null) {
+                @out.Append(" name '").Append(OptionalName).Append("'");
             }
 
-            if (_optionalType != null) {
-                @out.Append(" type '").Append(_optionalType.ToEPL()).Append("'");
+            if (OptionalType != null) {
+                @out.Append(" type '").Append(OptionalType.ToEPL()).Append("'");
             }
         }
 
         private CodegenExpressionField AsField(CodegenClassScope classScope)
         {
-            if (_field == null) {
-                _field = Field(classScope.AddSubstitutionParameter(_optionalName, _type));
-            }
-
+            _field ??= Field(classScope.AddSubstitutionParameter(OptionalName, ResolvedType));
             return _field;
         }
 
-        public string OptionalName => _optionalName;
+        public string OptionalName { get; }
 
         public ExprEvaluator ExprEvaluator => throw ExprNodeUtilityMake.MakeUnsupportedCompileTime();
 
         public override ExprForge Forge => this;
 
-        public Type EvaluationType => _type;
+        public Type EvaluationType => ResolvedType;
 
         public ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.DEPLOYCONST;
+
+        public ClassDescriptor OptionalType { get; }
+
+        public Type ResolvedType { get; private set; } = typeof(object);
 
         public ExprNodeRenderable ExprForgeRenderable {
             get {
@@ -186,9 +181,5 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 };
             }
         }
-
-        public ClassDescriptor OptionalType => _optionalType;
-
-        public Type ResolvedType => _type;
     }
 } // end of namespace

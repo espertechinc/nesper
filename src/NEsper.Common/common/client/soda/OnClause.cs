@@ -7,11 +7,15 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>A clause to delete from a named window based on a triggering event arriving and correlated to the named window events to be deleted. </summary>
     [Serializable]
+    [JsonConverter(typeof(JsonConverterAbstract<OnClause>))]
     public abstract class OnClause
     {
         /// <summary>Ctor. </summary>

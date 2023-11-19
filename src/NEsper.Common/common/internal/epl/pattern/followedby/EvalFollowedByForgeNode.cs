@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
 
         protected override Type TypeOfFactory => typeof(EvalFollowedByFactoryNode);
 
-        protected override string NameOfFactory => "followedby";
+        protected override string NameOfFactory => "Followedby";
 
         public override string ToString()
         {
@@ -81,8 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.DeclareVar(
-                typeof(EvalFactoryNode[]),
+            method.Block.DeclareVar<EvalFactoryNode[]>(
                 "children",
                 NewArrayByLength(typeof(EvalFactoryNode), Constant(ChildNodes.Count)));
             for (var i = 0; i < ChildNodes.Count; i++) {
@@ -97,8 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.followedby
                 .Expression(ExprDotMethodChain(symbols.GetAddInitSvc(method)).Add("AddReadyCallback", Ref("node")));
 
             if (OptionalMaxExpressions != null && !OptionalMaxExpressions.IsEmpty()) {
-                method.Block.DeclareVar(
-                    typeof(ExprEvaluator[]),
+                method.Block.DeclareVar<ExprEvaluator[]>(
                     "evals",
                     NewArrayByLength(typeof(ExprEvaluator), Constant(ChildNodes.Count - 1)));
 

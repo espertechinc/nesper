@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                 "GetValue",
                 Constant(column),
                 ExprDotName(exprSymbol.GetAddExprEvalCtx(parent), "AgentInstanceId"),
-                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddEps(parent),
                 exprSymbol.GetAddIsNewData(parent),
                 exprSymbol.GetAddExprEvalCtx(parent));
             if (requiredType == typeof(object)) {

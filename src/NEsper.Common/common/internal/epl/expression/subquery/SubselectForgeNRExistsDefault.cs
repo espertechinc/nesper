@@ -53,9 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .ForEach<EventBean>("subselectEvent", symbols.GetAddMatchingEvents(method))
                 .AssignArrayElement(REF_EVENTS_SHIFTED, Constant(0), Ref("subselectEvent"))
-                .DeclareVar<bool?>(
-                    "pass",
-                    LocalMethod(filter, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
+                .DeclareVar<bool?>("pass", LocalMethod(filter, REF_EVENTS_SHIFTED, ConstantTrue(), symbols.GetAddExprEvalCtx(method)))
                 .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                 .BlockReturn(ConstantTrue())
                 .BlockEnd()

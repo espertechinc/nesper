@@ -118,10 +118,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 instanceType = method.DeclaringType;
             }
 
-            var declaringType = forge.Method.DeclaringType;
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotMethodForgeNoDuckEvalPlain), codegenClassScope)
-                .AddParam(declaringType, "target");
+                .AddParam(innerType, "target");
 
             var block = methodNode.Block;
 

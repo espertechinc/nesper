@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Text;
 
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.support;
@@ -17,9 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertNotNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {

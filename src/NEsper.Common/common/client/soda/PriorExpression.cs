@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Expression representing the prior function.
     /// </summary>
-    [Serializable]
     public class PriorExpression : ExpressionBase
     {
         /// <summary>

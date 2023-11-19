@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.module
     /// <summary>
     ///     Holds an ordered list of modules considering each module's uses-dependencies on other modules.
     /// </summary>
-    [Serializable]
     public class ModuleOrder
     {
         /// <summary>

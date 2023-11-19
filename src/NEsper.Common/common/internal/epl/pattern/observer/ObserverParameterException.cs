@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
     /// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
-    [Serializable]
     public class ObserverParameterException : Exception
     {
         /// <summary>

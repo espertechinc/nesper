@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Expression returning a property value.
     /// </summary>
-    [Serializable]
     public class PropertyValueExpression : ExpressionBase
     {
         private string propertyName;

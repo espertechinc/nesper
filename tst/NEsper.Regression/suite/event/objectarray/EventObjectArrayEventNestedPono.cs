@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -18,9 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore; // makeMap
 using static com.espertech.esper.regressionlib.suite.@event.objectarray.EventObjectArrayCore; // getNestedKeyOA
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -140,7 +136,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             return levelZero;
         }
 
-        [Serializable]
         public class MyNested
         {
             private readonly IList<MyInside> insides;
@@ -153,7 +148,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public IList<MyInside> Insides => insides;
         }
 
-        [Serializable]
         public class MyInside
         {
             private readonly string id;

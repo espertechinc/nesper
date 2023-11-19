@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds runtime execution-related settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeExecution
     {
         /// <summary>

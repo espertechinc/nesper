@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Items within the split-stream syntax to contain a tuple of insert-into, select and where-clause.
     /// </summary>
-    [Serializable]
     public class OnInsertSplitStreamItem
     {
         /// <summary>Ctor.</summary>

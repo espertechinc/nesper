@@ -58,6 +58,7 @@ namespace com.espertech.esper.regressionrun.suite.client
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
             configuration.Common.AddEventType(
                 ClientRuntimeListener.MAP_TYPENAME,
                 Collections.SingletonDataMap("Ident", "string"));

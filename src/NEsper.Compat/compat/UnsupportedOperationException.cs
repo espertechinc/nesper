@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.compat
 {
-	[Serializable]
 	public class UnsupportedOperationException : NotSupportedException
 	{
 		/// <summary>

@@ -42,6 +42,8 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> meta = new Dictionary<string, object>();
             meta.Put("timeTaken", typeof(DateTimeEx));
             configuration.Common.AddEventType("RFIDEvent", meta);

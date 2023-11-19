@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom date-time-method.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInDateTimeMethod
     {
         private string _forgeClassName;

@@ -8,8 +8,6 @@
 
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.client.basic
 {
     public class ClientBasicPattern : RegressionExecution

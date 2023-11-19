@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Descriptor for an on-set assignment.
     /// </summary>
-    [Serializable]
     public class OnTriggerSetAssignment
     {
         /// <summary>Ctor. </summary>

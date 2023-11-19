@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.type;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class CreateTableColumn
     {
         public CreateTableColumn(

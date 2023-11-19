@@ -10,8 +10,6 @@ using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
     public class EventBeanExplicitOnly : RegressionExecution

@@ -19,7 +19,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
 
@@ -148,8 +147,8 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 					log.Error(
 						".RunTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
 						ex);
-					Assert.Fail();
 					compiled = null;
+					throw;
 				}
 
 				// We stop the statement again and start after the first listener was added.

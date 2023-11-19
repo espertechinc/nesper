@@ -11,7 +11,6 @@ using System.Text.RegularExpressions;
 
 namespace com.espertech.esper.compat
 {
-    [Serializable]
     public class MathContext
     {
         public static readonly MathContext DECIMAL32;

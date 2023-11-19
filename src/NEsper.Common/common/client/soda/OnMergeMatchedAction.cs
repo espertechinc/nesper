@@ -7,12 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Marker interface for an on-merge clause action item.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<OnMergeMatchedAction>))]
     public interface OnMergeMatchedAction
     {
         /// <summary>

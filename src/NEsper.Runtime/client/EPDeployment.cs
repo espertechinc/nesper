@@ -15,7 +15,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Represents a deployment.
     /// </summary>
-    [Serializable]
     public class EPDeployment
     {
         /// <summary>

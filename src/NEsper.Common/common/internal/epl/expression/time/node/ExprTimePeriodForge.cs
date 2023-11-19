@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
 
             var block = methodNode.Block
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "qExprTimePeriod", Constant(exprText)))
-                .DeclareVar(typeof(double), "seconds", Constant(0))
+                .DeclareVar<double>("seconds", Constant(0))
                 .DeclareVarNoInit(typeof(double?), "result");
             for (var i = 0; i < parent.ChildNodes.Length; i++) {
                 var forge = parent.ChildNodes[i].Forge;
@@ -140,7 +140,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
                     .BlockThrow(
                         StaticMethod(
                             typeof(ExprTimePeriodForge),
-                            "makeTimePeriodParamNullException",
+                            "MakeTimePeriodParamNullException",
                             Constant(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(parent))));
                 block.AssignRef("seconds", Op(Ref("seconds"), "+", adders[i].ComputeCodegen(Ref("result"))));
             }
@@ -338,14 +338,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
             CodegenClassScope codegenClassScope)
         {
             if (!present) {
-                block.DeclareVar(typeof(int?), variable, ConstantNull());
+                block.DeclareVar<int?>(variable, ConstantNull());
                 return 0;
             }
 
             var forge = parent.ChildNodes[counter].Forge;
             var evaluationType = forge.EvaluationType;
-            block.DeclareVar(
-                typeof(int?),
+            block.DeclareVar<int?>(
                 variable,
                 SimpleNumberCoercerFactory.CoercerInt.CoerceCodegenMayNull(
                     forge.EvaluateCodegen(evaluationType, codegenMethodScope, exprSymbol, codegenClassScope),

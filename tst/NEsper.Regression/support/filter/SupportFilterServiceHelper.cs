@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;

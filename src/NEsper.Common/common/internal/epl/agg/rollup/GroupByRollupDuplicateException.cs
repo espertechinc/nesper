@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.agg.rollup
 {
-    [Serializable]
     public class GroupByRollupDuplicateException : Exception
     {
         public GroupByRollupDuplicateException(int[] indexes)

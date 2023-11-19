@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.regressionlib.support.autoname.two
 {
-    [Serializable]
     public class SupportAmbiguousEventType
     {
         public SupportAmbiguousEventType(int id)

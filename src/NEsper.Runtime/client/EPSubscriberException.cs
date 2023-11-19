@@ -16,7 +16,6 @@ namespace com.espertech.esper.runtime.client
     /// such as when the subscribe does not expose an acceptable method to receive
     /// statement results.
     /// </summary>
-    [Serializable]
     public class EPSubscriberException : EPException
     {
         /// <summary>Ctor. </summary>

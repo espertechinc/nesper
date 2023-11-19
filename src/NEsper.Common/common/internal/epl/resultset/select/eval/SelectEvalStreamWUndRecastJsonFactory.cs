@@ -162,7 +162,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 					typeof(EventBean),
 					GetType(),
 					codegenClassScope);
-				var refEPS = exprSymbol.GetAddEPS(methodNode);
+				var refEPS = exprSymbol.GetAddEps(methodNode);
 				methodNode.Block
 					.DeclareVar(_resultType.UnderlyingType, "und", NewInstance(_resultType.UnderlyingType))
 					.DeclareVar(
@@ -218,7 +218,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 					typeof(EventBean),
 					GetType(),
 					codegenClassScope);
-				var refEPS = exprSymbol.GetAddEPS(methodNode);
+				var refEPS = exprSymbol.GetAddEps(methodNode);
 				var block = methodNode.Block
 					.DeclareVar(
 						sourceType.UnderlyingType,

@@ -8,16 +8,13 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -260,11 +257,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public void Run(RegressionEnvironment env)
             {
                 var eplOne =
-                    "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between rangeStart and rangeEnd";
+                    "@name('s0') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where IntBoxed between RangeStart and RangeEnd";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [rangeStart: rangeEnd]";
+                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [RangeStart: RangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups

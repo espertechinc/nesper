@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a single expression declaration that applies to a given statement.
     /// </summary>
-    [Serializable]
     public class ExpressionDeclaration
     {
         /// <summary>

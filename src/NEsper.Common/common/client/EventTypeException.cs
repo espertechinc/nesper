@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// Indicates that a problem occurred looking up, assigning or creating and event type.
     /// </summary>
-    [Serializable]
     public class EventTypeException : EPException
     {
         /// <summary>Ctor. </summary>

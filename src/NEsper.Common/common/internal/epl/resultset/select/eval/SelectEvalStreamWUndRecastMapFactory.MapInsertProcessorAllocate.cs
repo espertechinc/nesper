@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
                     true,
                     typeof(EventBeanManufacturer),
                     manufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 var block = methodNode.Block
                     .DeclareVar<MappedEventBean>(
                         "theEvent",

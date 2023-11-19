@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Not-expression for negating a pattern sub-expression for use in pattern expressions. </summary>
-    [Serializable]
     public class PatternNotExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>

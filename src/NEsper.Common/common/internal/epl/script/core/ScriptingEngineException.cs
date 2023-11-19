@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.epl.script.core
 {
-    [Serializable]
     public class ScriptingEngineException : Exception
     {
         /// <summary>

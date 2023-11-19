@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -647,14 +646,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 string expression;
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
                              "method:SupportJoinMethods.FetchVal('H0', var1) as h0," +
-                             "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'-H2', var3) as h2";
+                             "method:SupportJoinMethods.FetchVal('H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'-H2', var3) as h2";
                 TryAssertionSix(env, expression);
 
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'-H2', var3) as h2," +
-                             "method:SupportJoinMethods.fetchVal('H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+                             "method:SupportJoinMethods.FetchVal(h0.val||'-H2', var3) as h2," +
+                             "method:SupportJoinMethods.FetchVal('H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0";
                 TryAssertionSix(env, expression);
 
                 env.UndeployAll();
@@ -707,15 +706,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 string expression;
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0," +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'-H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal(h1.val||'-H2', var3) as h2";
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0," +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'-H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal(h1.val||'-H2', var3) as h2";
                 TryAssertionSeven(env, expression, milestone);
 
                 expression = "@name('s0') select h0.val as valh0, h1.val as valh1, h2.val as valh2 from " +
-                             "method:SupportJoinMethods.fetchVal(h1.val||'-H2', var3) as h2," +
-                             "method:SupportJoinMethods.fetchVal(h0.val||'-H1', var2) as h1," +
-                             "method:SupportJoinMethods.fetchVal('H0', var1) as h0";
+                             "method:SupportJoinMethods.FetchVal(h1.val||'-H2', var3) as h2," +
+                             "method:SupportJoinMethods.FetchVal(h0.val||'-H1', var2) as h1," +
+                             "method:SupportJoinMethods.FetchVal('H0', var1) as h0";
                 TryAssertionSeven(env, expression, milestone);
 
                 env.UndeployAll();
@@ -808,7 +807,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             return new ComputeCorrelationResult(us != null && them != null ? 1 : 0);
         }
 
-        [Serializable]
         public class ComputeCorrelationResult
         {
             private readonly int correlation;

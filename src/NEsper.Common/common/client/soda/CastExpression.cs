@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Cast expression casts the return value of an expression to a specified type.
     /// </summary>
-    [Serializable]
     public class CastExpression : ExpressionBase
     {
         /// <summary>

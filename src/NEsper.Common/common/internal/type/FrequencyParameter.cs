@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Encapsulates a parameter specifying a frequency, i.e. '* / 5'.
     /// </summary>
-    [Serializable]
     public class FrequencyParameter : NumberSetParameter
     {
         private readonly int _frequency;

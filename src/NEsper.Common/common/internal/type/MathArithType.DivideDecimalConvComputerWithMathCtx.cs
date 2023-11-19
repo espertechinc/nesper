@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.type
 {
     public partial class MathArithType
     {
-        [Serializable]
         public class DivideDecimalConvComputerWithMathCtx : DivideDecimalConvComputerBase
         {
             private readonly MathContext _mathContext;

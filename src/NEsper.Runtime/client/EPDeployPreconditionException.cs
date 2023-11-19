@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Deploy exception to indicate that a precondition is not satisfied
     /// </summary>
-    [Serializable]
     public class EPDeployPreconditionException : EPDeployException
     {
         /// <summary>

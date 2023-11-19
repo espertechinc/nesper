@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Like-Node Form-1: string input, constant pattern and no or constant escape character
     /// </summary>
-    [Serializable]
     public class ExprRegexpNodeForgeConstEval : ExprEvaluator
     {
         private readonly ExprRegexpNodeForgeConst _forge;

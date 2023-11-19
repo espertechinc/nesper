@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for the on-select and on-delete (no split-stream) statement.
     /// </summary>
-    [Serializable]
     public class OnTriggerWindowUpdateDesc : OnTriggerWindowDesc
     {
         /// <summary>Ctor. </summary>

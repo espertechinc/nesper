@@ -53,11 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
-                .DeclareVar(typeof(bool?), "haveResult", ConstantFalse())
+                .DeclareVar<bool>("haveResult", ConstantFalse())
                 .DeclareVar<object>("groupKeyMatch", ConstantNull());
 
             var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
@@ -78,8 +78,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("groupKey"),
                         Ref("cpid"),
                         ConstantNull())
-                    .DeclareVar(typeof(bool?), "pass", Cast(typeof(bool?), havingCall))
-                    .IfCondition(And(NotEqualsNull(Ref("pass")), Ref("pass")))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
+                    .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                     .IfCondition(Ref("haveResult"))
                     .BlockReturn(ConstantNull())
                     .AssignRef("groupKeyMatch", Ref("groupKey"))
@@ -136,18 +136,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(Subselect.SubselectMultirowType, EPStatementInitServicesConstants.REF));
 
-            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
             method.Block
-                .DeclareVar(typeof(int), "cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar(typeof(AggregationService), "aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
+                .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
+                .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols)
-                .DeclareVar(
-                    typeof(ICollection<EventBean>),
+                .DeclareVar<ICollection<EventBean>>(
                     "result",
                     NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")));
 
@@ -169,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("groupKey"),
                         Ref("cpid"),
                         ConstantNull())
-                    .DeclareVar(typeof(bool?), "pass", Cast(typeof(bool?), havingCall))
+                    .DeclareVar<bool?>("pass", Cast(typeof(bool?), havingCall))
                     .IfCondition(And(NotEqualsNull(Ref("pass")), Unbox(Ref("pass"))))
                     .DeclareVar(
                         typeof(IDictionary<string, object>),
@@ -179,13 +178,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             REF_EVENTS_SHIFTED,
                             ConstantTrue(),
                             symbols.GetAddExprEvalCtx(method)))
-                    .DeclareVar(
-                        typeof(EventBean),
+                    .DeclareVar<EventBean>(
                         "@event",
                         ExprDotMethod(factory, "AdapterForTypedMap", Ref("row"), subselectMultirowType))
                     .ExprDotMethod(Ref("result"), "Add", Ref("@event"));
             }
-            method.Block.MethodReturn(FlexWrap(Ref("result")));
+            method.Block.MethodReturn(Ref("result"));
             return LocalMethod(method);
         }
 

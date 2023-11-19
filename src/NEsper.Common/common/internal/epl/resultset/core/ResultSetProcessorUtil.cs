@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -66,8 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 else {
                     method.Block
                         .Apply(Instblock(classScope, "qHavingClause", REF_EPS))
-                        .DeclareVar(
-                            typeof(bool),
+                        .DeclareVar<bool>(
                             "passed",
                             CodegenLegoMethodExpression.CodegenBooleanExpressionReturnTrueFalse(
                                 optionalHavingClause,
@@ -300,8 +300,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
         {
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block.IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
-                    .DeclareVar(typeof(ArrayDeque<EventBean[]>), "eventGenerators", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean[]>>("eventGenerators", ConstantNull())
                     .DeclareVar<EventBean[]>(NAME_EPS, NewArrayByLength(typeof(EventBean), Constant(1)));
                 {
                     var forEach = methodNode.Block.ForEach<EventBean>("theEvent", Ref("events"));
@@ -431,7 +431,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             Consumer<CodegenMethod> code = methodNode => {
                 methodNode.Block
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
                     .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)));
 
                 {
@@ -617,7 +617,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "IsEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull());
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull());
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
@@ -746,8 +746,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                     .IfCondition(Or(EqualsNull(Ref("events")), ExprDotMethod(Ref("events"), "IsEmpty")))
                     .BlockReturn(ConstantNull())
                     .IfRefNullReturnNull("events")
-                    .DeclareVar(typeof(ArrayDeque<EventBean>), "result", ConstantNull())
-                    .DeclareVar(typeof(ArrayDeque<EventBean[]>), "eventGenerators", ConstantNull());
+                    .DeclareVar<ArrayDeque<EventBean>>("result", ConstantNull())
+                    .DeclareVar<ArrayDeque<EventBean[]>>("eventGenerators", ConstantNull());
                 {
                     var forEach = methodNode.Block.ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "key", Ref("events"));
                     forEach.DeclareVar<EventBean[]>(
@@ -1757,11 +1757,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool selectRStream,
             bool hasOrderBy)
         {
-            block.DeclareVar<EventBean[]>(
-                    "newEventsArr",
+            block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<EventBean[]>(
+                    "newEventsArrX",
                     StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYNULLFOREMPTYEVENTS, newEvents))
                 .DeclareVar<EventBean[]>(
-                    "oldEventsArr",
+                    "oldEventsArrX",
                     selectRStream
                         ? StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYNULLFOREMPTYEVENTS, oldEvents)
                         : ConstantNull());
@@ -1771,11 +1773,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                         "sortKeysNew",
                         StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYNULLFOREMPTYOBJECTS, newEventsSortKey))
                     .AssignRef(
-                        "newEventsArr",
+                        "newEventsArrX",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
                             "SortWOrderKeys",
-                            Ref("newEventsArr"),
+                            Ref("newEventsArrX"),
                             Ref("sortKeysNew"),
                             MEMBER_EXPREVALCONTEXT));
                 if (selectRStream) {
@@ -1783,11 +1785,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                             "sortKeysOld",
                             StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYNULLFOREMPTYOBJECTS, oldEventsSortKey))
                         .AssignRef(
-                            "oldEventsArr",
+                            "oldEventsArrX",
                             ExprDotMethod(
                                 MEMBER_ORDERBYPROCESSOR,
                                 "SortWOrderKeys",
-                                Ref("oldEventsArr"),
+                                Ref("oldEventsArrX"),
                                 Ref("sortKeysOld"),
                                 MEMBER_EXPREVALCONTEXT));
                 }
@@ -1797,8 +1799,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
                 StaticMethod(
                     typeof(ResultSetProcessorUtil),
                     METHOD_TOPAIRNULLIFALLNULL,
-                    Ref("newEventsArr"),
-                    Ref("oldEventsArr")));
+                    Ref("newEventsArrX"),
+                    Ref("oldEventsArrX")));
         }
 
         public static void PrefixCodegenNewOldEvents(
@@ -1807,12 +1809,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
             bool selectRStream)
         {
             block
-                .DeclareVar(typeof(IList<EventBean>), "newEvents", NewInstance(typeof(List<EventBean>)))
-                .DeclareVar(typeof(IList<EventBean>), "oldEvents", selectRStream ? NewInstance(typeof(List<EventBean>)) : ConstantNull());
+                .DeclareVar<IList<EventBean>>("newEvents", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<EventBean>>("oldEvents", selectRStream ? NewInstance(typeof(List<EventBean>)) : ConstantNull());
 
             block
-                .DeclareVar(typeof(IList<object>), "newEventsSortKey", ConstantNull())
-                .DeclareVar(typeof(IList<object>), "oldEventsSortKey", ConstantNull());
+                .DeclareVar<IList<object>>("newEventsSortKey", ConstantNull())
+                .DeclareVar<IList<object>>("oldEventsSortKey", ConstantNull());
             if (sorting) {
                 block.AssignRef("newEventsSortKey", NewInstance(typeof(List<object>)))
                     .AssignRef(

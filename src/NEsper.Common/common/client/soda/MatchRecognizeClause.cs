@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-recognize clause.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeClause
     {
         /// <summary>

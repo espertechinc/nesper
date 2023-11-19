@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Specification for the Update clause.
     /// </summary>
-    [Serializable]
     public class UpdateClause
     {
         /// <summary>

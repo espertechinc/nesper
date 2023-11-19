@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             StaticMethod(
                                 typeof(EventBeanUtility),
                                 "AllocatePerStreamShift",
-                                symbols.GetAddEPS(method)));
+                                symbols.GetAddEps(method)));
                     });
 
         public class ReturnIfNoMatch : TriConsumer<CodegenMethod, CodegenBlock, ExprSubselectEvalMatchSymbol>

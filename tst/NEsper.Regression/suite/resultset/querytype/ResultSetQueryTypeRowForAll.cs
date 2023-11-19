@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -138,9 +139,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "import " +
-                          typeof(MyHelper).FullName +
+                          typeof(MyHelper).MaskTypeName() +
                           ";\n" +
-                          "@name('s0') select MyHelper.doOuter(MyHelper.doInner(last(TheString))) as c0 from SupportBean;\n";
+                          "@name('s0') select MyHelper.DoOuter(MyHelper.DoInner(last(TheString))) as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -446,9 +447,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "sym,avgp".SplitCsv();
-                var epl = "@name('s0') select irstream avg(Price) as avgp, sym " +
-                          "from SupportPriceEvent#groupwin(sym)#length(2)";
+                var fields = "Sym,avgp".SplitCsv();
+                var epl = "@name('s0') select irstream avg(Price) as avgp, Sym " +
+                          "from SupportPriceEvent#groupwin(Sym)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportPriceEvent(1, "A"));
@@ -535,8 +536,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select istream Average as aprice from SupportMarketDataBean" +
-                               "#groupwin(Symbol)#length(2)#uni(Price)";
+                var stmtText =
+                    "@name('s0') select istream average as aprice from SupportMarketDataBean" +
+                    "#groupwin(Symbol)#length(2)#uni(Price)";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", 1);

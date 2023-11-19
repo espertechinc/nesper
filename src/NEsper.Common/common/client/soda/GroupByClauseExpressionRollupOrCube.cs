@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a rollup or cube in a group-by clause.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionRollupOrCube : GroupByClauseExpression
     {
         private bool _cube;

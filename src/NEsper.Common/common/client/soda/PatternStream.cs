@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Patterns matches are events that match pattern expressions. Pattern expressions are built using
     ///     <seealso cref="Patterns" />.
     /// </summary>
-    [Serializable]
     public class PatternStream : ProjectedStream
     {
         private AnnotationPart[] annotations;

@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
         private Pair<ExprForge, object> HandleUnderlyingStreamInsert(
             ExprForge exprEvaluator,
             EventPropertyDescriptor optionalInsertedTargetProp,
-            EPChainableType optionalInsertedTargetEPType)
+            EPChainableType optionalInsertedTargetType)
         {
             if (!(exprEvaluator is ExprStreamUnderlyingNode undNode)) {
                 return null;
@@ -258,10 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     TypeHelper.IsSubclassOrImplementsInterface(
                         eventTypeStream.UnderlyingType,
                         optionalInsertedTargetProp.PropertyType) &&
-                    (optionalInsertedTargetEPType == null ||
-                     !EventTypeUtility.IsTypeOrSubTypeOf(
-                         eventTypeStream,
-                         optionalInsertedTargetEPType.GetEventType()))) {
+                    (optionalInsertedTargetType == null || !EventTypeUtility.IsTypeOrSubTypeOf(eventTypeStream, optionalInsertedTargetType.GetEventType()))) {
                     return new Pair<ExprForge, object>(new ExprEvalStreamInsertUnd(undNode, streamNum, returnClass), returnClass);
                 }
                 else {

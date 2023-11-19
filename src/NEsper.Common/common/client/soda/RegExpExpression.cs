@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Regular expression evaluates a "regexp" regular expression.
     /// </summary>
-    [Serializable]
     public class RegExpExpression : ExpressionBase
     {
         private readonly bool not;

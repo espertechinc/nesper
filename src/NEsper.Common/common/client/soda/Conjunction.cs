@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Conjunction represents a logical AND allowing multiple sub-expressions to be connected by AND.
     /// </summary>
-    [Serializable]
     public class Conjunction : Junction
     {
         /// <summary>

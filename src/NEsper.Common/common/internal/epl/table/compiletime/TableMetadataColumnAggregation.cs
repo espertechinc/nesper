@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
 {
     public class TableMetadataColumnAggregation : TableMetadataColumn
     {
-        private int column;
-        private AggregationPortableValidation aggregationPortableValidation;
-        private string aggregationExpression;
-        private bool methodAgg;
-        private EPChainableType optionalEnumerationType;
+        private int _column;
+        private AggregationPortableValidation _aggregationPortableValidation;
+        private string _aggregationExpression;
+        private bool _methodAgg;
+        private EPChainableType _optionalEnumerationType;
 
         public TableMetadataColumnAggregation()
         {
@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             bool methodAgg,
             EPChainableType optionalEnumerationType) : base(columnName, key)
         {
-            this.column = column;
-            this.aggregationPortableValidation = aggregationPortableValidation;
-            this.aggregationExpression = aggregationExpression;
-            this.methodAgg = methodAgg;
-            this.optionalEnumerationType = optionalEnumerationType;
+            this._column = column;
+            this._aggregationPortableValidation = aggregationPortableValidation;
+            this._aggregationExpression = aggregationExpression;
+            this._methodAgg = methodAgg;
+            this._optionalEnumerationType = optionalEnumerationType;
         }
 
         protected override CodegenExpression Make(
@@ -54,51 +54,51 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             var method = parent.MakeChild(typeof(TableMetadataColumnAggregation), GetType(), classScope);
             method.Block.DeclareVarNewInstance(typeof(TableMetadataColumnAggregation), "col");
             MakeSettersInline(Ref("col"), method.Block);
-            method.Block.SetProperty(Ref("col"), "Column", Constant(column))
+            method.Block.SetProperty(Ref("col"), "Column", Constant(_column))
                 .SetProperty(
                     Ref("col"),
                     "AggregationPortableValidation",
-                    aggregationPortableValidation.Make(method, symbols, classScope))
-                .SetProperty(Ref("col"), "AggregationExpression", Constant(aggregationExpression))
-                .SetProperty(Ref("col"), "MethodAgg", Constant(methodAgg))
+                    _aggregationPortableValidation.Make(method, symbols, classScope))
+                .SetProperty(Ref("col"), "AggregationExpression", Constant(_aggregationExpression))
+                .SetProperty(Ref("col"), "MethodAgg", Constant(_methodAgg))
                 .SetProperty(
                     Ref("col"),
                     "OptionalEnumerationType",
-                    optionalEnumerationType == null
+                    _optionalEnumerationType == null
                         ? ConstantNull()
-                        : optionalEnumerationType.Codegen(method, classScope, symbols.GetAddInitSvc(method)))
+                        : _optionalEnumerationType.Codegen(method, classScope, symbols.GetAddInitSvc(method)))
                 .MethodReturn(Ref("col"));
             return LocalMethod(method);
         }
 
-        public bool IsMethodAgg => methodAgg;
+        public bool IsMethodAgg => _methodAgg;
 
         public int Column {
-            get => column;
+            get => _column;
 
-            set => column = value;
+            set => _column = value;
         }
 
         public AggregationPortableValidation AggregationPortableValidation {
-            get => aggregationPortableValidation;
+            get => _aggregationPortableValidation;
 
-            set => aggregationPortableValidation = value;
+            set => _aggregationPortableValidation = value;
         }
 
         public string AggregationExpression {
-            get => aggregationExpression;
+            get => _aggregationExpression;
 
-            set => aggregationExpression = value;
+            set => _aggregationExpression = value;
         }
 
         public bool MethodAgg {
-            set => methodAgg = value;
+            set => _methodAgg = value;
         }
 
         public EPChainableType OptionalEnumerationType {
-            get => optionalEnumerationType;
+            get => _optionalEnumerationType;
 
-            set => optionalEnumerationType = value;
+            set => _optionalEnumerationType = value;
         }
     }
 } // end of namespace

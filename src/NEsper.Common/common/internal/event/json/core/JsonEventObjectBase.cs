@@ -107,22 +107,57 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         /// <summary>
         /// Returns the pre-declared property name including properties names of the parent event type if any
         /// </summary>
+        /// <param name="index">the index of the property</param>
+        /// <param name="propertyName">the property name (output only)</param>
+        /// <returns></returns>
+
+        public virtual bool TryGetNativeKeyName(
+            int index,
+            out string propertyName)
+        {
+            propertyName = default;
+            return false;
+        }
+
+        /// <summary>
+        /// Returns the pre-declared property name including properties names of the parent event type if any
+        /// </summary>
         /// <param name="index"></param>
         /// <returns></returns>
         public virtual string GetNativeKeyName(int index)
         {
-            throw new NotImplementedException();
+            if (TryGetNativeKeyName(index, out var propertyName)) {
+                return propertyName;
+            }
+            
+            throw new NoSuchElementException();
         }
-        
+
         /// <summary>
         /// Returns the index for a pre-declared property name including properties names of the parent event type if any
         /// </summary>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public virtual bool TryGetNativeKeyIndex(string propertyName, out int index)
+        public virtual bool TryGetNativeKey(string propertyName, out int index)
         {
             index = default;
             return false;
+        }
+
+        /// <summary>
+        /// Returns the pre-declared property name including properties names of the parent event type if any.
+        /// </summary>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        /// <exception cref="NoSuchElementException"></exception>
+        
+        public virtual int GetNativeKey(string propertyName)
+        {
+            if (TryGetNativeKey(propertyName, out var index)) {
+                return index;
+            }
+
+            throw new NoSuchElementException();
         }
         
         /// <summary>
@@ -162,14 +197,27 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         }
 
         /// <summary>
+        /// Returns the flag whether the key exists as a pre-declared property of the same index including
+        /// indices of the parent event type if any
+        /// </summary>
+        /// <param name="index">property index</param>
+        /// <returns>flag</returns>
+        public virtual bool NativeContainsKey(int index)
+        {
+            // see if there is a native name mapped to this index
+            return TryGetNativeKeyName(index, out _);
+        }
+
+        /// <summary>
         /// Returns the flag whether the key exists as a pre-declared property of the same name including
         /// property names of the parent event type if any
         /// </summary>
-        /// <param name="key">property name</param>
+        /// <param name="name">property name</param>
         /// <returns>flag</returns>
-        public virtual bool NativeContainsKey(int key)
+        public virtual bool NativeContainsKey(string name)
         {
-            return false;
+            // see if there is a native index mapped to this key
+            return TryGetNativeKey(name, out _);
         }
 
         /// <summary>
@@ -245,6 +293,12 @@ namespace com.espertech.esper.common.@internal.@event.json.core
         
         public bool ContainsKey(string key)
         {
+            if (TryGetNativeKey(key, out var index)) {
+                if (NativeContainsKey(key)) {
+                    return true;
+                }
+            }
+
             return JsonValues.ContainsKey(key);
         }
 
@@ -330,7 +384,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
 
         public object this[string key] {
             get {
-                if (TryGetNativeKeyIndex(key, out var index)) {
+                if (TryGetNativeKey(key, out var index)) {
                     if (TryGetNativeValue(index, out var value)) {
                         return value;
                     }
@@ -339,7 +393,7 @@ namespace com.espertech.esper.common.@internal.@event.json.core
                 return JsonValues[key];
             }
             set {
-                if (TryGetNativeKeyIndex(key, out var index)) {
+                if (TryGetNativeKey(key, out var index)) {
                     if (!TrySetNativeValue(index, value)) {
                         // not a native value
                         JsonValues[key] = value;

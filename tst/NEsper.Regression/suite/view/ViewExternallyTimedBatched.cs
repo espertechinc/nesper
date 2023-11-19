@@ -8,10 +8,12 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -148,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var fields = "Id".SplitCsv();
                 var epl =
-                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute)";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(SupportEventIdWithTimestamp.MakeTime("E1", "8:00:00.000"));
@@ -237,11 +239,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var milestone = new AtomicLong();
 
                 var epl =
-                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute, 5000)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 5000)";
                 TryAssertionWithRefTime(env, epl, milestone);
 
                 epl =
-                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(mytimestamp, 1 minute, 65000)";
+                    "@name('s0') select irstream * from SupportEventIdWithTimestamp#ext_timed_batch(Mytimestamp, 1 minute, 65000)";
                 TryAssertionWithRefTime(env, epl, milestone);
             }
         }
@@ -400,13 +402,10 @@ namespace com.espertech.esper.regressionlib.suite.view
 
         private static object[] SplitDoubles(string doubleList)
         {
-            var doubles = doubleList.SplitCsv();
-            var result = new object[doubles.Length];
-            for (var i = 0; i < result.Length; i++) {
-                result[i] = double.Parse(doubles[i]);
-            }
-
-            return result;
+            return doubleList.SplitCsv()
+                .Select(SimpleTypeParserFunctions.ParseDouble)
+                .Cast<object>()
+                .ToArray();
         }
 
         private static void SendSupportBeanWLong(

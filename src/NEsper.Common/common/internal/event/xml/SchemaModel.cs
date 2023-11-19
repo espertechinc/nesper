@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// <summary>
     ///     Represents a XSD schema or other metadata for a class of XML documents.
     /// </summary>
-    [Serializable]
     public class SchemaModel
     {
         /// <summary>

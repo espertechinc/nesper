@@ -222,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 makeMethod.Block.MethodReturn(ConstantNull());
             }
             else {
-                makeMethod.Block.MethodReturn(CodegenExpressionBuilder.NewInstanceInner(classNameRow));
+                makeMethod.Block.MethodReturn(NewInstanceInner(classNameRow, Ref("statementFields")));
             }
 
             var methods = new CodegenClassMethods();

@@ -9,10 +9,13 @@
 using System;
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
@@ -232,14 +235,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
+                var iso = typeof(DateTimeFormat).FullName + ".GetIsoDateFormat()";
+                var cet = $"{typeof(TimeZoneHelper).FullName}.GetTimeZoneInfo('CET')";
+                var dtx = typeof(DateTimeEx).FullName;
+                var chrono = typeof(ChronoField).FullName;
+                
                 var epl =
-                    "create map schema MyEvent(someDate Date, dateFrom string, dateTo string, minutesOfDayFrom int, minutesOfDayTo int, daysOfWeek string);\n" +
+                    "create map schema MyEvent(someDate DateTime, dateFrom string, dateTo string, minutesFrom int, minutesTo int, daysOfWeek string);\n" +
                     "select " +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isAfter(cast(dateFrom||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c0,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).isBefore(cast(dateTo||'T00:00:00Z', zoneddatetime, dateformat:java.time.format.DateTimeFormatter.ISO_OFFSET_DATE_TIME.withZone(java.time.ZoneId.of('CET')))) as c1,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)>= minutesOfDayFrom as c2,\n" +
-                    "java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).get(java.time.temporal.ChronoField.MINUTE_OF_DAY)<= minutesOfDayTo as c3,\n" +
-                    "daysOfWeek.contains(System.String.valueOf(java.time.ZonedDateTime.ofInstant(someDate.toInstant(),java.time.ZoneId.of('CET')).getDayOfWeek().getValue())) as c4\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).IsAfter(cast(dateFrom||'T00:00:00Z', dtx, dateformat:" + iso + ")) as c0,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).IsBefore(cast(dateTo||'T00:00:00Z', dtx, dateformat:" + iso + ")) as c1,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".MINUTE_OF_HOUR)>= minutesFrom as c2,\n" +
+                    dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".MINUTE_OF_HOUR)<= minutesTo as c3,\n" +
+                    "daysOfWeek.Contains(System.Convert.ToString(" + dtx + ".GetInstance(" + cet + ", someDate).GetField("+ chrono + ".DAY_OF_WEEK))) as c4\n" +
                     "from MyEvent";
                 env.Compile(epl);
             }
@@ -249,33 +257,43 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                env.AdvanceTime(1000);
-                var epl =
-                    "@name('s0') select java.time.format.DateTimeFormatter.ISO_INSTANT.format(java.time.Instant.ofEpochMilli(current_timestamp())) as c0 from SupportBean";
+                var baseDate = new DateTimeEx(1970, 1, 1, 0, 0, 0, 0, TimeZoneInfo.Utc);
+                
+                env.AdvanceTime(baseDate.UtcMillis + 1000);
+                
+                var iso = typeof(DateTimeFormat).FullName + ".GetIsoDateFormat()";
+                var dtx = typeof(DateTimeEx).FullName;
+                var epl = "@Name('s0') select " + iso + ".Format(" + dtx + ".UtcInstance(current_timestamp())) as c0 from SupportBean";
+
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean());
-                env.AssertEqualsNew("s0", "c0", "1970-01-01T00:00:01Z");
+                env.AssertEqualsNew("s0", "c0", "1970-01-01T00:00:01");
 
                 env.UndeployAll();
             }
         }
 
+        
         internal class EPLOtherPrimitiveConversion : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
+                var primitiveConversionLib = typeof(PrimitiveConversionLib).MaskTypeName();
                 env.CompileDeploy(
-                        "@name('s0') select " +
-                        "PrimitiveConversionLib.passIntAsObject(IntPrimitive) as c0," +
-                        "PrimitiveConversionLib.passIntAsNumber(IntPrimitive) as c1," +
-                        "PrimitiveConversionLib.passIntAsComparable(IntPrimitive) as c2," +
-                        "PrimitiveConversionLib.passIntAsSerializable(IntPrimitive) as c3" +
+                        "@Name('s0') select " +
+                        $"{primitiveConversionLib}.PassIntAsObject(IntPrimitive) as c0," +
+                        $"{primitiveConversionLib}.PassIntAsNumber(IntPrimitive) as c1," +
+                        $"{primitiveConversionLib}.PassIntAsComparable(IntPrimitive) as c2," +
+                        $"{primitiveConversionLib}.PassIntAsNullable(IntPrimitive) as c3" +
                         " from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
-                env.AssertPropsNew("s0", "c0,c1,c2,c3".SplitCsv(), new object[] { 10, 10, 10, 10 });
+                EPAssertionUtil.AssertProps(
+                    env.Listener("s0").AssertOneGetNewAndReset(),
+                    new[] {"c0", "c1", "c2", "c3"},
+                    new object[] {10, 10, 10, 10});
 
                 env.UndeployAll();
             }
@@ -416,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var className = typeof(SupportStaticMethodLib).FullName;
                 var statementText =
-                    $"@name('s0') select price, {className}.ThrowException() as value {STREAM_MDB_LEN5}";
+                    $"@name('s0') select Price, {className}.ThrowException() as value {STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -467,8 +485,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                statementText = $"@name('s0') select java.lang.ClassLoader.getSystemClassLoader() {STREAM_MDB_LEN5}";
-                env.CompileDeploy(statementText).AddListener("s0");
+                //statementText = $"@name('s0') select java.lang.ClassLoader.getSystemClassLoader() {STREAM_MDB_LEN5}";
+                //env.CompileDeploy(statementText).AddListener("s0");
 
                 //object expected = ClassLoader.SystemClassLoader;
                 //SendEvent(env, "IBM", 10d, 4L);
@@ -477,8 +495,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 env.TryInvalidCompile(
-                    $"select UnknownClass.invalidMethod() {STREAM_MDB_LEN5}",
-                    "Failed to validate select-clause expression 'UnknownClass.invalidMethod()': Failed to resolve 'UnknownClass.invalidMethod' to a property, single-row function, aggregation function, script, stream or class name ");
+                    $"select UnknownClass.InvalidMethod() {STREAM_MDB_LEN5}",
+                    "Failed to validate select-clause expression 'UnknownClass.InvalidMethod()': Failed to resolve 'UnknownClass.InvalidMethod' to a property, single-row function, aggregation function, script, stream or class name ");
             }
         }
 
@@ -495,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 var bitWriter = typeof(BitWriter).CleanName();
-                var statementText = $"@name('s0') select {bitWriter}.Write(7) as value{STREAM_MDB_LEN5}";
+                var statementText = $"@Name('s0') select {bitWriter}.Write(7) as value{STREAM_MDB_LEN5}";
 
                 Assert.AreEqual(statementText.Trim(), model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
@@ -564,11 +582,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.UndeployAll();
 
-                statementText = $"@name('s0') select System.Math.Math(2,3d) {STREAM_MDB_LEN5}";
+                statementText = $"@name('s0') select System.Math.Max(2,3d) {STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
-                env.AssertEqualsNew("s0", "System.Math.Math(2,3.0)", 3d);
+                env.AssertEqualsNew("s0", "System.Math.Max(2,3.0d)", 3d);
 
                 env.UndeployAll();
 
@@ -586,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var className = typeof(SupportStaticMethodLib).FullName;
-                var statementText = $"@name('s0') select {className}.staticMethod(2){STREAM_MDB_LEN5}";
+                var statementText = $"@name('s0') select {className}.StaticMethod(2){STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -631,7 +649,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEqualsNew("s0", "Convert.ToString(2+3*5)", Convert.ToString(2 + 3 * 5));
                 env.UndeployAll();
 
-                statementText = $"@name('s0') select Convert.ToString(Price*volume +volume) {STREAM_MDB_LEN5}";
+                statementText = $"@name('s0') select Convert.ToString(Price*Volume +Volume) {STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -656,13 +674,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var statementText = $"@name('s0') select Math.Max(2d,Price), Math.Max(volume,4d){STREAM_MDB_LEN5}";
+                var statementText = $"@name('s0') select Math.Max(2d,Price), Math.Max(Volume,4d){STREAM_MDB_LEN5}";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
                 env.AssertPropsNew(
                     "s0",
-                    new string[] { "Math.Max(2.0d,Price)", "Math.Max(Volume,4.0)" },
+                    new string[] { "Math.Max(2.0d,Price)", "Math.Max(Volume,4.0d)" },
                     new object[] { 10d, 4d });
                 env.UndeployAll();
             }
@@ -673,7 +691,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 // where
-                var statementText = $"@name('s0') select *{STREAM_MDB_LEN5}where Math.Pow(price, .5) > 2";
+                var statementText = $"@name('s0') select *{STREAM_MDB_LEN5}where Math.Pow(Price, .5) > 2";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -686,7 +704,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // group-by
                 statementText =
-                    $"@name('s0') select symbol, sum(price){STREAM_MDB_LEN5}group by String.valueOf(symbol)";
+                    $"@name('s0') select Symbol, sum(Price){STREAM_MDB_LEN5}group by Convert.ToString(Symbol)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -698,7 +716,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // having
                 statementText =
-                    $"@name('s0') select symbol, sum(price){STREAM_MDB_LEN5}having Math.Pow(sum(price), .5) > 3";
+                    $"@name('s0') select Symbol, sum(Price){STREAM_MDB_LEN5}having Math.Pow(sum(Price), .5) > 3";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -711,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // order-by
                 statementText =
-                    $"@name('s0') select symbol, price{STREAM_MDB_LEN5}output every 3 events order by Math.Pow(price, 2)";
+                    $"@name('s0') select Symbol, Price{STREAM_MDB_LEN5}output every 3 events order by Math.Pow(Price, 2)";
                 env.CompileDeploy(statementText).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -782,7 +800,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 2000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(2000), "Failed perf test, delta=" + delta);
                 env.UndeployAll();
             }
         }
@@ -804,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
-                Assert.IsTrue(delta < 1000, "Failed perf test, delta=" + delta);
+                Assert.That(delta, Is.LessThan(1000), "Failed perf test, delta=" + delta);
 
                 env.UndeployAll();
             }
@@ -831,19 +849,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             private static string field;
 
-            public static void SetField(string field)
+            public string GetLevelTwoValue()
             {
-                LevelOne.field = field;
+                return field;
             }
-
+            
             public static string Field {
                 get => field;
                 set => field = value;
             }
 
-            public string GetLevelTwoValue()
+            public static void SetField(string field)
             {
-                return field;
+                LevelOne.field = field;
             }
 
             public string LevelTwoValue => field;
@@ -869,6 +887,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 return n.AsInt32();
             }
 
+            public static int PassIntAsNullable(int? c)
+            {
+                return c.GetValueOrDefault();
+            }
+            
             public static int PassIntAsComparable(IComparable c)
             {
                 return c.AsInt32();

@@ -40,11 +40,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private bool addingProperties; // when adding additional properties to output events
-        private bool isReclaimAged;
-        private string[] propertyNames;
-        private long reclaimFrequency;
-        private long reclaimMaxAge;
+        private bool _addingProperties; // when adding additional properties to output events
+        private bool _isReclaimAged;
+        private string[] _propertyNames;
+        private long _reclaimFrequency;
+        private long _reclaimMaxAge;
 
         internal override Type TypeOfFactory => typeof(GroupByViewFactory);
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             var reclaimGroupAged = HintEnum.RECLAIM_GROUP_AGED.GetHint(viewForgeEnv.Annotations);
 
             if (reclaimGroupAged != null) {
-                isReclaimAged = true;
+                _isReclaimAged = true;
                 var hintValueMaxAge = HintEnum.RECLAIM_GROUP_AGED.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueMaxAge == null) {
                     throw new ViewParameterException(
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 }
 
                 try {
-                    reclaimMaxAge = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueMaxAge));
+                    _reclaimMaxAge = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueMaxAge));
                 }
                 catch (Exception) {
                     throw new ViewParameterException(
@@ -98,11 +98,11 @@ namespace com.espertech.esper.common.@internal.view.groupwin
 
                 var hintValueFrequency = HintEnum.RECLAIM_GROUP_FREQ.GetHintAssignedValue(reclaimGroupAged);
                 if (hintValueFrequency == null) {
-                    reclaimFrequency = reclaimMaxAge;
+                    _reclaimFrequency = _reclaimMaxAge;
                 }
                 else {
                     try {
-                        reclaimFrequency = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueFrequency));
+                        _reclaimFrequency = timeAbacus.DeltaForSecondsDouble(double.Parse(hintValueFrequency));
                     }
                     catch (Exception) {
                         throw new ViewParameterException(
@@ -114,16 +114,16 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                     }
                 }
 
-                if (reclaimMaxAge < 1) {
+                if (_reclaimMaxAge < 1) {
                     Log.Warn("Reclaim max age parameter is less then 1, are your sure?");
                 }
 
                 if (Log.IsDebugEnabled) {
                     Log.Debug(
                         "Using reclaim-aged strategy for group-window age " +
-                        reclaimMaxAge +
+                        _reclaimMaxAge +
                         " frequency " +
-                        reclaimFrequency);
+                        _reclaimFrequency);
                 }
             }
         }
@@ -140,20 +140,19 @@ namespace com.espertech.esper.common.@internal.view.groupwin
                 viewForgeEnv);
 
             if (CriteriaExpressions.Length == 0) {
-                var errorMessage = ViewName +
-                                   " view requires a one or more expressions provinding unique values as parameters";
+                var errorMessage = $"{ViewName} view requires a one or more expressions providing unique values as parameters";
                 throw new ViewParameterException(errorMessage);
             }
 
-            propertyNames = new string[CriteriaExpressions.Length];
+            _propertyNames = new string[CriteriaExpressions.Length];
             for (var i = 0; i < CriteriaExpressions.Length; i++) {
-                propertyNames[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(CriteriaExpressions[i]);
+                _propertyNames[i] = ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(CriteriaExpressions[i]);
             }
 
-            var groupedEventType = Groupeds[Groupeds.Count - 1].EventType;
+            var groupedEventType = Groupeds[^1].EventType;
             eventType = DetermineEventType(groupedEventType, CriteriaExpressions, viewForgeEnv);
             if (eventType != groupedEventType) {
-                addingProperties = true;
+                _addingProperties = true;
             }
         }
 
@@ -179,14 +178,22 @@ namespace com.espertech.esper.common.@internal.view.groupwin
             }
 
             method.Block
-                .SetProperty(factory, "IsReclaimAged", Constant(isReclaimAged))
-                .SetProperty(factory, "ReclaimMaxAge", Constant(reclaimMaxAge))
-                .SetProperty(factory, "ReclaimFrequency", Constant(reclaimFrequency))
-                .SetProperty(factory, "PropertyNames", Constant(propertyNames))
+                .SetProperty(factory, "IsReclaimAged", Constant(_isReclaimAged))
+                .SetProperty(factory, "ReclaimMaxAge", Constant(_reclaimMaxAge))
+                .SetProperty(factory, "ReclaimFrequency", Constant(_reclaimFrequency))
+                .SetProperty(factory, "PropertyNames", Constant(_propertyNames))
                 .SetProperty(factory, "Groupeds", LocalMethod(MakeViewFactories(Groupeds, GetType(), method, classScope, symbols)))
                 .SetProperty(factory, "EventType", EventTypeUtility.ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF))
-                .SetProperty(factory, "IsAddingProperties", Constant(addingProperties));
+                .SetProperty(factory, "IsAddingProperties", Constant(_addingProperties));
             ViewMultiKeyHelper.Assign(CriteriaExpressions, MultiKeyClassNames, method, factory, symbols, classScope);
+        }
+
+        public override void Accept(ViewForgeVisitor visitor)
+        {
+            visitor.Visit(this);
+            foreach (var forge in Groupeds) {
+                forge.Accept(visitor);
+            }
         }
 
         private static EventType DetermineEventType(

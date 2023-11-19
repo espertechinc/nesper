@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Interface representing a permutation expression for use in match-recognize.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExPermutation : MatchRecognizeRegEx
     {
         public override void WriteEPL(TextWriter writer)

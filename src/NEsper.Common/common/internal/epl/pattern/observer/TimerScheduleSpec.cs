@@ -13,7 +13,6 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.observer
 {
-    [Serializable]
     public class TimerScheduleSpec
     {
         private long? optionalRemainder;

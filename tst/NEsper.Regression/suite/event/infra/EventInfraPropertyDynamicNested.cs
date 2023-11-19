@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(
                 env,
                 EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(name='myid',schema='[\"int\",{\"type\":\"string\",\"avro.java.string\":\"String\"},\"null\"]')");
+                "@AvroSchemaField(Name='myId',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
             RunAssertion(env, EventRepresentationChoice.DEFAULT, "");
             RunAssertion(env, EventRepresentationChoice.JSON, "");
         }
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("{\"Item\": { \"Id\": 101} }", Exists(101)),
                 new Pair<object, object>("{\"Item\": { \"Id\": \"abc\"} }", Exists("abc")),
             };
-            var schemasJson = "@JsonSchema(dynamic=true) create json schema Undefined();\n" +
+            var schemasJson = "@JsonSchema(Dynamic=true) create json schema Undefined();\n" +
                               "@public @buseventtype @name('schema') create json schema " +
                               JSON_TYPENAME +
                               "(Item Undefined)";
@@ -172,12 +172,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Json-Provided (class is provided)
             var schemasJsonProvided =
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvidedItem).FullName +
-                "') @public @buseventtype @name('schema') create json schema Item();\n" +
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvided).FullName +
-                "') @public @buseventtype @name('schema') create json schema " +
+                "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvidedItem).FullName + "') " +
+                "@public @buseventtype @name('schema') create json schema Item();\n" +
+                "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).FullName + "') " +
+                "@public @buseventtype @name('schema') create json schema " +
                 JSONPROVIDED_TYPENAME +
                 "(Item Item)";
             env.CompileDeploy(schemasJsonProvided, path);
@@ -204,18 +202,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Type expectedPropertyType,
             RegressionPath path)
         {
-            var stmtText = "@name('s0') " +
-                           eventRepresentationEnum.GetAnnotationText() +
-                           additionalAnnotations +
-                           " select " +
-                           "Item.Id? as myid, " +
-                           "exists(Item.Id?) as exists_myid " +
-                           "from " +
-                           typename +
-                           ";\n" +
-                           "@name('s1') select * from " +
-                           typename +
-                           ";\n";
+            var stmtText =
+                "@name('s0') " +
+                eventRepresentationEnum.GetAnnotationText() +
+                additionalAnnotations +
+                " select " + "Item.Id? as myid, " + "exists(Item.Id?) as exists_myid " +
+                "from " + typename + ";\n" +
+                "@name('s1') select * from " + typename + ";\n";
             env.CompileDeploy(stmtText, path).AddListener("s0").AddListener("s1");
 
             env.AssertStatement(
@@ -223,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 statement => {
                     var eventType = statement.EventType;
                     Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myid"));
-                    Assert.AreEqual(typeof(bool?), Boxing.GetBoxedType(eventType.GetPropertyType("exists_myid")));
+                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myid").GetBoxedType());
                     Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
                 });
 
@@ -271,13 +264,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.SendEventAvro(datum, typeName);
         };
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedItem item;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedItem
         {
             public object id;

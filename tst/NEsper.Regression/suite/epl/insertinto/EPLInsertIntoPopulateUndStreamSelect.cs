@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,9 +21,7 @@ using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -341,14 +337,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return record;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSrc
         {
             public int myint;
             public string mystr;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedD1
         {
             public int myint;
@@ -356,7 +350,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public long addprop;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedD2
         {
             public int myint;
@@ -364,27 +357,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public double addprop;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedD3
         {
             public string mystr;
             public int addprop;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedD4
         {
             public int myint;
             public string mystr;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedE1
         {
             public long myint;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedE2
         {
             public long someprop;

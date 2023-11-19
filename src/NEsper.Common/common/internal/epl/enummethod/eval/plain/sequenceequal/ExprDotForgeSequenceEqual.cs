@@ -17,7 +17,7 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.sequenceequal
 {
     public class ExprDotForgeSequenceEqual : ExprDotForgeEnumMethodBase
     {

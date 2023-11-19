@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration for Avro event types.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeAvro : ConfigurationCommonEventTypeWithSupertype
     {
         /// <summary>

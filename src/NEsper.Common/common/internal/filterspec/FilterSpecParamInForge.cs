@@ -187,8 +187,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 filterForValue = NewInstance(typeof(HashableMultiKey), Constant(_inListConstantsOnly));
             }
             else if (!_hasCollMapOrArray) {
-                getFilterValueLambda.Block.DeclareVar(
-                    typeof(object[]),
+                getFilterValueLambda.Block.DeclareVar<object[]>(
                     "values",
                     NewArrayByLength(typeof(object), Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {
@@ -202,8 +201,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 filterForValue = NewInstance(typeof(HashableMultiKey), Ref("values"));
             }
             else {
-                getFilterValueLambda.Block.DeclareVar(
-                    typeof(ArrayDeque<object>),
+                getFilterValueLambda.Block.DeclareVar<ArrayDeque<object>>(
                     "values",
                     NewInstance<ArrayDeque<object>>(Constant(_listOfValues.Count)));
                 for (var i = 0; i < _listOfValues.Count; i++) {

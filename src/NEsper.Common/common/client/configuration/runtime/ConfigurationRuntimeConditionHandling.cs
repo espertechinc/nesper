@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.hook.condition;
 using com.espertech.esper.compat.collections;
@@ -17,9 +18,25 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Configuration object for defining condition handling behavior.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeConditionHandling
     {
+        /// <summary>
+        /// Default constructor.
+        /// </summary>
+        public ConfigurationRuntimeConditionHandling()
+        {
+        }
+
+        /// <summary>
+        /// Constructor for JSON deserializer.
+        /// </summary>
+        /// <param name="handlerFactories"></param>
+        [JsonConstructor]
+        public ConfigurationRuntimeConditionHandling(IList<string> handlerFactories)
+        {
+            HandlerFactories = handlerFactories;
+        }
+
         /// <summary>
         ///     Returns the list of condition handler factory class names,
         ///     see <seealso cref="ConditionHandlerFactory" />

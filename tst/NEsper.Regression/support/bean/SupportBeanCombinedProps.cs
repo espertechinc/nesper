@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
@@ -16,7 +15,6 @@ namespace com.espertech.esper.regressionlib.support.bean
     /// <summary>
     ///     indexed[0].Mapped('0ma').value = 0ma0
     /// </summary>
-    [Serializable]
     public class SupportBeanCombinedProps
     {
         public static readonly string[] PROPERTIES = {"Indexed", "array"};
@@ -59,7 +57,6 @@ namespace com.espertech.esper.regressionlib.support.bean
             return Array[index];
         }
 
-        [Serializable]
         public class NestedLevOne
         {
             public NestedLevOne(string[][] keysAndValues)
@@ -84,7 +81,6 @@ namespace com.espertech.esper.regressionlib.support.bean
             }
         }
 
-        [Serializable]
         public class NestedLevTwo
         {
             public NestedLevTwo(string value)

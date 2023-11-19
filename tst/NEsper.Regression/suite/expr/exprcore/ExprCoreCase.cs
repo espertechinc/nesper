@@ -748,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     0.0,
                     null,
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "5");
+                AssertP1(env, "5L");
 
                 SendSupportBeanEvent(
                     env,
@@ -770,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     0.0,
                     null,
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "6");
+                AssertP1(env, "6L");
 
                 SendSupportBeanEvent(
                     env,
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     0.0,
                     null,
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "A");
+                AssertP1(env, "'A'");
 
                 SendSupportBeanEvent(
                     env,
@@ -814,7 +814,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     0.0,
                     null,
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "a");
+                AssertP1(env, "'a'");
 
                 SendSupportBeanEvent(
                     env,
@@ -831,7 +831,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     0,
                     0,
                     0.0f,
-                    0.0f,
+					0,
                     0.0,
                     0.0,
                     null,
@@ -924,7 +924,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     16.0,
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "13.0");
+                AssertP1(env, "13.0f");
 
                 SendSupportBeanEvent(
                     env,
@@ -946,7 +946,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     16.0,
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "14.0");
+                AssertP1(env, "14.0f");
 
                 SendSupportBeanEvent(
                     env,
@@ -968,7 +968,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     16.0,
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "15.0");
+                AssertP1(env, "15.0d");
 
                 SendSupportBeanEvent(
                     env,
@@ -990,7 +990,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     16.0,
                     "testCoercion",
                     SupportEnum.ENUM_VALUE_1);
-                AssertP1(env, "16.0");
+                AssertP1(env, "16.0d");
 
                 SendSupportBeanEvent(
                     env,

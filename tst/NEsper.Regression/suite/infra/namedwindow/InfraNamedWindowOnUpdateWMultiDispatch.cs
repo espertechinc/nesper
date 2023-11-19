@@ -14,8 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
@@ -40,7 +39,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.CompileDeploy(
                 "@name('create') @public create window S2Win#time(25 hour)#firstunique(Company) as S2",
                 path);
-            env.CompileDeploy("insert into S2Win select * from S2#firstunique(company)", path);
+            env.CompileDeploy("insert into S2Win select * from S2#firstunique(Company)", path);
             env.CompileDeploy("on S2 as a update S2Win as b set Total = b.Value + a.Value", path);
             env.CompileDeploy("@name('s0') select count(*) as cnt from S2Win", path).AddListener("s0");
 

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     /// Context partition identifier for segmented contexts.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierPartitioned : ContextPartitionIdentifier
     {
         private object[] _keys;

@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.client.configuration
 {
     /// <summary> Thrown to indicate a configuration problem.</summary>
-    [Serializable]
     public sealed class ConfigurationException : EPException
     {
         /// <summary> Ctor.</summary>

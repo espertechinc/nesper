@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.client.context
 {
     /// <summary>Context partition identifier for hash context. </summary>
-    [Serializable]
     public class ContextPartitionIdentifierHash : ContextPartitionIdentifier
     {
         private int _hash;

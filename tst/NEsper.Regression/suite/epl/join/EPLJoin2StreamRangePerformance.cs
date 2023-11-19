@@ -98,8 +98,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                "from SB sb " +
                                "full outer join " +
                                "SBR sbr " +
-                               "on TheString = key " +
-                               "where IntPrimitive between rangeStart and rangeEnd";
+                               "on TheString = Key " +
+                               "where IntPrimitive between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 // start query
-                var eplQuery = "@name('s0') select * from SBR a, SB b where a.rangeStart < b.IntPrimitive";
+                var eplQuery = "@name('s0') select * from SBR a, SB b where a.RangeStart < b.IntPrimitive";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // start query
                 var eplQuery =
-                    "@name('s0') select * from SBR sbr, SB sb where sbr.key = sb.TheString and sb.IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                    "@name('s0') select * from SBR sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive between sbr.RangeStart and sbr.RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // repeat
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // start query
                 var eplQuery =
-                    "@name('s0') select * from SupportBeanRange#lastevent sbr, SB sb where sbr.key = sb.TheString and sb.IntPrimitive not in [sbr.rangeStart:sbr.rangeEnd]";
+                    "@name('s0') select * from SupportBeanRange#lastevent sbr, SB sb where sbr.Key = sb.TheString and sb.IntPrimitive not in [sbr.RangeStart:sbr.RangeEnd]";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // repeat
@@ -308,22 +308,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test range
                 var rangeEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive between r.rangeStart and r.rangeEnd";
+                    "where a.IntPrimitive between r.RangeStart and r.RangeEnd";
                 var rangeEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange r unidirectional " +
-                    "where a.IntPrimitive between r.rangeStart and r.rangeEnd";
+                    "where a.IntPrimitive between r.RangeStart and r.RangeEnd";
                 var rangeEplThree =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange#lastevent r, SB a " +
-                    "where a.IntPrimitive between r.rangeStart and r.rangeEnd";
+                    "where a.IntPrimitive between r.RangeStart and r.RangeEnd";
                 var rangeEplFour =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange#lastevent r " +
-                    "where a.IntPrimitive between r.rangeStart and r.rangeEnd";
+                    "where a.IntPrimitive between r.RangeStart and r.RangeEnd";
                 var rangeEplFive =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a\n" +
-                    "where a.IntPrimitive >= r.rangeStart and a.IntPrimitive <= r.rangeEnd";
+                    "where a.IntPrimitive >= r.RangeStart and a.IntPrimitive <= r.RangeEnd";
                 var rangeEplSix =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive <= r.rangeEnd and a.IntPrimitive >= r.rangeStart";
+                    "where a.IntPrimitive <= r.RangeEnd and a.IntPrimitive >= r.RangeStart";
                 AssertionCallback rangeCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => {
                         return new SupportBeanRange("E", iteration + 50000, iteration + 50100);
@@ -343,10 +343,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test Greater-Equals
                 var geEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive >= r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive >= r.RangeStart and a.IntPrimitive <= 99200";
                 var geEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange r unidirectional " +
-                    "where a.IntPrimitive >= r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive >= r.RangeStart and a.IntPrimitive <= 99200";
                 AssertionCallback geCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 99000, null); },
 
@@ -358,16 +358,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test Greater-Then
                 var gtEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive <= 99200";
                 var gtEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange r unidirectional " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive <= 99200";
                 var gtEplThree =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange#lastevent r, SB a " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive <= 99200";
                 var gtEplFour =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange#lastevent r " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive <= 99200";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive <= 99200";
                 AssertionCallback gtCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 99000, null); },
 
@@ -381,10 +381,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test Less-Then
                 var ltEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive < r.rangeStart and a.IntPrimitive > 100";
+                    "where a.IntPrimitive < r.RangeStart and a.IntPrimitive > 100";
                 var ltEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange r unidirectional " +
-                    "where a.IntPrimitive < r.rangeStart and a.IntPrimitive > 100";
+                    "where a.IntPrimitive < r.RangeStart and a.IntPrimitive > 100";
                 AssertionCallback ltCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 500, null); },
 
@@ -396,10 +396,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test Less-Equals
                 var leEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive <= r.rangeStart and a.IntPrimitive > 100";
+                    "where a.IntPrimitive <= r.RangeStart and a.IntPrimitive > 100";
                 var leEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SB a, SupportBeanRange r unidirectional " +
-                    "where a.IntPrimitive <= r.rangeStart and a.IntPrimitive > 100";
+                    "where a.IntPrimitive <= r.RangeStart and a.IntPrimitive > 100";
                 AssertionCallback leCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 500, null); },
 
@@ -411,10 +411,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test open range
                 var openEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive < r.rangeEnd";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive < r.RangeEnd";
                 var openEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive in (r.rangeStart:r.rangeEnd)";
+                    "where a.IntPrimitive in (r.RangeStart:r.RangeEnd)";
                 AssertionCallback openCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 3, iteration + 7); },
 
@@ -426,10 +426,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test half-open range
                 var hopenEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive >= r.rangeStart and a.IntPrimitive < r.rangeEnd";
+                    "where a.IntPrimitive >= r.RangeStart and a.IntPrimitive < r.RangeEnd";
                 var hopenEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive in [r.rangeStart:r.rangeEnd)";
+                    "where a.IntPrimitive in [r.RangeStart:r.RangeEnd)";
                 AssertionCallback halfOpenCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 3, iteration + 7); },
 
@@ -441,10 +441,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test half-closed range
                 var hclosedEplOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive > r.rangeStart and a.IntPrimitive <= r.rangeEnd";
+                    "where a.IntPrimitive > r.RangeStart and a.IntPrimitive <= r.RangeEnd";
                 var hclosedEplTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive in (r.rangeStart:r.rangeEnd]";
+                    "where a.IntPrimitive in (r.RangeStart:r.RangeEnd]";
                 AssertionCallback halfClosedCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", iteration + 3, iteration + 7); },
 
@@ -456,10 +456,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test inverted closed range
                 var invertedClosedEPLOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive not in [r.rangeStart:r.rangeEnd]";
+                    "where a.IntPrimitive not in [r.RangeStart:r.RangeEnd]";
                 var invertedClosedEPLTwo =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive not between r.rangeStart and r.rangeEnd";
+                    "where a.IntPrimitive not between r.RangeStart and r.RangeEnd";
                 AssertionCallback invertedClosedCallback = new ProxyAssertionCallback() {
                     ProcGetEvent = (iteration) => { return new SupportBeanRange("E", 20, 99990); },
 
@@ -471,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 // Test inverted open range
                 var invertedOpenEPLOne =
                     "select min(a.IntPrimitive) as mini, max(a.IntPrimitive) as maxi from SupportBeanRange r unidirectional, SB a " +
-                    "where a.IntPrimitive not in (r.rangeStart:r.rangeEnd)";
+                    "where a.IntPrimitive not in (r.RangeStart:r.RangeEnd)";
                 TryAssertion(env, path, milestone, invertedOpenEPLOne, 100, invertedClosedCallback);
 
                 env.UndeployAll();

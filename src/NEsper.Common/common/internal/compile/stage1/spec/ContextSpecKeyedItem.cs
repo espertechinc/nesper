@@ -26,7 +26,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class ContextSpecKeyedItem
     {
         private FilterSpecCompiled filterSpecCompiled;

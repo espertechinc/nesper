@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -104,8 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
         }
 
-        [Serializable]
-        internal class MyUserObject
+        public class MyUserObject
         {
             public MyUserObject(string id)
             {

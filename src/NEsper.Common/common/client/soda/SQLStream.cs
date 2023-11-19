@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An SQL stream that polls via SQL for events via join.
     /// </summary>
-    [Serializable]
     public class SQLStream : Stream
     {
         private string databaseName;

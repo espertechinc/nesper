@@ -176,7 +176,7 @@ namespace NEsper.Avro.Writer
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 var theEvent = CodegenExpressionBuilder.Cast(
                     typeof(AvroGenericDataBackedEventBean),
                     CodegenExpressionBuilder.ArrayAtIndex(
@@ -269,7 +269,7 @@ namespace NEsper.Avro.Writer
                         "ResolveRecordSchema",
                         EventTypeUtility.ResolveTypeCodegen(ResultEventType, EPStatementInitServicesConstants.REF)));
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 var block = methodNode.Block
                     .DeclareVar<AvroGenericDataBackedEventBean>(
                         "theEvent",

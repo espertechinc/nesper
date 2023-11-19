@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.module
     /// Represents an EPL statement as part of a <seealso cref = "Module"/>.
     /// <para/>Character position start and end are only available for non-comment only.
     /// </summary>
-    [Serializable]
     public class ModuleItem
     {
         private string expression;

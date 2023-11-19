@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Atom in a specification for property evaluation.
     /// </summary>
-    [Serializable]
     public class PropertyEvalAtom
     {
         /// <summary>

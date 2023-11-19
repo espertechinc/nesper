@@ -73,12 +73,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             var methodNode = parent
                 .MakeChild(_returnType.Clazz, typeof(ExprDotDTForge), classScope)
                 .AddParam(innerType, "target");
+
+            var targetValue = Unbox(Ref("target"), innerType);
             var block = methodNode.Block;
-            if (!innerType.IsPrimitive) {
+
+            if (!innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
 
-            block.MethodReturn(_forge.Codegen(Ref("target"), innerType, methodNode, symbols, classScope));
+            block.MethodReturn(_forge.Codegen(targetValue, innerType, methodNode, symbols, classScope));
             return LocalMethod(methodNode, inner);
         }
 
@@ -188,11 +191,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             var propertyNameStart = inputEventType.StartTimestampPropertyName;
             var getter = ((EventTypeSPI)inputEventType).GetGetterSPI(propertyNameStart);
-            var getterResultEPType = inputEventType.GetPropertyType(propertyNameStart);
+            var getterResultType = inputEventType.GetPropertyType(propertyNameStart);
             
-            CheckNotNull(getterResultEPType, propertyNameStart);
+            CheckNotNull(getterResultType, propertyNameStart);
             
-            var getterResultType = getterResultEPType;
             if (reformatForge != null) {
                 var inner = GetForge(calendarForges, timeAbacus, getterResultType, null, reformatForge, null);
                 return new DTLocalBeanReformatForge(getter, getterResultType, inner, reformatForge.ReturnType);

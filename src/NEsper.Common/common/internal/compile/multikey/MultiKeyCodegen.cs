@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 exprMethod.Block.MethodReturn(Ref("values"));
             }
 
-            evaluate.Block.MethodReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
+            evaluate.Block.BlockReturn(LocalMethod(exprMethod, REF_EPS, REF_ISNEWDATA, REF_EXPREVALCONTEXT));
             return evaluator;
         }
 

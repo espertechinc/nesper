@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a plug-in aggregation function.
     /// </summary>
-    [Serializable]
     public class PlugInProjectionExpression : ExpressionBase
     {
         private string functionName;

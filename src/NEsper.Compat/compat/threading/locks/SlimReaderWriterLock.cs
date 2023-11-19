@@ -15,7 +15,6 @@ namespace com.espertech.esper.compat.threading.locks
         : IReaderWriterLock,
             IReaderWriterLockCommon
     {
-        private readonly long _id;
         private readonly int _lockTimeout;
         private readonly bool _useUpgradeableLocks;
 
@@ -26,7 +25,6 @@ namespace com.espertech.esper.compat.threading.locks
         /// </summary>
         public SlimReaderWriterLock(int lockTimeout, bool useUpgradeableLocks = false)
         {
-            _id = DebugId<SlimReaderWriterLock>.NewId();
             _lockTimeout = lockTimeout;
             _useUpgradeableLocks = useUpgradeableLocks;
             _rwLock = new ReaderWriterLockSlim(LockRecursionPolicy.SupportsRecursion);

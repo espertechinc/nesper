@@ -146,11 +146,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("B", 100));
 
                 var eplIdx1One =
-                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive = sbr.rangeStart";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive = sbr.RangeStart";
                 RunOnDemandAssertion(env, path, eplIdx1One, 1, new SupportBeanRange("R", 5501, 0), 5501);
 
                 var eplIdx1Two =
-                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where IntPrimitive between sbr.RangeStart and sbr.RangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     5501 + 5502 + 5503);
 
                 var eplIdx1Three =
-                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where TheString = key and IntPrimitive between sbr.rangeStart and sbr.rangeEnd";
+                    "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow where TheString = Key and IntPrimitive between sbr.RangeStart and sbr.RangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,
@@ -170,13 +170,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     4998 + 4999);
 
                 var eplIdx1Four = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
-                                  "where TheString = key and LongPrimitive = rangeStart and IntPrimitive between rangeStart and rangeEnd " +
-                                  "and LongBoxed between rangeStart and rangeEnd";
+                                  "where TheString = Key and LongPrimitive = RangeStart and IntPrimitive between RangeStart and RangeEnd " +
+                                  "and LongBoxed between RangeStart and RangeEnd";
                 RunOnDemandAssertion(env, path, eplIdx1Four, 1, new SupportBeanRange("R", "A", 4998, 5503), 4998);
 
                 var eplIdx1Five = "on SupportBeanRange sbr select sum(IntPrimitive) as sumi from MyWindow " +
-                                  "where IntPrimitive between rangeStart and rangeEnd " +
-                                  "and LongBoxed between rangeStart and rangeEnd";
+                                  "where IntPrimitive between RangeStart and RangeEnd " +
+                                  "and LongBoxed between RangeStart and RangeEnd";
                 RunOnDemandAssertion(
                     env,
                     path,

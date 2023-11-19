@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 
 using NUnit.Framework;
 
@@ -203,7 +204,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    $"create schema event as {typeof(EventWithTags).FullName};\n\ninsert into stream1\nselect name, tags from event;\n\nselect name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\nhaving count(1) >= 5;\n";
+                    $"create schema event as {typeof(EventWithTags).MaskTypeName()};\n\n" +
+                    $"insert into stream1\nselect name, tags from event;\n\n" +
+                    $"select name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\nhaving count(1) >= 5;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
 
@@ -493,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 AssertLastNewRow(env, "volumeLast3Stats", SYMBOL_GE, 1200d);
 
                 // Check iterator results
-                var fields = new string[] { "Symbol", "Average" };
+                var fields = new string[] { "Symbol", "average" };
                 env.AssertPropsPerRowIterator(
                     "priceAllStats",
                     fields,
@@ -518,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(timestamp.getDayOfWeek())#length(2)";
+                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(Timestamp.getDayOfWeek())#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(
@@ -671,14 +674,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 if (useGroup) {
                     // 0.69 sec for 100k
                     var stmtString =
-                        "@name('s0') select * from SupportSensorEvent#groupwin(type)#length(10000000)#weighted_avg(measurement, confidence)";
+                        "@name('s0') select * from SupportSensorEvent#groupwin(Type)#length(10000000)#weighted_avg(Measurement, Confidence)";
                     env.CompileDeploy(stmtString).AddListener("s0");
                 }
                 else {
                     // 0.53 sec for 100k
                     for (var i = 0; i < 10; i++) {
                         var stmtString =
-                            $"SELECT * FROM SupportSensorEvent(type='A{i}')#length(1000000)#weighted_avg(measurement,confidence)";
+                            $"SELECT * FROM SupportSensorEvent(Type='A{i}')#length(1000000)#weighted_avg(Measurement,Confidence)";
                         env.CompileDeploy(stmtString).AddListener("s0");
                     }
                 }
@@ -855,7 +858,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AdvanceTime(1000);
 
                 var text =
-                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(groupId)#time_order(timestamp, 10 sec)";
+                    "@name('s0') select irstream * from SupportBeanTimestamp#groupwin(GroupId)#time_order(Timestamp, 10 sec)";
                 env.CompileDeploy(text).AddListener("s0").Milestone(0);
 
                 // 1st event
@@ -1247,7 +1250,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             string symbol,
             double average)
         {
-            var fields = "Symbol,Average".SplitCsv();
+            var fields = "Symbol,average".SplitCsv();
             env.AssertListener(
                 statementName,
                 listener => EPAssertionUtil.AssertPropsPerRow(
@@ -1270,8 +1273,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             env.AssertEqualsNew("s0", "Price", expected);
         }
 
-        [Serializable]
-        internal class EventWithTags
+        public class EventWithTags
         {
             private string name;
             private IDictionary<string, string> tags;

@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>As part of on-merge, this represents a single "matched" or "not matched" entry. </summary>
-    [Serializable]
     public class OnMergeMatchItem : OnClause
     {
         /// <summary>Ctor. </summary>
@@ -58,6 +57,7 @@ namespace com.espertech.esper.common.client.soda
 
             foreach (var action in Actions) {
                 formatter.BeginMergeAction(writer);
+                writer.Write("then ");
                 action.ToEPL(writer);
             }
         }

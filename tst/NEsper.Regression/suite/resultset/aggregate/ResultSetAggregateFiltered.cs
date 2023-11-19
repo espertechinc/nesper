@@ -245,25 +245,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.UndeployAll();
                 fields = "c1,c2,c3".SplitCsv();
                 epl = "@name('s0') select " +
-                      "avg(bigdec, bigint < 100) as c1," +
-                      "sum(bigdec, bigint < 100) as c2, " +
-                      "sum(bigint, bigint < 100) as c3 " +
+                      "avg(DecimalOne, Bigint < 100) as c1," +
+                      "sum(DecimalOne, Bigint < 100) as c2, " +
+                      "sum(Bigint, Bigint < 100) as c3 " +
                       "from SupportBeanNumeric#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("10"), 20m));
-                env.AssertPropsNew("s0", fields, new object[] { 20m, 20m, BigInteger.Parse("10") });
+                env.SendEventBean(new SupportBeanNumeric(new BigInteger(10), 20m));
+                env.AssertPropsNew("s0", fields, new object[] { 20m, 20m, new BigInteger(10) });
 
-                env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("101"), 101m));
-                env.AssertPropsNew("s0", fields, new object[] { 20m, 20m, BigInteger.Parse("10") });
+                env.SendEventBean(new SupportBeanNumeric(new BigInteger(101), 101m));
+                env.AssertPropsNew("s0", fields, new object[] { 20m, 20m, new BigInteger(10) });
 
                 env.MilestoneInc(milestone);
 
-                env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("20"), 40m));
-                env.AssertPropsNew("s0", fields, new object[] { 40m, 40m, BigInteger.Parse("20") });
+                env.SendEventBean(new SupportBeanNumeric(new BigInteger(20), 40m));
+                env.AssertPropsNew("s0", fields, new object[] { 40m, 40m, new BigInteger(20) });
 
-                env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("30"), 50m));
-                env.AssertPropsNew("s0", fields, new object[] { 45m, 90m, BigInteger.Parse("50") });
+                env.SendEventBean(new SupportBeanNumeric(new BigInteger(30), 50m));
+                env.AssertPropsNew("s0", fields, new object[] { 45m, 90m, new BigInteger(50) });
 
                 env.UndeployAll();
                 epl = "@name('s0') select " +

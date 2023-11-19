@@ -37,13 +37,13 @@ namespace com.espertech.esper.common.@internal.filterspec
     public class FilterSpecParamExprNodeForge : FilterSpecParamForge
     {
         private readonly IDictionary<string, Pair<EventType, string>> _arrayEventTypes;
-        private readonly StatementCompileTimeServices compileTimeServices;
-        private readonly ExprNode exprNode;
-        private readonly bool hasFilterStreamSubquery;
-        private readonly bool hasTableAccess;
-        private readonly bool hasVariable;
-        private readonly StreamTypeService streamTypeService;
-        private readonly IDictionary<string, Pair<EventType, string>> taggedEventTypes;
+        private readonly StatementCompileTimeServices _compileTimeServices;
+        private readonly ExprNode _exprNode;
+        private readonly bool _hasFilterStreamSubquery;
+        private readonly bool _hasTableAccess;
+        private readonly bool _hasVariable;
+        private readonly StreamTypeService _streamTypeService;
+        private readonly IDictionary<string, Pair<EventType, string>> _taggedEventTypes;
 
         public FilterSpecParamExprNodeForge(
             ExprFilterSpecLookupableForge lookupable,
@@ -61,14 +61,14 @@ namespace com.espertech.esper.common.@internal.filterspec
                 throw new ArgumentException("Invalid filter operator for filter expression node");
             }
 
-            this.exprNode = exprNode;
-            this.taggedEventTypes = taggedEventTypes;
+            _exprNode = exprNode;
+            _taggedEventTypes = taggedEventTypes;
             _arrayEventTypes = arrayEventTypes;
-            this.streamTypeService = streamTypeService;
-            hasFilterStreamSubquery = hasSubquery;
-            this.hasTableAccess = hasTableAccess;
-            this.hasVariable = hasVariable;
-            this.compileTimeServices = compileTimeServices;
+            _streamTypeService = streamTypeService;
+            _hasFilterStreamSubquery = hasSubquery;
+            _hasTableAccess = hasTableAccess;
+            _hasVariable = hasVariable;
+            _compileTimeServices = compileTimeServices;
         }
 
         public int FilterBoolExprId { get; set; } = -1;
@@ -77,11 +77,11 @@ namespace com.espertech.esper.common.@internal.filterspec
         ///     Returns the expression node of the boolean expression this filter parameter represents.
         /// </summary>
         /// <value>expression node</value>
-        public ExprNode ExprNode => exprNode;
+        public ExprNode ExprNode => _exprNode;
 
         public override string ToString()
         {
-            return base.ToString() + "  exprNode=" + exprNode;
+            return base.ToString() + "  exprNode=" + _exprNode;
         }
 
         public override bool Equals(object obj)
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 return false;
             }
 
-            if (exprNode != other.exprNode) {
+            if (_exprNode != other._exprNode) {
                 return false;
             }
 
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.filterspec
         public override int GetHashCode()
         {
             var result = base.GetHashCode();
-            result = 31 * result + exprNode.GetHashCode();
+            result = 31 * result + _exprNode.GetHashCode();
             return result;
         }
 
@@ -139,20 +139,16 @@ namespace com.espertech.esper.common.@internal.filterspec
             //     typeof(FilterSpecParamExprNode),
             //     Arrays.AsList(Ref("lookupable"), Ref("op")));
             
-            var param = NewInstance<ProxyFilterSpecParamExprNode>(
-                Ref("lookupable"),
-                Ref("filterOperator"));
-
-            if ((taggedEventTypes != null && !taggedEventTypes.IsEmpty()) ||
+            if ((_taggedEventTypes != null && !_taggedEventTypes.IsEmpty()) ||
                 (_arrayEventTypes != null && !_arrayEventTypes.IsEmpty())) {
-                var size = taggedEventTypes?.Count ?? 0;
+                var size = _taggedEventTypes?.Count ?? 0;
                 size += _arrayEventTypes?.Count ?? 0;
                 getFilterValue.Block.DeclareVar<EventBean[]>(
                     "events",
                     NewArrayByLength(typeof(EventBean), Constant(size + 1)));
                 var count = 1;
-                if (taggedEventTypes != null) {
-                    foreach (var tag in taggedEventTypes.Keys) {
+                if (_taggedEventTypes != null) {
+                    foreach (var tag in _taggedEventTypes.Keys) {
                         getFilterValue.Block.AssignArrayElement(
                             "events",
                             Constant(count),
@@ -191,33 +187,38 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<object>(
                     "value",
                     ExprDotMethod(
-                        Ref("FilterBooleanExpressionFactory"),
+                        ExprDotName(Ref("node"), "FilterBooleanExpressionFactory"),
                         "Make",
-                        Ref("this"), // FilterSpecParamExprNode filterSpecParamExprNode
+                        Ref("node"), // FilterSpecParamExprNode filterSpecParamExprNode
                         Ref("events"), // EventBean[] events
                         REF_EXPREVALCONTEXT, // ExprEvaluatorContext exprEvaluatorContext
                         ExprDotName(REF_EXPREVALCONTEXT, "AgentInstanceId"), // int agentInstanceId
                         REF_STMTCTXFILTEREVALENV))
                 .BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
+
+            var proxyFilterSpecParamExprNode = NewInstance<ProxyFilterSpecParamExprNode>(
+                Ref("lookupable"),
+                Ref("filterOperator"));
+            
             // expression evaluator
             var evaluator = ExprNodeUtilityCodegen.CodegenEvaluatorNoCoerce(
-                exprNode.Forge,
+                _exprNode.Forge,
                 method,
                 GetType(),
                 classScope);
             // setter calls
-            method.Block.DeclareVar<FilterSpecParamExprNode>("node", param)
-                .SetProperty(
-                    Ref("node"),
-                    "ExprText",
+            method.Block
+                .DeclareVar<ProxyFilterSpecParamExprNode>("node", proxyFilterSpecParamExprNode)
+                .SetProperty(Ref("node"), "ProcGetFilterValue", getFilterValue)
+                .SetProperty(Ref("node"), "ExprText",
                     Constant(
                         StringValue.StringDelimitedTo60Char(
-                            ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode))))
+                            ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_exprNode))))
                 .SetProperty(Ref("node"), "ExprNode", evaluator)
-                .SetProperty(Ref("node"), "HasVariable", Constant(hasVariable))
-                .SetProperty(Ref("node"), "HasFilterStreamSubquery", Constant(hasFilterStreamSubquery))
+                .SetProperty(Ref("node"), "HasVariable", Constant(_hasVariable))
+                .SetProperty(Ref("node"), "HasFilterStreamSubquery", Constant(_hasFilterStreamSubquery))
                 .SetProperty(Ref("node"), "FilterBoolExprId", Constant(FilterBoolExprId))
-                .SetProperty(Ref("node"), "HasTableAccess", Constant(hasTableAccess))
+                .SetProperty(Ref("node"), "HasTableAccess", Constant(_hasTableAccess))
                 .SetProperty(
                     Ref("node"),
                     "FilterBooleanExpressionFactory",
@@ -227,7 +228,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                     Ref("node"),
                     "UseLargeThreadingProfile",
                     Constant(
-                        compileTimeServices.Configuration.Common.Execution.ThreadingProfile == ThreadingProfile.LARGE));
+                        _compileTimeServices.Configuration.Common.Execution.ThreadingProfile == ThreadingProfile.LARGE));
             var providedTypes = ProvidedTypesStartingStreamOne();
             if (providedTypes != null) {
                 method.Block.DeclareVar<EventType[]>(
@@ -255,14 +256,14 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public EventType[] ProvidedTypesStartingStreamOne()
         {
-            if ((taggedEventTypes != null && !taggedEventTypes.IsEmpty()) ||
+            if ((_taggedEventTypes != null && !_taggedEventTypes.IsEmpty()) ||
                 (_arrayEventTypes != null && !_arrayEventTypes.IsEmpty())) {
-                var size = taggedEventTypes?.Count ?? 0;
+                var size = _taggedEventTypes?.Count ?? 0;
                 size += _arrayEventTypes?.Count ?? 0;
                 var providedTypes = new EventType[size + 1];
-                for (var i = 1; i < streamTypeService.StreamNames.Length; i++) {
-                    var tag = streamTypeService.StreamNames[i];
-                    var eventType = FindMayNull(tag, taggedEventTypes);
+                for (var i = 1; i < _streamTypeService.StreamNames.Length; i++) {
+                    var tag = _streamTypeService.StreamNames[i];
+                    var eventType = FindMayNull(tag, _taggedEventTypes);
                     if (eventType == null) {
                         eventType = FindMayNull(tag, _arrayEventTypes);
                     }
@@ -286,7 +287,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             int i)
         {
             @out.Append("expression '")
-                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(exprNode))
+                .Append(ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_exprNode))
                 .Append("'");
         }
 
@@ -306,6 +307,6 @@ namespace com.espertech.esper.common.@internal.filterspec
             return tags.Get(tag).First;
         }
 
-        public IDictionary<string, Pair<EventType, string>> TaggedEventTypes => taggedEventTypes;
+        public IDictionary<string, Pair<EventType, string>> TaggedEventTypes => _taggedEventTypes;
     }
 } // end of namespace

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Standard deviation of the (distinct) values returned by an expression.
     /// </summary>
-    [Serializable]
     public class StddevProjectionExpression : ExpressionBase
     {
         private bool distinct;

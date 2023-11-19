@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.compat.collections;

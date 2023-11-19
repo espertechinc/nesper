@@ -49,15 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.and
 
         protected override Type TypeOfFactory => typeof(EvalAndFactoryNode);
 
-        protected override string NameOfFactory => "and";
+        protected override string NameOfFactory => "And";
 
         protected override void InlineCodegen(
             CodegenMethod method,
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            method.Block.DeclareVar(
-                typeof(EvalFactoryNode[]),
+            method.Block.DeclareVar<EvalFactoryNode[]>(
                 "children",
                 NewArrayByLength(typeof(EvalFactoryNode), Constant(ChildNodes.Count)));
             for (var i = 0; i < ChildNodes.Count; i++) {

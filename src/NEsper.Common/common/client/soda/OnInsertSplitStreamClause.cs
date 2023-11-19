@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>A clause to insert into zero, one or more streams based on criteria. </summary>
-    [Serializable]
     public class OnInsertSplitStreamClause : OnClause
     {
         /// <summary>Ctor. </summary>

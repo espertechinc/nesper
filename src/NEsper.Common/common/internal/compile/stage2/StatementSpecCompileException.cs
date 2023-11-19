@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.compile.stage2
 {
-    [Serializable]
     public class StatementSpecCompileException : Exception
     {
         public StatementSpecCompileException(

@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 evaluationType,
                 typeof(ExprDotNodeForgeStreamEvalMethod),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             var block = methodNode.Block
                 .Apply(

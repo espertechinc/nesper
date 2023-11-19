@@ -15,7 +15,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
 
@@ -204,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             {
                 var stmtText = "@name('s0') select * from SupportBean#lastevent sb, SupportBeanTwo#lastevent sbt, " +
                                "sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
-                               "  where sb.TheString = sbt.stringTwo and s1.myint = sbt.intPrimitiveTwo";
+                               "  where sb.TheString = sbt.stringTwo and s1.myint = sbt.IntPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 

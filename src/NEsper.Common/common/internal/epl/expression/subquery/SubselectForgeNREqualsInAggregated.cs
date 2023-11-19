@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 

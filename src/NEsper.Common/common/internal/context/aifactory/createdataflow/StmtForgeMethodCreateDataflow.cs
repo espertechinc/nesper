@@ -460,7 +460,9 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 new StreamTypeServiceImpl(false),
                 @base.StatementRawInfo,
                 services).Build();
-            var configs = operatorSpec.Detail == null ? Collections.EmptyDataMap : operatorSpec.Detail.Configs;
+            var configs = operatorSpec.Detail == null
+                ? Collections.EmptyDataMap
+                : operatorSpec.Detail.Configs;
             InjectObjectProperties(
                 dataflowName,
                 operatorSpec.OperatorName,
@@ -514,7 +516,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     LogicalChannelProducingPortDeclared foundDeclared = null;
                     foreach (var declared in declareds) {
-                        if (Arrays.AsList(inputItem.InputStreamNames).Contains(declared.StreamName)) {
+                        if (inputItem.InputStreamNames.Contains(declared.StreamName)) {
                             foundDeclared = declared;
                             break;
                         }
@@ -529,14 +531,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     port = new DataFlowOpInputPort(
                         foundDeclared.TypeDesc,
-                        new HashSet<string>(Arrays.AsList(inputItem.InputStreamNames)),
+                        new HashSet<string>(inputItem.InputStreamNames),
                         inputItem.OptionalAsName,
                         false);
                 }
                 else {
                     port = new DataFlowOpInputPort(
                         new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType),
-                        new HashSet<string>(Arrays.AsList(inputItem.InputStreamNames)),
+                        new HashSet<string>(inputItem.InputStreamNames),
                         inputItem.OptionalAsName,
                         producingPorts[0].HasPunctuation);
                 }
@@ -561,10 +563,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 var operatorName = operatorSpec.OperatorName;
                 var operatorPrettyPrint = ToPrettyPrint(i, operatorSpec);
                 var operatorAnnotation = operatorAnnotations.Get(i);
-
+                var operatorCaseName = char.ToUpper(operatorName[0]) + operatorName.Substring(1);
+                
                 Type forgeClass = null;
                 try {
-                    var forgeClassName = operatorSpec.OperatorName + "Forge";
+                    var forgeClassName = operatorCaseName + "Forge";
                     forgeClass = services.ImportServiceCompileTime.ResolveType(
                         forgeClassName,
                         false,
@@ -572,7 +575,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 }
                 catch (ImportException e) {
                     try {
-                        var forgeClassName = operatorSpec.OperatorName;
+                        var forgeClassName = operatorCaseName;
                         forgeClass = services.ImportServiceCompileTime.ResolveType(
                             forgeClassName,
                             false,
@@ -584,10 +587,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     if (forgeClass == null) {
                         throw new ExprValidationException(
-                            "Failed to resolve forge class for operator '" +
-                            operatorSpec.OperatorName +
-                            "': " +
-                            e.Message,
+                            $"Failed to resolve forge class for operator '{operatorName}': {e.Message}",
                             e);
                     }
                 }
@@ -595,13 +595,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
                 // if the factory implements the interface use that
                 if (!TypeHelper.IsImplementsInterface(forgeClass, typeof(DataFlowOperatorForge))) {
                     throw new ExprValidationException(
-                        "Forge class for operator '" +
-                        operatorSpec.OperatorName +
-                        "' does not implement interface '" +
-                        nameof(DataFlowOperatorForge) +
-                        "' (class '" +
-                        forgeClass.Name +
-                        "')");
+                        $"Forge class for operator '{operatorName}' does not implement interface '{nameof(DataFlowOperatorForge)}' (class '{forgeClass.Name}')");
                 }
 
                 var descriptor = new OperatorMetadataDescriptor(
@@ -618,7 +612,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
         private static ResolveTypesResult ResolveTypes(
             CreateDataFlowDesc desc,
-            string packageName,
+            string @namespace,
             StatementBaseInfo @base,
             StatementCompileTimeServices services)
         {
@@ -899,7 +893,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
             if (!propertyHolderFields.IsEmpty()) {
                 var field = propertyHolderFields.First();
                 try {
-                    field.SetValue(propertyInstance, instance);
+                    field.SetValue(instance, propertyInstance);
                 }
                 catch (Exception e) {
                     throw new ExprValidationException("Failed to set field '" + field.Name + "': " + e.Message, e);
@@ -1133,7 +1127,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     LogicalChannelProducingPortDeclared foundDeclared = null;
                     foreach (var declared in declareds) {
-                        if (Arrays.AsList(inputItem.InputStreamNames).Contains(declared.StreamName)) {
+                        if (inputItem.InputStreamNames.Contains(declared.StreamName)) {
                             foundDeclared = declared;
                             break;
                         }
@@ -1149,14 +1143,14 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
 
                     port = new DataFlowOpInputPort(
                         foundDeclared.TypeDesc,
-                        new HashSet<string>(Arrays.AsList(inputItem.InputStreamNames)),
+                        new HashSet<string>(inputItem.InputStreamNames),
                         inputItem.OptionalAsName,
                         false);
                 }
                 else {
                     port = new DataFlowOpInputPort(
                         new GraphTypeDesc(false, false, producingPorts[0].GraphTypeDesc.EventType),
-                        new HashSet<string>(Arrays.AsList(inputItem.InputStreamNames)),
+                        new HashSet<string>(inputItem.InputStreamNames),
                         inputItem.OptionalAsName,
                         producingPorts[0].HasPunctuation);
                 }

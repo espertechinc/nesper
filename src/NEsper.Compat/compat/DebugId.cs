@@ -4,7 +4,7 @@ namespace com.espertech.esper.compat
 {
     public class DebugId<T>
     {
-        private static long _typeId;
+        private static long _typeId = -1;
 
         /// <summary>
         /// Returns the identity counter for the type.

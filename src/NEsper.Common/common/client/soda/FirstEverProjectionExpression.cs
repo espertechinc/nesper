@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "firstever" aggregation function.
     /// </summary>
-    [Serializable]
     public class FirstEverProjectionExpression : ExpressionBase
     {
         private bool distinct;

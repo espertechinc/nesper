@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             return ArrayAtIndex(refEPS, Constant(_streamNum));
         }
 

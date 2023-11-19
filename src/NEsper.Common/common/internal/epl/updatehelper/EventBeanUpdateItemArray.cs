@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
         {
             var method = parent.MakeChild(ArrayType, GetType(), classScope);
             method.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(symbols.GetAddEps(method), Constant(0)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(

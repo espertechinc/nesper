@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
             // - may cast the key in case of Array.equals
             equalsMethod.Block.IfCondition(Not(InstanceOf(Ref("o"), typeof(MultiKey))))
                 .BlockReturn(Constant(false))
-                .DeclareVar(typeof(MultiKey), "k", Cast(typeof(MultiKey), Ref("o")));
+                .DeclareVar<MultiKey>("k", Cast(typeof(MultiKey), Ref("o")));
             for (var i = 0; i < length; i++) {
                 var self = Ref("k" + i);
                 var other = ExprDotMethod(Ref("k"), "GetKey", Constant(i));
@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
             // <code>
             
             var computeHash = GetHashExpression(Ref("k0"), _types[0]);
-            hashMethod.Block.DeclareVar(typeof(int), "h", computeHash);
+            hashMethod.Block.DeclareVar<int>("h", computeHash);
             
             for (var i = 1; i < length; i++) {
                 computeHash = GetHashExpression(Ref("k" + i), _types[i]);

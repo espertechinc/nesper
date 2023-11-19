@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Unvalided filter-based stream specification.
     /// </summary>
-    [Serializable]
     public class FilterStreamSpecRaw : StreamSpecBase,
         StreamSpecRaw
     {

@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.join.hint
                 }
 
                 var forge = ExcludePlanHintExprUtil.ToExpression(hint, rawInfo, services);
-                if (forge.EvaluationType.IsTypeBoolean()) {
+                if (!forge.EvaluationType.IsTypeBoolean()) {
                     throw new ExprValidationException(
                         "Expression provided for hint " + HintEnum.EXCLUDE_PLAN + " must return a boolean value");
                 }

@@ -16,7 +16,6 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
-    [Serializable]
     public class QueryGraphValueEntryInKeywordMultiIdxForge : QueryGraphValueEntryForge
     {
         internal QueryGraphValueEntryInKeywordMultiIdxForge(ExprNode keyExpr)

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// For use in view parameter lists, this is a wrapper expression
     /// that adds an ascending or descending sort indicator to its single child expression.
     /// </summary>
-    [Serializable]
     public class OrderedObjectParamExpression : ExpressionBase
     {
         private bool descending;

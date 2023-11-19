@@ -11,7 +11,6 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,9 +18,7 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -163,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 SendManyArray(env, "E4", new int[] { 1, 2 }, 11);
 
                 epl = "@name('s0') select " +
-                      "(select intOne as c0, sum(value) as c1 from MyWindow group by intOne).take(10) as e1 from SupportBean_S0";
+                      "(select IntOne as c0, sum(Value) as c1 from MyWindow group by IntOne).take(10) as e1 from SupportBean_S0";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.Milestone(0);
@@ -173,9 +170,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "s0",
                     @event => {
                         var maps = GetSortMapMultiRow("e1", @event, "c1");
-                        Assert.IsTrue(Arrays.Equals(new int[] { 1, 2 }, (int[])maps[0].Get("c0")));
+                        CollectionAssert.AreEqual(new int[] { 1, 2 }, (int[])maps[0].Get("c0"));
                         Assert.AreEqual(21, maps[0].Get("c1"));
-                        Assert.IsTrue(Arrays.Equals(new int[] { 1 }, (int[])maps[1].Get("c0")));
+                        CollectionAssert.AreEqual(new int[] { 1 }, (int[])maps[1].Get("c0"));
                         Assert.AreEqual(41, maps[1].Get("c1"));
                     });
 
@@ -188,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as subq from SupportBean";
+                    "@name('s0') select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array) as subq from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] { 1, 2 }, 10));
@@ -233,10 +230,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     epl,
                     "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (property 'Id' is not) [select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.Id) from SupportBean_S0 as s0]");
                 epl =
-                    "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.getP00()) from SupportBean_S0 as s0";
+                    "select (select TheString, sum(LongPrimitive) from SupportBean#keepall group by TheString, s0.GetP00()) from SupportBean_S0 as s0";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.getP00()' against stream 1 is not)");
+                    "Failed to plan subquery number 1 querying SupportBean: Subselect with group-by requires that group-by properties are provided by the subselect stream only (expression 's0.GetP00()' against stream 1 is not)");
 
                 // aggregations not allowed in group-by
                 epl =

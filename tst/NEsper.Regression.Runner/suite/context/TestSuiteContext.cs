@@ -45,7 +45,9 @@ namespace com.espertech.esper.regressionrun.suite.context
                      }) {
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
-
+            
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             configuration.Common.AddEventType(typeof(ContextDocExamples.BankTxn));
             configuration.Common.AddEventType(typeof(ContextDocExamples.LoginEvent));
             configuration.Common.AddEventType(typeof(ContextDocExamples.LogoutEvent));

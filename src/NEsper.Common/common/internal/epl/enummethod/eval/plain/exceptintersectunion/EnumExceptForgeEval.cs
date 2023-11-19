@@ -62,7 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             CodegenClassScope codegenClassScope)
         {
             var namedParams = EnumForgeCodegenNames.PARAMS;
-            var returnType = typeof(FlexCollection);
+            // PREVIOUSLY: FlexCollection
+            var returnType = forge.scalar
+                ? typeof(ICollection<object>)
+                : typeof(ICollection<EventBean>);
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
@@ -74,12 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                block.DeclareVar<FlexCollection>(
+                // PREVIOUS: FlexCollection
+                block.DeclareVar<ICollection<object>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                block.DeclareVar<FlexCollection>(
+                // PREVIOUS: FlexCollection
+                block.DeclareVar<ICollection<EventBean>>(
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }

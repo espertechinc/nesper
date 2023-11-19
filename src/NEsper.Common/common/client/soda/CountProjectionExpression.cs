@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Count of the (distinct) values returned by an expression, equivalent to "count(distinct property)"
     /// </summary>
-    [Serializable]
     public class CountProjectionExpression : ExpressionBase
     {
         private bool distinct;

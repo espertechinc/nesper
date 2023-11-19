@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(resultEventType, EPStatementInitServicesConstants.REF));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar(
                     resultEventType.UnderlyingType,

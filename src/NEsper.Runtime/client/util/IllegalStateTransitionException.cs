@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client.util
     /// <summary>
     /// Thrown when an illegal Adapter state transition is attempted.
     /// </summary>
-    [Serializable]
     public class IllegalStateTransitionException : EPException
     {
         /// <summary />

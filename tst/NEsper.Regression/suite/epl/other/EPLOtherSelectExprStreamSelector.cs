@@ -189,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var stmtOneText =
-                    "@name('l1') @public insert into StreamA select nested.* from SupportBeanComplexProps as s0";
+                    "@name('l1') @public insert into StreamA select Nested.* from SupportBeanComplexProps as s0";
                 env.CompileDeploy(stmtOneText, path).AddListener("l1");
                 env.AssertStatement(
                     "l1",
@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(model).AddListener("s0");
 
                 var epl =
-                    "@name('s0') select s0.*, s1.* as s1stream, TheString as sym from SupportBean#keepall as s0, " +
+                    "@Name('s0') select s0.*, s1.* as s1stream, TheString as sym from SupportBean#keepall as s0, " +
                     "SupportMarketDataBean#keepall as s1";
                 Assert.AreEqual(epl, model.ToEPL());
                 var modelReverse = env.EplToModel(model.ToEPL());

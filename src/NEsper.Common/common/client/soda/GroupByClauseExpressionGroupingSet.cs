@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "grouping sets" keywords.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionGroupingSet : GroupByClauseExpression
     {
         private IList<GroupByClauseExpression> _expressions;

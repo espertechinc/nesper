@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.annotation
     /// <summary>
     ///     Thrown to indicate a problem processing an EPL statement annotation.
     /// </summary>
-    [Serializable]
     public class AnnotationException : EPException
     {
         /// <summary>

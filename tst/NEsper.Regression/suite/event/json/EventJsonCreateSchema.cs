@@ -86,11 +86,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
                 env.TryInvalidCompile(
                     "create json schema InvalidDecl(int fieldname)",
-                    "Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'int', expected System.Type or java.util.Map or the name of a previously-declared event type");
+					"Nestable type configuration encountered an unexpected property type name 'fieldname' for property 'System.Int32', expected System.Type or Map or the name of a previously-declared event type");
 
                 env.TryInvalidCompile(
-                    "create json schema InvalidDecl(comparable java.lang.Comparable)",
-                    "Unsupported type 'java.lang.Comparable' for property 'comparable' (use @JsonSchemaField to declare additional information)");
+                    "create json schema InvalidDecl(comparable System.IComparable)",
+                    "Unsupported type 'System.IComparable' for property 'comparable' (use @JsonSchemaField to declare additional information)");
             }
         }
     }

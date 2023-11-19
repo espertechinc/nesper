@@ -9,8 +9,6 @@
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternObserverTimerScheduleTimeZoneEST : RegressionExecution

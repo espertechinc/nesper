@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         {
             var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(_tableMetadata, codegenClassScope, GetType());
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return StaticMethod(

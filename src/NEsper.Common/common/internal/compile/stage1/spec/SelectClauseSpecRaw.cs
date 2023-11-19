@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Encapsulates the parsed select expressions in a select-clause in an EPL statement.
     /// </summary>
-    [Serializable]
     public class SelectClauseSpecRaw
     {
         private readonly List<SelectClauseElementRaw> _selectClauseElements;

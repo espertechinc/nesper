@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.serde;
@@ -217,14 +218,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            method.Block.MethodReturn(
-                ExprDotMethod(
-                    MEMBER_CURRENTROW,
-                    "GetCollectionScalar",
-                    REF_VCOL,
-                    REF_EPS,
-                    REF_ISNEWDATA,
-                    REF_EXPREVALCONTEXT));
+            method.Block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .MethodReturn(
+                    ExprDotMethod(
+                        MEMBER_CURRENTROW,
+                        "GetCollectionScalar",
+                        REF_VCOL,
+                        REF_EPS,
+                        REF_ISNEWDATA,
+                        REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionOfEventsCodegen(
@@ -268,7 +271,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                 MEMBER_CURRENTROW,
                 Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)));
             block.IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop))
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("statementFields")))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, MEMBER_CURRENTROW);
             if (HasRefCounting) {
                 block.ExprDotMethod(MEMBER_CURRENTROW, "IncreaseRefcount");
@@ -301,7 +304,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     MEMBER_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop))
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("statementFields")))
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Put", REF_GROUPKEY, MEMBER_CURRENTROW);
             if (HasRefCounting) {
                 method.Block.ExprDotMethod(MEMBER_CURRENTROW, "DecreaseRefcount");
@@ -340,7 +343,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
                     MEMBER_CURRENTROW,
                     Cast(classNames.RowTop, ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Get", REF_GROUPKEY)))
                 .IfCondition(EqualsNull(MEMBER_CURRENTROW))
-                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop));
+                .AssignRef(MEMBER_CURRENTROW, NewInstanceInner(classNames.RowTop, Ref("statementFields")));
         }
 
         public void ClearResultsCodegen(
@@ -420,7 +423,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             CodegenClassScope classScope)
         {
             var method = scope.MakeChild(typeof(void), typeof(AggregationServiceGroupByForge), classScope);
-            method.Block.IfCondition(Not(ExprDotMethod(MEMBER_REMOVEDKEYS, "IsEmpty")))
+            method.Block
+                .IfCondition(Not(ExprDotMethod(MEMBER_REMOVEDKEYS, "IsEmpty")))
                 .ForEach<object>("removedKey", MEMBER_REMOVEDKEYS)
                 .ExprDotMethod(MEMBER_AGGREGATORSPERGROUP, "Remove", Ref("removedKey"))
                 .BlockEnd()

@@ -9,8 +9,6 @@
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -20,9 +18,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.util;
 
-// singletonList
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
     public class ClientExtendAggregationMultiFunctionInlinedClass
@@ -89,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             "        /// This handler handles the \"trieState\"-type table column\n" +
             "        /// <summary />\n" +
             "        public class TrieAggHandlerTrieState : AggregationMultiFunctionHandler {\n" +
-            "            public EPType ReturnType => EPTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
+            "            public Type ReturnType => EPTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
             "\n" +
             "            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +
             "                get => new InertAggregationMultiFunctionStateKey();\n" +

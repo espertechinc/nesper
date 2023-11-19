@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// the fragment event type if passing a property name that results in a fragment event otherwise
     /// the class simple name of the expression result or null if the expression returns a null value.
     /// </summary>
-    [Serializable]
     public class TypeOfExpression : ExpressionBase
     {
         /// <summary>

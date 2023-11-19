@@ -8,6 +8,7 @@
 
 using System.Collections.Generic;
 
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -24,7 +25,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public static readonly CodegenExpressionRef REF_EPS = Ref(NAME_EPS);
 
         public static readonly CodegenNamedParam FP_ENUMCOLL = new CodegenNamedParam(
-            typeof(FlexCollection),
+            typeof(ICollection<EventBean>),
             REF_ENUMCOLL);
 
         public static readonly IList<CodegenNamedParam> PARAMS = Collections.List(

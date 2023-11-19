@@ -238,7 +238,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
         {
             return CodegenLegoCast.CastSafeFromObjectType(
                 requiredType,
-                MakeEval("evaluate", codegenMethodScope, symbols, codegenClassScope));
+                MakeEval("Evaluate", codegenMethodScope, symbols, codegenClassScope));
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(
@@ -246,7 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetROCollectionEvents", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetROCollectionEvents", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetROCollectionScalarCodegen(
@@ -254,7 +254,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetROCollectionScalar", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetROCollectionScalar", codegenMethodScope, symbols, codegenClassScope);
         }
 
         public CodegenExpression EvaluateGetEventBeanCodegen(
@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope codegenClassScope)
         {
-            return MakeEval("evaluateGetEventBean", codegenMethodScope, symbols, codegenClassScope);
+            return MakeEval("EvaluateGetEventBean", codegenMethodScope, symbols, codegenClassScope);
         }
 
         private CodegenExpression MakeEval(
@@ -275,7 +275,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             return ExprDotMethod(
                 eval,
                 method,
-                symbols.GetAddEPS(codegenMethodScope),
+                symbols.GetAddEps(codegenMethodScope),
                 symbols.GetAddIsNewData(codegenMethodScope),
                 symbols.GetAddExprEvalCtx(codegenMethodScope));
         }

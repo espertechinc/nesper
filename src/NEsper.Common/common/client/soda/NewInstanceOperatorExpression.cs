@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.client.soda
     ///   i.e. the expression is "new array[] {{...}, {...}}".
     /// </para>
     /// </summary>
-    [Serializable]
     public class NewInstanceOperatorExpression : ExpressionBase
     {
         private string className;

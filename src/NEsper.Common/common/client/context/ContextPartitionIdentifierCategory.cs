@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     /// Context partition identifier for category context.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierCategory : ContextPartitionIdentifier
     {
         /// <summary>Ctor. </summary>

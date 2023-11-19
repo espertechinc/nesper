@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             var result = _fragmentType.IsIndexed ? typeof(EventBean[]) : typeof(EventBean);
             var methodNode = codegenMethodScope.MakeChild(result, typeof(ExprEvalByGetterFragment), codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(StreamNum)))
                 .IfRefNullReturnNull("@event")

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for a pattern observer object consists of a namespace, name and object parameters.
     /// </summary>
-    [Serializable]
     public class PatternObserverSpec : ObjectSpec
     {
         /// <summary>

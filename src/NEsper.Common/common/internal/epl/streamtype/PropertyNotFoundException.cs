@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.@internal.epl.streamtype
 {
     /// <summary> Exception to indicate that a property name used in a filter doesn't resolve.</summary>
-    [Serializable]
     public class PropertyNotFoundException : StreamTypesException
     {
         /// <summary>

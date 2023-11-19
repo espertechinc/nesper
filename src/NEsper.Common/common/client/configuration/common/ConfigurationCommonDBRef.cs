@@ -25,7 +25,6 @@ namespace com.espertech.esper.common.client.configuration.common
     ///     options around getting a database connection and options to control the lifecycle
     ///     of connections and set connection parameters.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonDBRef
     {
         /// <summary>

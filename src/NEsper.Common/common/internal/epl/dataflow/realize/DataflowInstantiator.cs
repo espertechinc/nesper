@@ -244,14 +244,14 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
 
             string channelSpecificMethodName = null;
             if (channelDesc.ConsumingOptStreamAliasName != null) {
-                channelSpecificMethodName = "on" + channelDesc.ConsumingOptStreamAliasName;
+                channelSpecificMethodName = "On" + channelDesc.ConsumingOptStreamAliasName;
             }
 
             foreach (var method in target.GetMethods()) {
                 var eligible = method.Name.Equals("OnInput");
                 if (!eligible && method.Name.Equals(channelSpecificMethodName)) {
                     eligible = true;
-                }
+                } 
 
                 if (!eligible) {
                     continue;
@@ -290,7 +290,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
                         new LogicalChannelBindingTypePassAlongWStream(channelDesc.ConsumingOpStreamNum));
                 }
 
-                // if exposing a method that exactly matches each property type in order, use that, i.e. "onInut(String p0, int p1)"
+                // if exposing a method that exactly matches each property type in order, use that, i.e. "OnInput(String p0, int p1)"
                 if (expectedUnderlyingType is ObjectArrayEventType &&
                     TypeHelper.IsSignatureCompatible(expectedIndividual, parameterTypes)) {
                     return new LogicalChannelBindingMethodDesc(method, LogicalChannelBindingTypeUnwind.INSTANCE);
@@ -305,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             throw new ExprValidationException(
-                $"Failed to find onInput method on for operator '{operatorName}' class {target.Name}, expected an onInput method that takes any of {{{CollectionUtil.ToString(choices)}}}");
+                $"Failed to find OnInput method on for operator '{operatorName}' class {target.Name}, expected an OnInput method that takes any of {{{CollectionUtil.ToString(choices)}}}");
         }
     }
 } // end of namespace

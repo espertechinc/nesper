@@ -11,7 +11,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBeanSimple
     {
         public SupportBeanSimple(

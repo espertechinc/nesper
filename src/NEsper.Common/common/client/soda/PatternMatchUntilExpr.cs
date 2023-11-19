@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-Until construct for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternMatchUntilExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>

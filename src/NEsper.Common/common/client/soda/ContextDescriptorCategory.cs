@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Category-segmented context.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorCategory : ContextDescriptor
     {
         /// <summary>Ctor. </summary>

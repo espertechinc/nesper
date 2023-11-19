@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.type;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Descriptor for create-variable statements. </summary>
-    [Serializable]
     public class CreateVariableDesc
     {
         /// <summary>

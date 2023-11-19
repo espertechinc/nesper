@@ -11,7 +11,6 @@ using System.Threading;
 
 namespace com.espertech.esper.compat
 {
-    [Serializable]
     public class AtomicBoolean
     {
         private long _value;

@@ -8,12 +8,13 @@
 
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBean_N
     {
+        [JsonConstructor]
         public SupportBean_N(
             int intPrimitive,
             int? intBoxed,

@@ -26,7 +26,6 @@ namespace com.espertech.esper.common.client.module
     /// The archive name and user object are opportunities to attach additional deployment
     /// information.
     /// </summary>
-    [Serializable]
     public class Module
     {
         /// <summary>Ctor. </summary>

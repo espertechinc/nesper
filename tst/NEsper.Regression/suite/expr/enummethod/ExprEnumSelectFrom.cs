@@ -79,10 +79,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Integer.toString(i))");
+                builder.WithExpression(fields[0], "Strvals.selectFrom( (v, i) => v || '_' || Convert.ToString(i))");
                 builder.WithExpression(
                     fields[1],
-                    "Strvals.selectFrom( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.selectFrom( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<string>)));

@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Object model of a data flow operator declaration.
     /// </summary>
-    [Serializable]
     public class DataFlowOperator
     {
         private IList<AnnotationPart> annotations;

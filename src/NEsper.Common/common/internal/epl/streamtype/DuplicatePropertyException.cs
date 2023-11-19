@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
     /// <summary>
     /// Indicates a property exists in multiple streams.
     /// </summary>
-    [Serializable]
     public class DuplicatePropertyException : StreamTypesException
     {
         /// <summary> Ctor.</summary>

@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
         {
             var catchBlock = tryBlock.TryEnd()
                 .AddCatch(typeof(Exception), "ex")
-                .DeclareVar(typeof(object[]), "argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
+                .DeclareVar<object[]>("argArray", NewArrayByLength(typeof(object), Constant(args.Length)));
             for (var i = 0; i < args.Length; i++) {
                 catchBlock.AssignArrayElement("argArray", Constant(i), Ref(args[i].BlockRefName));
             }
@@ -97,9 +97,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             StaticMethodCodegenArgDesc[] args,
             CodegenClassScope codegenClassScope)
         {
+            var parameters = reflectionMethod.GetParameters();
             var expressions = new CodegenExpression[args.Length];
             for (var i = 0; i < expressions.Length; i++) {
-                expressions[i] = Ref(args[i].BlockRefName);
+                // Check for downcast transformations between nullables and non-nullables
+                var parameter = parameters[i];
+                if (parameter.ParameterType == args[i].DeclareType) {
+                    expressions[i] = Ref(args[i].BlockRefName);
+                }
+                else if (parameter.ParameterType.CanNotBeNull() && args[i].DeclareType.IsNullable()) {
+                    expressions[i] = ExprDotName(Ref(args[i].BlockRefName), "Value");
+                }
+                else {
+                    expressions[i] = Ref(args[i].BlockRefName);
+                }
             }
 
             if (optionalTargetObject == null) {

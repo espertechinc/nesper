@@ -12,7 +12,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
-    [Serializable]
     public class EmptyList<T> : IList<T>
     {
         public static readonly EmptyList<T> Instance = new EmptyList<T>(); 

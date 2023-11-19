@@ -6,11 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -28,21 +28,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             // Bean
             Consumer<IDictionary<string, string>> bean = entries => { env.SendEventBean(new LocalEvent(entries)); };
-            var beanepl = "@Public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            var beanepl = $"@Public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
             RunAssertion(env, beanepl, bean);
 
             // Map
             Consumer<IDictionary<string, string>> map = entries => {
-                env.SendEventMap(Collections.SingletonDataMap("mapped", entries), "LocalEvent");
+                env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
             };
-            var mapepl = "@Public @buseventtype create schema LocalEvent(mapped java.util.Map);\n";
+            var mapType = typeof(IDictionary<string, object>).CleanName();
+            var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
             RunAssertion(env, mapepl, map);
 
             // Object-array
             Consumer<IDictionary<string, string>> oa = entries => {
                 env.SendEventObjectArray(new object[] { entries }, "LocalEvent");
             };
-            var oaepl = "@public @buseventtype create objectarray schema LocalEvent(mapped java.util.Map);\n";
+			var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
             RunAssertion(env, oaepl, oa);
 
             // Json
@@ -52,27 +53,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     mapValues.Add(entry.Key, entry.Value);
                 }
 
-                var @event = new JObject(new JProperty("mapped", mapValues));
+                var @event = new JObject(new JProperty("Mapped", mapValues));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
             };
-            var jsonepl = "@public @buseventtype create json schema LocalEvent(mapped java.util.Map);\n";
+			var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
-            var jsonProvidedEpl = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
-                                  "') @public @buseventtype create json schema LocalEvent();\n";
+			var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
+			var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonProvidedEpl, json);
 
             // Avro
             Consumer<IDictionary<string, string>> avro = entries => {
                 var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
                 var @event = new GenericRecord(schema.AsRecordSchema());
-                @event.Put("mapped", entries);
+                @event.Put("Mapped", entries);
                 env.SendEventAvro(@event, "LocalEvent");
             };
-            var avroepl =
-                "@name('schema') @public @buseventtype create avro schema LocalEvent(mapped java.util.Map);\n";
+			var avroepl = $"@public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
             RunAssertion(env, avroepl, avro);
         }
 
@@ -84,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.CompileDeploy(
                     createSchemaEPL +
                     "create constant variable string keyChar = 'a';" +
-                    "@name('s0') select mapped(keyChar||'1') as c0, mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
+                    "@name('s0') select Mapped(keyChar||'1') as c0, Mapped(keyChar||'2') as c1 from LocalEvent as e;\n"
                 )
                 .AddListener("s0");
 
@@ -97,7 +96,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private IDictionary<string, string> mapped;
@@ -110,10 +108,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public IDictionary<string, string> Mapped => mapped;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
-            public IDictionary<string, string> mapped;
+            public IDictionary<string, string> Mapped;
         }
     }
 } // end of namespace

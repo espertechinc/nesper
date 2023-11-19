@@ -383,7 +383,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
                             throw new ExprValidationException(
                                 "Segmented context '" +
                                 validationEnv.ContextName +
-                                "' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, Type '" +
+                                "' requires that all of the event types that are listed in the initialized-by also appear in the partition-by, type '" +
                                 filterForType.Name +
                                 "' is not one of the types listed in partition-by");
                         }

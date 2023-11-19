@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public void SavePropertyColl(
             string propertyNameFullyQualified,
             EventBean reference,
-            FlexCollection events)
+            ICollection<EventBean> events)
         {
             var entry = new ExpressionResultCacheEntryBeanAndCollBean(reference, events);
             collPropertyCache.Put(

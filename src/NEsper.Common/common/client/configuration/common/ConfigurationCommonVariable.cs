@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Provides variable configuration.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonVariable
     {
         /// <summary>

@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -15,6 +18,7 @@ namespace com.espertech.esper.common.client.soda
     /// of expressions, parenthesis-expression-combinations, rollup, cube and grouping sets
     /// and their parameters.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<GroupByClauseExpression>))]
     public interface GroupByClauseExpression
     {
         /// <summary>RenderAny group by expression </summary>

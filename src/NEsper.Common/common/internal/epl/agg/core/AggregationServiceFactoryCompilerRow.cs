@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -32,6 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationServiceFactoryCompilerRow
     {
+        private const string NAME_STATEMENT_FIELDS = ("statementFields");
+
         private const string NAME_ASSIGNMENT = "ASSIGNMENTS";
 
         public static AggregationClassAssignmentPerLevel MakeRow(
@@ -336,14 +339,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 true,
                 (
                     index,
-                    block) => block.BlockReturn(
-                    ExprDotMethod(
-                        Ref(leafs[index].MemberName),
-                        "GetCollectionScalar",
-                        REF_VCOL,
-                        REF_EPS,
-                        REF_ISNEWDATA,
-                        REF_EXPREVALCONTEXT)));
+                    block) => block
+                    .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                    .BlockReturn(
+                        ExprDotMethod(
+                            Ref(leafs[index].MemberName),
+                            "GetCollectionScalar",
+                            REF_VCOL,
+                            REF_EPS,
+                            REF_ISNEWDATA,
+                            REF_EXPREVALCONTEXT)));
             var getCollectionOfEventsMethod = MakeMethodGet(
                 AggregationCodegenGetType.GETCOLLECTIONOFEVENTS,
                 classScope);
@@ -436,7 +441,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool blocksReturnValue,
             BiConsumer<int, CodegenBlock> blockConsumer)
         {
-            method.Block.DeclareVar(typeof(int), "i", Constant(0));
+            method.Block.DeclareVar<int>("i", Constant(0));
             CodegenBlock ifBlock = null;
             for (var i = leafs.Length - 1; i > 0; i--) {
                 var rangeCheck = Relational(
@@ -463,7 +468,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             bool blocksReturnValue,
             BiConsumer<int, CodegenBlock> blockConsumer)
         {
-            method.Block.DeclareVar(typeof(int), "i", ArrayAtIndex(Ref(NAME_ASSIGNMENT), Ref(NAME_VCOL)));
+            method.Block.DeclareVar<int>("i", ArrayAtIndex(Ref(NAME_ASSIGNMENT), Ref(NAME_VCOL)));
             var blocks = method.Block.SwitchBlockOfLength(Ref("i"), leafs.Length, blocksReturnValue);
             for (var i = 0; i < leafs.Length; i++) {
                 blockConsumer.Invoke(i, blocks[i]);
@@ -490,7 +495,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 
             // make member+ctor
             var namedMethods = new CodegenNamedMethods();
-            IList<CodegenTypedParam> rowMembers = new List<CodegenTypedParam>();
+            
+            // row members
+            var rowMembers = new List<CodegenTypedParam>();
+
             foreach (var entry in assignment.Members.Members) {
                 rowMembers.Add(new CodegenTypedParam(entry.Value, entry.Key.Ref, false, true));
             }
@@ -928,7 +936,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                             factory.AggregationExpression);
                         getValue = ExprDotMethod(
                             Ref("this"),
-                            "getValue",
+                            "GetValue",
                             Constant(count),
                             ConstantNull(),
                             ConstantTrue(),

@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -21,9 +19,7 @@ using com.espertech.esper.regressionlib.support.multistmtassert;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework; // assertFalse
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -155,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.intOne, a.intTwo))]";
+                    "@name('s0') select * from pattern [a=SupportBeanNumeric -> every b=SupportBean(IntPrimitive in (a.IntOne, a.IntTwo))]";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendBeanNumeric(env, 10, 20);
@@ -207,8 +203,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // try enum collection with substitution param
                 ISet<SupportEnum> types = new HashSet<SupportEnum>();
                 types.Add(SupportEnum.ENUM_VALUE_2);
+                var collectionType = typeof(ICollection<SupportEnum>).CleanName();
                 var compiled = env.Compile(
-                    "@name('s0') select * from SupportBean ev " + "where ev.enumValue in (?::java.util.Collection)");
+                    "@name('s0') select * from SupportBean ev " + "where ev.EnumValue in (?::`" + collectionType + "`)");
                 env.Deploy(
                     compiled,
                     new DeploymentOptions().WithStatementSubstitutionParameter(

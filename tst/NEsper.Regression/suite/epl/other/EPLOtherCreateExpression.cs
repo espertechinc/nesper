@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 "('E1', 10); ]";
                 env.CompileDeploy(eplScript, path);
                 env.CompileDeploy(
-                        "@name('s0') select callIt() as val0, callIt().getTheString() as val1 from SupportBean as sb",
+                        "@name('s0') select callIt() as val0, callIt().TheString as val1 from SupportBean as sb",
                         path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean());

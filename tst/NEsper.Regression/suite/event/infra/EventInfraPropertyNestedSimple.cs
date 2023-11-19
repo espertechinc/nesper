@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -22,7 +21,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 using com.espertech.esper.regressionlib.support.util;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertPropEquals
@@ -84,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.CompileDeploy(epl, path);
             RunAssertion(env, JSON_TYPENAME, FJSON, null, JSON_TYPENAME + "_1", path);
 
-            epl = "@JsonSchema(className='" +
+            epl = "@JsonSchema(ClassName='" +
                   typeof(MyLocalJSONProvidedTop).FullName +
                   "') @name('types') @public @buseventtype create json schema " +
                   JSONPROVIDED_TYPENAME +
@@ -413,7 +411,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             int lvl3,
             int lvl4);
 
-        [Serializable]
         public class InfraNestedSimplePropTop
         {
             private InfraNestedSimplePropLvl1 l1;
@@ -426,7 +423,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public InfraNestedSimplePropLvl1 L1 => l1;
         }
 
-        [Serializable]
         public class InfraNestedSimplePropLvl1
         {
             private InfraNestedSimplePropLvl2 l2;
@@ -445,7 +441,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl1 => lvl1;
         }
 
-        [Serializable]
         public class InfraNestedSimplePropLvl2
         {
             private InfraNestedSimplePropLvl3 l3;
@@ -464,7 +459,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl2 => lvl2;
         }
 
-        [Serializable]
         public class InfraNestedSimplePropLvl3
         {
             private InfraNestedSimplePropLvl4 l4;
@@ -483,7 +477,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl3 => lvl3;
         }
 
-        [Serializable]
         public class InfraNestedSimplePropLvl4
         {
             private int lvl4;
@@ -496,34 +489,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl4 => lvl4;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedTop
         {
             public MyLocalJSONProvidedLvl1 l1;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl1
         {
             public MyLocalJSONProvidedLvl2 l2;
             public int lvl1;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl2
         {
             public MyLocalJSONProvidedLvl3 l3;
             public int lvl2;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl3
         {
             public MyLocalJSONProvidedLvl4 l4;
             public int lvl3;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl4
         {
             public int lvl4;

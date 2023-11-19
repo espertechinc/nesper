@@ -51,8 +51,8 @@ namespace com.espertech.esper.regressionlib.support.extend.view
 				throw new ViewParameterException(message);
 			}
 
-			var resultEPType = validated[0].Forge.EvaluationType;
-			if (!TypeHelper.IsTypeInteger(resultEPType) && !TypeHelper.IsTypeDouble(resultEPType)) {
+			var resultType = validated[0].Forge.EvaluationType;
+			if (!TypeHelper.IsTypeInteger(resultType) && !TypeHelper.IsTypeDouble(resultType)) {
 				throw new ViewParameterException(message);
 			}
 

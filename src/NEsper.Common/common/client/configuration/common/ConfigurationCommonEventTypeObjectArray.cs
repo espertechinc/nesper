@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration object for Object array-based event types.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeObjectArray : ConfigurationCommonEventTypeWithSupertype
     {
         /// <summary>

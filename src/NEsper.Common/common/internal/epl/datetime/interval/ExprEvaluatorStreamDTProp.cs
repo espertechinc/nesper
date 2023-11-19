@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                 typeof(ExprEvaluatorStreamDTProp),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamId)))

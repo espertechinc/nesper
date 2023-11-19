@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Indicates cancellation of a data flow instance. </summary>
-    [Serializable]
     public class EPDataFlowCancellationException : EPException
     {
         public string DataFlowName { get; private set; }

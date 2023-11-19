@@ -16,9 +16,7 @@ using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // ass
 // parseDefaultMSec
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil; // stageIt
 // unstageIt
-using NUnit.Framework; // assertEquals
-
-// assertFalse
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {

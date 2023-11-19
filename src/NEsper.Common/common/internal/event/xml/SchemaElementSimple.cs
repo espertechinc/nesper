@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// <summary>
     ///     Represents a simple value in a schema.
     /// </summary>
-    [Serializable]
     public class SchemaElementSimple : SchemaElement
     {
         /// <summary>

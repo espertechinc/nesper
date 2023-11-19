@@ -9,10 +9,7 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
-using com.espertech.esper.common.client.fireandforget;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -230,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env,
                     path,
                     "context MyContext select context.s0.P00 as P00 order by P00 desc",
-                    "Fire-and-forget queries without a from-clause and with context do not allow Order-by");
+                    "Fire-and-forget queries without a from-clause and with context do not allow order-by");
 
                 env.UndeployAll();
             }

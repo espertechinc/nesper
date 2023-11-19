@@ -71,16 +71,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 result);
         }
 
-        public static FlexCollection UnwrapEventBeans(
+        public static ICollection<EventBean> UnwrapEventBeans(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventType type,
             IEnumerable enumerable)
         {
-            return FlexCollection.Of(
-                enumerable
-                    .Cast<object>()
-                    .Select(value => eventBeanTypedEventFactory.AdapterForTypedObject(value, type))
-                    .ToList());
+            return enumerable
+                .Cast<object>()
+                .Select(value => eventBeanTypedEventFactory.AdapterForTypedObject(value, type))
+                .ToList();
         }
     }
 } // end of namespace

@@ -6,16 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
@@ -32,10 +29,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Bean
             Consumer<string> bean = id => { env.SendEventBean(new LocalEvent(new LocalInnerEvent(id))); };
             var beanepl = "@public @buseventtype create schema LocalInnerEvent as " +
-                          typeof(LocalInnerEvent).FullName +
+                          typeof(LocalInnerEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -67,8 +64,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
-            var jsonProvidedEpl = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var jsonProvidedEpl = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonProvidedEpl, json);
 
@@ -102,7 +99,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
             public LocalInnerEvent(string id)
@@ -113,7 +109,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Id { get; }
         }
 
-        [Serializable]
         public class LocalEvent
         {
             public LocalEvent(LocalInnerEvent property)
@@ -124,13 +119,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent Property { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent Property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
             public string Id;

@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Spec for defining a row limit. </summary>
-    [Serializable]
     public class RowLimitSpec
     {
         /// <summary>Ctor. </summary>

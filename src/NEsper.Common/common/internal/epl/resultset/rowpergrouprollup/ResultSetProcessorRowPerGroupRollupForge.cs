@@ -120,13 +120,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenCtor factoryCtor,
             IList<CodegenTypedParam> factoryMembers)
         {
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(AggregationService),
-                "GetAggregationService",
-                EmptyList<CodegenNamedParam>.Instance,
+                "AggregationService",
                 GetType(),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(MEMBER_AGGREGATIONSVC));
+                property => property.GetterBlock.BlockReturn(MEMBER_AGGREGATIONSVC));
             
 #if DEFINED_IN_BASECLASS
             instance.Properties.AddProperty(
@@ -147,13 +146,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
                 true,
                 typeof(AggregationGroupByRollupDesc),
                 groupByRollupDesc.Codegen(classScope.NamespaceScope.InitMethod, classScope));
-            instance.Methods.AddMethod(
+            instance.Properties.AddProperty(
                 typeof(AggregationGroupByRollupDesc),
-                "GetGroupByRollupDesc",
-                EmptyList<CodegenNamedParam>.Instance,
+                "GroupByRollupDesc",
                 typeof(ResultSetProcessorRowPerGroupRollup),
                 classScope,
-                methodNode => methodNode.Block.MethodReturn(rollupDesc));
+                property => property.GetterBlock.BlockReturn(rollupDesc));
             generateGroupKeySingle = GenerateGroupKeySingleCodegen(
                 GroupKeyNodeExpressions,
                 multiKeyClassRef,

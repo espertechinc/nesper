@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configures a variant stream.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonVariantStream
     {
         /// <summary>

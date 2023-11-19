@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
     public class ResultSetQueryTypeLocalGroupBy
     {
         public static readonly string PLAN_CALLBACK_HOOK =
-            $"@Hook(type={typeof(HookType).FullName}.INTERNAL_AGGLOCALLEVEL,hook='{typeof(SupportAggLevelPlanHook).FullName}')";
+            $"@Hook(HookType={typeof(HookType).FullName}.INTERNAL_AGGLOCALLEVEL,Hook='{typeof(SupportAggLevelPlanHook).FullName}')";
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -294,11 +294,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select " +
-                          "sum(value, group_by:(intArray)) as c0, " +
-                          "sum(value, group_by:(longArray)) as c1, " +
-                          "sum(value, group_by:(doubleArray)) as c2, " +
-                          "sum(value, group_by:(intArray, longArray, doubleArray)) as c3, " +
-                          "sum(value) as c4 " +
+                          "sum(Value, group_by:(IntArray)) as c0, " +
+                          "sum(Value, group_by:(LongArray)) as c1, " +
+                          "sum(Value, group_by:(DoubleArray)) as c2, " +
+                          "sum(Value, group_by:(IntArray, LongArray, DoubleArray)) as c3, " +
+                          "sum(Value) as c4 " +
                           "from SupportThreeArrayEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -455,7 +455,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 // invalid group-by expression
                 env.TryInvalidCompile(
                     "select sum(IntPrimitive, group_by:sum(IntPrimitive)) from SupportBean",
-                    "Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(intPr...(44 chars)': Group-by expressions cannot contain aggregate functions");
+                    "Failed to validate select-clause expression 'sum(IntPrimitive,group_by:sum(IntPr...(44 chars)': Group-by expressions cannot contain aggregate functions"
+                );
 
                 // other functions don't accept this named parameter
                 env.TryInvalidCompile(
@@ -983,8 +984,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           " countever(*, IntPrimitive>0, group_by:()) as c1," +
                           " countever(*, group_by:(TheString)) as c2," +
                           " countever(*, group_by:()) as c3," +
-                          " concatstring(Integer.toString(IntPrimitive), group_by:(TheString)) as c4," +
-                          " concatstring(Integer.toString(IntPrimitive), group_by:()) as c5," +
+                          " concatstring(Convert.ToString(IntPrimitive), group_by:(TheString)) as c4," +
+                          " concatstring(Convert.ToString(IntPrimitive), group_by:()) as c5," +
                           " sc(IntPrimitive, group_by:(TheString)) as c6," +
                           " sc(IntPrimitive, group_by:()) as c7," +
                           " leaving(group_by:(TheString)) as c8," +
@@ -1218,7 +1219,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                           "minever(IntPrimitive, group_by:(TheString)) as minever0," +
                           "fminever(IntPrimitive, IntPrimitive>0, group_by:(TheString)) as fminever0," +
                           "median(IntPrimitive, group_by:(TheString)) as median0," +
-                          "Math.round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
+                          "Math.Round(coalesce(stddev(IntPrimitive, group_by:(TheString)), 0)) as stddev0" +
                           " from SupportBean#keepall";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1241,7 +1242,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                         10,
                         10,
                         10.0,
-                        0L
+                        0.0d
                     });
 
                 env.SendEventBean(new SupportBean("E2", 20));
@@ -1263,7 +1264,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                         20,
                         20,
                         20.0,
-                        0L
+                        0.0d
                     });
 
                 env.SendEventBean(new SupportBean("E1", 30));
@@ -1285,7 +1286,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                         10,
                         10,
                         20.0,
-                        14L
+                        14.0d
                     });
 
                 env.SendEventBean(new SupportBean("E2", 40));
@@ -1304,7 +1305,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     20,
                     20,
                     30.0,
-                    14L
+                    14.0d
                 };
                 env.AssertPropsNew("s0", fields, expected);
 

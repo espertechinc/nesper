@@ -10,8 +10,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTDocSamples : RegressionExecution

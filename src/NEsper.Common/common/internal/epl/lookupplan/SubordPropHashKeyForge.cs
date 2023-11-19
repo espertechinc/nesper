@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplan
     /// <summary>
     ///     Holds property information for joined properties in a lookup.
     /// </summary>
-    [Serializable]
     public class SubordPropHashKeyForge
     {
         public SubordPropHashKeyForge(

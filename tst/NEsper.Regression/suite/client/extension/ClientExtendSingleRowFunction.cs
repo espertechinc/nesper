@@ -9,16 +9,13 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.hook.expr;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -78,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 var fields = new string[] { "c0", "c1" };
                 var text = "@name('s0') select isNullValue(*, 'TheString') as c0," +
                            nameof(ClientExtendSingleRowFunction) +
-                           ".localIsNullValue(*, 'TheString') as c1 from SupportBean";
+                           ".LocalIsNullValue(*, 'TheString') as c1 from SupportBean";
                 env.CompileDeploy(text).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("a", 1));
@@ -144,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var text = "@name('s0') select chainTop().chainValue(12,IntPrimitive) as val from SupportBean";
+                var text = "@name('s0') select chainTop().ChainValue(12,IntPrimitive) as val from SupportBean";
 
                 env.CompileDeploy(text).AddListener("s0");
                 TryAssertionChainMethod(env);
@@ -207,9 +204,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                         }
                         catch (EPException ex) {
                             Assert.AreEqual(
-                                "java.lang.RuntimeException: Unexpected exception in statement 's0': Invocation exception when invoking method 'throwexception' of class '" +
-                                typeof(SupportSingleRowFunction).FullName +
-                                "' passing parameters [] for statement 's0': RuntimeException : This is a 'throwexception' generated exception",
+                                "Unexpected exception in statement 's0': Invocation exception when invoking method 'Throwexception' of class '" +
+                                nameof(SupportSingleRowFunction) +
+                                "' passing parameters [] for statement 's0': com.espertech.esper.common.client.EPException : This is a 'throwexception' generated exception",
                                 ex.Message);
                             env.UndeployAll();
                         }
@@ -226,9 +223,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                         }
                         catch (EPException ex) {
                             Assert.AreEqual(
-                                "java.lang.RuntimeException: Unexpected exception in statement 's0': NullPointerException invoking method 'computePower3' of class '" +
-                                typeof(SupportSingleRowFunction).FullName +
-                                "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive int value but received a null value",
+                                "Unexpected exception in statement 's0': NullPointerException invoking method 'ComputePower3' of class '" +
+                                nameof(SupportSingleRowFunction) +
+                                "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive Int32 value but received a null value",
                                 ex.Message);
                         }
                     });
@@ -237,15 +234,15 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             }
         }
 
-        private class ClientExtendSRFFailedValidation : RegressionExecution
+        internal class ClientExtendSRFFailedValidation : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
                     "select singlerow('a', 'b') from SupportBean",
-                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'testSingleRow' in class '" +
+                    "Failed to validate select-clause expression 'singlerow(\"a\",\"b\")': Could not find static method named 'TestSingleRow' in class '" +
                     typeof(SupportSingleRowFunctionTwo).FullName +
-                    "' with matching parameter number and expected parameter type(s) 'String, String' (nearest match found was 'testSingleRow' taking type(s) 'String, int')");
+                    "' with matching parameter number and expected parameter type(s) 'System.String, System.String' (nearest match found was 'TestSingleRow' taking type(s) 'System.String, System.Int32')");
             }
         }
 

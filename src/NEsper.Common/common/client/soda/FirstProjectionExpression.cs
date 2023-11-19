@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "first" aggregation function.
     /// </summary>
-    [Serializable]
     public class FirstProjectionExpression : AccessProjectionExpressionBase
     {
         /// <summary>

@@ -254,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 // every-operator
                 var expressionThree =
-                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(id=a.Id) and not SupportBean_C(Id=a.Id))]";
+                    "@name('s0') select a.Id as a, b.Id as b from pattern [every a=SupportBean_A -[2]> (every b=SupportBean_B(Id=a.Id) and not SupportBean_C(Id=a.Id))]";
                 env.CompileDeploy(expressionThree).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("1"));

@@ -9,17 +9,17 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>
     /// Static method call consists of a class name and method name.
     /// </summary>
-    [Serializable]
     public class StaticMethodExpression : ExpressionBase
     {
-        private string className;
-        private IList<DotExpressionItem> chain = new List<DotExpressionItem>();
+        private string _className;
+        private IList<DotExpressionItem> _chain = new List<DotExpressionItem>();
 
         /// <summary>
         /// Ctor.
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.client.soda
             string method,
             object[] parameters)
         {
-            this.className = className;
+            _className = className;
 
             IList<Expression> parameterList = new List<Expression>();
             for (var i = 0; i < parameters.Length; i++) {
@@ -44,7 +44,22 @@ namespace com.espertech.esper.common.client.soda
                 }
             }
 
-            chain.Add(new DotExpressionItemCall(method, parameterList));
+            _chain.Add(new DotExpressionItemCall(method, parameterList));
+        }
+
+        
+        /// <summary>
+        /// Ctor.
+        /// </summary>
+        /// <param name="className">class name providing the static method</param>
+        /// <param name="chain">method chain</param>
+        [JsonConstructor]
+        public StaticMethodExpression(
+            string className,
+            IList<DotExpressionItem> chain)
+        {
+            this._className = className;
+            this._chain = chain;
         }
 
         /// <summary>
@@ -52,8 +67,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>method chain</returns>
         public IList<DotExpressionItem> Chain {
-            get => chain;
-            set => chain = value;
+            get => _chain;
+            set => _chain = value;
         }
 
         /// <summary>
@@ -62,29 +77,16 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="chain">method chain</param>
         public StaticMethodExpression SetChain(IList<DotExpressionItem> chain)
         {
-            this.chain = chain;
+            this._chain = chain;
             return this;
-        }
-
-        /// <summary>
-        /// Ctor.
-        /// </summary>
-        /// <param name="className">class name providing the static method</param>
-        /// <param name="chain">method chain</param>
-        public StaticMethodExpression(
-            string className,
-            IList<DotExpressionItem> chain)
-        {
-            this.className = className;
-            this.chain = chain;
         }
 
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.UNARY;
 
         public override void ToPrecedenceFreeEPL(TextWriter writer)
         {
-            writer.Write(className);
-            DotExpressionItem.Render(chain, writer, true);
+            writer.Write(_className);
+            DotExpressionItem.Render(_chain, writer, true);
         }
 
         /// <summary>
@@ -92,8 +94,8 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>class name</returns>
         public string ClassName {
-            get => className;
-            set => className = value;
+            get => _className;
+            set => _className = value;
         }
 
         /// <summary>
@@ -102,7 +104,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="className">class name</param>
         public StaticMethodExpression SetClassName(string className)
         {
-            this.className = className;
+            this._className = className;
             return this;
         }
     }

@@ -8,18 +8,13 @@
 
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
@@ -245,17 +240,19 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public class MyLocalService
         {
+            [JsonConstructor]
             public MyLocalService(int secretValue)
             {
                 this.SecretValue = secretValue;
             }
 
-            internal int SecretValue { get; }
+            [JsonPropertyName("SecretValue")]
+            public int SecretValue { get; }
         }
 
         public class MyListener : UpdateListener
         {
-            private int secretValue;
+            private int _secretValue;
 
             public void Update(
                 object sender,
@@ -263,29 +260,29 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 var runtime = eventArgs.Runtime;
                 var svc = (MyLocalService)runtime.ConfigurationTransient.Get(TEST_SERVICE_NAME);
-                secretValue = svc.SecretValue;
+                _secretValue = svc.SecretValue;
             }
 
-            internal int SecretValue => secretValue;
+            public int SecretValue => _secretValue;
         }
 
         private class MyStatementTraverse
         {
-            IList<EPStatement> statements = new List<EPStatement>();
+            private readonly IList<EPStatement> _statements = new List<EPStatement>();
 
             public void Accept(
                 EPDeployment epDeployment,
                 EPStatement epStatement)
             {
-                statements.Add(epStatement);
+                _statements.Add(epStatement);
             }
 
-            public IList<EPStatement> Statements => statements;
+            public IList<EPStatement> Statements => _statements;
 
             public void AssertAndReset(params EPStatement[] expected)
             {
-                EPAssertionUtil.AssertEqualsExactOrder(statements.ToArray(), expected);
-                statements.Clear();
+                EPAssertionUtil.AssertEqualsExactOrder(_statements.ToArray(), expected);
+                _statements.Clear();
             }
         }
 

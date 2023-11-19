@@ -244,8 +244,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]),
+                .DeclareVar<EventBean[]>(
                     "rewritten",
                     CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
@@ -257,20 +256,34 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return LocalMethod(methodNode);
         }
 
+        private Type DetermineEvaluationType(Type requiredType)
+        {
+            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
+            if (evaluationType != requiredType) {
+                if (evaluationType.GetBoxedType() == requiredType) {
+                    evaluationType = evaluationType.GetBoxedType();
+                }
+                else {
+                    throw new IllegalStateException("requiredType incompatible with evaluationType");
+                }
+            }
+
+            return evaluationType;
+        }
+        
         private CodegenMethod EvaluateCodegenRewritten(
             Type requiredType,
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
             var nodeObject = GetNodeObject(codegenClassScope);
-            var inner = innerForge.EvaluationType;
-            var evaluationType = requiredType == typeof(object) ? typeof(object) : inner;
+            var evaluationType = DetermineEvaluationType(requiredType);
 
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(evaluationType, typeof(ExprDeclaredForgeBase), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-            CodegenExpression refEPS = scope.GetAddEPS(methodNode);
+            CodegenExpression refEPS = scope.GetAddEps(methodNode);
             CodegenExpression refExprEvalCtx = scope.GetAddExprEvalCtx(methodNode);
 
             // generate code for the inner value so we know its symbols and derived symbols
@@ -287,7 +300,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             if (isCache) {
                 CodegenExpression eval = ExprDotName(Ref("entry"), "Result");
                 if (evaluationType != typeof(object)) {
-                    eval = Cast(innerForge.EvaluationType.GetBoxedType(), eval);
+                    eval = Cast(innerForge.EvaluationType, eval);
                 }
 
                 block.DeclareVar<ExpressionResultCacheForDeclaredExprLastValue>("cache",
@@ -332,15 +345,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            // PREVIOUSLY: FlexCollection
+            var returnType = typeof(ICollection<EventBean>);
+            
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(FlexCollection),
+                returnType,
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]),
+                .DeclareVar<EventBean[]>(
                     "rewritten",
                     CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
@@ -357,15 +372,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var nodeObject = GetNodeObject(codegenClassScope);
+            // PREVIOUSLY: FlexCollection
+            var returnType = typeof(ICollection<EventBean>);
 
             var scope = new ExprForgeCodegenSymbol(true, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    typeof(FlexCollection),
+                    returnType,
                     typeof(ExprDeclaredForgeBase),
                     scope,
                     codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-            CodegenExpression refEPS = scope.GetAddEPS(methodNode);
+            CodegenExpression refEPS = scope.GetAddEps(methodNode);
             CodegenExpression refExprEvalCtx = scope.GetAddExprEvalCtx(methodNode);
 
             // generate code for the inner value so we know its symbols and derived symbols
@@ -389,7 +406,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                         ExprDotMethod(Ref("cache"), "GetDeclaredExpressionLastColl", nodeObject, refEPS))
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(ExprDotName(Ref("entry"), "Result"))
-                    .DeclareVar(typeof(FlexCollection), "result", innerValue)
+                    .DeclareVar(returnType, "result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
@@ -399,10 +416,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                             Ref("result")));
             }
             else {
-                block.DeclareVar(typeof(FlexCollection), "result", innerValue);
+                block.DeclareVar(returnType, "result", innerValue);
             }
 
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
             return methodNode;
         }
 
@@ -422,14 +439,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<object>),
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             methodNode.Block
-                .DeclareVar(
-                    typeof(EventBean[]),
+                .DeclareVar<EventBean[]>(
                     "rewritten",
                     CodegenEventsPerStreamRewritten(methodNode, exprSymbol, codegenClassScope))
                 .MethodReturn(
@@ -453,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     scope,
                     codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.PARAMS);
-            CodegenExpression refEPS = scope.GetAddEPS(methodNode);
+            CodegenExpression refEPS = scope.GetAddEps(methodNode);
             CodegenExpression refExprEvalCtx = scope.GetAddExprEvalCtx(methodNode);
 
             // generate code for the inner value so we know its symbols and derived symbols
@@ -477,17 +493,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     .IfCondition(NotEqualsNull(Ref("entry")))
                     .BlockReturn(
                         Unwrap<object>(ExprDotName(Ref("entry"), "Result")))
-                    .DeclareVar(typeof(ICollection<object>), "result", innerValue)
+                    .DeclareVar<ICollection<object>>("result", innerValue)
                     .Expression(
                         ExprDotMethod(
                             Ref("cache"),
                             "SaveDeclaredExpressionLastColl",
                             nodeObject,
                             refEPS,
-                            FlexWrap(Unwrap<EventBean>(Ref("result")))));
+                            Unwrap<EventBean>(Ref("result"))));
             }
             else {
-                block.DeclareVar(typeof(ICollection<object>), "result", innerValue);
+                block.DeclareVar<ICollection<object>>("result", innerValue);
             }
 
             block.MethodReturn(Ref("result"));

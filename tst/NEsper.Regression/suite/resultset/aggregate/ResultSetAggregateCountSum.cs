@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select count(distinct intOne) as c0, count(distinct {intOne, intTwo}) as c1 from SupportEventWithManyArray#length(3)";
+                    "@name('s0') select count(distinct IntOne) as c0, count(distinct {IntOne, IntTwo}) as c1 from SupportEventWithManyArray#length(3)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArrayAssert(env, new int[] { 1, 2 }, new int[] { 1 }, 1, 1);

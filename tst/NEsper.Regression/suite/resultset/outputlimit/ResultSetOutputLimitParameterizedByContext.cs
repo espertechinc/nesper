@@ -11,8 +11,6 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
     public class ResultSetOutputLimitParameterizedByContext : RegressionExecution

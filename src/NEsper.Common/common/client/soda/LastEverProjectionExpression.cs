@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "lastever" aggregation function.
     /// </summary>
-    [Serializable]
     public class LastEverProjectionExpression : ExpressionBase
     {
         private bool distinct;

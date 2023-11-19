@@ -148,7 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 eventType.UnderlyingType,
                 typeof(ExprStreamUnderlyingNodeImpl),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")

@@ -17,7 +17,6 @@ namespace com.espertech.esper.compat.collections
     /// </summary>
     /// <typeparam name="TK"></typeparam>
     /// <typeparam name="TV"></typeparam>
-    [Serializable]
     public class HashMap<TK, TV> : BaseMap<TK, TV>
     {
         /// <summary>

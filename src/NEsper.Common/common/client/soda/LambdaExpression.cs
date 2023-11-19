@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <para />The form "x =&gt; x * x" reads as "x goes to x times x", for an example expression that yields x multiplied by x.
     /// <para />Used with expression declaration and with enumeration methods, for example, to parameterize by an expression.
     /// </summary>
-    [Serializable]
     public class LambdaExpression : ExpressionBase
     {
         private IList<string> parameters;

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -248,7 +247,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.AssertPropsNew("s0", fields, new object[] { expected });
         }
 
-        [Serializable]
         public class MyConstantServiceVariable
         {
             public SupportBean_A FetchABean(int intPrimitive)
@@ -257,7 +255,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             }
         }
 
-        [Serializable]
         public class MyNonConstantServiceVariable
         {
             private string postfix;
@@ -299,7 +296,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             }
         }
 
-        [Serializable]
         public class MyMethodHandlerMap
         {
             private readonly string field1;
@@ -332,7 +328,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             }
         }
 
-        [Serializable]
         public class MyMethodHandlerOA
         {
             private readonly string field1;

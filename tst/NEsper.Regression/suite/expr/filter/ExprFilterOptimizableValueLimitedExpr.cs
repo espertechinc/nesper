@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -20,11 +19,10 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using static com.espertech.esper.common.@internal.filterspec.FilterOperator;
-using static
-    com.espertech.esper.regressionlib.support.filter.SupportFilterOptimizableHelper; // hasFilterIndexPlanAdvanced
-using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper; // assertFilterSvcByTypeSingle
-// assertFilterSvcSingle
-using NUnit.Framework; // fail
+using static com.espertech.esper.regressionlib.support.filter.SupportFilterOptimizableHelper;
+using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
+
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -250,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=a.getTheString())]";
+                    "@name('s0') select * from pattern [a=SupportBean -> b=SupportBean(TheString=a.TheString)]";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean("E1", 1));
                 if (HasFilterIndexPlanAdvanced(env)) {
@@ -489,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
                 env.Compile(objects, path);
 
-                AssertDisqualified(env, path, "SupportBean", "TheString=Integer.toString(IntPrimitive)");
+                AssertDisqualified(env, path, "SupportBean", "TheString=Convert.ToString(IntPrimitive)");
                 AssertDisqualified(env, path, "SupportBean", "TheString=MYVARIABLE_NONCONSTANT");
                 AssertDisqualified(env, path, "SupportBean", "TheString=MyTable.tablecol");
                 AssertDisqualified(env, path, "SupportBean", "TheString=(select TheString from MyWindow)");

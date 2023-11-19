@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -779,27 +778,27 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public void Run(RegressionEnvironment env)
             {
                 var stmtOne = env.CompileDeploy("@name('s0') select * from SupportBean").Statement("s0");
-                TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'update'");
+                TryInvalid(this, stmtOne, "Subscriber object does not provide a public method by name 'Update'");
                 TryInvalid(
                     new DummySubscriberEmptyUpd(),
                     stmtOne,
-                    "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
+                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
                 TryInvalid(
                     new DummySubscriberMultipleUpdate(),
                     stmtOne,
-                    "No suitable subscriber method named 'update' found, expecting a method that takes 1 parameter of type SupportBean");
+                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
                 TryInvalid(
                     new DummySubscriberUpdate(),
                     stmtOne,
-                    "Subscriber method named 'update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
+                    "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
                 TryInvalid(
                     new DummySubscriberPrivateUpd(),
                     stmtOne,
-                    "Subscriber object does not provide a public method by name 'update'");
+                    "Subscriber object does not provide a public method by name 'Update'");
                 env.UndeployModuleContaining("s0");
 
                 var stmtTwo = env.CompileDeploy("@name('s0') select IntPrimitive from SupportBean").Statement("s0");
-                var message = "Subscriber 'updateRStream' method footprint must match 'update' method footprint";
+                var message = "Subscriber 'UpdateRStream' method footprint must match 'Update' method footprint";
                 TryInvalid(new DummySubscriberMismatchUpdateRStreamOne(), stmtTwo, message);
                 TryInvalid(new DummySubscriberMismatchUpdateRStreamTwo(), stmtTwo, message);
 
@@ -1248,7 +1247,6 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedWidenedEvent
         {
             public byte bytePrimitive;
@@ -1257,7 +1255,6 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             public float floatPrimitive;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedStringInt
         {
             public string theString;

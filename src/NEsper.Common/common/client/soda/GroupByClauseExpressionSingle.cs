@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// Represents a single expression (non-combined, rollup/cube or grouping set) as part
     /// of a group-by expression.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionSingle : GroupByClauseExpression
     {
         private Expression _expression;

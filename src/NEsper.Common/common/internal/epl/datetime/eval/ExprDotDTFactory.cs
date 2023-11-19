@@ -51,9 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             StatementRawInfo statementRawInfo)
         {
             // verify input
-            var message = "Date-time enumeration method '" +
-                          dtMethodName +
-                          "' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property";
+            var message = $"Date-time enumeration method '{dtMethodName}' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property";
             if (inputType is EPChainableTypeEventSingle single) {
                 if (single.EventType.StartTimestampPropertyName == null) {
                     throw new ExprValidationException(message);

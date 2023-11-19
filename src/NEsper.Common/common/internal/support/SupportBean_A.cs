@@ -7,12 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBean_A : SupportBeanBase
     {
+        [JsonConstructor]
         public SupportBean_A(string id)
             : base(id)
         {

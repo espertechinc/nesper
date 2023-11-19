@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.context.util
     /// <summary>
     /// Records minimal statement filter version required for processing.
     /// </summary>
-    [Serializable]
     public class StatementAgentInstanceFilterVersion
     {
         private long _stmtFilterVersion;

@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
         {
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
-                .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
+                .Get(EventTypeResolverConstants.EVENTSERDEFACTORY)
                 .Add(
                     _name.MethodName,
                     DataInputOutputSerdeForgeExtensions.CodegenArray(

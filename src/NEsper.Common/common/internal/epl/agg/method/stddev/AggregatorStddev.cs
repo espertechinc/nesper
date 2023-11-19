@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
         {
             method.Block.IfCondition(Relational(cnt, LT, Constant(2)))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(StaticMethod(typeof(Math), "sqrt", Op(qn, "/", Op(cnt, "-", Constant(1)))));
+                .MethodReturn(StaticMethod(typeof(Math), "Sqrt", Op(qn, "/", Op(cnt, "-", Constant(1)))));
         }
 
         protected override void WriteWODistinct(
@@ -146,14 +146,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenExpression doubleExpression)
         {
-            method.Block.DeclareVar(typeof(double), "p", doubleExpression)
+            method.Block.DeclareVar<double>("p", doubleExpression)
                 .IfCondition(EqualsIdentity(cnt, Constant(0)))
                 .AssignRef(mean, Ref("p"))
                 .AssignRef(qn, Constant(0))
                 .AssignRef(cnt, Constant(1))
                 .IfElse()
                 .Increment(cnt)
-                .DeclareVar(typeof(double), "oldmean", mean)
+                .DeclareVar<double>("oldmean", mean)
                 .AssignCompound(mean, "+", Op(Op(Ref("p"), "-", mean), "/", cnt))
                 .AssignCompound(qn, "+", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }
@@ -162,12 +162,12 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.stddev
             CodegenMethod method,
             CodegenExpression doubleExpression)
         {
-            method.Block.DeclareVar(typeof(double), "p", doubleExpression)
+            method.Block.DeclareVar<double>("p", doubleExpression)
                 .IfCondition(Relational(cnt, LE, Constant(1)))
                 .Apply(Clear)
                 .IfElse()
                 .Decrement(cnt)
-                .DeclareVar(typeof(double), "oldmean", mean)
+                .DeclareVar<double>("oldmean", mean)
                 .AssignCompound(mean, "-", Op(Op(Ref("p"), "-", mean), "/", cnt))
                 .AssignCompound(qn, "-", Op(Op(Ref("p"), "-", Ref("oldmean")), "*", Op(Ref("p"), "-", mean)));
         }

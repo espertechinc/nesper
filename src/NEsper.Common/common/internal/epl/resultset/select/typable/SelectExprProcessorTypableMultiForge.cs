@@ -61,8 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                     true,
                     typeof(EventBeanManufacturer),
                     factory.Make(firstMethodNode.Block, codegenMethodScope, codegenClassScope));
-                var firstBlock = firstMethodNode.Block.DeclareVar(
-                        typeof(object[]),
+                var firstBlock = firstMethodNode.Block.DeclareVar<object[]>(
                         "row",
                         typable.EvaluateTypableSingleCodegen(firstMethodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("row");
@@ -90,8 +89,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 factory.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
 
             var methodBlock = methodNode.Block
-                .DeclareVar(
-                    typeof(object[][]),
+                .DeclareVar<object[][]>(
                     "rows",
                     typable.EvaluateTypableMultiCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("rows")
@@ -106,8 +104,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                         codegenClassScope));
             }
 
-            methodBlock.DeclareVar(
-                    typeof(EventBean[]),
+            methodBlock.DeclareVar<EventBean[]>(
                     "events",
                     NewArrayByLength(typeof(EventBean), ArrayLength(Ref("rows"))))
                 .ForLoopIntSimple("i", ArrayLength(Ref("events")))

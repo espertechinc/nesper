@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// In-expresson checks that a value is in (or not in) a set of values, equivalent to the syntax "color in ('red', 'blue')".
     /// </summary>
-    [Serializable]
     public class InExpression : ExpressionBase
     {
         private bool notIn;

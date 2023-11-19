@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         int? StreamReferencedIfAny { get; }
 
-        IList<Chainable> ChainSpec { get; set; }
+        //IList<Chainable> ChainSpec { get; set; }
 
         VariableMetaData IsVariableOpGetName(VariableCompileTimeResolver variableCompileTimeResolver);
 

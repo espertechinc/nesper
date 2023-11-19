@@ -21,9 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -94,22 +92,22 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsW1Param('abc', 1.0, 2.0)", "abc,1.0,2.0"),
-                    MakePair("varargsW1Param('abc', 1, 2)", "abc,1.0,2.0"),
-                    MakePair("varargsW1Param('abc', 1)", "abc,1.0"),
-                    MakePair("varargsW1Param('abc')", "abc")
+                    MakePair("varargsW1Param('abc', 1.0, 2.0)", "\"abc\",1.0d,2.0d"),
+                    MakePair("varargsW1Param('abc', 1, 2)", "\"abc\",1.0d,2.0d"),
+                    MakePair("varargsW1Param('abc', 1)", "\"abc\",1.0d"),
+                    MakePair("varargsW1Param('abc')", "\"abc\"")
                 );
 
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0,3"),
-                    MakePair("varargsW2Param(1, 2.0)", "1,2.0"),
-                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0,3,4"));
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0d,3"),
+                    MakePair("varargsW2Param(1, 2.0)", "1,2.0d"),
+                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0d,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0d,3,4"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0d,3,4"));
 
                 RunVarargAssertion(
                     env,
@@ -239,10 +237,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             AtomicLong milestone)
         {
             var epl = "@name('s0') select " +
-                      "java.util.Arrays.asList('a') as c0, " +
-                      "java.util.Arrays.asList({'a'}) as c1, " +
-                      "java.util.Arrays.asList('a', 'b') as c2, " +
-                      "java.util.Arrays.asList({'a', 'b'}) as c3 " +
+                      "com.espertech.esper.compat.collections.Collections.List(\"a\") as c0, " +
+                      "com.espertech.esper.compat.collections.Collections.List({\"a\"}) as c1, " +
+                      "com.espertech.esper.compat.collections.Collections.List(\"a\", \"b\") as c2, " +
+                      "com.espertech.esper.compat.collections.Collections.List({\"a\", \"b\"}) as c3 " +
                       "from SupportBean";
             env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 

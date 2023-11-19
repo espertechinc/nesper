@@ -14,7 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.visitor
 {
-    [Serializable]
     public class ExprNodeGroupingVisitorWParent : ExprNodeVisitorWithParent
     {
         /// <summary>Ctor. </summary>

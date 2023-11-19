@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.settings
     /// <summary>
     ///     Provides information about a single-row function.
     /// </summary>
-    [Serializable]
     public class ImportSingleRowDesc
     {
         public ImportSingleRowDesc(

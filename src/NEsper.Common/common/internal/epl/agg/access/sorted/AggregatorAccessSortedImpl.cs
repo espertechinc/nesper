@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                             null);
                         return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                             .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
-                            .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
+                            .Get(EventTypeResolverConstants.EVENTSERDEFACTORY)
                             .Add("TreeMapEventsMayDeque", criteriaSerdes, type);
                     }
                 });
@@ -113,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var ctx = symbols.GetAddExprEvalCtx(method);
             var referenceAddToColl = ReferenceAddToCollCodegen(method, namedMethods, classScope);
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
@@ -134,7 +134,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var ctx = symbols.GetAddExprEvalCtx(method);
             var dereferenceRemove = DereferenceRemoveFromCollCodegen(method, namedMethods, classScope);
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
@@ -168,7 +168,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
+            method.Block
+                .IfCondition(ExprDotMethod(sorted, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<KeyValuePair<object, object>>("max", ExprDotName(sorted, "FirstEntry"))
                 .MethodReturn(StaticMethod(typeof(AggregatorAccessSortedImpl), "CheckedPayloadMayDeque", ExprDotName(Ref("max"), "Value")));
@@ -185,7 +186,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 GetType(),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(sorted, "IsEmpty"))
+            method.Block
+                .IfCondition(ExprDotMethod(sorted, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<KeyValuePair<object, object>>("min", ExprDotName(sorted, "LastEntry"))
                 .MethodReturn(
@@ -233,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             if (joinRefs != null) {
                 method.Block.ExprDotMethod(
                     joinRefsSerde,
-                    "write",
+                    "Write",
                     RowDotMember(row, joinRefs),
                     output,
                     unitKey,
@@ -336,7 +338,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("theEvent"))
                 .IfElseIf(InstanceOf(Ref("existing"), typeof(EventBean)))
                 .DeclareVar<ArrayDeque<EventBean>>("coll", NewInstance<ArrayDeque<EventBean>>(Constant(2)))
-                .ExprDotMethod(Ref("coll"), "Add", Ref("existing"))
+                .ExprDotMethod(Ref("coll"), "Add", Cast<EventBean>(Ref("existing")))
                 .ExprDotMethod(Ref("coll"), "Add", Ref("theEvent"))
                 .ExprDotMethod(sorted, "Put", Ref("comparable"), Ref("coll"))
                 .IfElse()

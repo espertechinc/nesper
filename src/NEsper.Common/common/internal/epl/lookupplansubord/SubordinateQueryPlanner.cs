@@ -473,7 +473,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 indexModuleName = existing.Second.ModuleName;
                 indexMultiKey = existing.First;
                 multiKeyForgeables = EmptyList<StmtClassForgeableFactory>.Instance;
-                fabricCharge.Add(planned.FabricCharge);
             }
             else {
                 // handle planned
@@ -486,6 +485,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
                 indexMultiKey = planned.IndexPropKey;
                 planIndexItem = planned.IndexItem;
                 multiKeyForgeables = planned.MultiKeyForgeables;
+                fabricCharge.Add(planned.FabricCharge);
             }
 
             var forge = new SubordinateQueryIndexDescForge(

@@ -111,13 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create table varaggRCM (wordCount referenceCountedMap(string))", path);
-                env.CompileDeploy(
-                    "into table varaggRCM select referenceCountedMap(TheString) as wordCount from SupportBean#length(3)",
-                    path);
-                env.CompileDeploy(
-                        "@name('s0') select varaggRCM.wordCount.referenceCountLookup(P00) as c0 from SupportBean_S0",
-                        path)
-                    .AddListener("s0");
+                env.CompileDeploy("into table varaggRCM select referenceCountedMap(TheString) as wordCount from SupportBean#length(3)", path);
+                env.CompileDeploy("@name('s0') select varaggRCM.wordCount.referenceCountLookup(P00) as c0 from SupportBean_S0", path).AddListener("s0");
 
                 var words = "the,house,is,green";
                 SendWordAssert(env, "the", words, new int?[] { 1, null, null, null });

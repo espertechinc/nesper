@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.util
 {
-    [Serializable]
     public class TypeWidenerException : Exception
     {
         public TypeWidenerException(string message)

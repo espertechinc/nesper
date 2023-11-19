@@ -11,7 +11,6 @@ using System.Text;
 
 namespace com.espertech.esper.common.client.util
 {
-    [Serializable]
     public class TimePeriod
     {
         public TimePeriod(

@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
-    [Serializable]
     public class SupportGroupSubgroupEvent
     {
         private double _value;

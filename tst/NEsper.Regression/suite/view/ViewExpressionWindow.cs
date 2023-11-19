@@ -536,7 +536,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 env.TryInvalidCompile(
                     "select * from SupportBean#expr(1)",
-                    "Failed to validate data window declaration: Invalid return value for expiry expression, expected a boolean return value but received int [select * from SupportBean#expr(1)]");
+                    "Failed to validate data window declaration: Invalid return value for expiry expression, expected a boolean return value but received System.Int32 [select * from SupportBean#expr(1)]");
 
                 env.TryInvalidCompile(
                     "select * from SupportBean#expr((select * from SupportBean#lastevent))",

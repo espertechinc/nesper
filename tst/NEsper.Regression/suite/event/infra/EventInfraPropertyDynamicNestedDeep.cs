@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -156,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("{}", notExists)
             };
             var schemas =
-                "@JsonSchema(dynamic=true) create json schema Item();\n" +
+                "@JsonSchema(Dynamic=true) create json schema Item();\n" +
                 "@public @buseventtype @name('schema') " +
                 "create json schema " +
                 JSON_TYPENAME +
@@ -197,7 +195,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("{}", notExists)
             };
             var schemasJsonProvided =
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJsonProvided).FullName +
                 "') @public @buseventtype @name('schema') " +
                 "create json schema " +
@@ -309,26 +307,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.SendEventAvro(@event, typename);
         };
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonItem item;
         }
 
-        [Serializable]
         public class MyLocalJsonItem
         {
             public MyLocalJsonProvidedNested nested;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNested
         {
             public int? NestedValue;
             public MyLocalJsonProvidedNestedNested NestedNested;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNestedNested
         {
             public int? nestedNestedValue;

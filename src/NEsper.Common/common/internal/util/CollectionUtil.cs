@@ -56,9 +56,7 @@ namespace com.espertech.esper.common.@internal.util
         public static readonly object[] OBJECTARRAY_EMPTY = Array.Empty<object>();
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = Array.Empty<object[]>();
 
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(
-            typeof(FlexCollection),
-            "Empty");
+        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(typeof(FlexCollection), "Empty");
 
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
@@ -746,38 +744,16 @@ namespace com.espertech.esper.common.@internal.util
                 throw new ArgumentException("Expected array type and received " + arrayType);
             }
 
-            var block = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(CollectionUtil), codegenClassScope)
-                .AddParam(arrayType, "array")
-                .Block
-                .IfRefNullReturnNull("array");
-            if (!arrayType.GetElementType().IsValueType) {
-                return LocalMethodBuild(
-                        block.MethodReturn(FlexWrap(Ref("array"))))
-                    .Pass(array)
-                    .Call();
-            }
+            var arrayElementType = arrayType.GetComponentType();
 
-            var method = block
-                .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(0)))
-                .BlockReturn(EnumValue(typeof(FlexCollection), "Empty"))
-                .IfCondition(EqualsIdentity(ArrayLength(Ref("array")), Constant(1)))
-                .BlockReturn(
-                    FlexWrap(
-                        StaticMethod(
-                            typeof(Collections),
-                            "SingletonList",
-                            new[] { typeof(object) },
-                            ArrayAtIndex(Ref("array"), Constant(0)))))
-                .DeclareVar<ArrayDeque<object>>(
-                    "dq",
-                    NewInstance<ArrayDeque<object>>(ArrayLength(Ref("array"))))
-                .ForLoopIntSimple("i", ArrayLength(Ref("array")))
-                .Expression(ExprDotMethod(Ref("dq"), "Add", ArrayAtIndex(Ref("array"), Ref("i"))))
-                .BlockEnd()
-                .MethodReturn(FlexWrap(Ref("dq")));
-            return LocalMethodBuild(method).Pass(array).Call();
+            return StaticMethod(
+                        typeof(CompatExtensions),
+                        "Unwrap",
+                        new[] { arrayElementType },
+                        array,
+                        ConstantTrue());
         }
+
 
         /// <summary>
         ///     NOTE: Code-generation-invoked method, method name and parameter order matters

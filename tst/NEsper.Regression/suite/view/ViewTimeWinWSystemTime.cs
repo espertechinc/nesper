@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Threading;
 
 using com.espertech.esper.common.client;
@@ -17,9 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -124,7 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             try {
                 Thread.Sleep(msec);
             }
-            catch (ThreadInterruptedException e) {
+            catch (ThreadInterruptedException) {
             }
         }
     }

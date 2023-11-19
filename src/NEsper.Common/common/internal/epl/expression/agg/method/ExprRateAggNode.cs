@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.method
             const string message =
                 "The rate aggregation function requires a property or expression returning a non-constant long-type value as the first parameter in the timestamp-property notation";
             var paramOne = first.Forge.EvaluationType;
-            if (paramOne.IsTypeInt64()) {
+            if (!paramOne.IsTypeInt64()) {
                 throw new ExprValidationException(message);
             }
 

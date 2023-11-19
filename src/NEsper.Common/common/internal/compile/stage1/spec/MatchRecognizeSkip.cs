@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for the skip-part of match_recognize.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeSkip
     {
         /// <summary>

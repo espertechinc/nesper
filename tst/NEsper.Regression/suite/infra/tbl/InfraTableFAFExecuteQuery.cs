@@ -17,9 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
-using NUnit.Framework; // assertEquals
-
-// assertSame
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {

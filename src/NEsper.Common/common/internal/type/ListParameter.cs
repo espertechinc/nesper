@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Represents a list of values in a set of numeric parameters.
     /// </summary>
-    [Serializable]
     public class ListParameter : NumberSetParameter
     {
         private readonly IList<NumberSetParameter> _parameters;

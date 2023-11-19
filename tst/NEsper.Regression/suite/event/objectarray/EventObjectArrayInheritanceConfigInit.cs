@@ -15,8 +15,6 @@ using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
     public class EventObjectArrayInheritanceConfigInit : RegressionExecution

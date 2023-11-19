@@ -139,8 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(ExprEvaluator[]), originator, classScope);
-            method.Block.DeclareVar(
-                typeof(ExprEvaluator[]),
+            method.Block.DeclareVar<ExprEvaluator[]>(
                 "evals",
                 NewArrayByLength(typeof(ExprEvaluator), Constant(expressions.Count)));
             for (var i = 0; i < expressions.Count; i++) {

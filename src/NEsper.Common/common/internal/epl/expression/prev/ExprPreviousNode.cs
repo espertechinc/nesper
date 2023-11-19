@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 throw new IllegalStateException("Unrecognized previous type " + PreviousType);
             }
 
-            var method = parent.MakeChild(typeof(FlexCollection), GetType(), codegenClassScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), codegenClassScope);
             method.Block.DeclareVar<PreviousGetterStrategy>(
                 "strategy",
                 ExprDotMethod(
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
                         ExprDotName(Ref("getter"), "Accessor"))
-                    .BlockReturn(FlexWrap(ExprDotName(Ref("randomAccess"), "WindowCollectionReadOnly")));
+                    .BlockReturn(ExprDotName(Ref("randomAccess"), "WindowCollectionReadOnly"));
             }
             var relativeAccess = randomAccess.IfElse();
             {
@@ -139,11 +139,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .DeclareVar<RelativeAccessByEventNIndexGetter>("getter",
                         Cast(typeof(RelativeAccessByEventNIndexGetter), Ref("strategy")))
                     .DeclareVar<EventBean>("evalEvent",
-                        ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(StreamNumber)))
+                        ArrayAtIndex(exprSymbol.GetAddEps(method), Constant(StreamNumber)))
                     .DeclareVar<RelativeAccessByEventNIndex>("relativeAccess",
                         ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess")
-                    .BlockReturn(FlexWrap(ExprDotName(Ref("relativeAccess"), "WindowToEventCollReadOnly")));
+                    .BlockReturn(ExprDotName(Ref("relativeAccess"), "WindowToEventCollReadOnly"));
             }
             return LocalMethod(method);
         }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .MethodReturn(
                     LocalMethod(
                         GetSubstituteCodegen(method, exprSymbol, codegenClassScope),
-                        exprSymbol.GetAddEPS(method),
+                        exprSymbol.GetAddEps(method),
                         exprSymbol.GetAddExprEvalCtx(method)));
             return LocalMethod(method);
         }
@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                             exprSymbol.GetAddExprEvalCtx(methodX)))
                     .Apply(new PreviousBlockGetSizeAndIterator(methodX, exprSymbol, StreamNumber, Ref("strategy")).Accept);
 
-                var eps = exprSymbol.GetAddEPS(methodX);
+                var eps = exprSymbol.GetAddEps(methodX);
                 var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                     ChildNodes[1].Forge,
                     methodX,
@@ -201,8 +201,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
 
                 methodX.Block
                     .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
-                    .DeclareVar(
-                        typeof(ICollection<object>),
+                    .DeclareVar<ICollection<object>>(
                         "result",
                         NewInstance(typeof(ArrayDeque<object>), Ref("size")))
                     .ForLoopIntSimple("i", Ref("size"))
@@ -414,7 +413,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     .DeclareVar<RelativeAccessByEventNIndexGetter>("getter",
                         Cast(typeof(RelativeAccessByEventNIndexGetter), Ref("strategy")))
                     .DeclareVar<EventBean>("evalEvent",
-                        ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(StreamNumber)))
+                        ArrayAtIndex(exprSymbol.GetAddEps(method), Constant(StreamNumber)))
                     .DeclareVar<RelativeAccessByEventNIndex>("relativeAccess",
                         ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess")
@@ -438,7 +437,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)))
                 .Apply(new PreviousBlockGetSizeAndIterator(method, exprSymbol, StreamNumber, Ref("strategy")).Accept);
 
-            var eps = exprSymbol.GetAddEPS(method);
+            var eps = exprSymbol.GetAddEps(method);
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
@@ -470,7 +469,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
         {
             var method = parent.MakeChild(ResultType, GetType(), codegenClassScope);
 
-            var eps = exprSymbol.GetAddEPS(method);
+            var eps = exprSymbol.GetAddEps(method);
             var innerEval = CodegenLegoMethodExpression.CodegenExpression(
                 ChildNodes[1].Forge,
                 method,
@@ -485,7 +484,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                         eps,
                         exprSymbol.GetAddExprEvalCtx(method)))
                 .IfRefNullReturnNull("substituteEvent")
-                .DeclareVar(typeof(EventBean), "originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
+                .DeclareVar<EventBean>("originalEvent", ArrayAtIndex(eps, Constant(StreamNumber)))
                 .AssignArrayElement(eps, Constant(StreamNumber), Ref("substituteEvent"))
                 .DeclareVar(
                     ResultType,
@@ -514,12 +513,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 .AddParam<EventBean[]>(REF_EPS.Ref)
                 .AddParam<ExprEvaluatorContext>(REF_EXPREVALCONTEXT.Ref);
 
-            method.Block.DeclareVar(
-                typeof(PreviousGetterStrategy),
+            method.Block.DeclareVar<PreviousGetterStrategy>(
                 "strategy",
                 ExprDotMethod(GetterField(codegenClassScope), "GetStrategy", exprSymbol.GetAddExprEvalCtx(method)));
             if (IsConstantIndex) {
-                method.Block.DeclareVar(typeof(int), "index", Constant(ConstantIndexNumber));
+                method.Block.DeclareVar<int>("index", Constant(ConstantIndexNumber));
             }
             else {
                 var index = ChildNodes[0].Forge;
@@ -527,10 +525,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                     CodegenLegoMethodExpression.CodegenExpression(index, method, codegenClassScope);
                 CodegenExpression indexCall = LocalMethod(indexMethod, REF_EPS, ConstantTrue(), REF_EXPREVALCONTEXT);
                 method.Block
-                    .DeclareVar(typeof(object), "indexResult", indexCall)
+                    .DeclareVar<object>("indexResult", indexCall)
                     .IfRefNullReturnNull("indexResult")
-                    .DeclareVar(
-                        typeof(int),
+                    .DeclareVar<int>(
                         "index",
                         ExprDotMethod(Ref("indexResult"), "AsInt32"));
             }
@@ -539,12 +536,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 method.Block.IfCondition(InstanceOf(Ref("strategy"), typeof(RandomAccessByIndexGetter)));
             {
                 randomAccess
-                    .DeclareVar(
-                        typeof(RandomAccessByIndexGetter),
+                    .DeclareVar<RandomAccessByIndexGetter>(
                         "getter",
                         Cast(typeof(RandomAccessByIndexGetter), Ref("strategy")))
-                    .DeclareVar(
-                        typeof(RandomAccessByIndex),
+                    .DeclareVar<RandomAccessByIndex>(
                         "randomAccess",
                         ExprDotName(Ref("getter"), "Accessor"));
                 if (PreviousType == ExprPreviousNodePreviousType.PREV) {
@@ -561,16 +556,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             var relativeAccess = randomAccess.IfElse();
             {
                 relativeAccess
-                    .DeclareVar(
-                        typeof(RelativeAccessByEventNIndexGetter),
+                    .DeclareVar<RelativeAccessByEventNIndexGetter>(
                         "getter",
                         Cast(typeof(RelativeAccessByEventNIndexGetter), Ref("strategy")))
-                    .DeclareVar(
-                        typeof(EventBean),
+                    .DeclareVar<EventBean>(
                         "evalEvent",
-                        ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(StreamNumber)))
-                    .DeclareVar(
-                        typeof(RelativeAccessByEventNIndex),
+                        ArrayAtIndex(exprSymbol.GetAddEps(method), Constant(StreamNumber)))
+                    .DeclareVar<RelativeAccessByEventNIndex>(
                         "relativeAccess",
                         ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                     .IfRefNullReturnNull("relativeAccess");
@@ -657,19 +649,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 block
                     .IfCondition(Not(_exprSymbol.GetAddIsNewData(_method)))
                     .BlockReturn(ConstantNull())
-                    .DeclareVar(typeof(IEnumerator<EventBean>), "events", ConstantNull())
-                    .DeclareVar(typeof(int), "size", Constant(0));
+                    .DeclareVar<IEnumerator<EventBean>>("events", ConstantNull())
+                    .DeclareVar<int>("size", Constant(0));
 
                 var randomAccess =
                     _method.Block.IfCondition(InstanceOf(_getter, typeof(RandomAccessByIndexGetter)));
                 {
                     randomAccess
-                        .DeclareVar(
-                            typeof(RandomAccessByIndexGetter),
+                        .DeclareVar<RandomAccessByIndexGetter>(
                             "getter",
                             Cast(typeof(RandomAccessByIndexGetter), _getter))
-                        .DeclareVar(
-                            typeof(RandomAccessByIndex),
+                        .DeclareVar<RandomAccessByIndex>(
                             "randomAccess",
                             ExprDotName(Ref("getter"), "Accessor"))
                         .AssignRef("events", ExprDotMethod(Ref("randomAccess"), "GetWindowEnumerator"))
@@ -678,16 +668,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
                 var relativeAccess = randomAccess.IfElse();
                 {
                     relativeAccess
-                        .DeclareVar(
-                            typeof(RelativeAccessByEventNIndexGetter),
+                        .DeclareVar<RelativeAccessByEventNIndexGetter>(
                             "getter",
                             Cast(typeof(RelativeAccessByEventNIndexGetter), _getter))
-                        .DeclareVar(
-                            typeof(EventBean),
+                        .DeclareVar<EventBean>(
                             "evalEvent",
-                            ArrayAtIndex(_exprSymbol.GetAddEPS(_method), Constant(_streamNumber)))
-                        .DeclareVar(
-                            typeof(RelativeAccessByEventNIndex),
+                            ArrayAtIndex(_exprSymbol.GetAddEps(_method), Constant(_streamNumber)))
+                        .DeclareVar<RelativeAccessByEventNIndex>(
                             "relativeAccess",
                             ExprDotMethod(Ref("getter"), "GetAccessor", Ref("evalEvent")))
                         .IfRefNullReturnNull("relativeAccess")

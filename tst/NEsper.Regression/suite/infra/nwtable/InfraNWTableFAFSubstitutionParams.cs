@@ -19,9 +19,7 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {

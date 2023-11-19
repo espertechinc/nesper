@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Subquery-expression returns values returned by a lookup modelled by a further <seealso cref="EPStatementObjectModel" />.
     /// </summary>
-    [Serializable]
     public class SubqueryExpression : ExpressionBase
     {
         private EPStatementObjectModel model;

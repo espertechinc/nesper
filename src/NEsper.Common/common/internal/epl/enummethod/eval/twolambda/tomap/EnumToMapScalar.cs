@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -101,9 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             
             block
                 .DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)))
-                .DeclareVar(
-					typeof(ObjectArrayEventBean),
-                    "resultEvent",
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<ObjectArrayEventBean>(
+					"resultEvent",
                     NewInstance(
                         typeof(ObjectArrayEventBean),
                         NewArrayByLength(typeof(object), Constant(_numParameters)),

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -124,13 +123,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 EventRepresentationChoice eventRepresentationEnum,
                 AtomicLong milestone)
             {
-                var fields = "UserId,keyword,sumScore".SplitCsv();
+                var fields = "UserId,Keyword,SumScore".SplitCsv();
                 var epl =
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedScoreCycle)) +
-                    "@buseventtype @public create schema ScoreCycle (UserId string, keyword string, ProductId string, score long);\n" +
+                    "@buseventtype @public create schema ScoreCycle (UserId string, Keyword string, ProductId string, Score long);\n" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(
                         typeof(MyLocalJsonProvidedUserKeywordTotalStream)) +
-                    "@buseventtype @public create schema UserKeywordTotalStream (UserId string, keyword string, sumScore long);\n" +
+                    "@buseventtype @public create schema UserKeywordTotalStream (UserId string, Keyword string, SumScore long);\n" +
                     "\n" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvided)) +
                     " create context HashByUserCtx as " +
@@ -138,14 +137,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "consistent_hash_crc32(UserId) from UserKeywordTotalStream " +
                     "granularity 1000000;\n" +
                     "\n" +
-                    "context HashByUserCtx create window ScoreCycleWindow#unique(ProductId, keyword) as ScoreCycle;\n" +
+                    "context HashByUserCtx create window ScoreCycleWindow#unique(ProductId, Keyword) as ScoreCycle;\n" +
                     "\n" +
                     "context HashByUserCtx insert into ScoreCycleWindow select * from ScoreCycle;\n" +
                     "\n" +
                     "@name('s0') context HashByUserCtx insert into UserKeywordTotalStream \n" +
-                    "select UserId, keyword, sum(score) as sumScore from ScoreCycleWindow group by keyword;\n" +
+                    "select UserId, Keyword, sum(Score) as SumScore from ScoreCycleWindow group by Keyword;\n" +
                     "\n" +
-                    "@name('outTwo') context HashByUserCtx on UserKeywordTotalStream(sumScore > 10000) delete from ScoreCycleWindow;\n";
+                    "@name('outTwo') context HashByUserCtx on UserKeywordTotalStream(SumScore > 10000) delete from ScoreCycleWindow;\n";
                 env.CompileDeploy(epl, new RegressionPath());
                 env.AddListener("s0");
 
@@ -178,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@name('ctx') @public create context MyCtx as coalesce consistent_hash_crc32(TheString) from SupportBean granularity 16 preallocate",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.Id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
+                    "@name('s0') context MyCtx select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean#keepall group by TheString",
                     path);
                 env.Milestone(0);
 
@@ -378,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 var fields = "c0,c1,c2".SplitCsv();
                 var eplGrouped = "@name('s0') context CtxHash " +
-                                 "select context.Id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
+                                 "select context.id as c0, TheString as c1, sum(IntPrimitive) as c2 from SupportBean group by TheString";
                 env.CompileDeploy(eplGrouped, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
@@ -726,9 +725,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplCtx, path);
 
                 var eplStmt =
-                    "@name('s0') context HashSegmentedContext select context.Id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
+                    "@name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
                     nameof(ContextHashSegmented) +
-                    ".mySecondFunc(*, TheString) as c4 from SupportBean";
+                    ".NySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");
 
@@ -778,9 +777,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             if (eventRepresentationEnum.IsMapEvent()) {
                 IDictionary<string, object> theEvent = new LinkedHashMap<string, object>();
                 theEvent.Put("UserId", userId);
-                theEvent.Put("keyword", keyword);
+                theEvent.Put("Keyword", keyword);
                 theEvent.Put("ProductId", productId);
-                theEvent.Put("score", score);
+                theEvent.Put("Score", score);
                 env.SendEventMap(theEvent, typeName);
             }
             else if (eventRepresentationEnum.IsObjectArrayEvent()) {
@@ -789,17 +788,17 @@ namespace com.espertech.esper.regressionlib.suite.context
             else if (eventRepresentationEnum.IsAvroEvent()) {
                 var record = new GenericRecord(env.RuntimeAvroSchemaPreconfigured(typeName).AsRecordSchema());
                 record.Put("UserId", userId);
-                record.Put("keyword", keyword);
+                record.Put("Keyword", keyword);
                 record.Put("ProductId", productId);
-                record.Put("score", score);
+                record.Put("Score", score);
                 env.SendEventAvro(record, typeName);
             }
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var @object = new JObject();
                 @object.Add("UserId", userId);
-                @object.Add("keyword", keyword);
+                @object.Add("Keyword", keyword);
                 @object.Add("ProductId", productId);
-                @object.Add("score", score);
+                @object.Add("Score", score);
                 env.SendEventJson(@object.ToString(), typeName);
             }
             else {
@@ -873,26 +872,23 @@ namespace com.espertech.esper.regressionlib.suite.context
             public IList<int> Contexts => contexts;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedScoreCycle
         {
-            public string userId;
-            public string keyword;
-            public string productId;
-            public long score;
+            public string UserId;
+            public string Keyword;
+            public string ProductId;
+            public long Score;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedUserKeywordTotalStream
         {
-            public string userId;
-            public string keyword;
-            public long sumScore;
+            public string UserId;
+            public string Keyword;
+            public long SumScore;
         }
     }
 } // end of namespace

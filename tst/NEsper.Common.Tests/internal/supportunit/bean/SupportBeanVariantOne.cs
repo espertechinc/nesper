@@ -13,7 +13,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBeanVariantOne
     {
         private readonly ISupportB p0;
@@ -55,7 +54,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             return Mapped.Get(key);
         }
 
-        [Serializable]
         public class SupportBeanVariantOneInner
         {
             public SupportBeanVariantOneInner(string val)

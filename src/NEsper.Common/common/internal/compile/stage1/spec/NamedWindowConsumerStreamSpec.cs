@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification for use of an existing named window.
     /// </summary>
-    [Serializable]
     public class NamedWindowConsumerStreamSpec : StreamSpecBase,
         StreamSpecCompiled
     {

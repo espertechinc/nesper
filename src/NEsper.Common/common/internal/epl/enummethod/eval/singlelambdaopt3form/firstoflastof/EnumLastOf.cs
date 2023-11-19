@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -15,6 +16,7 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -54,6 +56,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+#if false
+            return StaticMethod(typeof(EnumLastOf), "LastValue", args.Expressions); 
+#else
             var type = _resultType.GetCodegenReturnType().GetBoxedType();
             var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
                 .AddParam(EnumForgeCodegenNames.PARAMS)
@@ -64,6 +69,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .BlockEnd()
                 .MethodReturn(FlexCast(type, Ref("result")));
             return LocalMethod(method, args.Expressions);
+#endif
+        }
+        
+        public static T LastValue<T>(
+            EventBean[] eventsPerStream,
+            ICollection<T> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext exprEvalCtx)
+        {
+            if ((enumcoll == null || enumcoll.IsEmpty())) {
+                return default;
+            }
+
+            return enumcoll.LastOrDefault();
         }
     }
 } // end of namespace

@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
         {
             var methodNode = codegenMethodScope.MakeChild(EvaluationType, typeof(ExprEvalByGetter), codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")

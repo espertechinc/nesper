@@ -880,7 +880,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 rendered);
         }
 
-        [Serializable]
         public class MyLocalEvent
         {
             public string theString;
@@ -928,7 +927,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             }
         }
 
-        [Serializable]
         public class MyLocalEventCollectionBuiltinType
         {
             public IList<string> c0;
@@ -944,7 +942,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public IList<decimal> c10;
         }
 
-        [Serializable]
         public class MyLocalEventCollectionEnumType
         {
             public IList<SupportEnum> c0;
@@ -1048,7 +1045,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public ICollection<object> C0Collection => c0Coll.Unwrap<object>();
         }
 
-        [Serializable]
         public class MyLocalEventWArrayColl
         {
             public MyLocalEvent c0;
@@ -1065,7 +1061,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public ICollection<object> C0Collection => c0Coll.Unwrap<object>();
         }
 
-        [Serializable]
         public class MyLocalEventNestedRecursive
         {
             public string id;

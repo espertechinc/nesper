@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     ///     <para />
     ///     Compare to <seealso cref="SelectClauseExprCompiledSpec" /> which carries a determined name.
     /// </summary>
-    [Serializable]
     public class SelectClauseExprRawSpec : SelectClauseElementRaw
     {
         /// <summary>

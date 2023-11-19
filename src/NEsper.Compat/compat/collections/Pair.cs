@@ -16,7 +16,6 @@ namespace com.espertech.esper.compat.collections
     /// the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
     /// and the first pair second object equals the second pair second object.
     /// </summary>
-    [Serializable]
     public sealed class Pair<TFirst, TSecond>
     {
         /// <summary>

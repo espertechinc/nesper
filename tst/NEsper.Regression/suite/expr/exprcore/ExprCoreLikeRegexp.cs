@@ -19,8 +19,6 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreLikeRegexp

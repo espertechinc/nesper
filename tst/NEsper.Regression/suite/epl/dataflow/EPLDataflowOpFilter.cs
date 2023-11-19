@@ -17,9 +17,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
-using NUnit.Framework; // assertEquals
-
-// assertSame
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -70,12 +68,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 TryInvalidFilter(
                     env,
                     "TheString = 1",
-                    "Failed to obtain operator 'Filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'Integer' to 'String' is not allowed");
+                    "Failed to obtain operator 'filter': Failed to validate filter dataflow operator expression 'TheString=1': Implicit conversion from datatype 'System.Nullable<System.Int32>' to 'System.String' is not allowed");
 
                 TryInvalidFilter(
                     env,
                     "prev(TheString, 1) = 'abc'",
-                    "Failed to obtain operator 'Filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
+                    "Failed to obtain operator 'filter': Invalid filter dataflow operator expression 'prev(TheString,1)=\"abc\"': Aggregation, sub-select, previous or prior functions are not supported in this context");
             }
 
             public ISet<RegressionFlag> Flags()
@@ -118,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 DefaultSupportCaptureOpStatic<object>.Instances.Clear();
                 var graph = "@name('flow') create dataflow MyFilter\n" +
                             "Emitter -> sb<SupportBean> {name : 'e1'}\n" +
-                            "Filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
+                            "filter(sb) -> out.ok, out.fail {filter: TheString = 'x'}\n" +
                             "DefaultSupportCaptureOpStatic(out.ok) {}" +
                             "DefaultSupportCaptureOpStatic(out.fail) {}";
                 env.CompileDeploy(graph);
@@ -152,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
         {
             var graph = "@name('flow') create dataflow MySelect\n" +
                         "DefaultSupportSourceOp -> instream<SupportBean>{}\n" +
-                        "Filter(instream as ME) -> outstream {filter: " +
+                        "filter(instream as ME) -> outstream {filter: " +
                         filter +
                         "}\n" +
                         "DefaultSupportCaptureOp(outstream) {}";
@@ -165,10 +163,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             object[] events)
         {
             var graph = "@name('flow') create dataflow MySelect\n" +
-                        "DefaultSupportSourceOp -> instream.with.dot<" +
-                        typeName +
-                        ">{}\n" +
-                        "Filter(instream.with.dot) -> outstream.dot {filter: MyString = 'two'}\n" +
+                        "DefaultSupportSourceOp -> instream.with.dot<" + typeName + ">{}\n" +
+                        "filter(instream.with.dot) -> outstream.dot {filter: MyString = 'two'}\n" +
                         "DefaultSupportCaptureOp(outstream.dot) {}";
             env.CompileDeploy(graph);
 

@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.util
     /// The presence of a reference indicates that a value exists, the absence of a reference
     /// to this object indicates that there is no value (similar to a Pair&lt;Object, bool&gt;).
     ///  </summary>
-    [Serializable]
     public class NullableObject<T>
     {
         /// <summary>Ctor. </summary>

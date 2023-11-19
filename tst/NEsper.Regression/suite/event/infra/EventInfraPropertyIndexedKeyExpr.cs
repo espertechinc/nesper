@@ -6,17 +6,15 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -35,8 +33,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private void RunAssertionJsonClassProvided(RegressionEnvironment env)
         {
             env.CompileDeploy(
-                    "@JsonSchema(className='" +
-                    typeof(MyLocalJsonProvided).FullName +
+                    "@JsonSchema(ClassName='" +
+                    typeof(MyLocalJsonProvided).MaskTypeName() +
                     "') @public @buseventtype create json schema JsonSchema();\n" +
                     "@name('s0') select * from JsonSchema;\n")
                 .AddListener("s0");
@@ -54,8 +52,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionJson(RegressionEnvironment env)
         {
+            var mapType = typeof(IDictionary<string, object>).CleanName();
             env.CompileDeploy(
-                    "@public @buseventtype create json schema JsonSchema(indexed int[], mapped java.util.Map);\n" +
+                    $"@public @buseventtype create json schema JsonSchema(indexed int[], mapped `{mapType}`);\n" +
                     "@name('s0') select * from JsonSchema;\n")
                 .AddListener("s0");
             env.SendEventJson("{ \"indexed\": [1, 2], \"mapped\" : { \"keyOne\": 20 }}", "JsonSchema");
@@ -75,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var path = new RegressionPath();
             env.CompileDeploy(
                 "@public @buseventtype create schema MyIndexMappedSamplerBean as " +
-                typeof(MyIndexMappedSamplerBean).FullName,
+                typeof(MyIndexMappedSamplerBean).MaskTypeName(),
                 path);
 
             env.CompileDeploy("@name('s0') select * from MyIndexMappedSamplerBean", path).AddListener("s0");
@@ -86,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("listOfInt").Get(@event, 1));
-                    Assert.AreEqual(2, type.GetGetterIndexed("iterableOfInt").Get(@event, 1));
+                    Assert.AreEqual(2, type.GetGetterIndexed("ListOfInt").Get(@event, 1));
+                    Assert.AreEqual(2, type.GetGetterIndexed("IterableOfInt").Get(@event, 1));
                 });
 
             env.UndeployAll();
@@ -95,8 +94,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionWrapper(RegressionEnvironment env)
         {
+            var collections = typeof(Collections).FullName;
             env.CompileDeploy(
-                "@name('s0') select {1, 2} as arr, *, Collections.singletonMap('A', 2) as mapped from SupportBean");
+                $"@name('s0') select {1, 2} as Arr, *, {collections}.SingletonDataMap('A', 2) as Mapped from SupportBean");
             env.AddListener("s0");
 
             env.SendEventBean(new SupportBean());
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("arr").Get(@event, 1));
-                    Assert.AreEqual(2, type.GetGetterMapped("mapped").Get(@event, "A"));
+                    Assert.AreEqual(2, type.GetGetterIndexed("Arr").Get(@event, 1));
+                    Assert.AreEqual(2, type.GetGetterMapped("Mapped").Get(@event, "A"));
                 });
 
             env.UndeployAll();
@@ -140,12 +140,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionOA(RegressionEnvironment env)
         {
-            var epl = "@public create objectarray schema OAEventInner(p0 string);\n" +
-                      "@buseventtype @public create objectarray schema OAEvent(intarray int[], oainner OAEventInner[]);\n" +
-                      "@name('s0') select * from OAEvent;\n";
+            var epl =
+                "@public create objectarray schema OAEventInner(p0 string);\n" +
+                "@buseventtype @public create objectarray schema OAEvent(intarray int[], oainner OAEventInner[]);\n" +
+                "@name('s0') select * from OAEvent;\n";
             env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
-            var oainner = new object[] { new object[] { "A" }, new object[] { "B" } };
+            var oainner = new object[] {
+                new object[] { "A" },
+                new object[] { "B" }
+            };
+            
             env.SendEventObjectArray(new object[] { new int[] { 1, 2 }, oainner }, "OAEvent");
             env.AssertEventNew(
                 "s0",
@@ -159,17 +164,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class MyIndexMappedSamplerBean
         {
-            private readonly IList<int> intlist = Arrays.AsList(1, 2);
+            public IList<int> ListOfInt { get; } = Arrays.AsList(1, 2);
 
-            public IList<int> ListOfInt => intlist;
-
-            public IEnumerable<int> IterableOfInt => intlist;
+            public IEnumerable<int> IterableOfInt => ListOfInt;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public int[] indexed;

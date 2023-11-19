@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     /// A select-clause consists of a list of selection elements (expressions, Wildcard(s), stream wildcard
     /// and the like) and an optional stream selector.
     /// </summary>
-    [Serializable]
     public class SelectClause
     {
         private IList<SelectClauseElement> _selectList;

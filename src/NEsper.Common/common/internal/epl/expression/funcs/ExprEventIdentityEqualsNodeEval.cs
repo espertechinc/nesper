@@ -53,10 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             method.Block
                 .DeclareVar<EventBean>(
                     "left",
-                    ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndLeft.StreamId)))
+                    ArrayAtIndex(symbols.GetAddEps(method), Constant(forge.UndLeft.StreamId)))
                 .DeclareVar<EventBean>(
                     "right",
-                    ArrayAtIndex(symbols.GetAddEPS(method), Constant(forge.UndRight.StreamId)))
+                    ArrayAtIndex(symbols.GetAddEps(method), Constant(forge.UndRight.StreamId)))
                 .IfCondition(Or(EqualsNull(Ref("left")), EqualsNull(Ref("right"))))
                 .BlockReturn(ConstantNull())
                 .MethodReturn(StaticMethod<object>("Equals", Ref("left"), Ref("right")));

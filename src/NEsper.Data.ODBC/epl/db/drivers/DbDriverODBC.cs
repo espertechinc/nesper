@@ -19,7 +19,6 @@ namespace com.espertech.esper.epl.db.drivers
     /// <summary>
     /// Generic database driver using ODBC.
     /// </summary>
-    [Serializable]
     public class DbDriverODBC : BaseDbDriver
     {
         public DbDriverODBC()

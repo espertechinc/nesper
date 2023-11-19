@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Specification object for a row limit.
     /// </summary>
-    [Serializable]
     public class RowLimitClause
     {
         /// <summary>

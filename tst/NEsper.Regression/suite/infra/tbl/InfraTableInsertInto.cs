@@ -430,15 +430,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.AssertThat(
                     () => {
-                        try {
-                            env.SendEventBean(new SupportBean("E2", 0));
-                            Assert.Fail();
-                        }
-                        catch (EPException ex) {
-                            SupportMessageAssertUtil.AssertMessage(
-                                ex,
-                                "java.lang.RuntimeException: Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
-                        }
+                        var ex = Assert.Throws<EPException>(() => env.SendEventBean(new SupportBean("E2", 0)));
+                        SupportMessageAssertUtil.AssertMessage(
+                            ex,
+                            "Unexpected exception in statement 'tbl-insert': Unique index violation, table 'MyTableIIU' is a declared to hold a single un-keyed row");
                     });
 
                 env.UndeployAll();
@@ -603,7 +598,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public string P1 => p1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMySchema
         {
             public string p0;

@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         EVENTSBETWEEN,
         SUBMAP,
-        NAVIGABLEMAPREFERENCE
+        DICTIONARYREFERENCE
     }
 
     public static class AggregationMethodSortedEnumExtensions
@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
                 AggregationMethodSortedEnum.EVENTSBETWEEN => true,
                 AggregationMethodSortedEnum.SUBMAP => false,
-                AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => false,
+                AggregationMethodSortedEnum.DICTIONARYREFERENCE => false,
 
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
                 AggregationMethodSortedEnum.EVENTSBETWEEN => false,
                 AggregationMethodSortedEnum.SUBMAP => false,
-                AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => false,
+                AggregationMethodSortedEnum.DICTIONARYREFERENCE => false,
 
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
@@ -167,7 +167,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
                 AggregationMethodSortedEnum.EVENTSBETWEEN => AggregationMethodSortedFootprintEnum.SUBMAP,
                 AggregationMethodSortedEnum.SUBMAP => AggregationMethodSortedFootprintEnum.SUBMAP,
-                AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE => AggregationMethodSortedFootprintEnum.NOPARAM,
+                AggregationMethodSortedEnum.DICTIONARYREFERENCE => AggregationMethodSortedFootprintEnum.NOPARAM,
 
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
@@ -187,7 +187,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                     return typeof(int);
 
                 case AggregationMethodSortedEnum.SUBMAP:
-                case AggregationMethodSortedEnum.NAVIGABLEMAPREFERENCE:
+                case AggregationMethodSortedEnum.DICTIONARYREFERENCE:
                     return typeof(IOrderedDictionary<ICollection<object>, EventBean>);
             }
 

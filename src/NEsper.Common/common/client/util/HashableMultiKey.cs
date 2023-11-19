@@ -12,7 +12,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.util
 {
-    [Serializable]
     public sealed class HashableMultiKey
     {
         /// <summary>

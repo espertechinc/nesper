@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.client.dataflow.core
 {
     /// <summary>Indicates an exception instantiating a data flow. </summary>
-    [Serializable]
     public class EPDataFlowInstantiationException : EPException
     {
         /// <summary>Ctor. </summary>

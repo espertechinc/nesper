@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Descriptor for use in create-schema syntax to define property name and type of an event property.
     /// </summary>
-    [Serializable]
     public class SchemaColumnDesc
     {
         private string name;

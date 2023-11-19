@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.collection;
@@ -66,10 +67,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
                             if (pass == null || false.Equals(pass)) {
-                                return FlexCollection.Empty;
+                                return EmptyList<object>.Instance;
                             }
 
-                            return FlexCollection.OfObject(item);
+                            return Collections.List<object>(item);
                         }
 
                         var all = TakeWhileLastScalarToArray(enumcoll);
@@ -89,19 +90,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.AddFirst(all[i]);
                         }
 
-                        return FlexCollection.Of(result);
+                        return result;
                     });
             }
         }
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<object>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
@@ -154,7 +156,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
         }
     }
 } // end of namespace

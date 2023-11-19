@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Create an index on a named window. </summary>
-    [Serializable]
     public class CreateIndexClause
     {
         /// <summary>Ctor. </summary>

@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.StaticMethod(mode.Serde, "write", output, RowDotMember(row, plugin));
+                method.Block.StaticMethod(mode.Serde, "Write", output, RowDotMember(row, plugin));
             }
         }
 
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
             CodegenClassScope classScope)
         {
             if (mode.HasHA) {
-                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "read", input));
+                method.Block.AssignRef(RowDotMember(row, plugin), StaticMethod(mode.Serde, "Read", input));
             }
         }
 
@@ -148,21 +148,20 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.plugin
                 expression = forges[0].EvaluateCodegen(typeof(object), method, symbols, classScope);
             }
             else {
-                method.Block.DeclareVar(
-                    typeof(object[]),
-                    "params",
+                method.Block.DeclareVar<object[]>(
+                    "@params",
                     NewArrayByLength(typeof(object), Constant(forges.Length)));
                 for (var i = 0; i < forges.Length; i++) {
                     method.Block.AssignArrayElement(
-                        "params",
+                        "@params",
                         Constant(i),
                         forges[i].EvaluateCodegen(typeof(object), method, symbols, classScope));
                 }
 
-                expression = Ref("params");
+                expression = Ref("@params");
             }
 
-            method.Block.ExprDotMethod(plugin, enter ? "enter" : "leave", expression);
+            method.Block.ExprDotMethod(plugin, enter ? "Enter" : "Leave", expression);
         }
     }
 } // end of namespace

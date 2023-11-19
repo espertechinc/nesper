@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -558,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var epl = "create context MyContext\n" +
                           "start pattern [a=SupportBean_S0 or b=SupportBean_S1]\n" +
-                          "end pattern [SupportBean_S2(id=a.Id) or SupportBean_S3(Id=b.Id)];\n" +
+                          "end pattern [SupportBean_S2(Id=a.Id) or SupportBean_S3(Id=b.Id)];\n" +
                           "@name('s0') context MyContext select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -917,7 +916,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@name('ctx') @public create context MyCtx as initiated by SupportBean_S0 s0 terminated by SupportBean_S1(Id=s0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.Id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@name('s0') context MyCtx select context.id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -1962,7 +1961,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // test late-coming statement without "terminated"
                 env.CompileDeploy(
                     "@name('s0') context EveryMinute " +
-                    "select context.Id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events",
+                    "select context.id as c0, sum(IntPrimitive) as c1 from SupportBean output snapshot every 2 events",
                     path);
                 env.AddListener("s0");
 

@@ -15,6 +15,8 @@ namespace com.espertech.esper.regressionrun.suite.core
 
         internal RegressionSession _session;
 
+        public RegressionSession Session => _session;
+
         public AbstractTestBase(Action<Configuration> configure)
         {
             _configure = configure;

@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -19,8 +18,6 @@ using com.espertech.esper.regressionlib.support.bean;
 using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
-
-//using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -109,8 +106,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                           "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                           "on SupportEventWithIntArray as sewia " +
-                          "update MyWindow as mw set value = sewia.Value " +
-                          "where mw.Id = sewia.Id and mw.intOne = sewia.array;\n";
+                          "update MyWindow as mw set Value = sewia.Value " +
+                          "where mw.Id = sewia.Id and mw.IntOne = sewia.Array;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportEventWithManyArray("ID1").WithIntOne(new int[] { 1, 2 }));
@@ -127,9 +124,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "create",
-                    "Id,value".SplitCsv(),
+                    "Id,Value".SplitCsv(),
                     new object[][]
-                        { new object[] { "ID1", 12 }, new object[] { "ID2", 10 }, new object[] { "ID3", 11 } });
+                    {
+                        new object[] { "ID1", 12 },
+                        new object[] { "ID2", 10 },
+                        new object[] { "ID3", 11 }
+                    });
 
                 env.UndeployAll();
             }
@@ -142,8 +143,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                           "insert into MyWindow select * from SupportEventWithManyArray;\n" +
                           "on SupportEventWithIntArray as sewia " +
-                          "update MyWindow as mw set value = sewia.Value " +
-                          "where mw.intOne = sewia.array;\n";
+                          "update MyWindow as mw set Value = sewia.Value " +
+                          "where mw.IntOne = sewia.Array;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportEventWithManyArray("E1").WithIntOne(new int[] { 1, 2 }));
@@ -160,9 +161,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "create",
-                    "Id,value".SplitCsv(),
+                    "Id,Value".SplitCsv(),
                     new object[][] {
-                        new object[] { "E1", 13 }, new object[] { "E2", 10 }, new object[] { "E3", 11 },
+                        new object[] { "E1", 13 },
+                        new object[] { "E2", 10 },
+                        new object[] { "E3", 11 },
                         new object[] { "E4", 12 }
                     });
 
@@ -174,15 +177,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('window') create window MyWindow#keepall as select *, 1 as p0 from SupportBean;\n" +
-                          "insert into MyWindow select *, 2 as p0 from SupportBean;\n" +
-                          "on SupportBean_S0 update MyWindow set TheString = 'x', p0 = 2;\n";
+                var epl = "@name('window') create window MyWindow#keepall as select *, 1 as P0 from SupportBean;\n" +
+                          "insert into MyWindow select *, 2 as P0 from SupportBean;\n" +
+                          "on SupportBean_S0 update MyWindow set TheString = 'x', P0 = 2;\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBean("E1", 100));
                 env.SendEventBean(new SupportBean_S0(-1));
                 env.AssertPropsPerRowIterator(
                     "window",
-                    new string[] { "TheString", "p0" },
+                    new string[] { "TheString", "P0" },
                     new object[][] { new object[] { "x", 2 } });
 
                 env.UndeployAll();
@@ -195,11 +198,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var epl = "@name('window') create window MyWindowBeanCopyMethod#keepall as SupportBeanCopyMethod;\n" +
                           "insert into MyWindowBeanCopyMethod select * from SupportBeanCopyMethod;\n" +
-                          "on SupportBean update MyWindowBeanCopyMethod set valOne = 'x';\n";
+                          "on SupportBean update MyWindowBeanCopyMethod set ValOne = 'x';\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBeanCopyMethod("a", "b"));
                 env.SendEventBean(new SupportBean());
-                env.AssertIterator("window", iterator => Assert.AreEqual("x", iterator.Advance().Get("valOne")));
+                env.AssertIterator("window", enumerator => Assert.AreEqual("x", enumerator.Advance().Get("ValOne")));
 
                 env.UndeployAll();
             }
@@ -218,8 +221,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "insert into MyWindowUNP select * from SupportBean;\n" +
                           "@name('update') on SupportBean_S0 as sb " +
                           "update MyWindowUNP as mywin" +
-                          " set mywin.setIntPrimitive(10)," +
-                          "     setBeanLongPrimitive999(mywin);\n";
+                          " set mywin.IntPrimitive = (10)," +
+                          "     SetBeanLongPrimitive999(mywin);\n";
                 env.CompileDeploy(epl).AddListener("update");
 
                 var fields = "IntPrimitive,LongPrimitive".SplitCsv();
@@ -298,8 +301,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     });
                 env.AssertIterator(
                     "create",
-                    iterator => {
-                        var events = EPAssertionUtil.Sort(iterator, "TheString");
+                    enumerator => {
+                        var events = EPAssertionUtil.Sort(enumerator, "TheString");
                         EPAssertionUtil.AssertPropsPerRow(
                             events,
                             "TheString,IntPrimitive".SplitCsv(),
@@ -317,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl =
                     "@name('create') create window MyWindowSC#keepall as select * from SupportBeanAbstractSub;\n" +
                     "insert into MyWindowSC select * from SupportBeanAbstractSub;\n" +
-                    "on SupportBean update MyWindowSC set v1=TheString, v2=TheString;\n";
+                    "on SupportBean update MyWindowSC set V1=TheString, V2=TheString;\n";
                 env.CompileDeploy(epl).AddListener("create");
 
                 env.SendEventBean(new SupportBeanAbstractSub("value2"));
@@ -326,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertPropsPerRowLastNew(
                     "create",
-                    new string[] { "v1", "v2" },
+                    new string[] { "V1", "V2" },
                     new object[][] { new object[] { "E1", "E1" } });
 
                 env.UndeployAll();

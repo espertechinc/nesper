@@ -21,47 +21,42 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputStrategyPostProcessFactory
     {
-        private readonly bool isRoute;
-        private readonly SelectClauseStreamSelectorEnum insertIntoStreamSelector;
-        private readonly SelectClauseStreamSelectorEnum selectStreamDirEnum;
-        private readonly bool addToFront;
-        private readonly Table optionalTable;
-        private readonly ExprEvaluator eventPrecedence;
+        private readonly Table _optionalTable;
 
         public OutputStrategyPostProcessFactory(
             bool isRoute,
-            SelectClauseStreamSelectorEnum insertIntoStreamSelector,
+            SelectClauseStreamSelectorEnum? insertIntoStreamSelector,
             SelectClauseStreamSelectorEnum selectStreamDirEnum,
             bool addToFront,
             Table optionalTable,
             ExprEvaluator eventPrecedence)
         {
-            this.isRoute = isRoute;
-            this.insertIntoStreamSelector = insertIntoStreamSelector;
-            this.selectStreamDirEnum = selectStreamDirEnum;
-            this.addToFront = addToFront;
-            this.optionalTable = optionalTable;
-            this.eventPrecedence = eventPrecedence;
+            IsRoute = isRoute;
+            InsertIntoStreamSelector = insertIntoStreamSelector;
+            SelectStreamDirEnum = selectStreamDirEnum;
+            IsAddToFront = addToFront;
+            _optionalTable = optionalTable;
+            EventPrecedence = eventPrecedence;
         }
 
         public OutputStrategyPostProcess Make(AgentInstanceContext agentInstanceContext)
         {
             TableInstance tableInstance = null;
-            if (optionalTable != null) {
-                tableInstance = optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
+            if (_optionalTable != null) {
+                tableInstance = _optionalTable.GetTableInstance(agentInstanceContext.AgentInstanceId);
             }
 
             return new OutputStrategyPostProcess(this, agentInstanceContext, tableInstance);
         }
 
-        public bool IsRoute => isRoute;
+        public bool IsRoute { get; }
 
-        public bool IsAddToFront => addToFront;
+        public bool IsAddToFront { get; }
 
-        public SelectClauseStreamSelectorEnum InsertIntoStreamSelector => insertIntoStreamSelector;
+        public SelectClauseStreamSelectorEnum? InsertIntoStreamSelector { get; }
 
-        public SelectClauseStreamSelectorEnum SelectStreamDirEnum => selectStreamDirEnum;
+        public SelectClauseStreamSelectorEnum SelectStreamDirEnum { get; }
 
-        public ExprEvaluator EventPrecedence => eventPrecedence;
+        public ExprEvaluator EventPrecedence { get; }
     }
 } // end of namespace

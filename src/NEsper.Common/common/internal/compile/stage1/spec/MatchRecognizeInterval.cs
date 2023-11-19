@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Interval specification within match_recognize.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeInterval
     {
         /// <summary>

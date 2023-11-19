@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Context detail for a key-filter pair for the keyed segmented context.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorKeyedSegmentedItem : ContextDescriptor
     {
         private IList<string> propertyNames;

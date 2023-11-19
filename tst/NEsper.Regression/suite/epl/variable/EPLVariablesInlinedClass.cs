@@ -15,8 +15,6 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.util;
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
-
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
     public class EPLVariablesInlinedClass

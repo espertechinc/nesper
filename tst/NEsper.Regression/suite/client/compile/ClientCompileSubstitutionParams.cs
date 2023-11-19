@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,6 +15,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.compiler.client;
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             public string Name()
             {
-                return this.GetType().Name +
+                return GetType().Name +
                        "{" +
                        "soda=" +
                        soda +
@@ -295,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 catch (EPCompileException ex) {
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Exception processing statement: Invalid constant of type 'Object' encountered as the class has no compiler representation, please use substitution parameters instead");
+                        "Exception processing statement: Invalid constant of type 'System.Object' encountered as the class has no compiler representation, please use substitution parameters instead");
                 }
             }
 
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             public string Name()
             {
-                return this.GetType().Name +
+                return GetType().Name +
                        "{" +
                        "soda=" +
                        soda +
@@ -389,16 +389,16 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from SupportBean_S0(Id=?:subs_1:int);\n" +
-                          "@name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
+                               "@name('s1') select * from SupportBean_S1(P10=?:subs_2:string);\n";
                 var compiled = env.Compile(epl);
 
                 var options = new DeploymentOptions().WithStatementSubstitutionParameter(
-                    (env) => {
-                        if (env.StatementName.Equals("s1")) {
-                            env.SetObject("subs_2", "abc");
+                    _ => {
+                        if (_.StatementName.Equals("s1")) {
+                            _.SetObject("subs_2", "abc");
                         }
                         else {
-                            env.SetObject("subs_1", 100);
+                            _.SetObject("subs_1", 100);
                         }
                     });
                 try {
@@ -429,7 +429,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         {
             public void Run(RegressionEnvironment env)
             {
-                MySubstitutionOption.GetContexts().Clear();
+                MySubstitutionOption.Contexts.Clear();
                 var compiled = env.Compile("@name('s0') select ?:p0:int as c0 from SupportBean");
                 var options = new DeploymentOptions()
                     .WithStatementSubstitutionParameter(new MySubstitutionOption().SetStatementParameters);
@@ -438,12 +438,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env.Deployment.Deploy(compiled, options);
                     Assert.Fail();
                 }
-                catch (EPDeployException e) {
+                catch (EPDeployException) {
                     // expected
                 }
 
-                Assert.AreEqual(1, MySubstitutionOption.GetContexts().Count);
-                var ctx = MySubstitutionOption.GetContexts()[0];
+                Assert.AreEqual(1, MySubstitutionOption.Contexts.Count);
+                var ctx = MySubstitutionOption.Contexts[0];
                 Assert.IsNotNull(ctx.Annotations);
                 Assert.AreEqual("abc", ctx.DeploymentId);
                 Assert.IsNotNull(ctx.Epl);
@@ -495,7 +495,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 // invalid type incompatible
                 env.TryInvalidCompile(
                     "select ?:p0:int as c0, ?:p0:long from SupportBean",
-                    "Substitution parameter 'p0' incompatible type assignment between types 'Integer' and 'Long'");
+                    "Substitution parameter 'p0' incompatible type assignment between types 'System.Nullable<System.Int32>' and 'System.Nullable<System.Int64>'");
             }
         }
 
@@ -517,7 +517,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     env,
                     compiled,
                     null,
-                    new SupportPortableDeploySubstitutionParams().Add("pstring", "E1")
+                    new SupportPortableDeploySubstitutionParams()
+                        .Add("pstring", "E1")
                         .Add("pint", 10)
                         .Add("plong", 100L));
                 env.AddListener("s0");
@@ -537,7 +538,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             public string Name()
             {
-                return this.GetType().Name + "soda_" + soda;
+                return GetType().Name + "soda_" + soda;
             }
 
             public ISet<RegressionFlag> Flags()
@@ -559,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var compiled = env.Compile(
                     soda,
-                    "@name('s0') select * from SupportBean(TheString=(?::SupportBean.getTheString()))",
+                    "@name('s0') select * from SupportBean(TheString=(?::SupportBean.GetTheString()))",
                     new CompilerArguments(new Configuration()));
                 DeployWithResolver(
                     env,
@@ -581,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
             public string Name()
             {
-                return this.GetType().Name +
+                return GetType().Name +
                        "{" +
                        "soda=" +
                        soda +
@@ -599,7 +600,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var compiled = env.Compile(
-                    "@name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.getTheString())");
+                    "@name('s0') select * from SupportBean(TheString = ?:psb:SupportBean.GetTheString())");
                 DeployWithResolver(
                     env,
                     compiled,
@@ -719,14 +720,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var path = new RegressionPath();
                 var types =
                     "@public @buseventtype create schema MyEventOne as " +
-                    typeof(MyEventOne).Name +
+                    typeof(MyEventOne).MaskTypeName() +
                     ";\n" +
                     "@public @buseventtype create schema MyEventTwo as " +
-                    typeof(MyEventTwo).Name +
+                    typeof(MyEventTwo).MaskTypeName() +
                     ";\n";
                 env.CompileDeploy(types, path);
 
-                var epl = "select * from MyEventOne(key = ?::IKey)";
+                var epl = "select * from MyEventOne(Key = ?::IKey)";
                 var compiled = env.Compile(epl, path);
                 var lKey = new MyObjectKeyInterface();
                 DeployWithResolver(env, compiled, "s0", new SupportPortableDeploySubstitutionParams(1, lKey));
@@ -736,7 +737,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AssertListenerInvoked("s0");
 
                 // Test substitution parameter and concrete subclass in key matching
-                epl = "select * from MyEventTwo where key = ?::MyObjectKeyConcrete";
+                epl = "select * from MyEventTwo where Key = ?::MyObjectKeyConcrete";
                 compiled = env.Compile(epl, path);
                 var cKey = new MyObjectKeyConcrete();
                 DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, cKey));
@@ -891,7 +892,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject("x", 10),
-                            "Failed to find substitution parameter named 'x', available parameters are [p0]");
+                            "Failed to find substitution parameter named 'x', available parameters are [\"p0\"]");
                         TryInvalidSetObject(
                             prepared,
                             stmt => stmt.SetObject(0, "a"),
@@ -1080,17 +1081,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
         public class MySubstitutionOption
         {
-            private static IList<StatementSubstitutionParameterContext> contexts =
-                new List<StatementSubstitutionParameterContext>();
-
-            public static IList<StatementSubstitutionParameterContext> GetContexts()
-            {
-                return contexts;
-            }
+            public static IList<StatementSubstitutionParameterContext> Contexts { get; } = new List<StatementSubstitutionParameterContext>();
 
             public void SetStatementParameters(StatementSubstitutionParameterContext env)
             {
-                contexts.Add(env);
+                Contexts.Add(env);
             }
         }
 
@@ -1099,32 +1094,39 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         }
 
         /// <summary>
-        /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
         /// </summary>
         public class MyObjectKeyInterface : IKey
         {
         }
 
         /// <summary>
-        /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyEventOne
         {
-            private IKey key;
+            private readonly IKey _key;
 
             public MyEventOne(IKey key)
             {
-                this.key = key;
+                _key = key;
             }
 
-            public IKey Key => key;
+            public IKey GetKey()
+            {
+                return _key;
+            }
         }
 
         /// <summary>
-        /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
+        /// Test event; only serializable because it *may* go over the wire
+        /// when running remote tests and serialization is just convenient.
+        /// Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyObjectKeyConcrete
         {
         }
@@ -1132,17 +1134,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyEventTwo
         {
-            private MyObjectKeyConcrete key;
+            private MyObjectKeyConcrete _key;
 
             public MyEventTwo(MyObjectKeyConcrete key)
             {
-                this.key = key;
+                _key = key;
             }
 
-            public MyObjectKeyConcrete Key => key;
+            public MyObjectKeyConcrete GetKey()
+            {
+                return _key;
+            }
         }
     }
 } // end of namespace

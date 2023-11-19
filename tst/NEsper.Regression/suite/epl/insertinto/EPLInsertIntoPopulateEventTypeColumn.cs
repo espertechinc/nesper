@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -16,8 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -454,14 +451,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNested
         {
             public string p0;
             public int p1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedOuterType
         {
             public MyLocalJsonProvidedNested n0;

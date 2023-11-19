@@ -80,13 +80,13 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                     if (insertIntoStreamSelector.Value.IsSelectsIStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "First")));
+                            ExprDotName(Ref("result"), "First"));
                     }
 
                     if (insertIntoStreamSelector.Value.IsSelectsRStream()) {
                         ifResultNotNull.LocalMethod(
                             RouteCodegen(classScope, parent),
-                            Cast(typeof(EventBean[]), ExprDotName(Ref("result"), "Second")));
+                            ExprDotName(Ref("result"), "Second"));
                     }
                 }
             }
@@ -160,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 forEach.Expression(
                     ExprDotMethodChain(MEMBER_AGENTINSTANCECONTEXT)
                         .Get("AuditProvider")
-                        .Add("insert", Ref("routed"), MEMBER_AGENTINSTANCECONTEXT));
+                        .Add("Insert", Ref("routed"), MEMBER_AGENTINSTANCECONTEXT));
             }
 
             // Evaluate event precedence
@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                         Constant(true),
                         MEMBER_AGENTINSTANCECONTEXT);
                     forEach.DeclareVar<int>("precedence", Constant(0))
-                        .DeclareVar(typeof(int?), "precedenceResult", exprEventPrecedence)
+                        .DeclareVar<int?>("precedenceResult", exprEventPrecedence)
                         .IfRefNotNull("precedenceResult")
                         .AssignRef("precedence", Ref("precedenceResult"));
                 }

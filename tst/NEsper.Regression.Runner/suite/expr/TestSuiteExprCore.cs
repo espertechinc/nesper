@@ -59,6 +59,8 @@ namespace com.espertech.esper.regressionrun.suite.expr
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             configuration.Common.AddEventType(
                 "MyDateType",
                 CollectionUtil.PopulateNameValueMap(

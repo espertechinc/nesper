@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// </summary>
     public abstract class FilterSpecParamExprNode : FilterSpecParam
     {
-        protected FilterBooleanExpressionFactory filterBooleanExpressionFactory; // subclasses by generated code
-
         public FilterSpecParamExprNode(
             ExprFilterSpecLookupable lkupable,
             FilterOperator filterOperator)
@@ -29,14 +27,17 @@ namespace com.espertech.esper.common.@internal.filterspec
         }
 
         public bool HasVariable {
+            get => IsVariable;
             set => IsVariable = value;
         }
 
         public bool HasFilterStreamSubquery {
+            get => IsFilterStreamSubquery;
             set => IsFilterStreamSubquery = value;
         }
 
         public bool HasTableAccess {
+            get => IsTableAccess;
             set => IsTableAccess = value;
         }
 
@@ -46,28 +47,21 @@ namespace com.espertech.esper.common.@internal.filterspec
 
         public EventBeanTypedEventFactory EventBeanTypedEventFactory { get; set; }
 
-        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory {
-            get => filterBooleanExpressionFactory;
-            set => filterBooleanExpressionFactory = value;
-        }
+        public FilterBooleanExpressionFactory FilterBooleanExpressionFactory { get; set; }
 
-        public bool IsVariable { get; private set; }
+        public bool IsVariable { get; set; }
 
-        public bool IsUseLargeThreadingProfile { get; private set; }
+        public bool UseLargeThreadingProfile { get; set; }
 
-        public bool IsFilterStreamSubquery { get; private set; }
+        public bool IsFilterStreamSubquery { get; set; }
 
-        public bool IsTableAccess { get; private set; }
+        public bool IsTableAccess { get; set; }
 
         public string ExprText { get; set; }
 
         public EventType[] EventTypesProvidedBy { get; set; }
 
         public int StatementIdBooleanExpr { get; set; }
-
-        public bool UseLargeThreadingProfile {
-            set => IsUseLargeThreadingProfile = value;
-        }
     }
 
     public class ProxyFilterSpecParamExprNode : FilterSpecParamExprNode

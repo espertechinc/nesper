@@ -207,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var preloadedEventsOne = new object[]
                     { new SupportSimpleBeanOne("E1", 10, 11, 12), new SupportSimpleBeanOne("E2", 20, 21, 22) };
                 IndexAssertionEventSend eventSendAssertion = () => {
-                    var fields = "ssb2.s2,ssb1.s1,ssb1.i1".SplitCsv();
+                    var fields = "ssb2.S2,ssb1.S1,ssb1.I1".SplitCsv();
                     env.SendEventBean(new SupportSimpleBeanTwo("E2", 50, 21, 22));
                     env.AssertPropsNew("s0", fields, new object[] { "E2", "E2", 20 });
                     env.SendEventBean(new SupportSimpleBeanTwo("E1", 60, 11, 12));
@@ -220,52 +220,52 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     env,
                     noindexes,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new IndexAssertion[] {
-                        new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion),
                     });
 
                 // single index one field (duplicate in essence, since "unique(s1)"
-                var indexOneField = new string[] { "create unique index One on MyWindow (s1)" };
+                var indexOneField = new string[] { "create unique index One on MyWindow (S1)" };
                 AssertIndexChoice(
                     env,
                     indexOneField,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new IndexAssertion[] {
-                        new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion),
                     });
 
                 // single index two field (includes "unique(s1)")
-                var indexTwoField = new string[] { "create unique index One on MyWindow (s1, l1)" };
+                var indexTwoField = new string[] { "create unique index One on MyWindow (S1, L1)" };
                 AssertIndexChoice(
                     env,
                     indexTwoField,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new IndexAssertion[] {
-                        new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                        new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = D2", false, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion),
                     });
 
                 // two index one unique ("unique(s1)")
                 var indexSetTwo = new string[] {
-                    "create index One on MyWindow (s1)",
-                    "create unique index Two on MyWindow (s1, d1)"
+                    "create index One on MyWindow (S1)",
+                    "create unique index Two on MyWindow (S1, D1)"
                 };
                 AssertIndexChoice(
                     env,
                     indexSetTwo,
                     preloadedEventsOne,
-                    "std:unique(s1)",
+                    "std:unique(S1)",
                     new IndexAssertion[] {
-                        new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2", true, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and l1 = l2", true, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and d1 = d2 and l1 = l2", true, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = D2", false, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and L1 = L2", true, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and D1 = D2 and L1 = L2", true, eventSendAssertion),
                     });
 
                 // two index one unique ("win:keepall()")
@@ -275,11 +275,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     preloadedEventsOne,
                     "win:keepall()",
                     new IndexAssertion[] {
-                        new IndexAssertion(null, "d1 = d2", false, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2", false, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and l1 = l2", false, eventSendAssertion),
-                        new IndexAssertion(null, "s1 = s2 and d1 = d2 and l1 = l2", true, eventSendAssertion),
-                        new IndexAssertion(null, "d1 = d2 and s1 = s2", true, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = D2", false, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2", false, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and L1 = L2", false, eventSendAssertion),
+                        new IndexAssertion(null, "S1 = S2 and D1 = D2 and L1 = L2", true, eventSendAssertion),
+                        new IndexAssertion(null, "D1 = D2 and S1 = S2", true, eventSendAssertion),
                     });
             }
 
@@ -482,14 +482,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create window for Leave events
                 var epl =
-                    "@public create window WindowLeave#time(6000) as select timeLeave, Id, location from SupportQueueLeave;\n" +
-                    "insert into WindowLeave select timeLeave, Id, location from SupportQueueLeave;\n";
+                    "@public create window WindowLeave#time(6000) as select TimeLeave, Id, Location from SupportQueueLeave;\n" +
+                    "insert into WindowLeave select TimeLeave, Id, Location from SupportQueueLeave;\n";
                 env.CompileDeploy(epl, path);
 
                 // create second window for enter events
                 epl =
-                    "@public create window WindowEnter#time(6000) as select location, sku, timeEnter, Id from SupportQueueEnter;\n" +
-                    "insert into WindowEnter select location, sku, timeEnter, Id from SupportQueueEnter;\n";
+                    "@public create window WindowEnter#time(6000) as select Location, Sku, TimeEnter, Id from SupportQueueEnter;\n" +
+                    "insert into WindowEnter select Location, Sku, TimeEnter, Id from SupportQueueEnter;\n";
                 env.CompileDeploy(epl, path);
 
                 // fill data
@@ -501,9 +501,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // Console.WriteLine("Leave events:");
                 // {
                 // EventBean event = it.next();
-                // Console.WriteLine(event.get("timeLeave") +
+                // Console.WriteLine(event.get("TimeLeave") +
                 // " " + event.get("Id") +
-                // " " + event.get("location"));
+                // " " + event.get("Location"));
                 // }
 
                 for (var i = 0; i < 10; i++) {
@@ -515,37 +515,37 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // Console.WriteLine("Enter events:");
                 // {
                 // EventBean event = it.next();
-                // Console.WriteLine(event.get("timeEnter") +
+                // Console.WriteLine(event.get("TimeEnter") +
                 // " " + event.get("Id") +
-                // " " + event.get("sku") +
-                // " " + event.get("location"));
+                // " " + event.get("Sku") +
+                // " " + event.get("Location"));
                 // }
 
                 var stmtTextOne =
-                    "@name('s1') select s1.location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
-                    "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
+                    "@name('s1') select s1.Location as loc, Sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
+                    "count(TimeEnter) as cntEnter, count(TimeLeave) as cntLeave, (count(TimeEnter) - count(TimeLeave)) as diff " +
                     "from WindowLeave as s0 right outer join WindowEnter as s1 " +
-                    "on s0.Id = s1.Id and s0.location = s1.location " +
-                    "group by s1.location, sku " +
+                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
+                    "group by s1.Location, Sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.location, sku";
+                    "order by s1.Location, Sku";
                 env.CompileDeploy(stmtTextOne, path);
 
                 var stmtTextTwo =
-                    "@name('s2') select s1.location as loc, sku, avg((coalesce(timeLeave, 250) - timeEnter)) as avgTime, " +
-                    "count(timeEnter) as cntEnter, count(timeLeave) as cntLeave, (count(timeEnter) - count(timeLeave)) as diff " +
+                    "@name('s2') select s1.Location as loc, Sku, avg((coalesce(TimeLeave, 250) - TimeEnter)) as avgTime, " +
+                    "count(TimeEnter) as cntEnter, count(TimeLeave) as cntLeave, (count(TimeEnter) - count(TimeLeave)) as diff " +
                     "from WindowEnter as s1 left outer join WindowLeave as s0 " +
-                    "on s0.Id = s1.Id and s0.location = s1.location " +
-                    "group by s1.location, sku " +
+                    "on s0.Id = s1.Id and s0.Location = s1.Location " +
+                    "group by s1.Location, Sku " +
                     "output every 1.0 seconds " +
-                    "order by s1.location, sku";
+                    "order by s1.Location, Sku";
                 env.CompileDeploy(stmtTextTwo, path);
 
                 // Console.WriteLine("Statement 1");
                 // {
                 // EventBean event = it.next();
                 // Console.WriteLine("loc " + event.get("loc") +
-                // " sku " + event.get("sku") +
+                // " Sku " + event.get("Sku") +
                 // " avgTime " + event.get("avgTime") +
                 // " cntEnter " + event.get("cntEnter") +
                 // " cntLeave " + event.get("cntLeave") +
@@ -572,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
-                            "loc,sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
+                            "loc,Sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
                             expected);
                     });
                 env.AssertIterator(
@@ -581,7 +581,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
-                            "loc,sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
+                            "loc,Sku,avgTime,cntEnter,cntLeave,diff".SplitCsv(),
                             expected);
                     });
 
@@ -971,14 +971,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 });
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedProduct
         {
             public string product;
             public int size;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedPortfolio
         {
             public string portfolio;

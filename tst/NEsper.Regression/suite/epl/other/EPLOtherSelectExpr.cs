@@ -8,10 +8,8 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
@@ -118,8 +116,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public insert into MyStream select nested from SupportBeanComplexProps", path);
-                var epl = "@name('s0') select nested.NestedValue, nested.NestedNested.NestedNestedValue from MyStream";
+                env.CompileDeploy("@public insert into MyStream select Nested from SupportBeanComplexProps", path);
+                var epl = "@name('s0') select Nested.NestedValue, Nested.NestedNested.NestedNestedValue from MyStream";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
@@ -133,21 +131,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields =
-                    "count,escape,every,sum,avg,max,min,coalesce,median,stddev,avedev,events,first,last,unidirectional,pattern,sql,metadatasql,prev,prior,weekday,lastweekday,cast,snapshot,variable,window,left,right,full,outer,join";
-                env.CompileDeploy("@name('s0') select " + fields + " from SupportBeanKeywords").AddListener("s0");
+                var fields = new[] {
+                    "Count", "Escape", "Every", "Sum", "Avg", "Max", "Min", "Coalesce", "Median", "Stddev", "Avedev",
+                    "Events", "First", "Last", "Unidirectional", "Pattern", "Sql", "Metadatasql", "Prev", "Prior",
+                    "Weekday", "Lastweekday", "Cast", "Snapshot", "Variable", "Window", "Left", "Right", "Full",
+                    "Outer", "Join"
+                };
+
+                env.CompileDeploy("@Name('s0') select " + string.Join(",", fields) + " from SupportBeanKeywords")
+                    .AddListener("s0");
 
                 env.SendEventBean(new SupportBeanKeywords());
                 env.AssertStatement(
                     "s0",
                     statement => EPAssertionUtil.AssertEqualsExactOrder(
                         statement.EventType.PropertyNames,
-                        fields.SplitCsv()));
+                        fields));
 
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        var fieldsArr = fields.SplitCsv();
+                        var fieldsArr = fields;
                         foreach (var aFieldsArr in fieldsArr) {
                             Assert.AreEqual(1, theEvent.Get(aFieldsArr));
                         }
@@ -155,16 +159,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@name('s0') select escape as stddev, count(*) as count, last from SupportBeanKeywords");
+                    "@name('s0') select Escape as Stddev, count(*) as Count, Last from SupportBeanKeywords");
                 env.AddListener("s0");
                 env.SendEventBean(new SupportBeanKeywords());
 
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(1, theEvent.Get("stddev"));
-                        Assert.AreEqual(1L, theEvent.Get("count"));
-                        Assert.AreEqual(1, theEvent.Get("last"));
+                        Assert.AreEqual(1, theEvent.Get("Stddev"));
+                        Assert.AreEqual(1L, theEvent.Get("Count"));
+                        Assert.AreEqual(1, theEvent.Get("Last"));
                     });
 
                 env.UndeployAll();
@@ -191,8 +195,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "A\'B",
                     statement => {
                         Assert.AreEqual("A\'B", statement.Name);
-                        var desc =
-                            (com.espertech.esper.common.client.annotation.DescriptionAttribute)statement.Annotations[1];
+                        var desc = (com.espertech.esper.common.client.annotation.DescriptionAttribute)
+                            statement.Annotations[1];
                         Assert.AreEqual("A\"B", desc.Value);
                     });
                 env.UndeployAll();
@@ -229,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "@name('s0') select * from SupportBean(TheString=" + escaped + ")";
                 var text = "trying >" + escaped + "< (" + escaped.Length + " chars) EPL " + epl;
-                log.Info("tryEscapeMatch for " + text);
+                Log.Info("tryEscapeMatch for " + text);
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean(property, 1));
                 env.AssertEqualsNew("s0", "IntPrimitive", 1);
@@ -242,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 string epl)
             {
                 var text = "trying EPL " + epl;
-                log.Info("tryEscapeMatch for " + text);
+                Log.Info("tryEscapeMatch for " + text);
                 env.CompileDeploy("@name('s0') " + epl).AddListener("s0");
                 env.SendEventBean(new SupportBean(property, 1));
                 env.AssertEqualsNew("s0", "IntPrimitive", 1);
@@ -264,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        log.Debug(".testGetEventType properties=" + CompatExtensions.Render(type.PropertyNames));
+                        Log.Debug(".testGetEventType properties=" + type.PropertyNames.RenderAny());
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             type.PropertyNames,
                             new string[] { "3*IntPrimitive", "TheString", "result", "aBool" });
@@ -323,6 +327,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.SendEventBean(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPLOtherSelectExpr));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLOtherSelectExpr));
     }
 } // end of namespace

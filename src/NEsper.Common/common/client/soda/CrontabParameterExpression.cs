@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Parameter expression such as last/lastweek/weekday/wildcard for use in crontab expressions.
     /// </summary>
-    [Serializable]
     public class CrontabParameterExpression : ExpressionBase
     {
         private ScheduleItemType type;

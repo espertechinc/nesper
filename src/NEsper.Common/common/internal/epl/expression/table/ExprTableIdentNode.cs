@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     "TableColumnAggValue",
                     Constant(_streamNum),
                     Constant(_columnNum),
-                    symbols.GetAddEPS(method),
+                    symbols.GetAddEps(method),
                     symbols.GetAddIsNewData(method),
                     symbols.GetAddExprEvalCtx(method)));
             if (requiredType == typeof(object)) {

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for a "define" construct within a match_recognize.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeDefineItem
     {
         /// <summary>Ctor. </summary>

@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "create context mycontext initiated by SupportBean as criteria;" +
                           "context mycontext on SupportBean_S0 as event" +
-                          "  insert into SomeOtherStream select context.Id as cid, context.criteria as criteria, event as event;" +
+                          "  insert into SomeOtherStream select context.id as cid, context.criteria as criteria, event as event;" +
                           "@name('s0') select * from SomeOtherStream;";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -163,10 +163,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create schema AValue(value int);\n" +
+                var epl = "create schema AValue(Value int);\n" +
                           "on SupportBean\n" +
-                          "  insert into AValue select (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array) as value where IntPrimitive > 0\n" +
-                          "  insert into AValue select 0 as value where IntPrimitive <= 0;\n" +
+                          "  insert into AValue select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by array) as Value where IntPrimitive > 0\n" +
+                          "  insert into AValue select 0 as Value where IntPrimitive <= 0;\n" +
                           "@name('s0') select * from AValue;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.TryInvalidCompile(
                     "on SupportBean insert into AStream select * where IntPrimitive=1 group by string insert into BStream select * where 1=2",
-                    "A group-by clause, having-clause or Order-by clause is not allowed for the split stream syntax");
+                    "A group-by clause, having-clause or order-by clause is not allowed for the split stream syntax");
 
                 env.TryInvalidCompile(
                     "on SupportBean insert into AStream select * where IntPrimitive=1 insert into BStream select avg(IntPrimitive) where 1=2",
@@ -279,7 +279,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var stmtOrigText = "@name('split') @public on SupportBean " +
+                var stmtOrigText = "@Name('split') @public on SupportBean " +
                                    "insert into AStream2SP select * where IntPrimitive=1 " +
                                    "insert into BStream2SP select * where IntPrimitive=1 or IntPrimitive=2";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 var stmtOrigText = "@name('split') @public on SupportBean " +
                                    "insert into AStreamSub select (select P00 from SupportBean_S0#lastevent) as string where IntPrimitive=(select Id from SupportBean_S0#lastevent) " +
-                                   "insert into BStreamSub select (select P01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
+                                   "insert into BStreamSub select (select P01 from SupportBean_S0#lastevent) as string where IntPrimitive<>(select Id from SupportBean_S0#lastevent) or (select Id from SupportBean_S0#lastevent) is null";
                 env.CompileDeploy(stmtOrigText, path).AddListener("split");
 
                 env.CompileDeploy("@name('s0') select * from AStreamSub", path).AddListener("s0");
@@ -649,9 +649,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@public on OrderBean as oe " +
-                      "insert into StartEvent select oe.orderdetail.OrderId as oi " +
-                      "insert into ThenEvent select * from [select oe.orderdetail.OrderId as oi, ItemId from orderdetail.Items] as Item " +
-                      "insert into MoreEvent select oe.orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from orderdetail.Items] as Item " +
+                      "insert into StartEvent select oe.Orderdetail.OrderId as oi " +
+                      "insert into ThenEvent select * from [select oe.Orderdetail.OrderId as oi, ItemId from Orderdetail.Items] as Item " +
+                      "insert into MoreEvent select oe.Orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from Orderdetail.Items] as Item " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
 
@@ -689,9 +689,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@name('split') @public on OrderBean " +
-                      "insert into BeginEvent select orderdetail.OrderId as OrderId " +
-                      "insert into OrderItem select * from [select orderdetail.OrderId as OrderId, * from orderdetail.Items] " +
-                      "insert into EndEvent select orderdetail.OrderId as OrderId " +
+                      "insert into BeginEvent select Orderdetail.OrderId as OrderId " +
+                      "insert into OrderItem select * from [select Orderdetail.OrderId as OrderId, * from Orderdetail.Items] " +
+                      "insert into EndEvent select Orderdetail.OrderId as OrderId " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
             env.AssertStatement(
@@ -743,12 +743,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = "oe.orderdetail.OrderId".SplitCsv();
+            var fieldsOrderId = "oe.Orderdetail.OrderId".SplitCsv();
             var epl = "@public on OrderBean as oe " +
-                      "insert into HeaderEvent select orderdetail.OrderId as OrderId where 1=2 " +
-                      "insert into StreamOne select * from [select oe, * from orderdetail.Items] where ProductId=\"10020\" " +
-                      "insert into StreamTwo select * from [select oe, * from orderdetail.Items] where ProductId=\"10022\" " +
-                      "insert into StreamThree select * from [select oe, * from orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
+                      "insert into HeaderEvent select Orderdetail.OrderId as OrderId where 1=2 " +
+                      "insert into StreamOne select * from [select oe, * from Orderdetail.Items] where ProductId=\"10020\" " +
+                      "insert into StreamTwo select * from [select oe, * from Orderdetail.Items] where ProductId=\"10022\" " +
+                      "insert into StreamThree select * from [select oe, * from Orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
             env.CompileDeploy(soda, epl, path);
 
             var listenerEPL = new string[]
@@ -837,13 +837,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[] { orderId }));
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTrigger
         {
             public int trigger;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTypeTwo
         {
             public int col2;

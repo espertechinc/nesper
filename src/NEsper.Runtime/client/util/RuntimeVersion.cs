@@ -113,7 +113,6 @@ namespace com.espertech.esper.runtime.client.util
             public int Patch { get; }
         }
 
-        [Serializable]
         public class VersionException : Exception
         {
             public VersionException(string message) : base(message)

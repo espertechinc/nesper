@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var arrays = typeof(Arrays).FullName;
 
-                var list = (ICollection<object>)CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
+                var list = (ICollection<object>) CompileEvaluate($"{arrays}.AsList({{\"a\"}})", expressionCompiler);
                 EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new object[] { "a" });
 
                 CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);

@@ -246,8 +246,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(AggregationResultFutureAssignable[]), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(AggregationResultFutureAssignable[]),
+            method.Block.DeclareVar<AggregationResultFutureAssignable[]>(
                 "assignables",
                 NewArrayByLength(typeof(AggregationResultFutureAssignable), Constant(aggregationServices.Length)));
             for (var i = 0; i < aggregationServices.Length; i++) {
@@ -279,8 +278,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(RowRecogNFAStateBase[]), GetType(), classScope);
-            method.Block.DeclareVar(
-                typeof(RowRecogNFAStateBase[]),
+            method.Block.DeclareVar<RowRecogNFAStateBase[]>(
                 "states",
                 NewArrayByLength(typeof(RowRecogNFAStateBase), Constant(allStates.Length)));
             for (var i = 0; i < allStates.Length; i++) {

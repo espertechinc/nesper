@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
@@ -124,9 +125,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     if (Subselect.SubselectMultirowType == null) {
                         var eval = ((ExprIdentNode)Subselect.selectClause[0]).ExprEvaluatorIdent;
                         var method = parent.MakeChild(
-                            typeof(FlexCollection),
+                            typeof(ICollection<EventBean>),
                             GetType(),
                             classScope);
+                        method.Block.CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name);
                         method.Block.DeclareVar<ICollection<EventBean>>(
                             "events",
                             NewInstance<ArrayDeque<EventBean>>(
@@ -149,7 +151,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
                     // when selecting a combined output row that contains multiple fields
                     var methodX = parent.MakeChild(
-                        typeof(FlexCollection),
+                        typeof(ICollection<EventBean>),
                         GetType(),
                         classScope);
                     var fieldEventType = classScope.AddDefaultFieldUnshared(
@@ -161,6 +163,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     var eventBeanSvc =
                         classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
 
+                    methodX.Block.CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name);
                     methodX.Block
                         .DeclareVar<ICollection<EventBean>>(
                             "result",
@@ -195,8 +198,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             // handle filtered
-            var methodY = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var methodY = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
 
+            methodY.Block.CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name);
             methodY.Block.ApplyTri(DECLARE_EVENTS_SHIFTED, methodY, symbols);
 
             methodY.Block.DeclareVar<ArrayDeque<EventBean>>("filtered", ConstantNull());
@@ -224,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .ExprDotMethod(Ref("filtered"), "Add", Ref("@event"));
             }
 
-            methodY.Block.MethodReturn(FlexWrap(Ref("filtered")));
+            methodY.Block.MethodReturn(Ref("filtered"));
             return LocalMethod(methodY);
         }
 

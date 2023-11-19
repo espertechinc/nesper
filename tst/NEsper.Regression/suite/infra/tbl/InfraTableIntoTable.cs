@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, thesum sum(int));\n" +
-                    "into table MyTable select intOne, intTwo, sum(value) as thesum from SupportEventWithManyArray group by intOne, intTwo;\n";
+                    "into table MyTable select IntOne, IntTwo, sum(Value) as thesum from SupportEventWithManyArray group by IntOne, IntTwo;\n";
                 env.CompileDeploy(epl);
 
                 SendEvent(env, "E1", 100, new int[] { 10 }, new int[] { 1, 2 });
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "@name('tbl') create table MyTable(k int[primitive] primary key, thesum sum(int));\n" +
-                    "into table MyTable select intOne, sum(value) as thesum from SupportEventWithManyArray group by intOne;\n";
+                    "into table MyTable select IntOne, sum(Value) as thesum from SupportEventWithManyArray group by IntOne;\n";
                 env.CompileDeploy(epl);
 
                 SendEvent(env, "E1", 10, new int[] { 1, 2 });
@@ -571,8 +571,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var fields = "c0,c1,c2,c3".Split(",");
                 var epl =
-                    "@name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(DecimalBoxed), c2 sum(BigInteger), c3 sum(DecimalBoxed));\n" +
-                    "into table MyTable select avg(bigint) as c0, avg(bigdec) as c1, sum(bigint) as c2, sum(bigdec) as c3  from SupportBeanNumeric#lastevent;\n";
+                    "@name('tbl') create table MyTable as (c0 avg(BigInteger), c1 avg(decimal), c2 sum(BigInteger), c3 sum(decimal));\n" +
+                    "into table MyTable select avg(Bigint) as c0, avg(DecimalOne) as c1, sum(Bigint) as c2, sum(DecimalOne) as c3  from SupportBeanNumeric#lastevent;\n";
                 env.CompileDeploy(epl);
 
                 env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("5"), 100m));
@@ -583,7 +583,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         EPAssertionUtil.AssertProps(
                             result,
                             fields,
-                            new object[] { 5m, 100m, BigInteger.Parse("5"), 100m });
+                            new object[] {
+                                new BigInteger(5),
+                                100m,
+                                new BigInteger(5),
+                                100m
+                            });
                     });
 
                 env.SendEventBean(new SupportBeanNumeric(BigInteger.Parse("4"), 200m));
@@ -594,7 +599,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         EPAssertionUtil.AssertProps(
                             result,
                             fields,
-                            new object[] { 4m, 200m, BigInteger.Parse("4"), 200m });
+                            new object[] {
+                                new BigInteger(4),
+                                200m,
+                                new BigInteger(4),
+                                200m
+                            });
                     });
 
                 env.UndeployAll();

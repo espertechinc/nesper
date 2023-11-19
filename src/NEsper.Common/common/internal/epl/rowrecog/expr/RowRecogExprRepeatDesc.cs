@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
 {
-    [Serializable]
     public class RowRecogExprRepeatDesc
     {
         public RowRecogExprRepeatDesc(

@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -22,9 +20,7 @@ using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -242,7 +238,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             return eventOne;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyEvent
         {
             public string col1;

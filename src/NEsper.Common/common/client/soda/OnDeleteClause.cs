@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// A clause to delete from a named window based on a triggering event arriving and
     /// correlated to the named window events to be deleted.
     /// </summary>
-    [Serializable]
     public class OnDeleteClause : OnClause
     {
         /// <summary>

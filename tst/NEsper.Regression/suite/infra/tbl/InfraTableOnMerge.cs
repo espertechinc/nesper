@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -102,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertEventNew(
                     "s0",
-                    @event => CollectionAssert.AreEqual(new double?[] { null, 1d, null }, (double?[])@event.Get("c0")));
+                    @event => CollectionAssert.AreEqual(new double?[] { null, 1d, null }, @event.Get("c0").UnwrapIntoArray<double?>()));
 
                 env.UndeployAll();
             }
@@ -135,11 +134,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "  public class Helper {\n" +
                     "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
                     "      double Total = 0;\n" +
-                    "      for (int i = 0; i < burnValues.length; i++) {\n" +
+                    "      for (int i = 0; i < burnValues.Length; i++) {\n" +
                     "        Total = Total + burnValues[i];\n" +
                     "      }\n" +
-                    "      double value = Total / burnValues.length;\n" +
-                    "      for (int i = 0; i < burnValues.length; i++) {\n" +
+                    "      double value = Total / burnValues.Length;\n" +
+                    "      for (int i = 0; i < burnValues.Length; i++) {\n" +
                     "        value = alpha * burnValues[i] + (1 - alpha) * value;\n" +
                     "      }\n" +
                     "      return value;" +
@@ -448,13 +447,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2,c3".SplitCsv();
             var eplRead =
-                "@name('s0') select varaggMIU[id].p0 as c0, varaggMIU[id].p1 as c1, varaggMIU[id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
+                "@name('s0') select varaggMIU[Id].p0 as c0, varaggMIU[Id].p1 as c1, varaggMIU[Id].p2 as c2, varaggMIU[Id].sumint as c3 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
             var expectedAggType = new object[][] {
-                new object[] { "c0", typeof(string) }, new object[] { "c1", typeof(int?) },
-                new object[] { "c2", typeof(int?[]) }, new object[] { "c3", typeof(int?) }
+                new object[] { "c0", typeof(string) },
+                new object[] { "c1", typeof(int?) },
+                new object[] { "c2", typeof(int[]) },
+                new object[] { "c3", typeof(int?) }
             };
             env.AssertStatement(
                 "s0",
@@ -536,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var fields = "c0,c1,c2".SplitCsv();
             var eplRead =
-                "@name('s0') select varaggMIUD[id,P00].keyOne as c0, varaggMIUD[id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
+                "@name('s0') select varaggMIUD[Id,P00].keyOne as c0, varaggMIUD[Id,P00].keyTwo as c1, varaggMIUD[Id,P00].prop as c2 from SupportBean_S0";
             env.CompileDeploy(soda, eplRead, path).AddListener("s0");
 
             // assert selected column types
@@ -632,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         Assert.IsNull(burn);
                     }
                     else {
-                        Assert.AreEqual(expected.Value, burn, 1e-10);
+                        Assert.That(expected.Value, Is.EqualTo(burn).Within(1e-10));
                     }
                 });
         }

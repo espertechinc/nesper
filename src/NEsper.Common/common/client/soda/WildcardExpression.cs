@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents "*" in for example "last(*)"
     /// </summary>
-    [Serializable]
     public class WildcardExpression : ExpressionBase
     {
         public override void ToPrecedenceFreeEPL(TextWriter writer)

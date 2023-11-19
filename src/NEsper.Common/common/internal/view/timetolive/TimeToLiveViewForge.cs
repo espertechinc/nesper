@@ -70,8 +70,7 @@ namespace com.espertech.esper.common.@internal.view.timetolive
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(
-                    typeof(TimePeriodCompute),
+                .DeclareVar<TimePeriodCompute>(
                     "eval",
                     new TimePeriodComputeConstGivenDeltaForge(0).MakeEvaluator(method, classScope))
                 .SetProperty(

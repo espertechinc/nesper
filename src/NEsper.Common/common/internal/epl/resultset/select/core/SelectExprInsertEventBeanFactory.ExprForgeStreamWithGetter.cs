@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     typeof(object),
                     typeof(ExprForgeStreamWithGetter),
                     codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 methodNode.Block
                     .DeclareVar<EventBean>(
                         "theEvent",

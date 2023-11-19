@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Split-stream description.</summary>
-    [Serializable]
     public class OnTriggerSplitStream
     {
         /// <summary>

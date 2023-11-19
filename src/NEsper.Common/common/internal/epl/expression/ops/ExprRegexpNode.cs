@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     /// Represents the regexp-clause in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprRegexpNode : ExprNodeBase
     {
         private readonly bool _isNot;

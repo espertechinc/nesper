@@ -19,12 +19,12 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // toObjectArray;
-// AssertTrue;
-using static com.espertech.esper.regressionlib.support.client.AnnotationAssertUtil; // sortAlpha
+using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
+using static com.espertech.esper.regressionlib.support.client.AnnotationAssertUtil;
+
 using NUnit.Framework;
 
-using DescriptionAttribute = System.ComponentModel.DescriptionAttribute;
+using DescriptionAttribute = com.espertech.esper.common.client.annotation.DescriptionAttribute;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -90,8 +90,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@MyAnnotationAPIEventType create schema ABC();\n" +
-                          "@name('s0') select * from ABC;\n";
+                var epl =
+                    "@MyAnnotationAPIEventType create schema ABC();\n" +
+                    "@name('s0') select * from ABC;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventMap(EmptyDictionary<string, object>.Instance, "ABC");
@@ -130,28 +131,19 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationValue('abc') " +
                     "@MyAnnotationValueDefaulted " +
                     "@MyAnnotationValueEnum(SupportEnum=" +
-                    typeof(SupportEnum).Name +
+                    typeof(SupportEnum).FullName +
                     ".ENUM_VALUE_3) " +
-                    "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5) " +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
                     "@name('STMTONE') " +
                     "select * from SupportBean";
-                var stmtTextFormatted = "@MyAnnotationSimple" +
-                                        NEWLINE +
-                                        "@MyAnnotationValue('abc')" +
-                                        NEWLINE +
-                                        "@MyAnnotationValueDefaulted" +
-                                        NEWLINE +
-                                        "@MyAnnotationValueEnum(SupportEnum=" +
-                                        typeof(SupportEnum).Name +
-                                        ".ENUM_VALUE_3)" +
-                                        NEWLINE +
-                                        "@MyAnnotationValuePair(stringVal='a',intVal=-1,longVal=2,booleanVal=true,charVal='x',byteVal=10,shortVal=20,doubleVal=2.5)" +
-                                        NEWLINE +
-                                        "@name('STMTONE')" +
-                                        NEWLINE +
-                                        "select *" +
-                                        NEWLINE +
-                                        "from SupportBean";
+                var stmtTextFormatted = 
+                    "@MyAnnotationSimple" + NEWLINE +
+                    "@MyAnnotationValue('abc')" + NEWLINE + 
+                    "@MyAnnotationValueDefaulted" + NEWLINE +
+                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
+                    "@name('STMTONE')" + NEWLINE +
+                    "select *" + NEWLINE + "from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 env.AssertStatement(
@@ -199,8 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // test array
-                stmtText =
-                    "@MyAnnotationValueArray(value={1,2,3},intArray={4,5},doubleArray={},stringArray={'X'}) @name('s0') select * from SupportBean";
+                stmtText = "@MyAnnotationValueArray(Value={1,2,3},IntArray={4,5},DoubleArray={},StringArray={'X'}) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 AssertStatement(env);
@@ -219,51 +210,51 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean",
+                    "@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestable' requires a value for attribute 'value' [@MyAnnotationNested(nestableSimple=@MyAnnotationNestableSimple, nestableValues=@MyAnnotationNestableValues, nestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationNestableNestableAttribute' requires a value for attribute 'Value' [@MyAnnotationNested(NestableSimple=@MyAnnotationNestableSimple, NestableValues=@MyAnnotationNestableValues, NestableNestable=@MyAnnotationNestableNestable) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationNested(nestableNestable=@MyAnnotationNestableNestable('A'), nestableSimple=1) select * from Bean",
+                    "@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationNested' requires a MyAnnotationNestableSimple-typed value for attribute 'nestableSimple' but received a Integer-typed value [@MyAnnotationNested(nestableNestable=@MyAnnotationNestableNestable('A'), nestableSimple=1) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationNestedAttribute' requires a MyAnnotationNestableSimpleAttribute-typed value for attribute 'NestableSimple' but received a Int32-typed value [@MyAnnotationNested(NestableNestable=@MyAnnotationNestableNestable('A'), NestableSimple=1) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValuePair(stringVal='abc') select * from Bean",
+                    "@MyAnnotationValuePair(StringVal='abc') select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePair' requires a value for attribute 'booleanVal' [@MyAnnotationValuePair(stringVal='abc') select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValuePairAttribute' requires a value for attribute 'BooleanVal' [@MyAnnotationValuePair(StringVal='abc') select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "MyAnnotationValueArray(value=5) select * from Bean",
+                    "MyAnnotationValueArray(Value=5) select * from Bean",
                     true,
-                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(value=5) select * from Bean]");
+                    "Incorrect syntax near 'MyAnnotationValueArray' [MyAnnotationValueArray(Value=5) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(value=null) select * from Bean",
+                    "@MyAnnotationValueArray(Value=null) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a value for attribute 'doubleArray' [@MyAnnotationValueArray(value=null) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a value for attribute 'DoubleArray' [@MyAnnotationValueArray(Value=null) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a non-null value for array elements for attribute 'stringArray' [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={null},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a non-null value for array elements for attribute 'StringArray' [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean",
+                    "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean",
                     false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValue(value='a', value='a') select * from Bean",
+                    "@MyAnnotationValue(Value='a', Value='a') select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' has duplicate attribute values for attribute 'value' [@MyAnnotationValue(value='a', value='a') select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueAttribute' has duplicate attribute values for attribute 'Value' [@MyAnnotationValue(Value='a', Value='a') select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@ABC select * from Bean",
@@ -274,29 +265,32 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationSimple(5) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'value' [@MyAnnotationSimple(5) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationSimpleAttribute' does not have an attribute 'Value' [@MyAnnotationSimple(5) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationSimple(null) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationSimple' does not have an attribute 'value' [@MyAnnotationSimple(null) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationSimpleAttribute' does not have an attribute 'Value' [@MyAnnotationSimple(null) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValue select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a value for attribute 'value' [@MyAnnotationValue select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueAttribute' requires a value for attribute 'Value' [@MyAnnotationValue select * from Bean]");
 
+#if WORKS_IN_DOTNET // In dotnet, we find a caster for int to string, in java they do not
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValue(5) select * from Bean",
                     false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'value' but received a Integer-typed value [@MyAnnotationValue(5) select * from Bean]");
+#endif
+                
                 TryInvalidAnnotation(
                     env,
-                    "@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean",
+                    "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a long[]-typed value for attribute 'value' but received a String-typed value [@MyAnnotationValueArray(value=\"ABC\", intArray={}, doubleArray={}, stringArray={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a Int64[]-typed value for attribute 'Value' but received a String-typed value [@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean]");
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueEnum(a.b.CC) select * from Bean",
@@ -368,9 +362,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 var stmtText =
                     "@MyAnnotationNested(\n" +
-                    "            nestableSimple=@MyAnnotationNestableSimple,\n" +
-                    "            nestableValues=@MyAnnotationNestableValues(val=999, arr={2, 1}),\n" +
-                    "            nestableNestable=@MyAnnotationNestableNestable(\"CDF\")\n" +
+                    "            NestableSimple=@MyAnnotationNestableSimple,\n" +
+                    "            NestableValues=@MyAnnotationNestableValues(Val=999, Arr={2, 1}),\n" +
+                    "            NestableNestable=@MyAnnotationNestableNestable(\"CDF\")\n" +
                     "    ) " +
                     "@name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
@@ -384,8 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                         var nested = (MyAnnotationNestedAttribute)annotations[0];
                         Assert.IsNotNull(nested.NestableSimple);
-                        Assert.IsTrue(
-                            Arrays.DeepEquals(ToObjectArray(nested.NestableValues.Arr), new object[] { 2, 1 }));
+                        Assert.IsTrue(Arrays.DeepEquals(ToObjectArray(nested.NestableValues.Arr), new object[] { 2, 1 }));
                         Assert.AreEqual(999, nested.NestableValues.Val);
                         Assert.AreEqual("CDF", nested.NestableNestable.Value);
                     });
@@ -401,7 +394,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             private void RunNestedArray(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@MyAnnotationWArrayAndClass(priorities = {@Priority(1), @Priority(3)}, classOne = java.lang.typeof(String), classTwo = typeof(Integer)) @name('s0') select * from SupportBean";
+                    "@MyAnnotationWArrayAndClass(Priorities = {@Priority(1), @Priority(3)}, ClassOne = System.String.class, ClassTwo = System.Int32.class) " +
+                    "@Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 env.AssertStatement(
@@ -428,8 +422,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 string epl;
 
-                epl =
-                    "@name('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 env.AssertStatement(
                     "MyTestStmt",
@@ -443,16 +437,17 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // try lowercase
-                epl =
-                    "@name('MyTestStmt') @description('MyTestStmt description') @tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                epl = "@Name('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      " select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 env.AssertStatement("MyTestStmt", ClientRuntimeStatementAnnotation.TryAssertion);
                 env.UndeployAll();
 
                 // try fully-qualified
                 epl = "@" +
-                      typeof(NameAttribute).Name +
-                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(name=\"UserId\", value=\"value\") select * from SupportBean";
+                      nameof(NameAttribute) +
+                      "('MyTestStmt') @Description('MyTestStmt description') @Tag(Name=\"UserId\", Value=\"value\") " +
+                      "select * from SupportBean";
                 env.CompileDeploy(epl).AddListener("MyTestStmt");
                 env.AssertStatement("MyTestStmt", ClientRuntimeStatementAnnotation.TryAssertion);
                 env.UndeployAll();
@@ -609,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             Assert.AreEqual(3, annotations.Length);
 
             Assert.AreEqual(typeof(DescriptionAttribute), annotations[0].GetType());
-            Assert.AreEqual("MyTestStmt description", ((DescriptionAttribute)annotations[0]).Description);
+            Assert.AreEqual("MyTestStmt description", ((DescriptionAttribute)annotations[0]).Value);
             Assert.AreEqual("@Description(\"MyTestStmt description\")", annotations[0].ToString());
 
             Assert.AreEqual(typeof(NameAttribute), annotations[1].GetType());

@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.client
 {
-    [Serializable]
     public class EPNotSerializableException : EPRuntimeException
     {
         public EPNotSerializableException(Type classType)

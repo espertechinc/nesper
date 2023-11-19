@@ -12,7 +12,6 @@ using System.Threading;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
-using com.espertech.esper.common.client.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;

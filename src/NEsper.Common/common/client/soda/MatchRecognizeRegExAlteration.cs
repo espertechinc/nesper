@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// Event row regular expressions are organized into a tree-like structure
     /// with nodes representing sub-expressions.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExAlteration
         : MatchRecognizeRegEx
     {

@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.support;
@@ -18,8 +17,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {
     public class EventRenderXML
@@ -88,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "  <BytePrimitive>0</BytePrimitive>\n" +
                                        "  <CharPrimitive>x</CharPrimitive>\n" +
                                        "  <DoublePrimitive>0.0</DoublePrimitive>\n" +
-                                       "  <enumValue>ENUM_VALUE_2</enumValue>\n" +
+                                       "  <EnumValue>ENUM_VALUE_2</EnumValue>\n" +
                                        "  <FloatPrimitive>0.0</FloatPrimitive>\n" +
                                        "  <IntBoxed>992</IntBoxed>\n" +
                                        "  <IntPrimitive>1</IntPrimitive>\n" +
@@ -107,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             new XMLRenderingOptions().SetIsDefaultAsAttribute(true));
                         // Console.WriteLine(result);
                         var expected =
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" enumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/>";
+                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 

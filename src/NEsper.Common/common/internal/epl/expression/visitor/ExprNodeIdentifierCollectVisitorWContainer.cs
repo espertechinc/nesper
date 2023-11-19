@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     /// <summary>
     ///     Visitor that collects event property identifier information under expression nodes.
     /// </summary>
-    [Serializable]
     public class ExprNodeIdentifierCollectVisitorWContainer : ExprNodeVisitorWithParent
     {
         /// <summary>Ctor. </summary>

@@ -66,8 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                     factory.Make(singleMethodNode.Block, codegenMethodScope, codegenClassScope));
 
                 var singleMethodBlock = singleMethodNode.Block
-                    .DeclareVar(
-                        typeof(object[]),
+                    .DeclareVar<object[]>(
                         "row",
                         typable.EvaluateTypableSingleCodegen(singleMethodNode, exprSymbol, codegenClassScope))
                     .IfRefNullReturnNull("row");
@@ -94,8 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
                 typeof(EventBeanManufacturer),
                 factory.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
             
-            var methodBlock = methodNode.Block.DeclareVar(
-                    typeof(object[]),
+            var methodBlock = methodNode.Block.DeclareVar<object[]>(
                     "row",
                     typable.EvaluateTypableSingleCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("row");
@@ -109,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.typable
             }
 
             methodBlock
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .AssignArrayElement("events", Constant(0), ExprDotMethod(methodManufacturer, "Make", Ref("row")))
                 .MethodReturn(Ref("events"));
             

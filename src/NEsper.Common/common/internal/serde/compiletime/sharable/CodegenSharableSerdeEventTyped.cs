@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
                 .ResolveTypeCodegen(eventType, EPStatementInitServicesConstants.REF);
             return ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                 .Get(EPStatementInitServicesConstants.EVENTTYPERESOLVER)
-                .Add(EventTypeResolverConstants.GETEVENTSERDEFACTORY)
+                .Get(EventTypeResolverConstants.EVENTSERDEFACTORY)
                 .Add(name.MethodName, type);
         }
 

@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
     ///     Represents a complex element possibly with attributes, simple elements, other
     ///     complex child elements.
     /// </summary>
-    [Serializable]
     public class SchemaElementComplex : SchemaElement
     {
         /// <summary>

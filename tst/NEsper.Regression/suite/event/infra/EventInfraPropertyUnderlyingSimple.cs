@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -20,7 +19,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NEsper.Avro.Extensions;
@@ -52,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "@public @buseventtype @name('schema') create json schema " +
                 JSON_TYPENAME +
                 "(MyInt int, MyString string);\n" +
-                "@public @buseventtype @name('schema') @JsonSchema(className='" +
+                "@public @buseventtype @name('schema') @JsonSchema(ClassName='" +
                 typeof(MyLocalJsonProvided).FullName +
                 "') create json schema " +
                 JSONPROVIDEDBEAN_TYPENAME +
@@ -333,7 +331,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             return json;
         };
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public int? myInt;

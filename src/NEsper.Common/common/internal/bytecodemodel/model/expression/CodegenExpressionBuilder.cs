@@ -504,7 +504,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             params CodegenExpression[] @params)
         {
             if (clazz.IsInterface) {
-                throw new ArgumentException("invalid attempt to instantiate interface", nameof(clazz));
+                throw new ArgumentException($"invalid attempt to instantiate interface {clazz.CleanName()}", nameof(clazz));
             }
             return new CodegenExpressionNewInstance(clazz, @params);
         }

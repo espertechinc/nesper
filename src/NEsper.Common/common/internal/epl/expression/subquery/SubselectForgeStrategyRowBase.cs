@@ -135,8 +135,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     GetType(),
                     classScope);
                 method.Block
-                    .DeclareVar(
-                        typeof(object[][]),
+                    .DeclareVar<object[][]>(
                         "rows",
                         NewArrayByLength(typeof(object[]), ExprDotName(symbols.GetAddMatchingEvents(method), "Count")))
                     .DeclareVar<int>("index", Constant(-1))

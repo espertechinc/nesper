@@ -451,6 +451,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             Schema avroExistingTypeSchema = SchemaBuilder.Record(
                 "name",
                 TypeBuilder.RequiredLong("MyLong"),

@@ -21,7 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
 
         public PropertyHashedEventTableUnadorned(PropertyHashedEventTableFactory factory) : base(factory)
         {
-            _propertyIndex = new Dictionary<object, ISet<EventBean>>();
+            _propertyIndex = new Dictionary<object, ISet<EventBean>>(AsymmetricEqualityComparer.Instance)
+                .WithNullKeySupport();
         }
 
         public override int? NumberOfEvents => null;
@@ -58,7 +59,6 @@ namespace com.espertech.esper.common.@internal.epl.index.hash
             ExprEvaluatorContext exprEvaluatorContext)
         {
             var key = GetKey(theEvent);
-
             if (!_propertyIndex.TryGetValue(key, out var events)) {
                 _propertyIndex[key] = events = new LinkedHashSet<EventBean>();
             }

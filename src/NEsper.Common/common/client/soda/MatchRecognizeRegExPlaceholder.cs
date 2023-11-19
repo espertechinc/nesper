@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use in match recognize pattern expression as a placeholder to represent its child nodes.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExPlaceholder
         : MatchRecognizeRegEx
     {

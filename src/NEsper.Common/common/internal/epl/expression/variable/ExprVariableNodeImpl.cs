@@ -35,17 +35,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
         ExprEvaluator,
         ExprVariableNode
     {
-        private readonly VariableMetaData variableMeta;
-        private readonly string optSubPropName;
-        private EventPropertyGetterSPI optSubPropGetter;
-        private Type returnType;
+        private readonly VariableMetaData _variableMeta;
+        private readonly string _optSubPropName;
+        private EventPropertyGetterSPI _optSubPropGetter;
+        private Type _returnType;
 
         public ExprVariableNodeImpl(
             VariableMetaData variableMeta,
             string optSubPropName)
         {
-            this.variableMeta = variableMeta;
-            this.optSubPropName = optSubPropName;
+            this._variableMeta = variableMeta;
+            this._optSubPropName = optSubPropName;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             }
 
             if (!hasPropertyAgnosticType) {
-                var variableName = variableMeta.VariableName;
+                var variableName = _variableMeta.VariableName;
                 // the variable name should not overlap with a property name
                 try {
                     validationContext.StreamTypeService.ResolveByPropertyName(variableName, false);
@@ -76,32 +76,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                 }
             }
 
-            var variableNameX = variableMeta.VariableName;
-            if (optSubPropName != null) {
-                if (variableMeta.EventType == null) {
+            var variableNameX = _variableMeta.VariableName;
+            if (_optSubPropName != null) {
+                if (_variableMeta.EventType == null) {
                     throw new ExprValidationException(
-                        "Property '" + optSubPropName + "' is not valid for variable '" + variableNameX + "'");
+                        "Property '" + _optSubPropName + "' is not valid for variable '" + variableNameX + "'");
                 }
 
-                optSubPropGetter = ((EventTypeSPI)variableMeta.EventType).GetGetterSPI(optSubPropName);
-                if (optSubPropGetter == null) {
+                _optSubPropGetter = ((EventTypeSPI)_variableMeta.EventType).GetGetterSPI(_optSubPropName);
+                if (_optSubPropGetter == null) {
                     throw new ExprValidationException(
-                        "Property '" + optSubPropName + "' is not valid for variable '" + variableNameX + "'");
+                        "Property '" + _optSubPropName + "' is not valid for variable '" + variableNameX + "'");
                 }
 
-                returnType = variableMeta.EventType.GetPropertyType(optSubPropName);
+                _returnType = _variableMeta.EventType.GetPropertyType(_optSubPropName);
             }
             else {
-                returnType = variableMeta.Type;
+                _returnType = _variableMeta.Type;
             }
 
-            returnType = returnType.GetBoxedType();
+            _returnType = _returnType.GetBoxedType();
             return null;
         }
 
         public override string ToString()
         {
-            return "variableName=" + variableMeta.VariableName;
+            return "variableName=" + _variableMeta.VariableName;
         }
 
         public object Evaluate(
@@ -109,8 +109,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (variableMeta.IsCompileTimeConstant) {
-                return variableMeta.ValueWhenAvailable;
+            if (_variableMeta.IsCompileTimeConstant) {
+                return _variableMeta.ValueWhenAvailable;
             }
 
             throw new IllegalStateException("Cannot evaluate at compile time");
@@ -122,30 +122,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (returnType == null) {
+            if (_returnType == null) {
                 return ConstantNull();
             }
 
-            var returnClass = returnType;
+            var returnClass = _returnType;
             var methodNode = parent.MakeChild(returnClass, typeof(ExprVariableNodeImpl), classScope);
-            var readerExpression = GetReaderExpression(variableMeta, methodNode, symbols, classScope);
+            var readerExpression = GetReaderExpression(_variableMeta, methodNode, symbols, classScope);
             var block = methodNode.Block.DeclareVar<VariableReader>("reader", readerExpression);
-            if (variableMeta.EventType == null) {
-                block.DeclareVar(returnClass, "value", Cast(returnClass, ExprDotName(Ref("reader"), "Value")))
+            if (_variableMeta.EventType == null) {
+                block
+                    .DeclareVar(returnClass, "value", Cast(returnClass, ExprDotName(Ref("reader"), "Value")))
                     .MethodReturn(Ref("value"));
             }
             else {
-                block.DeclareVar<object>("value", ExprDotName(Ref("reader"), "Value"))
+                block
+                    .DeclareVar<object>("value", ExprDotName(Ref("reader"), "Value"))
                     .IfRefNullReturnNull("value")
                     .DeclareVar<EventBean>("theEvent", Cast(typeof(EventBean), Ref("value")));
-                if (optSubPropName == null) {
+                if (_optSubPropName == null) {
                     block.MethodReturn(Cast(returnClass, ExprDotUnderlying(Ref("theEvent"))));
                 }
                 else {
                     block.MethodReturn(
                         CodegenLegoCast.CastSafeFromObjectType(
-                            returnType,
-                            optSubPropGetter.EventBeanGetCodegen(Ref("theEvent"), methodNode, classScope)));
+                            _returnType,
+                            _optSubPropGetter.EventBeanGetCodegen(Ref("theEvent"), methodNode, classScope)));
                 }
             }
 
@@ -174,14 +176,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public CodegenExpression CodegenGetDeployTimeConstValue(CodegenClassScope classScope)
         {
-            if (returnType == null) {
+            if (_returnType == null) {
                 return ConstantNull();
             }
 
-            var returnClass = returnType;
+            var returnClass = _returnType;
             CodegenExpression readerExpression =
-                classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(variableMeta));
-            if (variableMeta.EventType == null) {
+                classScope.AddOrGetDefaultFieldSharable(new VariableReaderCodegenFieldSharable(_variableMeta));
+            if (_variableMeta.EventType == null) {
                 return Cast(returnClass, ExprDotName(readerExpression, "Value"));
             }
 
@@ -209,10 +211,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(variableMeta.VariableName);
-            if (optSubPropName != null) {
+            writer.Write(_variableMeta.VariableName);
+            if (_optSubPropName != null) {
                 writer.Write(".");
-                writer.Write(optSubPropName);
+                writer.Write(_optSubPropName);
             }
         }
 
@@ -226,11 +228,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
                 return false;
             }
 
-            if (!optSubPropName?.Equals(that.optSubPropName) ?? that.optSubPropName != null) {
+            if (!_optSubPropName?.Equals(that._optSubPropName) ?? that._optSubPropName != null) {
                 return false;
             }
 
-            return that.variableMeta.VariableName.Equals(variableMeta.VariableName);
+            return that._variableMeta.VariableName.Equals(_variableMeta.VariableName);
         }
 
         public void RenderForFilterPlan(StringBuilder @out)
@@ -240,9 +242,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public ExprEvaluator ExprEvaluator => this;
 
-        public VariableMetaData VariableMetadata => variableMeta;
+        public VariableMetaData VariableMetadata => _variableMeta;
 
-        public Type EvaluationType => returnType;
+        public Type EvaluationType => _returnType;
 
         public override ExprForge Forge => this;
 
@@ -252,29 +254,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
 
         public ExprForgeConstantType ForgeConstantType {
             get {
-                if (variableMeta.OptionalContextName != null) {
+                if (_variableMeta.OptionalContextName != null) {
                     return ExprForgeConstantType.NONCONST;
                 }
 
                 // for simple-value variables that are constant and created by the same module and not preconfigured we can use compile-time constant
-                if (variableMeta.IsConstant &&
-                    variableMeta.IsCreatedByCurrentModule &&
-                    variableMeta.VariableVisibility != NameAccessModifier.PRECONFIGURED &&
-                    variableMeta.EventType == null) {
+                if (_variableMeta.IsConstant &&
+                    _variableMeta.IsCreatedByCurrentModule &&
+                    _variableMeta.VariableVisibility != NameAccessModifier.PRECONFIGURED &&
+                    _variableMeta.EventType == null) {
                     return ExprForgeConstantType.COMPILETIMECONST;
                 }
 
-                return variableMeta.IsConstant ? ExprForgeConstantType.DEPLOYCONST : ExprForgeConstantType.NONCONST;
+                return _variableMeta.IsConstant ? ExprForgeConstantType.DEPLOYCONST : ExprForgeConstantType.NONCONST;
             }
         }
 
         public string VariableNameWithSubProp {
             get {
-                if (optSubPropName == null) {
-                    return variableMeta.VariableName;
+                if (_optSubPropName == null) {
+                    return _variableMeta.VariableName;
                 }
 
-                return variableMeta.VariableName + "." + optSubPropName;
+                return _variableMeta.VariableName + "." + _optSubPropName;
             }
         }
     }

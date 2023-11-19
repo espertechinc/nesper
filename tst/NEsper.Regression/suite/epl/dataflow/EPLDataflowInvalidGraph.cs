@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.TryInvalidCompile(
                     "create dataflow MyGraph MySource -> myout",
-                    "Incorrect syntax near end-of-input expecting a left curly bracket '{' but found end-of-input at line 1 column 41 [");
+                    "Incorrect syntax near end-of-input expecting a left curly bracket '{' but found EOF at line 1 column 41 [");
 
                 // duplicate data flow name
                 epl = "create dataflow MyGraph Emitter -> outstream<?> {};\n" +
@@ -195,9 +195,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "MyGraph",
                     epl,
-                    "Failed to instantiate data flow 'MyGraph': Failed to find onInput method on for operator 'MySBInputOp#1(out1)' class " +
+                    "Failed to instantiate data flow 'MyGraph': Failed to find OnInput method on for operator 'MySBInputOp#1(out1)' class " +
                     typeof(MySBInputOp).FullName +
-                    ", expected an onInput method that takes any of {Object, Object[");
+                    ", expected an OnInput method that takes any of {Object, Object[");
             }
 
             public ISet<RegressionFlag> Flags()

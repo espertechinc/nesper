@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     For use with on-merge clauses, inserts into a named window if matching rows are not found.
     /// </summary>
-    [Serializable]
     public class OnMergeMatchedInsertAction : OnMergeMatchedAction
     {
         private IList<string> columnNames = EmptyList<string>.Instance;

@@ -51,8 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
-                .DeclareVar(
-                    typeof(ICollection<object>),
+                .DeclareVar<ICollection<object>>(
                     "groupKeys",
                     ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
                 .IfCondition(Not(EqualsIdentity(ExprDotName(Ref("groupKeys"), "Count"), Constant(1))))
@@ -107,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 new CodegenFieldNameSubqueryAgg(Subselect.SubselectNumber),
                 typeof(AggregationResultFuture));
 
-            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var eventBeanSvc =
                 classScope.AddOrGetDefaultFieldSharable(EventBeanTypedEventFactoryCodegenField.INSTANCE);
@@ -119,14 +118,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>("aggregationService", ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(typeof(ICollection<object>), "groupKeys", ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
+                .DeclareVar<ICollection<object>>("groupKeys", ExprDotMethod(aggService, "GetGroupKeys", evalCtx))
                 .IfCondition(ExprDotMethod(Ref("groupKeys"), "IsEmpty"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(typeof(ICollection<EventBean>), "events", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")))
+                .DeclareVar<ICollection<EventBean>>("events", NewInstance(typeof(ArrayDeque<EventBean>), ExprDotName(Ref("groupKeys"), "Count")))
                 .ForEach<object>("groupKey", Ref("groupKeys"))
                 .ExprDotMethod(aggService, "SetCurrentAccess", Ref("groupKey"), Ref("cpid"), ConstantNull())
                 .DeclareVar(
-                    typeof(ICollection<string, object>),
+                    typeof(IDictionary<string, object>),
                     "row",
                     LocalMethod(
                         Subselect.EvaluateRowCodegen(method, classScope),

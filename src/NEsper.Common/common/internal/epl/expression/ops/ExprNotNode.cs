@@ -25,7 +25,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     /// Represents a NOT expression in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprNotNode : ExprNodeBase,
         ExprEvaluator,
         ExprForgeInstrumentable

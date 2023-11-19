@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Context dimension descriptor for a start-and-end temporal (single instance) or initiated-terminated (overlapping)
     ///     context
     /// </summary>
-    [Serializable]
     public class ContextDescriptorInitiatedTerminated : ContextDescriptor
     {
         private ContextDescriptorCondition endCondition;

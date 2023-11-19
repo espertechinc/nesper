@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.support;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBean_C : SupportBeanBase
     {
         public SupportBean_C(string id)

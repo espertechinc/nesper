@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.soda
     ///     The following pairs of child expressions provide the "when expression then expression" results.
     ///     The last child expression provides the "else" result.
     /// </summary>
-    [Serializable]
     public class CaseSwitchExpression : ExpressionBase
     {
         /// <summary>

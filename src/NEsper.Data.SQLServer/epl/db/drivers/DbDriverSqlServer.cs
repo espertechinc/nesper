@@ -18,7 +18,6 @@ namespace com.espertech.esper.epl.db.drivers
     /// <summary>
     /// A database driver specific to the SQLServer
     /// </summary>
-    [Serializable]
     public class DbDriverSqlServer : BaseDbDriver
     {
         public DbDriverSqlServer()

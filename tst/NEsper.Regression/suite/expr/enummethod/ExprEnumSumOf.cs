@@ -83,10 +83,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
+                var bigInteger = typeof(BigIntegerHelper).FullName;
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean");
                 builder.WithExpression(fields[0], "{1d, 2d}.sumOf()");
-                builder.WithExpression(fields[1], "{BigInteger.valueOf(1), BigInteger.valueOf(2)}.sumOf()");
+                builder.WithExpression(fields[1], $"{{{bigInteger}.ValueOf(1), {bigInteger}.ValueOf(2)}}.sumOf()");
                 builder.WithExpression(fields[2], "{1L, 2L}.sumOf()");
                 builder.WithExpression(fields[3], "{1L, 2L, null}.sumOf()");
 

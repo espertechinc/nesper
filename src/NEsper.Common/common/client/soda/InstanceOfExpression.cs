@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Instance-of expression checks if an expression returns a certain type.
     /// </summary>
-    [Serializable]
     public class InstanceOfExpression : ExpressionBase
     {
         private string[] typeNames;

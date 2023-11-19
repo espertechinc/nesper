@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// In-expression for a set of values returned by a lookup.
     /// </summary>
-    [Serializable]
     public class SubqueryInExpression : ExpressionBase
     {
         private bool notIn;

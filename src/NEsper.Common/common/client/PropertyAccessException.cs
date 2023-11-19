@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// This exception is thrown to indicate a problem with a accessing a property of an EventBean />.
     /// </summary>
-    [Serializable]
     public class PropertyAccessException : Exception
     {
         private readonly string _expression;

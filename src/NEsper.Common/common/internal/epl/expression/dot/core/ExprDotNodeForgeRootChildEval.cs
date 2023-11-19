@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -28,10 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     public class ExprDotNodeForgeRootChildEval : ExprEvaluator,
         ExprEnumerationEval
     {
-        private readonly ExprDotNodeForgeRootChild forge;
-        private readonly ExprDotEvalRootChildInnerEval innerEvaluator;
-        private readonly ExprDotEval[] evalIteratorEventBean;
-        private readonly ExprDotEval[] evalUnpacking;
+        private readonly ExprDotNodeForgeRootChild _forge;
+        private readonly ExprDotEvalRootChildInnerEval _innerEvaluator;
+        private readonly ExprDotEval[] _evalIteratorEventBean;
+        private readonly ExprDotEval[] _evalUnpacking;
 
         public ExprDotNodeForgeRootChildEval(
             ExprDotNodeForgeRootChild forge,
@@ -39,10 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotEval[] evalIteratorEventBean,
             ExprDotEval[] evalUnpacking)
         {
-            this.forge = forge;
-            this.innerEvaluator = innerEvaluator;
-            this.evalIteratorEventBean = evalIteratorEventBean;
-            this.evalUnpacking = evalUnpacking;
+            _forge = forge;
+            _innerEvaluator = innerEvaluator;
+            _evalIteratorEventBean = evalIteratorEventBean;
+            _evalUnpacking = evalUnpacking;
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
@@ -52,11 +53,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var inner = innerEvaluator.Evaluate(eventsPerStream, isNewData, context);
+            var inner = _innerEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (inner != null) {
                 inner = ExprDotNodeUtility.EvaluateChain(
-                    forge.ForgesUnpacking,
-                    evalUnpacking,
+                    _forge.ForgesUnpacking,
+                    _evalUnpacking,
                     inner,
                     eventsPerStream,
                     isNewData,
@@ -72,24 +73,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var evaluationType = forge.EvaluationType;
+            var evaluationType = forge.EvaluationType.GetBoxedType();
             if (evaluationType == null) {
                 return ConstantNull();
             }
 
-            var evaluationClass = evaluationType;
-            var innerType = forge.InnerForge.TypeInfo.GetCodegenReturnType();
+            var innerType = forge.InnerForge.TypeInfo.GetCodegenReturnType().GetBoxedType();
             var methodNode = codegenMethodScope.MakeChild(
                 evaluationType,
                 typeof(ExprDotNodeForgeRootChildEval),
                 codegenClassScope);
 
-            var block = methodNode.Block
-                .DeclareVar(
-                    innerType,
-                    "inner",
-                    forge.InnerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope));
-            if (!innerType.IsPrimitive && !evaluationClass.IsTypeVoid()) {
+            var innerValue = forge.InnerForge.CodegenEvaluate(methodNode, exprSymbol, codegenClassScope);
+            if (innerType == typeof(FlexCollection)) {
+                innerValue = FlexWrap(innerValue);
+            }
+            
+            var block = methodNode.Block.DeclareVar(innerType, "inner", innerValue);
+            if (innerType.CanBeNull() && !evaluationType.IsTypeVoid()) {
                 block.IfRefNullReturnNull("inner");
             }
 
@@ -114,7 +115,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 innerType,
                 forge.ForgesUnpacking,
                 null);
-            if (evaluationClass.IsTypeVoid()) {
+            if (evaluationType.IsTypeVoid()) {
                 block.Expression(expression)
                     .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                     .MethodEnd();
@@ -133,11 +134,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object inner = innerEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
+            object inner = _innerEvaluator.EvaluateGetROCollectionEvents(eventsPerStream, isNewData, context);
             if (inner != null) {
                 inner = ExprDotNodeUtility.EvaluateChain(
-                    forge.ForgesIteratorEventBean,
-                    evalIteratorEventBean,
+                    _forge.ForgesIteratorEventBean,
+                    _evalIteratorEventBean,
                     inner,
                     eventsPerStream,
                     isNewData,
@@ -156,7 +157,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (forge.EvaluationType == null) {
+            var evaluationType = forge.EvaluationType;
+            if (evaluationType == null) {
                 return ConstantNull();
             }
 
@@ -171,9 +173,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     new EPChainableTypeCodegenSharable(forge.InnerForge.TypeInfo, codegenClassScope));
             }
 
+            var codegenResult = ExprDotNodeUtility.EvaluateChainCodegen(
+                methodNode,
+                exprSymbol,
+                codegenClassScope,
+                Ref("inner"),
+                typeof(ICollection<EventBean>),
+                forge.ForgesIteratorEventBean,
+                null);
+                
             methodNode.Block
-                .DeclareVar(
-                    typeof(FlexCollection),
+                .DeclareVar<ICollection<EventBean>>(
                     "inner",
                     forge.InnerForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .Apply(
@@ -186,17 +196,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .IfRefNull("inner")
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .BlockReturn(ConstantNull())
-                .DeclareVar(
-                    EPTYPE_COLLECTION_EVENTBEAN,
-                    "result",
-                    ExprDotNodeUtility.EvaluateChainCodegen(
-                        methodNode,
-                        exprSymbol,
-                        codegenClassScope,
-                        Ref("inner"),
-                        typeof(FlexCollection),
-                        forge.ForgesIteratorEventBean,
-                        null))
+                .DeclareVar(EPTYPE_COLLECTION_EVENTBEAN, "result", codegenResult)
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))
                 .MethodReturn(Ref("result"));
             return LocalMethod(methodNode);
@@ -207,11 +207,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            object inner = innerEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
+            object inner = _innerEvaluator.EvaluateGetROCollectionScalar(eventsPerStream, isNewData, context);
             if (inner != null) {
                 inner = ExprDotNodeUtility.EvaluateChain(
-                    forge.ForgesIteratorEventBean,
-                    evalIteratorEventBean,
+                    _forge.ForgesIteratorEventBean,
+                    _evalIteratorEventBean,
                     inner,
                     eventsPerStream,
                     isNewData,
@@ -245,8 +245,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     new EPChainableTypeCodegenSharable(forge.InnerForge.TypeInfo, codegenClassScope));
             }
 
-            methodNode.Block.DeclareVar(
-                    typeof(FlexCollection),
+            methodNode.Block
+                .DeclareVar<ICollection<object>>(
                     "inner",
                     forge.InnerForge.EvaluateGetROCollectionScalarCodegen(methodNode, exprSymbol, codegenClassScope))
                 .Apply(
@@ -267,7 +267,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         exprSymbol,
                         codegenClassScope,
                         Ref("inner"),
-                        typeof(FlexCollection),
+                        forge.EvaluationType,
                         forge.ForgesIteratorEventBean,
                         null))
                 .Apply(InstrumentationCode.Instblock(codegenClassScope, "aExprDotChain"))

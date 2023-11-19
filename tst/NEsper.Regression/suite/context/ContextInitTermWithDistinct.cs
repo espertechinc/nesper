@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public create context MyContext initiated by distinct(array) SupportEventWithIntArray as se",
+                    "@public create context MyContext initiated by distinct(Array) SupportEventWithIntArray as se",
                     path);
                 env.CompileDeploy(
                     "@name('s0') context MyContext select context.se.Id as Id, sum(IntPrimitive) as thesum from SupportBean",

@@ -12,7 +12,6 @@ using System.Text;
 
 namespace com.espertech.esper.common.@internal.epl.methodbase
 {
-    [Serializable]
     public class DotMethodFP
     {
         public DotMethodFP(

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     /// <summary>
     ///     indexed[0].Mapped('0ma').value = 0ma0
     /// </summary>
-    [Serializable]
     public class SupportBeanCombinedProps
     {
         public static string[] PROPERTIES = { "Indexed", "Array" };
@@ -43,7 +42,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             return Array[index];
         }
 
-        [Serializable]
         public class NestedLevOne
         {
             private readonly IDictionary<string, NestedLevTwo> map = new Dictionary<string, NestedLevTwo>();
@@ -69,7 +67,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             }
         }
 
-        [Serializable]
         public class NestedLevTwo
         {
             public NestedLevTwo(string value)

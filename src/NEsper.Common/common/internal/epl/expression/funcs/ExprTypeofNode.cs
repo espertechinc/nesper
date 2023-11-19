@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// <summary>
     ///     Represents the TYPEOF(a) function is an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprTypeofNode : ExprNodeBase,
         ExprFilterOptimizableNode
     {

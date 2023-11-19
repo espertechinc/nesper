@@ -75,11 +75,20 @@ namespace com.espertech.esper.common.@internal.compile.faf
                 IList<CodegenTypedParam> providerExplicitMembers = new List<CodegenTypedParam>(2);
                 providerExplicitMembers.Add(new CodegenTypedParam(typeof(FAFQueryMethod), MEMBERNAME_QUERYMETHOD));
                 var symbols = new SAIFFInitializeSymbol();
-                var makeMethod = providerCtor.MakeChildWithScope(typeof(FAFQueryMethod), GetType(), symbols, classScope)
+                var makeMethod = providerCtor
+                    .MakeChildWithScope(typeof(FAFQueryMethod), GetType(), symbols, classScope)
                     .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
+                
+                if (_namespaceScope.FieldsClassNameOptional != null) {
+                    providerCtor.Block.ExprDotMethod(
+                        Ref("statementFields"),
+                        "Init",
+                        EPStatementInitServicesConstants.REF);
+                }
+                
                 providerCtor.Block
-                    .StaticMethod(_namespaceScope.FieldsClassNameOptional, "Init", EPStatementInitServicesConstants.REF)
                     .AssignMember(MEMBERNAME_QUERYMETHOD, LocalMethod(makeMethod, EPStatementInitServicesConstants.REF));
+
                 _forge.MakeMethod(makeMethod, symbols, classScope);
                 
                 // make provider methods
@@ -113,7 +122,7 @@ namespace com.espertech.esper.common.@internal.compile.faf
                     classScope);
                 
                 // create an intermediary method (since they can have child methods and properties cannot)
-                var getSubstitutionFieldSetter = CodegenMethod.MakeParentNode(
+                var getSubstitutionFieldSetter = propSubstitutionFieldSetter.MakeChildMethodWithScope(
                     typeof(FAFQueryMethodAssignerSetter),
                     GetType(),
                     CodegenSymbolProviderEmpty.INSTANCE,

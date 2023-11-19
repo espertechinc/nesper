@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.context;
@@ -21,55 +20,55 @@ namespace com.espertech.esper.regressionlib.suite.context
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            Create(env, path, "@Public create context SegmentedByCustomer partition by custId from BankTxn");
+            Create(env, path, "@Public create context SegmentedByCustomer partition by CustId from BankTxn");
             Create(
                 env,
                 path,
-                "context SegmentedByCustomer select custId, account, sum(Amount) from BankTxn group by account");
+                "context SegmentedByCustomer select CustId, Account, sum(Amount) from BankTxn group by Account");
             Create(
                 env,
                 path,
                 "context SegmentedByCustomer\n" +
                 "select * from pattern [\n" +
-                "every a=BankTxn(amount > 400) -> b=BankTxn(Amount > 400) where timer:within(10 minutes)\n" +
+                "every a=BankTxn(Amount > 400) -> b=BankTxn(Amount > 400) where timer:within(10 minutes)\n" +
                 "]");
             UndeployClearPath(env, path);
             Create(
                 env,
                 path,
                 "@Public create context SegmentedByCustomer partition by\n" +
-                "custId from BankTxn, loginId from LoginEvent, loginId from LogoutEvent");
+                "CustId from BankTxn, LoginId from LoginEvent, LoginId from LogoutEvent");
             UndeployClearPath(env, path);
             Create(
                 env,
                 path,
                 "@Public create context SegmentedByCustomer partition by\n" +
-                "custId from BankTxn, loginId from LoginEvent(failed=false)");
+                "CustId from BankTxn, LoginId from LoginEvent(IsFailed=false)");
             UndeployClearPath(env, path);
             Create(
                 env,
                 path,
-                "@Public create context ByCustomerAndAccount partition by custId and account from BankTxn");
-            Create(env, path, "context ByCustomerAndAccount select custId, account, sum(Amount) from BankTxn");
+                "@Public create context ByCustomerAndAccount partition by CustId and Account from BankTxn");
+            Create(env, path, "context ByCustomerAndAccount select CustId, Account, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
                 "context ByCustomerAndAccount\n" +
-                "  select context.name, context.Id, context.key1, context.key2 from BankTxn");
+                "  select context.name, context.id, context.key1, context.key2 from BankTxn");
             UndeployClearPath(env, path);
-            Create(env, path, "@Public create context ByCust partition by custId from BankTxn");
+            Create(env, path, "@Public create context ByCust partition by CustId from BankTxn");
             Create(
                 env,
                 path,
                 "context ByCust\n" +
                 "select * from BankTxn as t1 unidirectional, BankTxn#time(30) t2\n" +
-                "where t1.amount = t2.Amount");
+                "where t1.Amount = t2.Amount");
             Create(
                 env,
                 path,
                 "context ByCust\n" +
                 "select * from SecurityEvent as t1 unidirectional, BankTxn#time(30) t2\n" +
-                "where t1.customerName = t2.customerName");
+                "where t1.CustomerName = t2.CustomerName");
             UndeployClearPath(env, path);
             Create(
                 env,
@@ -84,14 +83,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CategoryByTemp\n" +
-                "select context.name, context.Id, context.label from SensorEvent");
+                "select context.name, context.id, context.label from SensorEvent");
             Create(env, path, "@Public create context NineToFive start (0, 9, *, *, *) end (0, 17, *, *, *)");
-            Create(env, path, "context NineToFive select * from TrafficEvent(speed >= 100)");
+            Create(env, path, "context NineToFive select * from TrafficEvent(Speed >= 100)");
             Create(
                 env,
                 path,
                 "context NineToFive\n" +
-                "select context.name, context.startTime, context.endTime from TrafficEvent(speed >= 100)");
+                "select context.name, context.startTime, context.endTime from TrafficEvent(Speed >= 100)");
             Create(
                 env,
                 path,
@@ -102,13 +101,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxTrainEnter\n" +
-                "select *, context.te.trainId, context.Id, context.name from TrainLeaveEvent(trainId = context.te.trainId)");
+                "select *, context.te.TrainId, context.id, context.name from TrainLeaveEvent(TrainId = context.te.TrainId)");
             Create(
                 env,
                 path,
                 "context CtxTrainEnter\n" +
                 "select t1 from pattern [\n" +
-                "t1=TrainEnterEvent -> timer:interval(5 min) and not TrainLeaveEvent(trainId = context.te.trainId)]");
+                "t1=TrainEnterEvent -> timer:interval(5 min) and not TrainLeaveEvent(TrainId = context.te.TrainId)]");
             Create(
                 env,
                 path,
@@ -120,42 +119,42 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(Temp) from SensorEvent output snapshot when terminated");
+                "select context.id, avg(Temp) from SensorEvent output snapshot when terminated");
             Create(
                 env,
                 path,
                 "context CtxEachMinute\n" +
-                "select context.Id, avg(Temp) from SensorEvent output snapshot every 1 minute and when terminated");
+                "select context.id, avg(Temp) from SensorEvent output snapshot every 1 minute and when terminated");
             Create(
                 env,
                 path,
-                "select venue, ccyPair, side, sum(qty)\n" +
+                "select Venue, CcyPair, Side, sum(Qty)\n" +
                 "from CumulativePrice\n" +
-                "where side='O'\n" +
-                "group by venue, ccyPair, side");
+                "where Side='O'\n" +
+                "group by Venue, CcyPair, Side");
             Create(
                 env,
                 path,
-                "@Public create context MyContext partition by venue, ccyPair, side from CumulativePrice(side='O')");
-            Create(env, path, "context MyContext select venue, ccyPair, side, sum(qty) from CumulativePrice");
+                "@Public create context MyContext partition by Venue, CcyPair, Side from CumulativePrice(Side='O')");
+            Create(env, path, "context MyContext select Venue, CcyPair, Side, sum(Qty) from CumulativePrice");
 
             Create(
                 env,
                 path,
                 "@Public create context SegmentedByCustomerHash\n" +
-                "coalesce by consistent_hash_crc32(custId) from BankTxn granularity 16 preallocate");
+                "coalesce by consistent_hash_crc32(CustId) from BankTxn granularity 16 preallocate");
             Create(
                 env,
                 path,
                 "context SegmentedByCustomerHash\n" +
-                "select custId, account, sum(Amount) from BankTxn group by custId, account");
+                "select CustId, Account, sum(Amount) from BankTxn group by CustId, Account");
             Create(
                 env,
                 path,
                 "@Public create context HashedByCustomer as coalesce\n" +
-                "consistent_hash_crc32(custId) from BankTxn,\n" +
-                "consistent_hash_crc32(loginId) from LoginEvent,\n" +
-                "consistent_hash_crc32(loginId) from LogoutEvent\n" +
+                "consistent_hash_crc32(CustId) from BankTxn,\n" +
+                "consistent_hash_crc32(LoginId) from LoginEvent,\n" +
+                "consistent_hash_crc32(LoginId) from LogoutEvent\n" +
                 "granularity 32 preallocate");
 
             UndeployClearPath(env, path);
@@ -163,54 +162,54 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "@Public create context HashedByCustomer\n" +
-                "coalesce consistent_hash_crc32(loginId) from LoginEvent(failed = false)\n" +
+                "coalesce consistent_hash_crc32(LoginId) from LoginEvent(IsFailed = false)\n" +
                 "granularity 1024 preallocate");
             Create(
                 env,
                 path,
-                "@Public create context ByCustomerHash coalesce consistent_hash_crc32(custId) from BankTxn granularity 1024");
+                "@Public create context ByCustomerHash coalesce consistent_hash_crc32(CustId) from BankTxn granularity 1024");
             Create(
                 env,
                 path,
                 "context ByCustomerHash\n" +
-                "select context.name, context.Id from BankTxn");
+                "select context.name, context.id from BankTxn");
 
             Create(
                 env,
                 path,
                 "@Public create context NineToFiveSegmented\n" +
                 "context NineToFive start (0, 9, *, *, *) end (0, 17, *, *, *),\n" +
-                "context SegmentedByCustomer partition by custId from BankTxn");
+                "context SegmentedByCustomer partition by CustId from BankTxn");
             Create(
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
-                "select custId, account, sum(Amount) from BankTxn group by account");
+                "select CustId, Account, sum(Amount) from BankTxn group by Account");
             Create(
                 env,
                 path,
                 "@Public create context CtxNestedTrainEnter\n" +
                 "context InitCtx initiated by TrainEnterEvent as te terminated after 5 minutes,\n" +
-                "context HashCtx coalesce by consistent_hash_crc32(tagId) from PassengerScanEvent\n" +
+                "context HashCtx coalesce by consistent_hash_crc32(TagId) from PassengerScanEvent\n" +
                 "granularity 16 preallocate");
             Create(
                 env,
                 path,
                 "context CtxNestedTrainEnter\n" +
-                "select context.InitCtx.te.trainId, context.HashCtx.Id,\n" +
-                "tagId, count(*) from PassengerScanEvent group by tagId");
+                "select context.InitCtx.te.TrainId, context.HashCtx.id,\n" +
+                "TagId, count(*) from PassengerScanEvent group by TagId");
             Create(
                 env,
                 path,
                 "context NineToFiveSegmented\n" +
                 "select context.NineToFive.startTime, context.SegmentedByCustomer.key1 from BankTxn");
-            Create(env, path, "context NineToFiveSegmented select context.name, context.Id from BankTxn");
+            Create(env, path, "context NineToFiveSegmented select context.name, context.id from BankTxn");
 
             Create(env, path, "@Public create context MyContext start MyStartEvent end MyEndEvent");
             Create(
                 env,
                 path,
-                "@Public create context MyContext2 initiated MyEvent(level > 0) terminated after 10 seconds");
+                "@Public create context MyContext2 initiated MyEvent(Level > 0) terminated after 10 seconds");
             Create(
                 env,
                 path,
@@ -222,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context MyContext4 \n" +
                 "initiated by MyInitEvent as e1 \n" +
-                "terminated by MyTermEvent(Id=e1.Id, level <> e1.level)");
+                "terminated by MyTermEvent(Id=e1.Id, Level <> e1.Level)");
             Create(
                 env,
                 path,
@@ -236,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 path,
                 "@Public create context MyContext7 \n" +
                 "  start pattern [a=StartEventOne or  b=StartEventTwo]\n" +
-                "  end pattern [EndEventOne(id=a.Id) or EndEventTwo(Id=b.Id)]");
+                "  end pattern [EndEventOne(Id=a.Id) or EndEventTwo(Id=b.Id)]");
             Create(
                 env,
                 path,
@@ -286,14 +285,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "@Public create context CtxPerKeysAndExternallyControlled\n" +
                 "context PartitionedByKeys " +
                 "  partition by " +
-                "    key1, key2 from MyTwoKeyInit\n," +
-                "    key1, key2 from SensorEvent\n," +
-                "context InitiateAndTerm initiated by MyTwoKeyInit as e1 terminated by MyTwoKeyTerm(key1=e1.key1 and key2=e1.key2)");
+                "    Key1, Key2 from MyTwoKeyInit\n," +
+                "    Key1, Key2 from SensorEvent\n," +
+                "context InitiateAndTerm initiated by MyTwoKeyInit as e1 terminated by MyTwoKeyTerm(Key1=e1.Key1 and Key2=e1.Key2)");
             Create(
                 env,
                 path,
                 "context CtxPerKeysAndExternallyControlled\n" +
-                "select key1, key2, avg(Temp) as avgTemp, count(*) as cnt\n" +
+                "select Key1, Key2, avg(Temp) as avgTemp, count(*) as cnt\n" +
                 "from SensorEvent\n" +
                 "output snapshot when terminated\n" +
                 "// note: no group-by needed since \n");
@@ -302,43 +301,43 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env,
                 path,
                 "@Public create context PerCustId_TriggeredByLargeAmount\n" +
-                "  partition by custId from BankTxn \n" +
+                "  partition by CustId from BankTxn \n" +
                 "  initiated by BankTxn(Amount>100) as largeTxn");
             Create(
                 env,
                 path,
-                "context PerCustId_TriggeredByLargeAmount select context.largeTxn, custId, sum(Amount) from BankTxn");
+                "context PerCustId_TriggeredByLargeAmount select context.largeTxn, CustId, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
                 "@Public create context PerCustId_UntilExpired\n" +
-                "  partition by custId from BankTxn \n" +
-                "  terminated by BankTxn(expired=true)");
+                "  partition by CustId from BankTxn \n" +
+                "  terminated by BankTxn(IsExpired=true)");
             Create(
                 env,
                 path,
-                "context PerCustId_UntilExpired select custId, sum(Amount) from BankTxn output last when terminated");
+                "context PerCustId_UntilExpired select CustId, sum(Amount) from BankTxn output last when terminated");
             Create(
                 env,
                 path,
                 "@Public create context PerCustId_TriggeredByLargeAmount_UntilExpired\n" +
-                "  partition by custId from BankTxn \n" +
+                "  partition by CustId from BankTxn \n" +
                 "  initiated by BankTxn(Amount>100) as txn\n" +
-                "  terminated by BankTxn(expired=true and user=txn.user)");
+                "  terminated by BankTxn(IsExpired=true and User=txn.User)");
             Create(
                 env,
                 path,
                 "@Public create context PerCust_AmountGreater100\n" +
-                "  partition by custId from BankTxn(Amount>100)\n" +
+                "  partition by CustId from BankTxn(Amount>100)\n" +
                 "  initiated by BankTxn");
-            Create(env, path, "context PerCust_AmountGreater100 select custId, sum(Amount) from BankTxn");
+            Create(env, path, "context PerCust_AmountGreater100 select CustId, sum(Amount) from BankTxn");
             Create(
                 env,
                 path,
                 "@Public create context PerCust_TriggeredByLargeTxn\n" +
-                "  partition by custId from BankTxn\n" +
+                "  partition by CustId from BankTxn\n" +
                 "  initiated by BankTxn(Amount>100)");
-            Create(env, path, "context PerCust_TriggeredByLargeTxn select custId, sum(Amount) from BankTxn");
+            Create(env, path, "context PerCust_TriggeredByLargeTxn select CustId, sum(Amount) from BankTxn");
 
             env.UndeployAll();
         }
@@ -362,253 +361,178 @@ namespace com.espertech.esper.regressionlib.suite.context
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class CumulativePrice
         {
-            private string venue;
-            private string ccyPair;
-            private string side;
-            private double qty;
+            public string Venue { get; set; }
 
-            public string Venue => venue;
+            public string CcyPair { get; set; }
 
-            public string CcyPair => ccyPair;
+            public string Side { get; set; }
 
-            public string Side => side;
-
-            public double Qty => qty;
+            public double Qty { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class TrainLeaveEvent
         {
-            private int trainId;
-            public int TrainId => trainId;
+            public int TrainId { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class TrainEnterEvent
         {
-            private int trainId;
-
-            public int TrainId => trainId;
+            public int TrainId { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class TrafficEvent
         {
-            private double speed;
-
-            public double Speed => speed;
+            public double Speed { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class SensorEvent
         {
-            private double temp;
-            private int key1;
-            private int key2;
+            public double Temp { get; set; }
 
-            public double Temp => temp;
+            public int Key1 { get; set; }
 
-            public int Key1 {
-                get => key1;
-                set => key1 = value;
-            }
-
-            public int Key2 {
-                get => key2;
-                set => key2 = value;
-            }
+            public int Key2 { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class LoginEvent
         {
-            private string loginId;
-            private bool failed;
+            public string LoginId { get; set; }
 
-            public string LoginId => loginId;
-
-            public bool Failed => failed;
+            public bool IsFailed { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class LogoutEvent
         {
-            private string loginId;
-
-            public string LoginId => loginId;
+            public string LoginId { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class SecurityEvent
         {
-            private string customerName;
-
-            public string CustomerName => customerName;
+            public string CustomerName { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class BankTxn
         {
-            private string custId;
-            private string account;
-            private long amount;
-            private string customerName;
-            private bool expired;
-            private string user;
+            public string CustId { get; set; }
 
+            public string Account { get; set; }
 
-            public string CustId => custId;
+            public long Amount { get; set; }
 
-            public string Account => account;
+            public string CustomerName { get; set; }
 
-            public long Amount => amount;
+            public bool IsExpired { get; set; }
 
-            public string CustomerName => customerName;
-
-            public bool IsExpired => expired;
-
-            public string User => user;
+            public string User { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class PassengerScanEvent
         {
-            private readonly string tagId;
-
             public PassengerScanEvent(string tagId)
             {
-                this.tagId = tagId;
+                TagId = tagId;
             }
 
-            public string TagId => tagId;
+            public string TagId { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyStartEvent
         {
-            private int id;
-            private int level;
+            public int Level { get; set; }
 
-            public int Id => id;
-
-            public int Level => level;
+            public int Id { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyEndEvent
         {
-            private int id;
-            private int level;
+            public int Level { get; set; }
 
-            public int Id => id;
-
-            public int Level => level;
+            public int Id { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyInitEvent
         {
-            private int id;
-            private int level;
+            public int Level { get; set; }
 
-            public int Id => id;
-
-            public int Level => level;
+            public int Id { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyTermEvent
         {
-            private int id;
-            private int level;
+            public int Level { get; set; }
 
-            public int Id => id;
-
-            public int Level => level;
+            public int Id { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyEvent
         {
-            private int id;
-            private int level;
+            public int Level { get; set; }
 
-            public int Id => id;
-
-            public int Level => level;
+            public int Id { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyTwoKeyInit
         {
-            private int key1;
-            private int key2;
+            public int Key1 { get; set; }
 
-            public int Key1 => key1;
-
-            public int Key2 => key2;
+            public int Key2 { get; set; }
         }
 
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyTwoKeyTerm
         {
-            private int key1;
-            private int key2;
+            public int Key1 { get; set; }
 
-            public int Key1 => key1;
-
-            public int Key2 => key2;
+            public int Key2 { get; set; }
         }
     }
 } // end of namespace

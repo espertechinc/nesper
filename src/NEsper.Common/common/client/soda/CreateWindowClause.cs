@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Create a named window, defining the parameter of the named window such as window name and data window view name(s).
     /// </summary>
-    [Serializable]
     public class CreateWindowClause
     {
         private string asEventTypeName;

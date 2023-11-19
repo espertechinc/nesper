@@ -62,13 +62,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var returnType = forge.Method.ReturnType;
+            var elementType = returnType.GetComponentType();
+
             var methodNode = codegenMethodScope.MakeChild(
-                    typeof(ICollection<object>),
+                    typeof(ICollection<>).MakeGenericType(elementType),
                     typeof(ExprDotMethodForgeNoDuckEvalWrapArray),
                     codegenClassScope)
                 .AddParam(innerType, "target");
 
-            var returnType = forge.Method.ReturnType;
             methodNode.Block
                 .DeclareVar(
                     returnType.GetBoxedType(),

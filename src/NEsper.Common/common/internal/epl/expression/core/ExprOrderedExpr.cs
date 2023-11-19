@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     ///     A placeholder expression for view/pattern object parameters that allow
     ///     sorting expression values ascending or descending.
     /// </summary>
-    [Serializable]
     public class ExprOrderedExpr : ExprNodeBase,
         ExprForge,
         ExprEvaluator

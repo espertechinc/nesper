@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 typeof(EventBean),
                 GetType(),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             CodegenExpression bean = ExprDotName(
                 Cast(typeof(ObjectArrayBackedEventBean), ArrayAtIndex(refEPS, Constant(0))),
                 "Properties");

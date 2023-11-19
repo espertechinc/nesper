@@ -18,8 +18,7 @@ namespace com.espertech.esper.runtime.client.stage
 	///     <para />
 	///     This exception applies to destroyed runtime when a client attempts to use the runtime after it was destroyed.
 	/// </summary>
-	[Serializable]
-    public class EPStageDestroyedException : EPRuntimeException
+	public class EPStageDestroyedException : EPRuntimeException
     {
 	    /// <summary>
 	    ///     Ctor.

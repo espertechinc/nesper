@@ -13,8 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
     public class ResultSetQueryTypeAggregateGroupedHaving

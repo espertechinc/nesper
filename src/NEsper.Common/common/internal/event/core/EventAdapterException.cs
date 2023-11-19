@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// <summary>
     ///     This exception is thrown to indicate a problem resolving an event type by name.
     /// </summary>
-    [Serializable]
     public class EventAdapterException : EPException
     {
         /// <summary> Ctor.</summary>

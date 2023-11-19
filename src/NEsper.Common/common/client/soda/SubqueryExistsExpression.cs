@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Exists-expression for a set of values returned by a lookup.
     /// </summary>
-    [Serializable]
     public class SubqueryExistsExpression : ExpressionBase
     {
         private EPStatementObjectModel model;

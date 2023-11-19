@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     /// Context partition identifier for nested contexts.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierNested : ContextPartitionIdentifier
     {
         private ContextPartitionIdentifier[] _identifiers;

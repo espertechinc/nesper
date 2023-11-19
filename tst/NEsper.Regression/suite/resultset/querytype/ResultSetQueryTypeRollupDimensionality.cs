@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select sum(value) as thesum from SupportThreeArrayEvent group by grouping sets((intArray), (longArray), (doubleArray))";
+                    "@name('s0') select sum(Value) as thesum from SupportThreeArrayEvent group by grouping sets((IntArray), (LongArray), (DoubleArray))";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, "E1", 1, new int[] { 1, 2 }, new long[] { 10, 20 }, new double[] { 300, 400 }, 1, 1, 1);
@@ -302,10 +302,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var epl = join
-                    ? "@name('s0') select array, value, count(*) as cnt from SupportEventWithIntArray#keepall, SupportBean#keepall group by rollup(array, value)"
+                    ? "@name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray#keepall, SupportBean#keepall group by rollup(Array, Value)"
                     : (unbound
-                        ? "@name('s0') select array, value, count(*) as cnt from SupportEventWithIntArray group by rollup(array, value)"
-                        : "@name('s0') select array, value, count(*) as cnt from SupportEventWithIntArray#keepall group by rollup(array, value)"
+                        ? "@name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray group by rollup(Array, Value)"
+                        : "@name('s0') select Array, Value, count(*) as cnt from SupportEventWithIntArray#keepall group by rollup(Array, Value)"
                     );
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 long expectedByArray,
                 long expectedByArrayAndValue)
             {
-                var fields = new string[] { "array", "value", "cnt" };
+                var fields = new string[] { "Array", "Value", "cnt" };
                 env.SendEventBean(new SupportEventWithIntArray(id, array, value));
                 env.AssertListener(
                     "s0",
@@ -1777,7 +1777,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             SupportOutputLimitOpt opt,
             AtomicLong milestone)
         {
-            var epl = "@name('ctx') create context MyContext start SupportBean_S0(id=1) end SupportBean_S0(Id=0);\n" +
+            var epl = "@name('ctx') create context MyContext start SupportBean_S0(Id=1) end SupportBean_S0(Id=0);\n" +
                       opt.GetHint() +
                       " @name('s0') context MyContext select TheString as c0, sum(IntPrimitive) as c1 " +
                       "from SupportBean group by rollup(TheString) output " +

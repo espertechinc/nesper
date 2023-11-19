@@ -84,17 +84,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var dimValue = new CodegenExpression[dimensions.Length];
             for (var i = 0; i < dimensions.Length; i++) {
                 var dimForge = forge.Parent.ChildNodes[i].Forge;
+                var dimForgeType = dimForge.EvaluationType;
                 var dimExpr = dimForge.EvaluateCodegen(typeof(int?), method, symbols, classScope);
                 if (dimForge.ForgeConstantType == ExprForgeConstantType.COMPILETIMECONST) {
-                    dimValue[i] = dimExpr;
+                    dimValue[i] = Unbox(dimExpr, dimForgeType);
                 }
                 else {
                     var name = "dim" + i;
                     method.Block
-                        .DeclareVar(typeof(int?), name, dimExpr)
+                        .DeclareVar<int?>(name, dimExpr)
                         .IfRefNull(name)
                         .BlockThrow(NewInstance(typeof(EPException), Constant(NULL_MSG)));
-                    dimValue[i] = Ref(name);
+                    dimValue[i] = Unbox(Ref(name));
                 }
             }
 
@@ -112,7 +113,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var @params = new CodegenExpression[dimValue.Length + 1];
                 @params[0] = Clazz(forge.TargetClass);
                 Array.Copy(dimValue, 0, @params, 1, dimValue.Length);
-                make = StaticMethod(typeof(Array), "newInstance", @params);
+                make = StaticMethod(typeof(Arrays), "CreateJagged", @params);
             }
 
             method.Block.MethodReturn(CodegenLegoCast.CastSafeFromObjectType(requiredType, make));

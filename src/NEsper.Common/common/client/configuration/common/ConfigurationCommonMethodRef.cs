@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Holds configuration information for data caches for use in method invocations in the from-clause.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonMethodRef
     {
         /// <summary>

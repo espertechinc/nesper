@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // fail
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
     public class ClientCompileSyntaxValidate

@@ -17,7 +17,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.multistmtassert;
-using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
 
@@ -424,9 +423,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new double?[] { 2d, 2d, 1d },
                     new bool[] { false, true, true });
 
-                text = "select * from SupportBean(IntPrimitive in (IntBoxed, " +
-                       typeof(SupportStaticMethodLib).FullName +
-                       ".MinusOne(DoubleBoxed)))";
+                var staticMethodLib = typeof(SupportStaticMethodLib).FullName;
+                text = $"select * from SupportBean(IntPrimitive in (IntBoxed, {staticMethodLib}.MinusOne(DoubleBoxed)))";
                 Try3Fields(
                     env,
                     milestone,
@@ -681,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                           "pattern [ \n" +
                           " every start_load=SupportBeanArrayCollMap \n" +
                           " -> \n" +
-                          " single_load=SupportBean(TheString in (start_load.setOfString)) \n" +
+                          " single_load=SupportBean(TheString in (start_load.SetOfString)) \n" +
                           "]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -788,7 +786,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.property2 = '4' and SupportRuntimeExBean.property1 = '1')";
+                    "@name('s0') select * from SupportRuntimeExBean(SupportRuntimeExBean.Property2 = '4' and SupportRuntimeExBean.Property1 = '1')";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportRuntimeExBean());
@@ -819,19 +817,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 < x",
+                        "select * from SupportInstanceMethodBean where 4 < X",
                         new bool[] { false, false, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 <= x",
+                        "select * from SupportInstanceMethodBean where 4 <= X",
                         new bool[] { false, true, true }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 > x",
+                        "select * from SupportInstanceMethodBean where 4 > X",
                         new bool[] { true, false, false }));
                 assertions.Add(
                     new EPLWithInvokedFlags(
-                        "select * from SupportInstanceMethodBean where 4 >= x",
+                        "select * from SupportInstanceMethodBean where 4 >= X",
                         new bool[] { true, true, false }));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
@@ -865,7 +863,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from pattern [SupportBean(IntPrimitive=" +
-                          typeof(ISupportA).FullName +
+                          typeof(ISupportAConstants).FullName +
                           ".VALUE_1)]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
@@ -886,8 +884,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from pattern [SupportBeanWithEnum(SupportEnum=" +
-                          typeof(SupportEnum).FullName +
-                          ".valueOf('ENUM_VALUE_1'))]";
+                          typeof(SupportEnumHelper).FullName +
+                          ".GetEnumFor('ENUM_VALUE_1'))]";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var theEvent = new SupportBeanWithEnum("e1", SupportEnum.ENUM_VALUE_2);
@@ -1142,7 +1140,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var milestone = new AtomicLong();
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(IntBoxed = a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1155,7 +1153,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, false, true, false, false, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(IntBoxed is a.IntBoxed and DoubleBoxed = a.DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1168,7 +1166,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false, true, false, false, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed = DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1181,7 +1179,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed = b.DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1194,7 +1192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed != DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1207,7 +1205,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(a.DoubleBoxed != b.DoubleBoxed)]";
                 TryPattern(
                     env,
@@ -1220,7 +1218,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
@@ -1233,7 +1231,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, true, true, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
@@ -1246,7 +1244,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, false, true, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
@@ -1259,7 +1257,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, false, true, true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
@@ -1272,7 +1270,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, true, true, true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
@@ -1285,7 +1283,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false, false, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed])]";
                 TryPattern(
                     env,
@@ -1298,7 +1296,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, true, false, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed not in (a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
@@ -1311,7 +1309,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, true, false, false, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in [a.DoubleBoxed:a.IntBoxed))]";
                 TryPattern(
                     env,
@@ -1324,7 +1322,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false, false, false, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
@@ -1337,7 +1335,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false, true, false, false, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed in (a.DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
@@ -1350,7 +1348,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, true, false, true, true, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(b.DoubleBoxed in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
@@ -1363,7 +1361,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, true, true, true, true, true });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed not in (DoubleBoxed, a.IntBoxed, 9))]";
                 TryPattern(
                     env,
@@ -1376,7 +1374,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { false, false, false, false, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".MinusOne(a.DoubleBoxed))]";
@@ -1391,7 +1389,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, false, false });
 
                 text = "select * from pattern [a=SupportBean -> b=" +
-                       typeof(SupportBean).Name +
+                       nameof(SupportBean) +
                        "(DoubleBoxed = " +
                        typeof(SupportStaticMethodLib).FullName +
                        ".MinusOne(a.DoubleBoxed) or " +
@@ -1420,17 +1418,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('b', TheString))";
+                       ".IsStringEquals('b', TheString))";
                 assertions.Add(new EPLWithInvokedFlags(text, new bool[] { false, true, false }));
 
                 text = "select * from SupportBean(" +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new bool[] { false, true, false }));
 
                 text = "select * from SupportBean('b'=TheString," +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new bool[] { false, true, false }));
 
                 text = "select * from SupportBean('b'=TheString, TheString='b', TheString != 'a')";
@@ -1447,7 +1445,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 text = "select * from SupportBean(TheString = 'a' and TheString = 'c' and " +
                        typeof(SupportStaticMethodLib).FullName +
-                       ".isStringEquals('bx', TheString || 'x'))";
+                       ".IsStringEquals('bx', TheString || 'x'))";
                 assertions.Add(new EPLWithInvokedFlags(text, new bool[] { false, false, false }));
 
                 MultiStmtAssertUtil.RunIsInvokedWTestdata(
@@ -1664,10 +1662,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "Filter expression not returning a boolean value: '5-10' [");
 
                 env.TryInvalidCompile(
-                    "select * from SupportBeanWithEnum(TheString=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_1)",
-                    "Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '" +
+                    "select * from SupportBeanWithEnum(TheString=" +
                     typeof(SupportEnum).FullName +
-                    "' to 'String' is not allowed [");
+                    ".ENUM_VALUE_1)",
+                    $"Failed to validate filter expression 'TheString=ENUM_VALUE_1': Implicit conversion from datatype '{typeof(SupportEnum?).CleanName()}' to '{typeof(string).CleanName()}' is not allowed [");
 
                 env.TryInvalidCompile(
                     "select * from SupportBeanWithEnum(SupportEnum=A.b)",
@@ -1675,9 +1673,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 env.TryInvalidCompile(
                     "select * from pattern [a=SupportBean -> b=" +
-                    typeof(SupportBean).Name +
+                    nameof(SupportBean) +
                     "(DoubleBoxed not in (DoubleBoxed, x.IntBoxed, 9))]",
-                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.i...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
+                    "Failed to validate filter expression 'DoubleBoxed not in (DoubleBoxed,x.I...(45 chars)': Failed to find a stream named 'x' (did you mean 'b'?) [");
 
                 env.TryInvalidCompile(
                     "select * from pattern [a=SupportBean" +
@@ -1691,7 +1689,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         private static void TryRewriteWhereNamedWindow(RegressionEnvironment env)
         {
             var epl = "create window NamedWindowA#length(1) as SupportBean;\n" +
-                      "select * from NamedWindowA mywindow WHERE (mywindow.TheString.trim() is 'abc');\n";
+                      "select * from NamedWindowA mywindow WHERE (mywindow.TheString.Trim() is 'abc');\n";
             env.CompileDeploy(epl).UndeployAll();
         }
 
@@ -1705,11 +1703,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     new bool[] { true, true, true });
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(s0.MyInstanceMethodEventBean(s0, 'x', 1)) as s0",
+                    "select * from SupportInstanceMethodBean(s0.MyInstanceMethodEventBean(s0, 'X', 1)) as s0",
                     new bool[] { false, true, false });
                 TryFilterInstanceMethod(
                     env,
-                    "select * from SupportInstanceMethodBean(s0.MyInstanceMethodEventBean(*, 'x', 1)) as s0",
+                    "select * from SupportInstanceMethodBean(s0.MyInstanceMethodEventBean(*, 'X', 1)) as s0",
                     new bool[] { false, true, false });
             }
 

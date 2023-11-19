@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -65,22 +66,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             var resultTypeMember = codegenClassScope.AddDefaultFieldUnshared(
                 true,
                 typeof(ObjectArrayEventType),
-                Cast(
-                    typeof(ObjectArrayEventType),
-                    EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
+                Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
-                .AddParam(PARAMS);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+            
             var block = methodNode.Block;
             var hasIndex = numParameters >= 2;
             var hasSize = numParameters >= 3;
             var returnEmpty = ReturnIfEmptyOptional();
             if (returnEmpty != null) {
-                block.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty")).BlockReturn(returnEmpty);
+                block
+                    .IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
+                    .BlockReturn(returnEmpty);
             }
 
-            block.DeclareVar<ObjectArrayEventBean>("resultEvent",
+            block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<ObjectArrayEventBean>("resultEvent",
                     NewInstance(
                         typeof(ObjectArrayEventBean),
                         NewArrayByLength(typeof(object), Constant(numParameters)),

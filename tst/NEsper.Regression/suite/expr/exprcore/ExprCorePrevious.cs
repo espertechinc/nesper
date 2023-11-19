@@ -12,6 +12,8 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -218,11 +220,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 env.AdvanceTime(0);
 
-                var text = "@name('s0') select irstream Symbol, "+
-                    "prev(1, Symbol) as prev1, "+
-                    "prevtail(Symbol) as prevtail, "+
-                    "prevcount(Symbol) as prevCountSym, "+
-                    "prevwindow(Symbol) as prevWindowSym "+
+                var text = "@name('s0') select irstream Symbol, " +
+                           "prev(1, Symbol) as prev1, " +
+                           "prevtail(Symbol) as prevtail, " +
+                           "prevcount(Symbol) as prevCountSym, " +
+                           "prevwindow(Symbol) as prevWindowSym " +
                            "from SupportMarketDataBean#time_batch(1 sec)";
                 env.CompileDeploy(text).AddListener("s0");
                 var fields = new string[] { "Symbol", "prev1", "prevtail", "prevCountSym", "prevWindowSym" };
@@ -381,10 +383,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream count(*) as Total, "+
-                          "prev(" +
-                          typeof(ExprCorePrevious).Name +
-                          ".intToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
+                var exprCorePrevious = typeof(ExprCorePrevious).FullName;
+                var epl = $"@name('s0')select irstream count(*) as Total, prev({exprCorePrevious}.IntToLong(count(*)) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 AssertPrevCount(env);
@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream count(*) as Total, "+
+                var epl = "@name('s0')select irstream count(*) as Total, " +
                           "prev(count(*) - 1, Price) as firstPrice from SupportMarketDataBean#time(60)";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -411,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select Symbol, Feed, "+
+                var epl = "@name('s0')select Symbol, Feed, " +
                           "prev(1, Price) as prevPrice, " +
                           "prevtail(Price) as tailPrice, " +
                           "prevcount(Price) as countPrice, " +
@@ -502,7 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 // descending sort
                 var epl = "@name('s0')select " +
-                          "Symbol, "+
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -576,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 SendTimer(env, 0);
 
                 var epl = "@name('s0')select " +
-                          "Symbol, "+
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -649,7 +649,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 // Also testing the alternative syntax here of "prev(property)" and "prev(property, index)" versus "prev(index, property)"
                 var epl = "@name('s0')select irstream " +
-                          "Symbol, "+
+                          "Symbol, " +
                           "prev(Price) as prevPrice, " +
                           "prev(Price, 2) as prevPrevPrice, " +
                           "prevtail(Price, 0) as prevTail0Price, " +
@@ -745,7 +745,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0')select " +
-                          "Symbol, "+
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -762,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0')select " +
-                          "Symbol, "+
+                          "Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(0, Price) as prevTail0Price, " +
@@ -778,7 +778,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Symbol, "+
+                var epl = "@name('s0') select Symbol, " +
                           "prev(1, Price) as prevPrice, " +
                           "prev(2, Price) as prevPrevPrice, " +
                           "prevtail(Price, 0) as prevTail0Price, " +
@@ -794,12 +794,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          " prev(2, Symbol) as prevSymbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          " prev(2, Symbol) as prevSymbol, " +
                           " prev(2, Price) as prevPrice, " +
-                          " prevtail(0, Symbol) as prevTailSymbol, "+
+                          " prevtail(0, Symbol) as prevTailSymbol, " +
                           " prevtail(0, Price) as prevTailPrice, " +
-                          " prevtail(1, Symbol) as prevTail1Symbol, "+
+                          " prevtail(1, Symbol) as prevTail1Symbol, " +
                           " prevtail(1, Price) as prevTail1Price, " +
                           " prevcount(Price) as prevCountPrice, " +
                           " prevwindow(Price) as prevWindowPrice " +
@@ -873,12 +873,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          " prev(2, Symbol) as prevSymbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          " prev(2, Symbol) as prevSymbol, " +
                           " prev(2, Price) as prevPrice, " +
-                          " prevtail(0, Symbol) as prevTailSymbol, "+
+                          " prevtail(0, Symbol) as prevTailSymbol, " +
                           " prevtail(0, Price) as prevTailPrice, " +
-                          " prevtail(1, Symbol) as prevTail1Symbol, "+
+                          " prevtail(1, Symbol) as prevTail1Symbol, " +
                           " prevtail(1, Price) as prevTail1Price, " +
                           " prevcount(Price) as prevCountPrice, " +
                           " prevwindow(Price) as prevWindowPrice " +
@@ -959,12 +959,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          " prev(2, Symbol) as prevSymbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          " prev(2, Symbol) as prevSymbol, " +
                           " prev(2, Price) as prevPrice, " +
-                          " prevtail(0, Symbol) as prevTailSymbol, "+
+                          " prevtail(0, Symbol) as prevTailSymbol, " +
                           " prevtail(0, Price) as prevTailPrice, " +
-                          " prevtail(1, Symbol) as prevTail1Symbol, "+
+                          " prevtail(1, Symbol) as prevTail1Symbol, " +
                           " prevtail(1, Price) as prevTail1Price, " +
                           " prevcount(Price) as prevCountPrice, " +
                           " prevwindow(Price) as prevWindowPrice " +
@@ -1107,11 +1107,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0')select TheString as currSymbol, " +
-                          " prev(2, Symbol) as prevSymbol, "+
+                          " prev(2, Symbol) as prevSymbol, " +
                           " prev(1, Price) as prevPrice, " +
-                          " prevtail(0, Symbol) as prevTailSymbol, "+
+                          " prevtail(0, Symbol) as prevTailSymbol, " +
                           " prevtail(0, Price) as prevTailPrice, " +
-                          " prevtail(1, Symbol) as prevTail1Symbol, "+
+                          " prevtail(1, Symbol) as prevTail1Symbol, " +
                           " prevtail(1, Price) as prevTail1Price, " +
                           " prevcount(Price) as prevCountPrice, " +
                           " prevwindow(Price) as prevWindowPrice " +
@@ -1218,16 +1218,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          "prev(0, Symbol) as prev0Symbol, "+
-                          "prev(1, Symbol) as prev1Symbol, "+
-                          "prev(2, Symbol) as prev2Symbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          "prev(0, Symbol) as prev0Symbol, " +
+                          "prev(1, Symbol) as prev1Symbol, " +
+                          "prev(2, Symbol) as prev2Symbol, " +
                           "prev(0, Price) as prev0Price, " +
                           "prev(1, Price) as prev1Price, " +
                           "prev(2, Price) as prev2Price," +
-                          "prevtail(0, Symbol) as prevTail0Symbol, "+
+                          "prevtail(0, Symbol) as prevTail0Symbol, " +
                           "prevtail(0, Price) as prevTail0Price, " +
-                          "prevtail(1, Symbol) as prevTail1Symbol, "+
+                          "prevtail(1, Symbol) as prevTail1Symbol, " +
                           "prevtail(1, Price) as prevTail1Price, " +
                           "prevcount(Price) as prevCountPrice, " +
                           "prevwindow(Price) as prevWindowPrice " +
@@ -1305,16 +1305,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          "prev(0, Symbol) as prev0Symbol, "+
-                          "prev(1, Symbol) as prev1Symbol, "+
-                          "prev(2, Symbol) as prev2Symbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          "prev(0, Symbol) as prev0Symbol, " +
+                          "prev(1, Symbol) as prev1Symbol, " +
+                          "prev(2, Symbol) as prev2Symbol, " +
                           "prev(0, Price) as prev0Price, " +
                           "prev(1, Price) as prev1Price, " +
                           "prev(2, Price) as prev2Price, " +
-                          "prevtail(0, Symbol) as prevTail0Symbol, "+
+                          "prevtail(0, Symbol) as prevTail0Symbol, " +
                           "prevtail(0, Price) as prevTail0Price, " +
-                          "prevtail(1, Symbol) as prevTail1Symbol, "+
+                          "prevtail(1, Symbol) as prevTail1Symbol, " +
                           "prevtail(1, Price) as prevTail1Price, " +
                           "prevcount(Price) as prevCountPrice, " +
                           "prevwindow(Price) as prevWindowPrice " +
@@ -1508,7 +1508,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select prev(2, Symbol) as currSymbol "+
+                var epl = "@name('s0') select prev(2, Symbol) as currSymbol " +
                           "from SupportMarketDataBean#length(100) " +
                           "where prev(2, Price) > 100";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -1555,16 +1555,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0')select Symbol as currSymbol, "+
-                          " prev(0, Symbol) as prev0Symbol, "+
-                          " prev(1, Symbol) as prev1Symbol, "+
-                          " prev(2, Symbol) as prev2Symbol, "+
+                var epl = "@name('s0')select Symbol as currSymbol, " +
+                          " prev(0, Symbol) as prev0Symbol, " +
+                          " prev(1, Symbol) as prev1Symbol, " +
+                          " prev(2, Symbol) as prev2Symbol, " +
                           " prev(0, Price) as prev0Price, " +
                           " prev(1, Price) as prev1Price, " +
                           " prev(2, Price) as prev2Price, " +
-                          " prevtail(0, Symbol) as prevTail0Symbol, "+
+                          " prevtail(0, Symbol) as prevTail0Symbol, " +
                           " prevtail(0, Price) as prevTail0Price, " +
-                          " prevtail(1, Symbol) as prevTail1Symbol, "+
+                          " prevtail(1, Symbol) as prevTail1Symbol, " +
                           " prevtail(1, Price) as prevTail1Price, " +
                           " prevcount(Price) as prevCountPrice, " +
                           " prevwindow(Price) as prevWindowPrice " +
@@ -1708,16 +1708,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var fields =
                     "currSymbol,prev0Symbol,prev0Price,prev1Symbol,prev1Price,prev2Symbol,prev2Price,prevTail0Symbol,prevTail0Price,prevTail1Symbol,prevTail1Price,prevCountPrice,prevWindowPrice"
                         .SplitCsv();
-                var epl = "@name('s0')select irstream Symbol as currSymbol, "+
-                          "prev(0, Symbol) as prev0Symbol, "+
+                var epl = "@name('s0')select irstream Symbol as currSymbol, " +
+                          "prev(0, Symbol) as prev0Symbol, " +
                           "prev(0, Price) as prev0Price, " +
-                          "prev(1, Symbol) as prev1Symbol, "+
+                          "prev(1, Symbol) as prev1Symbol, " +
                           "prev(1, Price) as prev1Price, " +
-                          "prev(2, Symbol) as prev2Symbol, "+
+                          "prev(2, Symbol) as prev2Symbol, " +
                           "prev(2, Price) as prev2Price," +
-                          "prevtail(0, Symbol) as prevTail0Symbol, "+
+                          "prevtail(0, Symbol) as prevTail0Symbol, " +
                           "prevtail(0, Price) as prevTail0Price, " +
-                          "prevtail(1, Symbol) as prevTail1Symbol, "+
+                          "prevtail(1, Symbol) as prevTail1Symbol, " +
                           "prevtail(1, Price) as prevTail1Price, " +
                           "prevcount(Price) as prevCountPrice, " +
                           "prevwindow(Price) as prevWindowPrice " +
@@ -1766,7 +1766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile(
-                    "select prev(0, Average) "+
+                    "select prev(0, average) " +
                     "from SupportMarketDataBean#length(100)#uni(Price)",
                     "Previous function requires a single data window view onto the stream [");
 
@@ -1800,7 +1800,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevcount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[])eventBean.Get("prevWindowPrice"), prevwindow);
+            EPAssertionUtil.AssertEqualsExactOrder(eventBean.Get("prevWindowPrice").UnwrapIntoArray<object>(), prevwindow);
         }
 
         private static void AssertNewEvents(
@@ -1877,7 +1877,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail1Symbol, eventBean.Get("prevTail1Symbol"));
             Assert.AreEqual(prevTail1Price, eventBean.Get("prevTail1Price"));
             Assert.AreEqual(prevCount, eventBean.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder((object[])eventBean.Get("prevWindowPrice"), prevWindow);
+            EPAssertionUtil.AssertEqualsExactOrder(eventBean.Get("prevWindowPrice").UnwrapIntoArray<object>(), prevWindow);
 
             env.ListenerReset("s0");
         }
@@ -2093,7 +2093,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             Assert.AreEqual(prevTail0Price, theEvent.Get("prevTail0Price"));
             Assert.AreEqual(prevTail1Price, theEvent.Get("prevTail1Price"));
             Assert.AreEqual(countPrice, theEvent.Get("countPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, (object[])theEvent.Get("windowPrice"));
+            EPAssertionUtil.AssertEqualsExactOrder(windowPrice, theEvent.Get("windowPrice").UnwrapIntoArray<object>());
         }
 
         private static void AssertCountAndPrice(
@@ -2202,7 +2202,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var doubles = doubleList.SplitCsv();
             var result = new object[doubles.Length];
             for (var i = 0; i < result.Length; i++) {
-                result[i] = double.Parse(doubles[i]);
+                result[i] = SimpleTypeParserFunctions.ParseDouble(doubles[i]);
             }
 
             return result;

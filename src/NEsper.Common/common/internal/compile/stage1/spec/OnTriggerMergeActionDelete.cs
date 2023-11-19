@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for the merge statement delete-part.
     /// </summary>
-    [Serializable]
     public class OnTriggerMergeActionDelete : OnTriggerMergeAction
     {
         public OnTriggerMergeActionDelete(ExprNode optionalMatchCond)

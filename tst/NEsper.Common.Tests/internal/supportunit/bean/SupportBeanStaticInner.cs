@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBeanStaticInner
     {
         public SupportBeanStaticInnerTwo InsideTwo => new SupportBeanStaticInnerTwo();

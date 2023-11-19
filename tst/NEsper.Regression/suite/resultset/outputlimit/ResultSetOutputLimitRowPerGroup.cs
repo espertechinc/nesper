@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AdvanceTime(0);
                 var fields = new string[] { "thesum" };
                 var epl =
-                    "@name('s0') select sum(value) as thesum from SupportEventWithIntArray group by array output first every 10 seconds";
+                    "@name('s0') select sum(Value) as thesum from SupportEventWithIntArray group by Array output first every 10 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] { 1, 2 }, 10));

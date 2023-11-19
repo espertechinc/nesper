@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Contains settings that apply to the compiler only (and that do not apply at runtime).
     /// </summary>
-    [Serializable]
     public class ConfigurationCompiler
     {
         /// <summary>

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             VerifySizes(simpleEvent, 0, 0, 3);
 
             var nested1 = simpleEvent.ComplexElements[0];
-            VerifyComplexElement(nested1, "Nested1", false);
+            VerifyComplexElement(nested1, "nested1", false);
             VerifySizes(nested1, 1, 2, 1);
             Assert.AreEqual("attr1", nested1.Attributes[0].Name);
             Assert.AreEqual(string.Empty, nested1.Attributes[0].Namespace);
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(_schemaTypeBoolean, nested1.SimpleElements[1].SimpleType);
 
             var nested2 = nested1.ComplexElements[0];
-            VerifyComplexElement(nested2, "Nested2", false);
+            VerifyComplexElement(nested2, "nested2", false);
             VerifySizes(nested2, 0, 1, 0);
             VerifySimpleElement(nested2.SimpleElements[0], "prop3", _schemaTypeInt);
 
@@ -75,11 +75,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             Assert.AreEqual(_schemaTypeString, prop4.OptionalSimpleType);
 
             var nested3 = simpleEvent.ComplexElements[2];
-            VerifyComplexElement(nested3, "Nested3", false);
+            VerifyComplexElement(nested3, "nested3", false);
             VerifySizes(nested3, 0, 0, 1);
 
             var nested4 = nested3.ComplexElements[0];
-            VerifyComplexElement(nested4, "Nested4", true);
+            VerifyComplexElement(nested4, "nested4", true);
             VerifySizes(nested4, 1, 4, 0);
             Assert.AreEqual("id", nested4.Attributes[0].Name);
             Assert.AreEqual(_schemaTypeId, nested4.Attributes[0].SimpleType);

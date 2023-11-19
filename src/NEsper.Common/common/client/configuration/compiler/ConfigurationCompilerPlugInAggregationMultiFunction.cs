@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom aggregation multi-function.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInAggregationMultiFunction
     {
         /// <summary>

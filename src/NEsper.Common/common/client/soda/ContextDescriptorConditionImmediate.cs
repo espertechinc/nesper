@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Context condition that starts/initiates immediately.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorConditionImmediate : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>

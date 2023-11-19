@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.serde;
@@ -102,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             AggregationClassNames classNames)
         {
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_ROW.Ref));
-            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop));
+            ctor.Block.AssignRef(MEMBER_ROW, NewInstanceInner(classNames.RowTop, Ref("statementFields")));
         }
 
         public void GetValueCodegen(
@@ -187,14 +188,16 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupall
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            method.Block.MethodReturn(
-                ExprDotMethod(
-                    MEMBER_ROW,
-                    "GetCollectionScalar",
-                    REF_VCOL,
-                    REF_EPS,
-                    REF_ISNEWDATA,
-                    REF_EXPREVALCONTEXT));
+            method.Block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .MethodReturn(
+                    ExprDotMethod(
+                        MEMBER_ROW,
+                        "GetCollectionScalar",
+                        REF_VCOL,
+                        REF_EPS,
+                        REF_ISNEWDATA,
+                        REF_EXPREVALCONTEXT));
         }
 
         public void GetCollectionOfEventsCodegen(

@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.common.@internal.util
 {
-    [Serializable]
     public class ValidationException : EPRuntimeException
     {
         public ValidationException(string message)

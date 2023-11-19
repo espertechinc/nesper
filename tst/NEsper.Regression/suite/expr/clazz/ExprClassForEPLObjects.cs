@@ -15,8 +15,9 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // assertMessage
-using NUnit.Framework; // assertEquals
+using NUnit.Framework;
+
+using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
@@ -67,9 +68,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 var epl =
                     "inlined_class \"\"\"\n" +
                     "  public class MyBean {\n" +
-                    "    public MyBean(int id) {this.Id = Id;}\n" +
+					"    public MyBean(int id) {this.Id = id;}\n" +
                     "    public int Id { get; set; }\n" +
-                    "    public static MyBean GetBean(int id) {return new MyBean(Id);}\n" +
+					"    public static MyBean GetBean(int id) {return new MyBean(id);}\n" +
                     "  }\n" +
                     "\"\"\" \n" +
                     "@name('s0') select MyBean.GetBean(IntPrimitive) as c0 from SupportBean";
@@ -84,12 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "s0",
                     @event => {
                         var result = @event.Get("c0");
-                        try {
-                            Assert.AreEqual(10, result.GetType().GetProperty("Id")?.GetValue(result));
-                        }
-                        catch (Exception t) {
-                            Assert.Fail(t.Message);
-                        }
+                        Assert.AreEqual(10, result.GetType().GetProperty("Id")?.GetValue(result));
                     });
 
                 env.UndeployAll();
@@ -100,6 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
+#if WORKS_IN_DOTNET
                 // test Annotation
                 var eplAnnotation =
                     EscapeClass("public class MyAnnotationAttribute : System.Attribute {}") +
@@ -122,7 +119,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 env.TryInvalidCompile(
                     eplPropertyType,
                     "Nestable type configuration encountered an unexpected property type name");
-
+#endif
+                
                 var eplNamedWindow = EscapeClass("public class MyType {}") +
                                      "create window MyWindow(myfield MyType)\n";
                 env.TryInvalidCompile(
@@ -154,13 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
                 env.AssertThat(
                     () => {
-                        try {
-                            env.SendEventBean(new SupportBean("E1", 1));
-                            Assert.Fail();
-                        }
-                        catch (EPException ex) {
-                            AssertMessage(ex, "java.lang.RuntimeException: Unexpected exception in statement 's0'");
-                        }
+                        var ex = Assert.Throws<EPException>(() => env.SendEventBean(new SupportBean("E1", 1)));
+                        AssertMessage(ex, "Unexpected exception in statement 's0'");
                     });
 
                 env.UndeployAll();
@@ -182,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "       };\n" +
                     "    }\n" +
                     "    public class MyBean {\n" +
-                    "      public MyBean(int id) {Id = Id;}\n" +
+					"      public MyBean(int id) {Id = id;}\n" +
                     "      public int Id { get; set; }\n" +
                     "    }\n" +
                     "  }\n" +

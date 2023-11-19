@@ -6,12 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
@@ -198,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var textOne = "@name('s0') select Symbol, s1.getTheString() as TheString from " +
+                var textOne = "@name('s0') select Symbol, s1.TheString as TheString from " +
                               "SupportMarketDataBean#keepall as s0 " +
                               "left outer join " +
                               "SupportBean#keepall as s1 on s0.Symbol=s1.TheString";
@@ -421,7 +419,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        [Serializable]
         public class MyTestEvent
         {
             private int id;

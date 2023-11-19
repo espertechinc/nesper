@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// Negates the contained-within subexpression.
     /// <para />Has a single child expression to be negated.
     /// </summary>
-    [Serializable]
     public class NotExpression : ExpressionBase
     {
         /// <summary>

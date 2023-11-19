@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// A combination of expressions is for example "(a, b)", wherein the list of expressions
     /// provided together logically make up a grouping level.
     /// </summary>
-    [Serializable]
     public class GroupByClauseExpressionCombination : GroupByClauseExpression
     {
         private IList<Expression> _expressions;

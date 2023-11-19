@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         typeof(ExprTableIdentNode),
                         "TableColumnRow",
                         Constant(identNode.StreamNum),
-                        symbols.GetAddEPS(method)))
+                        symbols.GetAddEps(method)))
                 .IfRefNotNull("row")
                 .ExprDotMethod(Ref("row"), "Reset", Constant(column.Column));
             return LocalMethod(method);

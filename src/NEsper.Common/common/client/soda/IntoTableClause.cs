@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Into-table clause.
     /// </summary>
-    [Serializable]
     public class IntoTableClause
     {
         /// <summary>

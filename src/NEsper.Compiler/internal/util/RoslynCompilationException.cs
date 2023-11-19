@@ -17,7 +17,6 @@ using Microsoft.CodeAnalysis;
 
 namespace com.espertech.esper.compiler.@internal.util
 {
-    [Serializable]
     public class RoslynCompilationException : EPException
     {
         private readonly ImmutableArray<Diagnostic> _diagnosticErrors;

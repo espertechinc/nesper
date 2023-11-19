@@ -284,9 +284,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             catch (CoercionException) {
                 throw new ExprValidationException(
                     "Implicit conversion from datatype '" +
-                    typeTwo +
+                    typeTwo.CleanName() +
                     "' to '" +
-                    typeOne +
+                    typeOne.CleanName() +
                     "' is not allowed");
             }
 

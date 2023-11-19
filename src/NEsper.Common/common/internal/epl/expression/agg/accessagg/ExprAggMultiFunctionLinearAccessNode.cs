@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 future,
                 "GetCollectionScalar",
                 Constant(column),
-                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddEps(parent),
                 exprSymbol.GetAddIsNewData(parent),
                 exprSymbol.GetAddExprEvalCtx(parent));
         }
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 future,
                 "GetEventBean",
                 Constant(column),
-                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddEps(parent),
                 exprSymbol.GetAddIsNewData(parent),
                 exprSymbol.GetAddExprEvalCtx(parent));
         }
@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.accessagg
                 future,
                 "GetCollectionOfEvents",
                 Constant(column),
-                exprSymbol.GetAddEPS(parent),
+                exprSymbol.GetAddEps(parent),
                 exprSymbol.GetAddIsNewData(parent),
                 exprSymbol.GetAddExprEvalCtx(parent));
         }

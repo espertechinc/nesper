@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var method = parent.MakeChild(requiredType, typeof(ExprTableAccessNode), classScope);
 
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             var newData = symbols.GetAddIsNewData(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             readerMethodName,
                             Constant(column.Column),
                             Ref("row"),
-                            symbols.GetAddEPS(method),
+                            symbols.GetAddEps(method),
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method))));
             return LocalMethod(method);

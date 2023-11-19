@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(PropertyDotNonLambdaIndexedForgeEval),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var keyEvaluationType = forge.ParamForge.EvaluationType.GetUnboxedType();
             var keyEvaluation = forge.ParamForge.EvaluateCodegen(
                 keyEvaluationType,

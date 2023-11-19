@@ -9,7 +9,6 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
@@ -18,7 +17,7 @@ using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.reverse
 {
     public class EnumReverseForge : EnumEval,
         EnumForge
@@ -57,8 +56,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = typeof(FlexCollection);
             var namedParams = EnumForgeCodegenNames.PARAMS;
+            // PREVIOUSLY: FlexCollection
+            var returnType = IsScalar
+                ? typeof(ICollection<object>)
+                : typeof(ICollection<EventBean>);
             var collectionType = IsScalar
                 ? typeof(List<object>)
                 : typeof(List<EventBean>);
@@ -69,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval
 
             var block = method.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { returnType.GetComponentType() }));
 
             if (IsScalar) {
                 var listType = typeof(List<object>);

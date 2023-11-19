@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     A clause to insert, update or delete to/from a named window based on a triggering event arriving and correlated to
     ///     the named window events to be updated.
     /// </summary>
-    [Serializable]
     public class OnMergeClause : OnClause
     {
         /// <summary>

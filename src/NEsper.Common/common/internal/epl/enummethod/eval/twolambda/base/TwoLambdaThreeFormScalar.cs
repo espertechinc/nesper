@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -92,8 +93,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
             }
 
             InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
-            methodNode.Block.DeclareVar(
-                    typeof(ObjectArrayEventBean),
+            methodNode.Block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<ObjectArrayEventBean>(
                     "resultEvent",
                     NewInstance(
                         typeof(ObjectArrayEventBean),

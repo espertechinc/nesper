@@ -210,8 +210,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var epl = "create variant schema MyVariant as SupportEventWithManyArray;\n" +
                           "insert into MyVariant select * from SupportEventWithManyArray;\n" +
                           "@name('s0') select distinct * from MyVariant#keepall;\n" +
-                          "@name('s1') select distinct intOne from MyVariant#keepall;\n" +
-                          "@name('s2') select distinct intOne, intTwo from MyVariant#keepall;\n";
+                          "@name('s1') select distinct IntOne from MyVariant#keepall;\n" +
+                          "@name('s2') select distinct IntOne, IntTwo from MyVariant#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] { 1, 2 }, new int[] { 3, 4 });
@@ -240,8 +240,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "@public create window MyWindow#keepall as SupportEventWithManyArray;\n" +
                           "insert into MyWindow select * from SupportEventWithManyArray;\n" +
-                          "@name('s0') on SupportBean_S0 select distinct intOne from MyWindow;\n" +
-                          "@name('s1') on SupportBean_S1 select distinct intOne, intTwo from MyWindow;\n";
+                          "@name('s0') on SupportBean_S0 select distinct IntOne from MyWindow;\n" +
+                          "@name('s1') on SupportBean_S1 select distinct IntOne, IntTwo from MyWindow;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
                 SendManyArray(env, new int[] { 1, 2 }, new int[] { 3, 4 });
@@ -253,13 +253,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { new object[] { new int[] { 1, 2 } }, new object[] { new int[] { 3, 4 } } });
 
                 env.SendEventBean(new SupportBean_S1(0));
                 env.AssertPropsPerRowLastNew(
                     "s1",
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] { new int[] { 1, 2 }, new int[] { 3, 4 } },
                         new object[] { new int[] { 3, 4 }, new int[] { 1, 2 } },
@@ -275,8 +275,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select distinct intOne from SupportEventWithManyArray#keepall;\n" +
-                    "@name('s1') select distinct intOne, intTwo from SupportEventWithManyArray#keepall;\n";
+                    "@name('s0') select distinct IntOne from SupportEventWithManyArray#keepall;\n" +
+                    "@name('s1') select distinct IntOne, IntTwo from SupportEventWithManyArray#keepall;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, new int[] { 1, 2 }, new int[] { 3, 4 });
@@ -287,12 +287,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertPropsPerRowIterator(
                     "s0",
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { new object[] { new int[] { 1, 2 } }, new object[] { new int[] { 3, 4 } } });
 
                 env.AssertPropsPerRowIterator(
                     "s1",
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] { new int[] { 1, 2 }, new int[] { 3, 4 } },
                         new object[] { new int[] { 3, 4 }, new int[] { 1, 2 } },
@@ -318,16 +318,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendManyArray(env, new int[] { 3, 4 }, new int[] { 1, 2 });
                 SendManyArray(env, new int[] { 1, 2 }, new int[] { 3, 4 });
 
-                var result = env.CompileExecuteFAF("select distinct intOne from MyWindow", path);
+                var result = env.CompileExecuteFAF("select distinct IntOne from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] { new object[] { new int[] { 1, 2 } }, new object[] { new int[] { 3, 4 } } });
 
-                result = env.CompileExecuteFAF("select distinct intOne, intTwo from MyWindow", path);
+                result = env.CompileExecuteFAF("select distinct IntOne, IntTwo from MyWindow", path);
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] { new int[] { 1, 2 }, new int[] { 3, 4 } },
                         new object[] { new int[] { 3, 4 }, new int[] { 1, 2 } },
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.AdvanceTime(0);
                 var epl =
-                    "@name('s0') select distinct intOne, intTwo from SupportEventWithManyArray output every 1 seconds";
+                    "@name('s0') select distinct IntOne, IntTwo from SupportEventWithManyArray output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, new int[] { 1, 2 }, new int[] { 3, 4 });
@@ -362,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "intOne,intTwo".SplitCsv(),
+                    "IntOne,IntTwo".SplitCsv(),
                     new object[][] {
                         new object[] { new int[] { 1, 2 }, new int[] { 3, 4 } },
                         new object[] { new int[] { 3, 4 }, new int[] { 1, 2 } },
@@ -378,7 +378,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var epl = "@name('s0') select distinct intOne from SupportEventWithManyArray output every 1 seconds";
+                var epl = "@name('s0') select distinct IntOne from SupportEventWithManyArray output every 1 seconds";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, new int[] { 1, 2 });
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertPropsPerRowLastNew(
                     "s0",
-                    "intOne".SplitCsv(),
+                    "IntOne".SplitCsv(),
                     new object[][] {
                         new object[] { new int[] { 1, 2 } }, new object[] { new int[] { 2, 1 } },
                         new object[] { new int[] { 2, 3 } }

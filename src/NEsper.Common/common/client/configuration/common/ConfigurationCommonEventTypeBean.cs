@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration information for legacy event types.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeBean
     {
         /// <summary>
@@ -114,7 +113,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Encapsulates information about an accessor field backing a named event property.
         /// </summary>
-        [Serializable]
         public class LegacyFieldPropDesc
         {
             /// <summary>
@@ -146,7 +144,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Encapsulates information about an accessor method backing a named event property.
         /// </summary>
-        [Serializable]
         public class LegacyMethodPropDesc
         {
             /// <summary>

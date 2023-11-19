@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 typeof(ExprTypeofNodeForgeStreamEvent),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
                 .IfRefNullReturnNull("@event")

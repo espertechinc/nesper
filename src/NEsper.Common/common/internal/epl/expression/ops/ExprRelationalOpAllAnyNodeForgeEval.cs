@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var block = methodNode.Block
-                .DeclareVar(typeof(bool?), "hasNonNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasNonNullRow", ConstantFalse());
             block.DeclareVar(
                 valueLeftType,
                 "valueLeft",

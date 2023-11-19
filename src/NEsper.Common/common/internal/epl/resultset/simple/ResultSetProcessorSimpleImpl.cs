@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
+                .DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
             ResultSetProcessorUtil.ProcessJoinResultCodegen(
                 method,
@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenInstanceAux instance)
         {
             method.Block
-                .DeclareVar(typeof(EventBean[]), "selectOldEvents", ConstantNull())
+                .DeclareVar<EventBean[]>("selectOldEvents", ConstantNull())
                 .DeclareVarNoInit(typeof(EventBean[]), "selectNewEvents");
             ResultSetProcessorUtil.ProcessViewResultCodegen(
                 method,
@@ -92,21 +92,19 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             }
 
             // Pull all events, generate order keys
-            method.Block.DeclareVar(
-                    typeof(EventBean[]),
+            method.Block.DeclareVar<EventBean[]>(
                     "eventsPerStream",
                     NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar(typeof(IList<EventBean>), "events", NewInstance(typeof(List<EventBean>)))
-                .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)))
-                .DeclareVar(typeof(IEnumerator<EventBean>), "parentIterator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
+                .DeclareVar<IList<EventBean>>("events", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)))
+                .DeclareVar<IEnumerator<EventBean>>("parentIterator", ExprDotMethod(REF_VIEWABLE, "GetEnumerator"))
                 .IfCondition(EqualsNull(Ref("parentIterator")))
                 .BlockReturn(PublicConstValue(typeof(CollectionUtil), "NULL_EVENT_ITERATOR"));
 
             {
                 var loop = method.Block.ForEach<EventBean>("aParent", REF_VIEWABLE);
                 loop.AssignArrayElement("eventsPerStream", Constant(0), Ref("aParent"))
-                    .DeclareVar(
-                        typeof(object),
+                    .DeclareVar<object>(
                         "orderKey",
                         ExprDotMethod(
                             MEMBER_ORDERBYPROCESSOR,
@@ -116,8 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                             MEMBER_EXPREVALCONTEXT));
 
                 if (forge.OptionalHavingNode == null) {
-                    loop.DeclareVar(
-                        typeof(EventBean[]),
+                    loop.DeclareVar<EventBean[]>(
                         "result",
                         StaticMethod(
                             typeof(ResultSetProcessorUtil),
@@ -130,8 +127,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                 }
                 else {
                     var select = GetSelectEventsHavingCodegen(classScope, instance);
-                    loop.DeclareVar(
-                        typeof(EventBean[]),
+                    loop.DeclareVar<EventBean[]>(
                         "result",
                         LocalMethod(
                             select,
@@ -148,16 +144,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
                     .ExprDotMethod(Ref("orderKeys"), "Add", Ref("orderKey"));
             }
 
-            method.Block.DeclareVar(
-                    typeof(EventBean[]),
+            method.Block.DeclareVar<EventBean[]>(
                     "outgoingEvents",
                     StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYEVENTS, Ref("events")))
-                .DeclareVar(
-                    typeof(object[]),
+                .DeclareVar<object[]>(
                     "orderKeysArr",
                     StaticMethod(typeof(CollectionUtil), METHOD_TOARRAYOBJECTS, Ref("orderKeys")))
-                .DeclareVar(
-                    typeof(EventBean[]),
+                .DeclareVar<EventBean[]>(
                     "orderedEvents",
                     ExprDotMethod(
                         MEMBER_ORDERBYPROCESSOR,
@@ -177,8 +170,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            method.Block.DeclareVar(
-                    typeof(UniformPair<EventBean[]>),
+            method.Block.DeclareVar<UniformPair<EventBean[]>>(
                     "result",
                     ExprDotMethod(
                         Ref("this"),
@@ -320,8 +312,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
         {
             if (!forge.IsOutputLast) {
                 method.Block
-                    .DeclareVar(
-                        typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>),
+                    .DeclareVar<UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>>(
                         "pair",
                         StaticMethod(typeof(EventBeanUtility), METHOD_FLATTENBATCHJOIN, REF_JOINEVENTSSET))
                     .MethodReturn(
@@ -342,8 +333,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.simple
             CodegenMethod method)
         {
             if (!forge.IsOutputLast) {
-                method.Block.DeclareVar(
-                        typeof(UniformPair<EventBean[]>),
+                method.Block.DeclareVar<UniformPair<EventBean[]>>(
                         "pair",
                         StaticMethod(typeof(EventBeanUtility), METHOD_FLATTENBATCHSTREAM, REF_VIEWEVENTSLIST))
                     .MethodReturn(

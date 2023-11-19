@@ -15,7 +15,6 @@ using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.client.configuration.common
 {
-    [Serializable]
     public class ImportType : Import
     {
         public ImportType()

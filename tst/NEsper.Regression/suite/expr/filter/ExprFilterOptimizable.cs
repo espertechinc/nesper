@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Threading;
 
@@ -141,28 +140,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
 
-                TryInKeyword(env, "ints", new SupportInKeywordBean(new int[] { 1, 2 }), milestone);
+                TryInKeyword(env, "Ints", new SupportInKeywordBean(new int[] { 1, 2 }), milestone);
                 TryInKeyword(
                     env,
-                    "mapOfIntKey",
+                    "MapOfIntKey",
                     new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")),
                     milestone);
-                TryInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+                TryInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
-                TryNotInKeyword(env, "ints", new SupportInKeywordBean(new int[] { 1, 2 }), milestone);
+                TryNotInKeyword(env, "Ints", new SupportInKeywordBean(new int[] { 1, 2 }), milestone);
                 TryNotInKeyword(
                     env,
-                    "mapOfIntKey",
+                    "MapOfIntKey",
                     new SupportInKeywordBean(CollectionUtil.TwoEntryMap(1, "x", 2, "y")),
                     milestone);
-                TryNotInKeyword(env, "collOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
+                TryNotInKeyword(env, "CollOfInt", new SupportInKeywordBean(Arrays.AsList(1, 2)), milestone);
 
                 TryInArrayContextProvided(env, milestone);
 
                 if (HasFilterIndexPlanBasicOrMore(env)) {
                     env.TryInvalidCompile(
-                        "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.longs))]",
-                        "Implicit conversion from datatype 'long' to 'Integer' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
+                        "select * from pattern[every a=SupportInKeywordBean -> SupportBean(IntPrimitive in (a.Longs))]",
+                        "Implicit conversion from datatype 'System.Int64' to 'System.Nullable<System.Int32>' for property 'IntPrimitive' is not allowed (strict filter type coercion)");
                 }
             }
         }
@@ -233,16 +232,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomBigDecimalEquals(a.bigDecimal, b.bigDecimal))]";
+                var epl = "@name('s0') select * from pattern[a=SupportBean() -> b=SupportBean(myCustomDecimalEquals(a.DecimalPrimitive, b.DecimalPrimitive))]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var beanOne = new SupportBean("E1", 0);
-                beanOne.DecimalBoxed = 13m;
+                beanOne.DecimalPrimitive = 13m;
                 env.SendEventBean(beanOne);
 
                 var beanTwo = new SupportBean("E2", 0);
-                beanTwo.DecimalBoxed = 13m;
+                beanTwo.DecimalPrimitive = 13m;
                 env.SendEventBean(beanTwo);
 
                 env.AssertListenerInvoked("s0");
@@ -315,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 if (HasFilterIndexPlanBasicOrMore(env)) {
                     env.TryInvalidCompile(
                         "select * from SupportBean(IntPrimitive=?:p0:long)",
-                        "Implicit conversion from datatype 'Long' to 'Integer' for property 'IntPrimitive' is not allowed");
+                        "Implicit conversion from datatype 'System.Nullable<System.Int64>' to 'System.Nullable<System.Int32>' for property 'IntPrimitive' is not allowed");
                 }
 
                 RunAssertionRelOpWSubs(env, "select * from SupportBean(IntPrimitive>?:p0:int)");
@@ -701,8 +699,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             AtomicLong milestone)
         {
             var epl = "create context MyContext initiated by SupportInKeywordBean as mie terminated after 24 hours;\n" +
-                      "@name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.ints);\n" +
-                      "@name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.ints));\n";
+                      "@name('s1') context MyContext select * from SupportBean#keepall where IntPrimitive in (context.mie.Ints);\n" +
+                      "@name('s2') context MyContext select * from SupportBean(IntPrimitive in (context.mie.Ints));\n";
             env.CompileDeploy(epl).AddListener("s1").AddListener("s2");
 
             env.SendEventBean(new SupportInKeywordBean(new int[] { 1, 2 }));
@@ -755,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 env.RuntimeSetVariable(null, "myCheckServiceProvider", new MyCheckServiceProvider());
 
-                env.CompileDeploy("@name('s0') select * from SupportBean(myCheckServiceProvider.check())")
+                env.CompileDeploy("@name('s0') select * from SupportBean(myCheckServiceProvider.Check())")
                     .AddListener("s0");
                 var latch = new CountDownLatch(1);
 
@@ -770,7 +768,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 try {
                     Assert.IsTrue(latch.Await(10, TimeUnit.SECONDS));
                 }
-                catch (ThreadInterruptedException e) {
+                catch (ThreadInterruptedException) {
                     Assert.Fail();
                 }
 
@@ -861,14 +859,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             return "OK";
         }
 
-        public static bool MyCustomBigDecimalEquals(
+        public static bool MyCustomDecimalEquals(
             decimal first,
             decimal second)
         {
             return first.CompareTo(second) == 0;
         }
 
-        [Serializable]
         public class MyCheckServiceProvider
         {
             public bool Check()

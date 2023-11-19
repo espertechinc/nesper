@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Represents a wildcard as a parameter.
     /// </summary>
-    [Serializable]
     public class WildcardParameter : NumberSetParameter
     {
         public static readonly WildcardParameter Instance = new WildcardParameter();

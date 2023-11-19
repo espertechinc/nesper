@@ -9,11 +9,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Xml;
 using System.Xml.XPath;
-
-using Antlr4.Runtime.Tree.Xpath;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -26,7 +23,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-using NUnit.Framework.Interfaces;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -116,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var resultThree = (string)navigator.Evaluate(pathExprThree);
                     //Console.WriteLine("Result 3: <" + resultThree + ">");
                 }
-                catch (Exception t) {
+                catch (Exception) {
                     Assert.Fail();
                 }
             }

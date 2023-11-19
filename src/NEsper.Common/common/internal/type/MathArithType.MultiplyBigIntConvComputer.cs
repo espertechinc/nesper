@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class MultiplyBigIntConvComputer : Computer
         {
             private readonly BigIntegerCoercer convOne;

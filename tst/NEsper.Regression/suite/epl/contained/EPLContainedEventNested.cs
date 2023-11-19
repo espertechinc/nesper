@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.CompileDeploy("insert into OrderWindowNWOT select * from OrderBean", path);
 
                 var stmtText =
-                    "@name('s0') on OrderWindowNWOT[Books] owb select sbw.* from SupportBeanWindow sbw where TheString = title";
+                    "@name('s0') on OrderWindowNWOT[Books] owb select sbw.* from SupportBeanWindow sbw where TheString = Title";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // try where in root
                 var stmtText =
-                    "@name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews] bookReviews order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books where Title = 'Enders Game'][Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in different levels
                 env.UndeployAll();
                 stmtText =
-                    "@name('s0') select ReviewId from OrderBean[Books where title = 'Enders Game'][Reviews where ReviewId in (1, 10)] bookReviews order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books where Title = 'Enders Game'][Reviews where ReviewId in (1, 10)] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -238,7 +238,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // try where in combination
                 env.UndeployAll();
                 stmtText =
-                    "@name('s0') select ReviewId from OrderBean[Books as bc][Reviews as rw where rw.ReviewId in (1, 10) and bc.title = 'Enders Game'] bookReviews order by ReviewId asc";
+                    "@name('s0') select ReviewId from OrderBean[Books as bc][Reviews as rw where rw.ReviewId in (1, 10) and bc.Title = 'Enders Game'] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -254,14 +254,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 // columns supplied
                 var stmtText =
-                    "@name('s0') select * from OrderBean[select BookId, orderdetail.OrderId as OrderId from Books][select ReviewId from Reviews] bookReviews order by ReviewId asc";
+                    "@name('s0') select * from OrderBean[select BookId, OrderDetail.OrderId as OrderId from Books][select ReviewId from Reviews] bookReviews order by ReviewId asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // stream wildcards identify fragments
                 stmtText =
-                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "@name('s0') select orderFrag.OrderDetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
                     "from OrderBean[Books as Book][select myorder.* as orderFrag, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
@@ -269,14 +269,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // one event type dedicated as underlying
                 stmtText =
-                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "@name('s0') select OrderDetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
                     "from OrderBean[Books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // wildcard unnamed as underlying
-                stmtText = "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, BookId, ReviewId " +
+                stmtText = "@name('s0') select orderFrag.OrderDetail.OrderId as OrderId, BookId, ReviewId " +
                            "from OrderBean[select * from Books][select myorder.* as orderFrag, ReviewId from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
@@ -284,14 +284,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 // wildcard named as underlying
                 stmtText =
-                    "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "@name('s0') select orderFrag.OrderDetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
                     "from OrderBean[select * from Books as bookFrag][select myorder.* as orderFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
                 env.UndeployAll();
 
                 // object model
-                stmtText = "@name('s0') select orderFrag.orderdetail.OrderId as OrderId, BookId, ReviewId " +
+                stmtText = "@name('s0') select orderFrag.OrderDetail.OrderId as OrderId, BookId, ReviewId " +
                            "from OrderBean[select * from Books][select myorder.* as orderFrag, ReviewId from Reviews as review] as myorder";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
                 TryAssertionColumnSelect(env);
@@ -361,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var fields = "OrderId,BookId,ReviewId".SplitCsv();
 
                 var stmtText =
-                    "@name('s0') select orderdetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
+                    "@name('s0') select OrderDetail.OrderId as OrderId, bookFrag.BookId as BookId, reviewFrag.ReviewId as ReviewId " +
                     "from OrderBean[Books as Book][select myorder.*, Book.* as bookFrag, review.* as reviewFrag from Reviews as review] as myorder";
                 env.CompileDeploy(stmtText).AddListener("s0");
 

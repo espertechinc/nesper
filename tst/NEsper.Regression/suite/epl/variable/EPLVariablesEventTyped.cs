@@ -305,9 +305,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var path = new RegressionPath();
                 env.CompileDeploy("@name('create') @public create variable SupportBean varbean", path);
 
-                var fields = "varbean.TheString,varbean.IntPrimitive,varbean.getTheString()".SplitCsv();
+                var fields = "varbean.TheString,varbean.IntPrimitive,varbean.TheString".SplitCsv();
                 env.CompileDeploy(
-                    "@name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.getTheString() from SupportBean_S0",
+                    "@name('s0') select varbean.TheString,varbean.IntPrimitive,varbean.TheString from SupportBean_S0",
                     path);
                 env.AddListener("s0");
 

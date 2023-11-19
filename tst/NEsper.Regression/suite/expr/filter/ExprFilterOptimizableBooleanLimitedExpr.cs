@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -18,7 +17,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
-using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using static com.espertech.esper.common.@internal.filterspec.FilterOperator; // EQUAL
 // REBOOL
@@ -423,7 +421,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 SupportFilterPlanHook.Reset();
-                var hook = "@Hook(Type=HookType.INTERNAL_FILTERSPEC, Hook='" +
+                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" +
                            typeof(SupportFilterPlanHook).FullName +
                            "')";
                 var epl = hook + "@name('s0') select * from SupportBean(TheString regexp '.*a.*')";
@@ -559,7 +557,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "  using com.espertech.esper.common.client.configuration.compiler;\n" +
                               "  [ExtensionSingleRowFunction(Name=\"doit\", MethodName=\"Doit\", FilterOptimizable=ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED)]\n" +
                               "  public class Helper {\n" +
-                              "    public static string Doit(object param) {\n" +
+                              "    public static string DoIt(object param) {\n" +
                               "      return null;\n" +
                               "    }\n" +
                               "  }\n" +
@@ -619,7 +617,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var eplWithLocalHelper = hook +
                                          "inlined_class \"\"\"\n" +
                                          "  public class LocalHelper {\n" +
-                                         "    public static string Doit(object param) {\n" +
+                                         "    public static string DoIt(object param) {\n" +
                                          "      return null;\n" +
                                          "    }\n" +
                                          "  }\n" +

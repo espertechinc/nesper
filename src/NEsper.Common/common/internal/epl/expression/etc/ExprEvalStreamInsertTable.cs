@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var refEps = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEps = exprSymbol.GetAddEps(codegenMethodScope);
             var refIsNewData = exprSymbol.GetAddIsNewData(codegenMethodScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             var eventToPublic =

@@ -12,7 +12,6 @@ using System.Collections.Generic;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Represents type information for data flow operators. </summary>
-    [Serializable]
     public class DataFlowOperatorOutputType
     {
         /// <summary>Ctor. </summary>

@@ -11,8 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.@event.render;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -21,8 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {
     public class EventRenderJSON
@@ -131,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                         //Console.WriteLine(result);
                         var valuesOnly =
-                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"enumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" }";
+                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" }";
                         var expected = "{ \"supportBean\": " + valuesOnly + " }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
@@ -262,7 +259,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
             return text.RegexReplaceAll("\\s\\s+|\\n|\\r", " ").Trim();
         }
 
-        [Serializable]
         public class EmptyMapEvent
         {
             private IDictionary<string, string> props;

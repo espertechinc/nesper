@@ -23,21 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
     /// </summary>
     public class OutputConditionPolledExpressionFactory : OutputConditionPolledFactory
     {
-        private ExprEvaluator whenExpression;
-        private VariableReadWritePackage variableReadWritePackage;
-        private bool isUsingBuiltinProperties;
-        private EventType builtinPropertiesEventType;
+        private EventType _builtinPropertiesEventType;
 
         public OutputConditionPolled MakeFromState(
             ExprEvaluatorContext exprEvaluatorContext,
             OutputConditionPolledState state)
         {
             ObjectArrayEventBean builtinProperties = null;
-            if (isUsingBuiltinProperties) {
+            if (IsUsingBuiltinProperties) {
                 InitType(exprEvaluatorContext);
                 builtinProperties = new ObjectArrayEventBean(
                     OutputConditionExpressionTypeUtil.OAPrototype,
-                    builtinPropertiesEventType);
+                    _builtinPropertiesEventType);
             }
 
             var expressionState = (OutputConditionPolledExpressionState)state;
@@ -48,11 +45,11 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
         {
             ObjectArrayEventBean builtinProperties = null;
             long? lastOutputTimestamp = null;
-            if (isUsingBuiltinProperties) {
+            if (IsUsingBuiltinProperties) {
                 InitType(exprEvaluatorContext);
                 builtinProperties = new ObjectArrayEventBean(
                     OutputConditionExpressionTypeUtil.OAPrototype,
-                    builtinPropertiesEventType);
+                    _builtinPropertiesEventType);
                 lastOutputTimestamp = exprEvaluatorContext.TimeProvider.Time;
             }
 
@@ -62,27 +59,17 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
 
         private void InitType(ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (builtinPropertiesEventType == null) {
-                builtinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
+            if (_builtinPropertiesEventType == null) {
+                _builtinPropertiesEventType = OutputConditionExpressionTypeUtil.GetBuiltInEventType(
                     exprEvaluatorContext.ModuleName,
                     new BeanEventTypeFactoryDisallow(exprEvaluatorContext.EventBeanTypedEventFactory));
             }
         }
 
-        public ExprEvaluator WhenExpression {
-            get => whenExpression;
+        public ExprEvaluator WhenExpression { get; set; }
 
-            set => whenExpression = value;
-        }
+        public VariableReadWritePackage VariableReadWritePackage { get; set; }
 
-        public VariableReadWritePackage VariableReadWritePackage {
-            get => variableReadWritePackage;
-
-            set => variableReadWritePackage = value;
-        }
-
-        public bool UsingBuiltinProperties {
-            set => isUsingBuiltinProperties = value;
-        }
+        public bool IsUsingBuiltinProperties { get; set; }
     }
 } // end of namespace

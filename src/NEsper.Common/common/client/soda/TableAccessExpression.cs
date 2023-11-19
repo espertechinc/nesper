@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Table access expression.
     /// </summary>
-    [Serializable]
     public class TableAccessExpression : ExpressionBase
     {
         private string _tableName;

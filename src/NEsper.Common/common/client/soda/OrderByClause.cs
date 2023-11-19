@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An order-by clause consists of expressions and flags indicating if ascending or descending.
     /// </summary>
-    [Serializable]
     public class OrderByClause
     {
         private IList<OrderByElement> orderByExpressions;

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Pattern observer expression observes occurances such as timer-at (crontab) and timer-interval.
     /// </summary>
-    [Serializable]
     public class PatternObserverExpr : EPBaseNamedObject,
         PatternExpr
     {

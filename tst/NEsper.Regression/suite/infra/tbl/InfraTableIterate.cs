@@ -6,13 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -65,7 +64,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.AssertPropsPerRowIteratorAnyOrder(
                 "s0",
                 "pkey0,pkey1,c0".SplitCsv(),
-                new object[][] { new object[] { "E1", 10, 100L }, new object[] { "E2", 20, 200L } });
+                new object[][] {
+                    new object[] { "E1", 10, 100L },
+                    new object[] { "E2", 20, 200L }
+                });
             env.UndeployModuleContaining("s0");
         }
 

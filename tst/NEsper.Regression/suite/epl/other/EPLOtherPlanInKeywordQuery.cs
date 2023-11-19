@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
@@ -149,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 TryAssertionMultiIdx(env);
@@ -315,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[0].Items;
-                        Assert.AreEqual("[P00]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        Assert.AreEqual("[\"P00\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 TryAssertionSingleIdx(env);
@@ -480,7 +479,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[P10]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        Assert.AreEqual("[\"P10\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 env.SendEventBean(new SupportBean_S1(100, "x"));
@@ -515,7 +514,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[P10][P11]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 env.SendEventBean(new SupportBean_S1(100, "x", "y"));

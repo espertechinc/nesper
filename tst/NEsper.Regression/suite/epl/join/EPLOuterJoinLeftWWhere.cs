@@ -14,9 +14,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
-// assertSame
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {

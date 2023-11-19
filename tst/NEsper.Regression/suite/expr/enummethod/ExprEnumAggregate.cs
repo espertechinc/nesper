@@ -133,10 +133,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Strvals.aggregate('', (result, Item) => result || '+' || Item)");
                 builder.WithExpression(
                     fields[1],
-                    "Strvals.aggregate('', (result, Item, i) => result || '+' || Item || '_' || Integer.toString(i))");
+                    "Strvals.aggregate('', (result, Item, i) => result || '+' || Item || '_' || Convert.ToString(i))");
                 builder.WithExpression(
                     fields[2],
-                    "Strvals.aggregate('', (result, Item, i, s) => result || '+' || Item || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.aggregate('', (result, Item, i, s) => result || '+' || Item || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
                 builder.WithExpression(fields[3], "Strvals.aggregate('', (result, Item, i, s) => null)");
 
                 builder.WithStatementConsumer(

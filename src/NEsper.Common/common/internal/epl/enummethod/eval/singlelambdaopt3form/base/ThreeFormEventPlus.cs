@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -79,11 +80,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
             var returnEmpty = ReturnIfEmptyOptional();
             if (returnEmpty != null) {
-                block.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
+                block
+                    .IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
                     .BlockReturn(returnEmpty);
             }
 
-            block.DeclareVar<ObjectArrayEventBean>(
+            block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
                     NewInstance(
                         typeof(ObjectArrayEventBean),

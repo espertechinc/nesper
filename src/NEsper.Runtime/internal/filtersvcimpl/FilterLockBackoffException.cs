@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
-    [Serializable]
     public class FilterLockBackoffException : EPRuntimeException
     {
         public FilterLockBackoffException(string message)

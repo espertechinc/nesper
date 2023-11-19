@@ -8,10 +8,12 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+
+using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -131,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SetupOrPattern(
                     env,
                     "a, a as myAEvent, b, b as myBEvent, a.IntPrimitive as MyInt, " +
-                    "a.TheString, b.SimpleProperty as simple, b.indexed[0] as indexed, b.Nested.NestedValue as nestedVal");
+                    "a.TheString, b.SimpleProperty as simple, b.Indexed[0] as Indexed, b.Nested.NestedValue as NestedValue");
 
                 object theEvent = SupportBeanComplexProps.MakeDefaultBean();
                 env.SendEventBean(theEvent);
@@ -139,9 +141,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     eventBean => {
                         Assert.AreSame(theEvent, eventBean.Get("b"));
-                        Assert.AreEqual("simple", eventBean.Get("simple"));
-                        Assert.AreEqual(1, eventBean.Get("indexed"));
-                        Assert.AreEqual("NestedValue", eventBean.Get("NestedVal"));
+                        Assert.AreEqual("Simple", eventBean.Get("simple"));
+                        Assert.AreEqual(1, eventBean.Get("Indexed"));
+                        Assert.AreEqual("NestedValue", eventBean.Get("NestedValue"));
                         Assert.IsNull(eventBean.Get("a"));
                         Assert.IsNull(eventBean.Get("myAEvent"));
                         Assert.IsNull(eventBean.Get("MyInt"));
@@ -160,8 +162,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.IsNull(eventBean.Get("b"));
                         Assert.IsNull(eventBean.Get("myBEvent"));
                         Assert.IsNull(eventBean.Get("simple"));
-                        Assert.IsNull(eventBean.Get("indexed"));
-                        Assert.IsNull(eventBean.Get("NestedVal"));
+                        Assert.IsNull(eventBean.Get("Indexed"));
+                        Assert.IsNull(eventBean.Get("NestedValue"));
                     });
 
                 env.UndeployAll();

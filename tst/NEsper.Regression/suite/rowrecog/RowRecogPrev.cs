@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                            "  measures A.TheString as a_string, B.TheString as b_string" +
                            "  all matches pattern (A B) " +
                            "  define " +
-                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.abs(prev(A.Value, 0)) >= 0," +
+                           "    A as PREV(A.TheString, 3) = 'P3' and PREV(A.TheString, 2) = 'P2' and PREV(A.TheString, 4) = 'P4' and Math.Abs(prev(A.Value, 0)) >= 0," +
                            "    B as B.Value in (PREV(B.Value, 4), PREV(B.Value, 2))" +
                            ")";
 

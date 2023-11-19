@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.context.controller.core
         {
             return "Segmented context '" +
                    contextName +
-                   "' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, Type '" +
+                   "' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type '" +
                    typeNameEx +
                    "' is not one of the types listed";
         }

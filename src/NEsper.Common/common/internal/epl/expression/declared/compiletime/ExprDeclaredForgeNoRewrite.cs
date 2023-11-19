@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return exprSymbol.GetAddEPS(codegenMethodScope);
+            return exprSymbol.GetAddEps(codegenMethodScope);
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

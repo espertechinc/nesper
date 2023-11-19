@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Describes a column name and type.
     /// </summary>
-    [Serializable]
     public class ColumnDesc
     {
         /// <summary>

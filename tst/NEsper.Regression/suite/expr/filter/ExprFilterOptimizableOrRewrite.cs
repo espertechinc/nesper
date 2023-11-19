@@ -14,11 +14,9 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.filter;
-using com.espertech.esper.runtime.client.scopetest;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
-using NUnit.Framework; // assertSame
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableOrRewrite
@@ -233,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Hint('MAX_FILTER_WIDTH=0') @name('s0') select * from SupportBean_IntAlphabetic((b=1 or c=1) and (d=1 or e=1))";
+                    "@Hint('MAX_FILTER_WIDTH=0') @name('s0') select * from SupportBean_IntAlphabetic((B=1 or C=1) and (D=1 or E=1))";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
                 SupportFilterServiceHelper.AssertFilterSvcSingle(
                     env,
@@ -250,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var epl =
-                    "@name('s0') select (select * from SupportBean_IntAlphabetic(a=1 or b=1)#keepall) as c0 from SupportBean";
+                    "@name('s0') select (select * from SupportBean_IntAlphabetic(A=1 or B=1)#keepall) as c0 from SupportBean";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 var iaOne = IntEvent(1, 1);
@@ -267,10 +265,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('ctx') create context MyContext \n" +
-                          "  group a=1 or b=1 as g1,\n" +
-                          "  group c=1 as g1\n" +
+                          "  group A=1 or B=1 as g1,\n" +
+                          "  group C=1 as g1\n" +
                           "  from SupportBean_IntAlphabetic;" +
-                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(d=1 or e=1)";
+                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1 or E=1)";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendAssertEvents(
@@ -288,8 +286,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create context MyContext " +
-                          "coalesce by consistent_hash_crc32(a) from SupportBean_IntAlphabetic(b=1) granularity 16 preallocate;" +
-                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(c=1 or d=1)";
+                          "coalesce by consistent_hash_crc32(A) from SupportBean_IntAlphabetic(B=1) granularity 16 preallocate;" +
+                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(C=1 or D=1)";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendAssertEvents(
@@ -305,8 +303,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context MyContext partition by a from SupportBean_IntAlphabetic(b=1 or c=1);" +
-                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(d=1)";
+                var epl = "create context MyContext partition by A from SupportBean_IntAlphabetic(B=1 or C=1);" +
+                          "@name('s0') context MyContext select * from SupportBean_IntAlphabetic(D=1)";
                 env.CompileDeployAddListenerMile(epl, "s0", 0);
 
                 SendAssertEvents(
@@ -324,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filters = new string[] {
-                    "(a='a' or a like 'A%') and (b='b' or b like 'B%')",
+                    "(A='a' or A like 'A%') and (B='b' or B like 'B%')",
                 };
                 foreach (var filter in filters) {
                     var epl = "@name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
@@ -367,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filters = new string[] {
-                    "a like 'a%' and (b='b' or c='c')",
+                    "A like 'a%' and (B='b' or C='c')",
                 };
                 foreach (var filter in filters) {
                     var epl = "@name('s0') select * from SupportBean_StringAlphabetic(" + filter + ")";
@@ -402,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filters = new string[] {
-                    "a!=1 and a!=2 and ((a!=3 and a!=4) or (a!=5 and a!=6))",
+                    "A!=1 and A!=2 and ((A!=3 and A!=4) or (A!=5 and A!=6))",
                 };
                 foreach (var filter in filters) {
                     var epl = "@name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
@@ -440,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filters = new string[] {
-                    "a!=1 and a!=2 and (a!=3 or a!=4)",
+                    "A!=1 and A!=2 and (A!=3 or A!=4)",
                 };
                 foreach (var filter in filters) {
                     var epl = "@name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
@@ -478,7 +476,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filters = new string[] {
-                    "a!=1 and a!=2 and (b=1 or c=1)",
+                    "A!=1 and A!=2 and (B=1 or C=1)",
                 };
                 foreach (var filter in filters) {
                     var epl = "@name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";
@@ -554,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             {
                 var milestone = new AtomicLong();
                 var filtersAB = new string[] {
-                    "a=1 and (b=1 or c=1) and (d=1 or e=1)",
+                    "A=1 and (B=1 or C=1) and (D=1 or E=1)",
                 };
                 foreach (var filter in filtersAB) {
                     var epl = "@name('s0') select * from SupportBean_IntAlphabetic(" + filter + ")";

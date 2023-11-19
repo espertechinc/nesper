@@ -23,7 +23,6 @@ namespace com.espertech.esper.epl.db.drivers
     /// A database driver specific to the MySQL driver.  The MySQL driver
     /// is a named positional driver.
     /// </summary>
-    [Serializable]
     public class DbDriverMySQL : BaseDbDriver
     {
         [JsonIgnore]

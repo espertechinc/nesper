@@ -61,12 +61,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .DeclareVar<int>("cpid", ExprDotName(evalCtx, "AgentInstanceId"))
                 .DeclareVar<AggregationService>(
                     "aggregationService",
-                    ExprDotMethod(aggService, "ContextPartitionAggregationService", Ref("cpid")))
-                .DeclareVar(
-                    typeof(ICollection<object>),
+                    ExprDotMethod(aggService, "GetContextPartitionAggregationService", Ref("cpid")))
+                .DeclareVar<ICollection<object>>(
                     "groupKeys",
                     ExprDotMethod(Ref("aggregationService"), "GetGroupKeys", evalCtx))
-                .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
 
             var forEach = method.Block.ForEach<object>("groupKey", Ref("groupKeys"));
             {
@@ -97,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     forEach.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 var ifRightNotNull = forEach.IfCondition(EqualsNull(Ref("valueRight")))
@@ -105,21 +104,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .IfElse();
                 {
                     if (coercer == null) {
-                        ifRightNotNull.DeclareVar(
-                            typeof(bool?),
-                            "eq",
-                            ExprDotMethod(left, "Equals", Ref("valueRight")));
+                        ifRightNotNull.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
                     }
                     else {
-                        ifRightNotNull.DeclareVar(
-                                typeof(object),
+                        ifRightNotNull.DeclareVar<object>(
                                 "left",
                                 coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(
-                                typeof(object),
+                            .DeclareVar<object>(
                                 "right",
                                 coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar(typeof(bool?), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(Constant(!isNotIn));

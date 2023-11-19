@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Nested () regular expression in a regex expression tree.
     /// </summary>
-    [Serializable]
     public class RowRecogExprNodeNested : RowRecogExprNode
     {
         public RowRecogExprNodeNested(

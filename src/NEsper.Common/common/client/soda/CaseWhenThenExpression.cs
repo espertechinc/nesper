@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Case expression that act as a when-then-else.
     /// </summary>
-    [Serializable]
     public class CaseWhenThenExpression : ExpressionBase
     {
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.CASE;

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     ///     <para />
     ///     Closed and open ranges (endpoint included or excluded) are supported by this class, as is not-between.
     /// </summary>
-    [Serializable]
     public class BetweenExpression : ExpressionBase
     {
         /// <summary>

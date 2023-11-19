@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Hash-segmented context. </summary>
-    [Serializable]
     public class ContextDescriptorHashSegmented : ContextDescriptor
     {
         /// <summary>Ctor. </summary>

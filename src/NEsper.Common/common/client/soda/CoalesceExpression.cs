@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Coalesce-function which returns the first non-null value in a list of values.
     /// </summary>
-    [Serializable]
     public class CoalesceExpression : ExpressionBase
     {
         /// <summary>

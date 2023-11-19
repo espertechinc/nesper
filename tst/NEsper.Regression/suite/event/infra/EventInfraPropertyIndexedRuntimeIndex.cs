@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -28,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             // Bean
             Consumer<string[]> bean = values => { env.SendEventBean(new LocalEvent(values)); };
-            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
             RunAssertion(env, beanepl, bean);
 
             // Map
@@ -57,8 +55,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
-            var jsonProvidedEpl = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var jsonProvidedEpl = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonProvidedEpl, json);
 
@@ -91,7 +89,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private string[] indexed;
@@ -107,7 +104,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string[] indexed;

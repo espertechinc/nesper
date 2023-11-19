@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
+using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
@@ -19,6 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
 {
     public class AggregationClassAssignment
     {
+        public const string STATEMENT_FIELDS = "statementFields";
+
         private readonly int _offset;
         private readonly CodegenMemberCol _members;
         private readonly CodegenCtor _ctor;
@@ -36,11 +39,31 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             CodegenClassScope classScope)
         {
             _offset = offset;
-            _ctor = new CodegenCtor(forgeClass, classScope, EmptyList<CodegenTypedParam>.Instance);
             _members = new CodegenMemberCol();
             _methodForges = new List<ExprForge[]>();
             _methodFactories = new List<AggregationForgeFactory>();
             _accessStateFactories = new List<AggregationStateFactoryForge>();
+            _ctor = GetConstructor(forgeClass, classScope);
+        }
+
+        private CodegenCtor GetConstructor(
+            Type forgeClass,
+            CodegenClassScope classScope)
+        {
+            var namespaceScope = classScope.NamespaceScope;
+            if (namespaceScope.FieldsClassNameOptional != null) {
+                var ctorParams = new List<CodegenTypedParam>() {
+                    new CodegenTypedParam(
+                        classScope.NamespaceScope.FieldsClassNameOptional,
+                        STATEMENT_FIELDS,
+                        true,
+                        false)
+                };
+
+                return new CodegenCtor(forgeClass, classScope, ctorParams);
+            }
+
+            return new CodegenCtor(forgeClass, classScope, EmptyList<CodegenTypedParam>.Instance);
         }
 
         public void AddMethod(AggregationVColMethod vcol)

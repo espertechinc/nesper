@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration information for JSON event types.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeJson : ConfigurationCommonEventTypeWithSupertype
     {
     }

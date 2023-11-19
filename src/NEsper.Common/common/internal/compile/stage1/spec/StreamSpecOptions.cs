@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// stream of events.
     /// </para>
     /// </summary>
-    [Serializable]
     public class StreamSpecOptions
     {
         public static readonly StreamSpecOptions DEFAULT = new StreamSpecOptions();

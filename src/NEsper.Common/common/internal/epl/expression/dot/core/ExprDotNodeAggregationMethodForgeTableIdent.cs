@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         typeof(ExprTableIdentNode),
                         "TableColumnRow",
                         Constant(identNode.StreamNum),
-                        symbols.GetAddEPS(method)))
+                        symbols.GetAddEps(method)))
                 .IfRefNullReturnNull("row")
                 .MethodReturn(
                     CodegenLegoCast.CastSafeFromObjectType(
@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             readerMethodName,
                             Constant(column.Column),
                             Ref("row"),
-                            symbols.GetAddEPS(method),
+                            symbols.GetAddEps(method),
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method))));
             return LocalMethod(method);

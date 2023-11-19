@@ -55,12 +55,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (lhsClass != typeof(string) || rhsClass != typeof(string)) {
                 if (!lhsClass.IsTypeNumeric()) {
                     throw new ExprValidationException(
-                        "Implicit conversion from datatype '" + lhsClass + "' to numeric is not allowed");
+                        "Implicit conversion from datatype '" + lhsClass.CleanName() + "' to numeric is not allowed");
                 }
 
                 if (!rhsClass.IsTypeNumeric()) {
                     throw new ExprValidationException(
-                        "Implicit conversion from datatype '" + rhsClass + "' to numeric is not allowed");
+                        "Implicit conversion from datatype '" + rhsClass.CleanName() + "' to numeric is not allowed");
                 }
             }
 

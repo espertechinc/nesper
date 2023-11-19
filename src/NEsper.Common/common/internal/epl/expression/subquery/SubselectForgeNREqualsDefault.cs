@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
-            method.Block.DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
+            method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
             var foreachX = method.Block.ForEach(
                 typeof(EventBean),
                 "theEvent",
@@ -83,16 +83,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 var ifRight = foreachX.IfCondition(NotEqualsNull(Ref("valueRight")));
                 {
                     if (coercer == null) {
-                        ifRight.DeclareVar(
-                            typeof(bool?),
-                            "eq",
-                            ExprDotMethod(left, "Equals", Ref("valueRight")));
+                        ifRight.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("valueRight")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, Ref("eq"))).BlockReturn(ConstantFalse());
                         }
@@ -101,18 +98,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         }
                     }
                     else {
-                        ifRight.DeclareVar(
-                                typeof(object),
+                        ifRight.DeclareVar<object>(
                                 "left",
                                 coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(
-                                typeof(object),
+                            .DeclareVar<object>(
                                 "right",
                                 coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar(
-                                typeof(bool?),
-                                "eq",
-                                ExprDotMethod(Ref("left"), "Equals", Ref("right")));
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                         if (isAll) {
                             ifRight.IfCondition(NotOptional(!isNot, Ref("eq"))).BlockReturn(ConstantFalse());
                         }

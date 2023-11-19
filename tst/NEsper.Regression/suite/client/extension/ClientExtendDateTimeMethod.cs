@@ -8,9 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-
-using Avro.Util;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.datetimemethod;

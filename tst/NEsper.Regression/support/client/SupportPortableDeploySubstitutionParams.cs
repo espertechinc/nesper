@@ -14,7 +14,6 @@ using com.espertech.esper.runtime.client.option;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
-	[Serializable]
 	public class SupportPortableDeploySubstitutionParams // : StatementSubstitutionParameterOption
 	{
 	    private IDictionary<int, object> valuesByIndex;

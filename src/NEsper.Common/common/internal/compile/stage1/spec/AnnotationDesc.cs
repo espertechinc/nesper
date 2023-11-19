@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Describes an annotation.
     /// </summary>
-    [Serializable]
     public class AnnotationDesc
     {
         // Map of Identifier and value={constant, array of value (Object[]), AnnotationDesc} (exclusive with value)

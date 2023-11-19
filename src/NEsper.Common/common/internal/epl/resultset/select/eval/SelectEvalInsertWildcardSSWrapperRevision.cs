@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
             CodegenClassScope codegenClassScope)
         {
             var type = VariantEventTypeUtil.GetField(variantEventType, codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             return StaticMethod(
                 typeof(SelectEvalInsertWildcardSSWrapperRevision),
                 "SelectExprInsertWildcardSSWrapRevision",

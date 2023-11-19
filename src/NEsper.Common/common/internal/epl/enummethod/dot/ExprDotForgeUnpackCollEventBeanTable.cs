@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             var eventToPublic =
                 TableDeployTimeResolver.MakeTableEventToPublicField(table, classScope, GetType());
-            var refEPS = symbols.GetAddEPS(parent);
+            var refEPS = symbols.GetAddEps(parent);
             var refIsNewData = symbols.GetAddIsNewData(parent);
             var refExprEvalCtx = symbols.GetAddExprEvalCtx(parent);
             return StaticMethod(
@@ -91,7 +91,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
 
-            var events = ((FlexCollection)target).EventBeanCollection;
+            var events = target.Unwrap<EventBean>();
             var underlyings = new ArrayDeque<object[]>(events.Count);
             foreach (var @event in events) {
                 underlyings.Add(eventToPublic.ConvertToUnd(@event, eventsPerStream, isNewData, exprEvaluatorContext));

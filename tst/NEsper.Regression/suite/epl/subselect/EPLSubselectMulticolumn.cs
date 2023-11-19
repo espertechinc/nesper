@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -64,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             {
                 var fields = new string[] { "Id", "s1totals.v1", "s1totals.v2" };
                 var text =
-                    "@name('s0') select id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as s1totals " +
+                    "@name('s0') select Id, (select count(*) as v1, sum(Id) as v2 from SupportBean_S1#length(3)) as s1totals " +
                     "from SupportBean_S0 s0";
                 env.CompileDeploy(text).AddListener("s0");
 

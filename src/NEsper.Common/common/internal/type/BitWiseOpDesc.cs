@@ -51,10 +51,7 @@ namespace com.espertech.esper.common.@internal.type
 
         public override int GetHashCode()
         {
-            unchecked {
-                return ((_type != null ? _type.GetHashCode() : 0) * 397) ^
-                       (_bitwise != null ? _bitwise.GetHashCode() : 0);
-            }
+            return HashCode.Combine(_type, (int)_bitwise);
         }
 
         public override string ToString()

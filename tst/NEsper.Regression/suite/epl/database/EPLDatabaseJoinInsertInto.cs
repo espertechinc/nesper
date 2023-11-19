@@ -8,7 +8,6 @@
 
 using System.Text;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;

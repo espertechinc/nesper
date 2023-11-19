@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
                 .DeclareVar(
                     classNameResultSetProcessor,
                     "rsp",
-                    NewInstanceInner(classNameResultSetProcessor, symbols.GetAddInitSvc(method)))
+                    NewInstanceInner(classNameResultSetProcessor, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(
                     select,
                     "ResultSetProcessorFactoryProvider",

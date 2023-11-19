@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     ///     The assembly of a compile EPL module or EPL fire-and-forget query.
     /// </summary>
-    [Serializable]
     public class EPCompiled
     {
         /// <summary>

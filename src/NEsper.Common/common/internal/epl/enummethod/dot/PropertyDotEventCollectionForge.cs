@@ -79,11 +79,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<EventBean>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamId)))
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var methodNode = methodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<EventBean>),
                 typeof(PropertyDotEventCollectionForge),
                 codegenClassScope);
             methodNode.Block
@@ -231,7 +231,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             if (_disablePropertyExpressionEventCollCache) {
                 var methodNodeX = codegenMethodScope.MakeChild(
-                        typeof(FlexCollection),
+                        typeof(ICollection<EventBean>),
                         typeof(PropertyDotEventCollectionForge),
                         codegenClassScope)
                     .AddParam<EventBean>("@event");
@@ -243,12 +243,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             typeof(EventBean[]),
                             _getter.EventBeanFragmentCodegen(Ref("@event"), methodNodeX, codegenClassScope)))
                     .IfRefNullReturnNull("events")
-                    .MethodReturn(FlexWrap(Ref("events")));
+                    .MethodReturn(Ref("events"));
                 return LocalMethod(methodNodeX, @event);
             }
 
             var methodNode = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(PropertyDotEventCollectionForge), codegenClassScope)
+                .MakeChild(typeof(ICollection<EventBean>), typeof(PropertyDotEventCollectionForge), codegenClassScope)
                 .AddParam<EventBean>("@event");
             var refExprEvalCtx = refExprEvalCtxFunc.Invoke(methodNode);
 
@@ -268,11 +268,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                     Cast(
                         typeof(EventBean[]),
                         _getter.EventBeanFragmentCodegen(Ref("@event"), methodNode, codegenClassScope)))
-                .DeclareVarNoInit(typeof(FlexCollection), "coll")
+                .DeclareVarNoInit(typeof(ICollection<EventBean>), "coll")
                 .IfRefNull("events")
                 .AssignRef("coll", ConstantNull())
                 .IfElse()
-                .AssignRef("coll", FlexWrap(Ref("events")))
+                .AssignRef("coll", Ref("events"))
                 .BlockEnd()
                 .Expression(
                     ExprDotMethod(

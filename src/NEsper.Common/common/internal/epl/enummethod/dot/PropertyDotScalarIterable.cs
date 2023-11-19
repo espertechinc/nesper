@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             return CodegenEvaluateInternal(
                 ArrayAtIndex(refEPS, Constant(streamId)),
                 codegenMethodScope,

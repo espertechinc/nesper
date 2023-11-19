@@ -393,8 +393,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
             var assignLambda = new CodegenExpressionLambda(enclosingBlock)
                 .WithParam<StatementAIFactoryAssignments>("assignments");
             if (!namespaceScope.FieldsNamed.IsEmpty()) {
-                assignLambda.Block.StaticMethod(
-                    namespaceScope.FieldsClassNameOptional, "assign", Ref("assignments"));
+                assignLambda.Block.ExprDotMethod(Ref("statementFields"), "Assign", Ref("assignments"));
             }
 
             // var setValueMethod = CodegenMethod

@@ -12,6 +12,7 @@ using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -35,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             // Bean
             Consumer<string> bean = property => { env.SendEventBean(new LocalEvent(property)); };
-            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
             RunAssertion(env, "LocalEvent", beanepl, bean);
 
             // Map
@@ -64,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(
                 env,
                 "LocalEvent",
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvided).FullName +
+                "@JsonSchema(ClassName='" +
+                typeof(MyLocalJsonProvided).MaskTypeName() +
                 "') @public @buseventtype create json schema LocalEvent();\n",
                 json);
 
@@ -143,7 +144,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Assert.IsNull(getter.GetFragment(@event));
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private string property;
@@ -159,7 +159,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string property;

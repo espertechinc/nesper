@@ -14,7 +14,6 @@ using com.espertech.esper.common.client;
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     /// <summary> Thrown to indicate a validation error in a filter expression.</summary>
-    [Serializable]
     public class ExprValidationException : EPException
     {
         /// <summary> Ctor.</summary>

@@ -11,6 +11,7 @@ using System;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -19,8 +20,7 @@ using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraGetterIndexed : RegressionExecution
@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             // Bean
             Consumer<string[]> bean = array => { env.SendEventBean(new LocalEvent(array)); };
-            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
             RunAssertion(env, beanepl, bean);
 
             // Map
@@ -65,8 +65,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Json-Class-Provided
             RunAssertion(
                 env,
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvided).FullName +
+                "@JsonSchema(ClassName='" +
+                typeof(MyLocalJsonProvided).MaskTypeName() +
                 "') @public @buseventtype create json schema LocalEvent();\n",
                 json);
 
@@ -162,7 +162,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private string[] array;
@@ -175,7 +174,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string[] Array => array;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string[] array;

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.type
     /// <summary>
     /// Parameter supplying a single int value is a set of numbers.
     /// </summary>
-    [Serializable]
     public class IntParameter : NumberSetParameter
     {
         /// <summary> Returns int value.</summary>

@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         agentInstanceId);
                 }
                 else {
-                    if (node.IsUseLargeThreadingProfile) {
+                    if (node.UseLargeThreadingProfile) {
                         adapter = new ExprNodeAdapterMSNoTL(node, exprEvaluatorContext, events, variableServiceToUse);
                     }
                     else {

@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esperio.support.util
 {
-    [Serializable]
     public class SupportSerializableBean
     {
         public String String { get; private set; }

@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return MakeEvaluate(
                 SubselectEvaluationType.GETEVENTCOLL,
                 this,
-                typeof(FlexCollection),
+                typeof(ICollection<EventBean>),
                 parent,
                 exprSymbol,
                 codegenClassScope);
@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             return MakeEvaluate(
                 SubselectEvaluationType.GETSCALARCOLL,
                 this,
-                typeof(FlexCollection),
+                typeof(ICollection<object>),
                 parent,
                 exprSymbol,
                 codegenClassScope);
@@ -387,7 +387,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var resultType = resultTypeMayNull;
             var method = parent.MakeChild(resultType, typeof(ExprSubselectNode), classScope);
 
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var newData = symbols.GetAddIsNewData(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
 
@@ -396,7 +396,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
             var evalMatching = ExprDotMethod(future, "Lookup", eps, evalCtx);
-            method.Block.DeclareVar(typeof(ICollection<EventBean>), NAME_MATCHINGEVENTS, evalMatching);
+            method.Block.DeclareVar<ICollection<EventBean>>(NAME_MATCHINGEVENTS, evalMatching);
 
             // process matching events
             var evalMatchSymbol = new ExprSubselectEvalMatchSymbol();

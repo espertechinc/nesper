@@ -16,7 +16,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     ///     Exception during a deploy operation by <seealso cref="EPDeploymentService.Deploy(EPCompiled)" />
     /// </summary>
-    [Serializable]
     public class EPDeployException : Exception
     {
         private readonly int _rolloutItemNumber;

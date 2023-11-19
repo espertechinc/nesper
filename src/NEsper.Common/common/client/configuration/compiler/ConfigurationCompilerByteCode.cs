@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Code generation settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerByteCode
     {
         private NameAccessModifier accessModifierContext = NameAccessModifier.PRIVATE;

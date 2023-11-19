@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.support.context
 
             cpids.Add(id.ContextPartitionId);
             startTimes.Add(id.StartTime);
-            var p00Value = (string) ((EventBean) id.Properties.Get("S0")).Get("P00");
+            var p00Value = (string) ((EventBean) id.Properties.Get("s0")).Get("P00");
             p00PropertyValues.Add(p00Value);
             lastValue = id;
             return matchP00Value != null && matchP00Value.Equals(p00Value);

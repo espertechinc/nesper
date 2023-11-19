@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     /// <summary>
     /// Exception to indicate that a stream name could not be resolved.
     /// </summary>
-    [Serializable]
     public class DatabaseConfigException : Exception
     {
         /// <summary> Ctor.</summary>

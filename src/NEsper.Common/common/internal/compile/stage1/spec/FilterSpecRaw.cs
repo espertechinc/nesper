@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     ///     Event type and expression nodes in this filter specification are not yet
     ///     validated, optimized for resolved against actual streams.
     /// </summary>
-    [Serializable]
     public class FilterSpecRaw
     {
         /// <summary>

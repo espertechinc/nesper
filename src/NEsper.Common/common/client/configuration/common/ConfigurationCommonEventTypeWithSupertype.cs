@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Configuration object for event types with super-types and timestamp.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeWithSupertype
     {
         private string endTimestampPropertyName;

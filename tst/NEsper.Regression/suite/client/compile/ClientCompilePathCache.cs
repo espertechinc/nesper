@@ -13,7 +13,6 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.context.module;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
@@ -33,11 +32,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                            "@public create table MyTable(y string);\n" +
                                            "@public create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
                                            "@public create expression myScript() [ 2 ];\n" +
-                                           "@public create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n" +
+                                           "@public create inlined_class \"\"\" public class MyClass { public static stringDoIt(string parameter) { return \"def\"; } }\"\"\";\n" +
                                            "@public @buseventtype create json schema CarLocUpdateEvent(CarId string, Direction int);\n";
 
         private const string EPL_CONSUME = "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2," +
-                                           "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
+                                           "MyClass.DoIt(TheString) as c4 from SupportBean;\n" +
                                            "select * from MySchema;" +
                                            "on SupportBean_S1 delete from MyWindow;\n" +
                                            "on SupportBean_S1 delete from MyTable;\n" +

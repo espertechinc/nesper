@@ -693,8 +693,7 @@ namespace com.espertech.esper.compiler.@internal.util
 					NewInstanceInner(statementClassNames[0]));
 			}
 			else {
-				statementsProperty.GetterBlock.DeclareVar(
-					typeof(IList<StatementProvider>),
+				statementsProperty.GetterBlock.DeclareVar<IList<StatementProvider>>(
 					"statements",
 					NewInstance(typeof(List<StatementProvider>), Constant(statementClassNames.Count)));
 				if (statementClassNames.Count <= NUM_STATEMENT_NAMES_PER_BATCH) {
@@ -843,7 +842,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			item.OptionalSodaBytes = () => bytes;
 
 			method.Block
-				.DeclareVar(typeof(ExpressionDeclItem), "detail", expression.Value.Make(method, symbols, classScope))
+				.DeclareVar<ExpressionDeclItem>("detail", expression.Value.Make(method, symbols, classScope))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleExprDeclaredInitServicesConstants.GETEXPRDECLAREDCOLLECTOR)
@@ -906,7 +905,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(NamedWindowMetaData), "detail", namedWindow.Value.Make(symbols.GetAddInitSvc(method)))
+				.DeclareVar<NamedWindowMetaData>("detail", namedWindow.Value.Make(symbols.GetAddInitSvc(method)))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleNamedWindowInitServicesConstants.GETNAMEDWINDOWCOLLECTOR)
@@ -925,7 +924,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(TableMetaData), "detail", table.Value.Make(parent, symbols, classScope))
+				.DeclareVar<TableMetaData>("detail", table.Value.Make(parent, symbols, classScope))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleTableInitServicesConstants.GETTABLECOLLECTOR)
@@ -944,8 +943,8 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(IndexCompileTimeKey), "key", index.Key.Make(symbols.GetAddInitSvc(method)))
-				.DeclareVar(typeof(IndexDetail), "detail", index.Value.Make(method, symbols, classScope))
+				.DeclareVar<IndexCompileTimeKey>("key", index.Key.Make(symbols.GetAddInitSvc(method)))
+				.DeclareVar<IndexDetail>("detail", index.Value.Make(method, symbols, classScope))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleIndexInitServicesConstants.INDEXCOLLECTOR)
@@ -961,7 +960,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(ContextMetaData), "detail", context.Value.Make(symbols.GetAddInitSvc(method)))
+				.DeclareVar<ContextMetaData>("detail", context.Value.Make(symbols.GetAddInitSvc(method)))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleContextInitServicesConstants.GETCONTEXTCOLLECTOR)
@@ -977,7 +976,7 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(VariableMetaData), "detail", variable.Value.Make(symbols.GetAddInitSvc(method)))
+				.DeclareVar<VariableMetaData>("detail", variable.Value.Make(symbols.GetAddInitSvc(method)))
 				.Expression(
 					ExprDotMethodChain(symbols.GetAddInitSvc(method))
 						.Get(EPModuleVariableInitServicesConstants.GETVARIABLECOLLECTOR)
@@ -994,7 +993,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 
 			// metadata
-			method.Block.DeclareVar(typeof(EventTypeMetadata), "metadata", eventType.Metadata.ToExpression());
+			method.Block.DeclareVar<EventTypeMetadata>("metadata", eventType.Metadata.ToExpression());
 
 			if (eventType is JsonEventType jsonEventType) {
 				method.Block
@@ -1048,8 +1047,7 @@ namespace com.espertech.esper.compiler.@internal.util
 							Constant(baseNestable.EndTimestampPropertyName)));
 			}
 			else if (eventType is WrapperEventType wrapper) {
-				method.Block.DeclareVar(
-					typeof(EventType),
+				method.Block.DeclareVar<EventType>(
 					"inner",
 					EventTypeUtility.ResolveTypeCodegen(
 						wrapper.UnderlyingEventType,
@@ -1165,13 +1163,11 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			var method = parent.MakeChild(typeof(void), typeof(EPCompilerImpl), classScope);
 			method.Block
-				.DeclareVar(typeof(EventTypeMetadata), "metadata", eventType.Metadata.ToExpression())
-				.DeclareVar(
-					typeof(EventTypeResolver),
+				.DeclareVar<EventTypeMetadata>("metadata", eventType.Metadata.ToExpression())
+				.DeclareVar<EventTypeResolver>(
 					"resolver",
 					ExprDotMethod(symbols.GetAddInitSvc(method), EPModuleEventTypeInitServicesConstants.GETEVENTTYPERESOLVER))
-				.DeclareVar(
-					typeof(DataInputOutputSerde),
+				.DeclareVar<DataInputOutputSerde>(
 					"serde",
 					serdeForge.Codegen(method, classScope, Ref("resolver")));
 			method.Block.Expression(

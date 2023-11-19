@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -52,13 +51,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
             var beanepl =
                 "@public @buseventtype create schema LocalInnerEvent as " +
-                typeof(LocalInnerEvent).FullName +
+                typeof(LocalInnerEvent).MaskTypeName() +
                 ";\n" +
                 "@public @buseventtype create schema LocalEvent as " +
-                typeof(LocalEvent).FullName +
+                typeof(LocalEvent).MaskTypeName() +
                 ";\n" +
                 "@public @buseventtype create schema LocalEventSubA as " +
-                typeof(LocalEventSubA).FullName +
+                typeof(LocalEventSubA).MaskTypeName() +
                 ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -113,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, epl, json);
 
             // Json-Class-Provided
-            var eplJsonProvided = "@JsonSchema(className='" +
+            var eplJsonProvided = "@JsonSchema(ClassName='" +
                                   typeof(MyLocalJsonProvided).FullName +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, eplJsonProvided, json);
@@ -241,12 +240,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
@@ -266,13 +263,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent[] array;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
         }

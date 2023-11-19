@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Concatenation expression that concatenates the result of child expressions to the expression.
     /// </summary>
-    [Serializable]
     public class ConcatExpression : ExpressionBase
     {
         /// <summary>

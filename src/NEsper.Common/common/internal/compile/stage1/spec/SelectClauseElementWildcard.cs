@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Represents a wildcard as a select clause element.
     /// </summary>
-    [Serializable]
     public class SelectClauseElementWildcard : SelectClauseElementRaw,
         SelectClauseElementCompiled
     {

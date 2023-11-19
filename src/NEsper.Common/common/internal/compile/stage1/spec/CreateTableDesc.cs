@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Descriptor for create-table statements.
     /// </summary>
-    [Serializable]
     public class CreateTableDesc
     {
         public CreateTableDesc(

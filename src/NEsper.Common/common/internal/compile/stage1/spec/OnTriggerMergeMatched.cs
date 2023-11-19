@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Specification for the merge statement insert/Update/delete-part. </summary>
-    [Serializable]
     public class OnTriggerMergeMatched
     {
         public OnTriggerMergeMatched(

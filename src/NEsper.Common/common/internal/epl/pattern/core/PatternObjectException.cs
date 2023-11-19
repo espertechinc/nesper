@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     /// <summary>
     /// This exception is thrown to indicate a problem with a view expression.
     /// </summary>
-    [Serializable]
     public sealed class PatternObjectException : Exception
     {
         /// <summary>Constructor.</summary>

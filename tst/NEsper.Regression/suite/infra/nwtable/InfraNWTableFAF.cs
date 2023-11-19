@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -504,12 +503,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var eplEvents =
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedProduct)) +
-                    " @public @buseventtype create schema Product (ProductId string, categoryId string);" +
+                    " @public @buseventtype create schema Product (productId string, categoryId string);" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedCategory)) +
                     " @public @buseventtype create schema Category (categoryId string, owner string);" +
                     eventRepresentationEnum.GetAnnotationTextWJsonProvided(
                         typeof(MyLocalJsonProvidedProductOwnerDetails)) +
-                    " @public @buseventtype create schema ProductOwnerDetails (ProductId string, owner string);";
+                    " @public @buseventtype create schema ProductOwnerDetails (productId string, owner string);";
                 string epl;
                 if (namedWindow) {
                     epl = eplEvents +
@@ -522,12 +521,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
                 else {
                     epl = eplEvents +
-                          "@public create table WinProduct (ProductId string primary key, categoryId string primary key);" +
+                          "@public create table WinProduct (productId string primary key, categoryId string primary key);" +
                           "@public create table WinCategory (categoryId string primary key, owner string primary key);" +
-                          "@public create table WinProductOwnerDetails (ProductId string primary key, owner string);" +
-                          "on Product t1 merge WinProduct t2 where t1.productId = t2.productId and t1.categoryId = t2.categoryId when not matched then insert select ProductId, categoryId;" +
+                          "@public create table WinProductOwnerDetails (productId string primary key, owner string);" +
+                          "on Product t1 merge WinProduct t2 where t1.productId = t2.productId and t1.categoryId = t2.categoryId when not matched then insert select productId, categoryId;" +
                           "on Category t1 merge WinCategory t2 where t1.categoryId = t2.categoryId when not matched then insert select categoryId, owner;" +
-                          "on ProductOwnerDetails t1 merge WinProductOwnerDetails t2 where t1.productId = t2.productId when not matched then insert select ProductId, owner;";
+                          "on ProductOwnerDetails t1 merge WinProductOwnerDetails t2 where t1.productId = t2.productId when not matched then insert select productId, owner;";
                 }
 
                 var path = new RegressionPath();
@@ -537,17 +536,17 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     eventRepresentationEnum,
                     env,
                     "Product",
-                    new string[] { "ProductId=Product1", "categoryId=Category1" });
+                    new string[] { "productId=Product1", "categoryId=Category1" });
                 SendEvent(
                     eventRepresentationEnum,
                     env,
                     "Product",
-                    new string[] { "ProductId=Product2", "categoryId=Category1" });
+                    new string[] { "productId=Product2", "categoryId=Category1" });
                 SendEvent(
                     eventRepresentationEnum,
                     env,
                     "Product",
-                    new string[] { "ProductId=Product3", "categoryId=Category1" });
+                    new string[] { "productId=Product3", "categoryId=Category1" });
                 SendEvent(
                     eventRepresentationEnum,
                     env,
@@ -557,16 +556,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     eventRepresentationEnum,
                     env,
                     "ProductOwnerDetails",
-                    new string[] { "ProductId=Product1", "owner=Petar" });
+                    new string[] { "productId=Product1", "owner=Petar" });
 
-                var fields = "WinProduct.ProductId".SplitCsv();
+                var fields = "WinProduct.productId".SplitCsv();
                 EventBean[] queryResults;
                 queryResults = env.CompileExecuteFAF(
                         "" +
-                        "select WinProduct.ProductId " +
+                        "select WinProduct.productId " +
                         " from WinProduct" +
                         " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
-                        " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.ProductId",
+                        " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId",
                         path
                     )
                     .Array;
@@ -574,10 +573,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 queryResults = env.CompileExecuteFAF(
                         "" +
-                        "select WinProduct.ProductId " +
+                        "select WinProduct.productId " +
                         " from WinProduct" +
                         " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
-                        " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.ProductId" +
+                        " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId" +
                         " where WinCategory.owner=WinProductOwnerDetails.owner",
                         path
                     )
@@ -586,20 +585,20 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 queryResults = env.CompileExecuteFAF(
                         "" +
-                        "select WinProduct.ProductId " +
+                        "select WinProduct.productId " +
                         " from WinProduct, WinCategory, WinProductOwnerDetails" +
                         " where WinCategory.owner=WinProductOwnerDetails.owner" +
                         " and WinProduct.categoryId=WinCategory.categoryId" +
-                        " and WinProduct.productId=WinProductOwnerDetails.ProductId",
+                        " and WinProduct.productId=WinProductOwnerDetails.productId",
                         path
                     )
                     .Array;
                 EPAssertionUtil.AssertPropsPerRow(queryResults, fields, new object[][] { new object[] { "Product1" } });
 
-                var eplQuery = "select WinProduct.ProductId " +
+                var eplQuery = "select WinProduct.productId " +
                                " from WinProduct" +
                                " inner join WinCategory on WinProduct.categoryId=WinCategory.categoryId" +
-                               " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.ProductId" +
+                               " inner join WinProductOwnerDetails on WinProduct.productId=WinProductOwnerDetails.productId" +
                                " having WinCategory.owner=WinProductOwnerDetails.owner";
                 queryResults = env.CompileExecuteFAF(eplQuery, path).Array;
                 EPAssertionUtil.AssertPropsPerRow(queryResults, fields, new object[][] { new object[] { "Product1" } });
@@ -645,8 +644,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select w1.key, sum(value) from Infra1 w1, Infra2 w2 WHERE w1.keyJoin = w2.keyJoin GROUP BY w1.key order by w1.key";
                 var fieldsAgg = "w1.key,sum(value)".SplitCsv();
                 var queryNoagg =
-                    "select w1.key, w2.Value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
-                var fieldsNoagg = "w1.key,w2.Value".SplitCsv();
+                    "select w1.key, w2.value from Infra1 w1, Infra2 w2 where w1.keyJoin = w2.keyJoin and value = 1 order by w1.key";
+                var fieldsNoagg = "w1.key,w2.value".SplitCsv();
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
                 Assert.AreEqual(0, result.Length);
@@ -2127,21 +2126,18 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             return env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedProduct
         {
             public string productId;
             public string categoryId;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedCategory
         {
             public string categoryId;
             public string owner;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedProductOwnerDetails
         {
             public string productId;

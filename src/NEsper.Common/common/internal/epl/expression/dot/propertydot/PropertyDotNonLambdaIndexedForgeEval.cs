@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.propertydot
                 typeof(PropertyDotNonLambdaIndexedForgeEval),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var evaluationType = forge.ParamForge.EvaluationType;
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(forge.StreamId)))

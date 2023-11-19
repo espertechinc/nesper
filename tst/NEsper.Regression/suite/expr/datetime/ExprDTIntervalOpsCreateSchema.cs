@@ -163,7 +163,6 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided<T>
         {
             // ReSharper disable InconsistentNaming
@@ -177,22 +176,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             // ReSharper restore InconsistentNaming
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedLong : MyLocalJsonProvided<long>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTimeEx : MyLocalJsonProvided<DateTimeEx>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTimeOffset : MyLocalJsonProvided<DateTimeOffset>
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedDateTime : MyLocalJsonProvided<DateTime>
         {
         }

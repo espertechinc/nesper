@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " on sb.TheString = sbt.stringTwo " +
                                " inner join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
-                               "  on s1.myint = sbt.intPrimitiveTwo";
+                               "  on s1.myint = sbt.IntPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanTwo("T1", 2));
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                " on sb.TheString = sbt.stringTwo " +
                                " left outer join " +
                                " sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
-                               "  on s1.myint = sbt.intPrimitiveTwo";
+                               "  on s1.myint = sbt.IntPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanTwo("T1", 2));

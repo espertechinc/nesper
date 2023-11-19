@@ -7,6 +7,8 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.resultset.select.core;
 using com.espertech.esper.common.@internal.@event.core;
 
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
+
 namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
 {
     public partial class SelectEvalStreamWUndRecastObjectArrayFactory
@@ -43,30 +45,29 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
                     true,
                     typeof(EventBeanManufacturer),
                     manufacturer.Make(methodNode.Block, codegenMethodScope, codegenClassScope));
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var block = methodNode.Block.DeclareVar(
-                        typeof(ObjectArrayBackedEventBean),
+                var refEPS = exprSymbol.GetAddEps(methodNode);
+                var block = methodNode.Block.DeclareVar<ObjectArrayBackedEventBean>(
                         "theEvent",
-                        CodegenExpressionBuilder.Cast(
+                        Cast(
                             typeof(ObjectArrayBackedEventBean),
-                            CodegenExpressionBuilder.ArrayAtIndex(
+                            ArrayAtIndex(
                                 refEPS,
-                                CodegenExpressionBuilder.Constant(underlyingStreamNumber))))
+                                Constant(underlyingStreamNumber))))
                     .DeclareVar<object[]>(
                         "props",
-                        CodegenExpressionBuilder.NewArrayByLength(
+                        NewArrayByLength(
                             typeof(object),
-                            CodegenExpressionBuilder.Constant(items.Length)));
+                            Constant(items.Length)));
                 foreach (var item in items) {
                     if (item.OptionalFromIndex != -1) {
                         block.AssignArrayElement(
                             "props",
-                            CodegenExpressionBuilder.Constant(item.ToIndex),
-                            CodegenExpressionBuilder.ArrayAtIndex(
-                                CodegenExpressionBuilder.ExprDotName(
-                                    CodegenExpressionBuilder.Ref("theEvent"),
+                            Constant(item.ToIndex),
+                            ArrayAtIndex(
+                                ExprDotName(
+                                    Ref("theEvent"),
                                     "Properties"),
-                                CodegenExpressionBuilder.Constant(item.OptionalFromIndex)));
+                                Constant(item.OptionalFromIndex)));
                     }
                     else {
                         CodegenExpression value;
@@ -86,15 +87,15 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
                                 codegenClassScope);
                         }
 
-                        block.AssignArrayElement("props", CodegenExpressionBuilder.Constant(item.ToIndex), value);
+                        block.AssignArrayElement("props", Constant(item.ToIndex), value);
                     }
                 }
 
                 block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(
+                    ExprDotMethod(
                         manufacturerField,
-                        "make",
-                        CodegenExpressionBuilder.Ref("props")));
+                        "Make",
+                        Ref("props")));
                 return methodNode;
             }
 

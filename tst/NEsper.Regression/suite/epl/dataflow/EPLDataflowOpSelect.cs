@@ -22,9 +22,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
-// singletonMap
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowOpSelect
@@ -203,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env,
                     "select TheString from DUMMY",
                     false,
-                    "Failed to obtain operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [ME]");
+                    "Failed to obtain operator 'Select': Failed to find stream 'DUMMY' among input ports, input ports are [\"ME\"]");
 
                 TryInvalidCompileGraph(
                     env,

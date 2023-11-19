@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.dataflow.core
     ///     A data flow configuration is just a configuration name, a data flow name
     ///     and an instantiation options object.
     /// </summary>
-    [Serializable]
     public class EPDataFlowSavedConfiguration
     {
         /// <summary>

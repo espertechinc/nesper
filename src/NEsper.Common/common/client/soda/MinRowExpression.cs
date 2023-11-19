@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Minimum-value per-row expression (not aggregating) determines the minimum value among a set of values.
     /// </summary>
-    [Serializable]
     public class MinRowExpression : ExpressionBase
     {
         /// <summary>

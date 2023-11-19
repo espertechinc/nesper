@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class OnTriggerSplitStreamFromClause
     {
         public OnTriggerSplitStreamFromClause(

@@ -19,7 +19,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;

@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "create context MyContext " +
                           "context OuterContext partition by TheString from SupportBean,\n" +
                           "context InnerContext start SupportBean(IntPrimitive = 1) as startevent end SupportBean(IntPrimitive = 0) as endevent;\n" +
-                          "@name('s0') context MyContext select context.Id as Id, context.InnerContext.startevent as c0, context.InnerContext.endevent as c1 from SupportBean(IntPrimitive > 0) output all when terminated;\n";
+                          "@name('s0') context MyContext select context.id as Id, context.InnerContext.startevent as c0, context.InnerContext.endevent as c1 from SupportBean(IntPrimitive > 0) output all when terminated;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var sb1 = SendSBEvent(env, "A", 1);
@@ -2425,7 +2425,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2535,7 +2535,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2626,7 +2626,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2718,7 +2718,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.Id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",
+                    "context.FirstCtx.s0.id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 

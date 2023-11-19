@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var fields = "maxi,mini,max0,min0".SplitCsv();
                 var epl = "@name('s0') select max(IntPrimitive) as maxi, min(IntPrimitive) as mini," +
-                          "(select max(id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
+                          "(select max(Id) from SupportBean_S0#lastevent) as max0, (select min(Id) from SupportBean_S0#lastevent) as min0" +
                           " from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         try {
                             Thread.Sleep((int)(950 - delta));
                         }
-                        catch (ThreadInterruptedException e) {
+                        catch (ThreadInterruptedException) {
                             break;
                         }
                     }

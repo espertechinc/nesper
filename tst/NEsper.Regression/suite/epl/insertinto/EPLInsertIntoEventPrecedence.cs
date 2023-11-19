@@ -6,13 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.IO;
 
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
@@ -553,7 +549,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return value;
         }
 
-        [Serializable]
         public class LvlA
         {
             private readonly LvlB[] b;
@@ -566,7 +561,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public LvlB[] B => b;
         }
 
-        [Serializable]
         public class LvlB
         {
             private readonly int precedence;
@@ -585,7 +579,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public LvlC[] C => c;
         }
 
-        [Serializable]
         public class LvlC
         {
             private readonly string id;

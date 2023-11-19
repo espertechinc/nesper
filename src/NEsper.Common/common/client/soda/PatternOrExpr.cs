@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Logical OR for use in pattern expressions. </summary>
-    [Serializable]
     public class PatternOrExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>

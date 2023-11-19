@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             field,
                             "DeltaAdd",
                             reference,
-                            exprSymbol.GetAddEPS(parent),
+                            exprSymbol.GetAddEps(parent),
                             exprSymbol.GetAddIsNewData(parent),
                             exprSymbol.GetAddExprEvalCtx(parent));
                     }

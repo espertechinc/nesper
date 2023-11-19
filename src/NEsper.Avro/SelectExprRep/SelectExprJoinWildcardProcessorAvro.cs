@@ -55,7 +55,7 @@ namespace NEsper.Avro.SelectExprRep
                     "ResolveRecordSchema",
                     EventTypeUtility.ResolveTypeCodegen(_resultEventTypeAvro, EPStatementInitServicesConstants.REF)));
             var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block.MethodReturn(
                 CodegenExpressionBuilder.StaticMethod(
                     typeof(SelectExprJoinWildcardProcessorAvro),

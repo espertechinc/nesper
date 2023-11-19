@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
     /// <summary>
     ///     A generic database driver.
     /// </summary>
-    [Serializable]
     public class DbDriverGeneric : BaseDbDriver,
         ISerializable
     {

@@ -101,11 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public create table MyStats (\n" +
                     "  myKey string primary key,\n" +
                     "  myAvedev avedev(int), // column holds a mean deviation of int-typed values\n" +
-                    "  myAvg avg(double), // column holds a Average of double-typed values\n" +
+                    "  myAvg avg(double), // column holds a average of double-typed values\n" +
                     "  myCount count(*), // column holds a number of values\n" +
                     "  myMax max(int), // column holds a highest int-typed value\n" +
                     "  myMedian median(float), // column holds the median of float-typed values\n" +
-                    "  myStddev stddev(java.math.BigDecimal), // column holds a standard deviation for BigDecimal values\n" +
+                    "  myStddev stddev(decimal), // column holds a standard deviation for BigDecimal values\n" +
                     "  mySum sum(long), // column holds a sum of long values\n" +
                     "  myFirstEver firstever(string), // column holds the first ever string value\n" +
                     "  myCountEver countever(*) // column holds the count-ever\n" +
@@ -115,9 +115,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "@public create table MyStatsMore (\n" +
                     "  myKey string primary key,\n" +
-                    "  myAvgFiltered avg(double, boolean), // column holds a Average of double-typed values\n" +
+                    "  myAvgFiltered avg(double, boolean), // column holds a average of double-typed values\n" +
                     "                      // and filtered by a boolean expression to be provided\n" +
-                    "  myAvgDistinct avg(distinct double) // column holds a Average of distinct double-typed values\n" +
+                    "  myAvgDistinct avg(distinct double) // column holds a average of distinct double-typed values\n" +
                     ")",
                     path);
 
@@ -125,9 +125,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public create table MyEventAggregationTable (\n" +
                     "  myKey string primary key,\n" +
                     "  myWindow window(*) @type(SupportMySortValueEvent), // column holds a window of SupportMySortValueEvent events\n" +
-                    "  mySorted sorted(mySortValue) @type(SupportMySortValueEvent), // column holds SupportMySortValueEvent events sorted by mySortValue\n" +
-                    "  myMaxByEver maxbyever(mySortValue) @type(SupportMySortValueEvent) // column holds the single SupportMySortValueEvent event that \n" +
-                    "        // provided the highest value of mySortValue ever\n" +
+                    "  mySorted sorted(MySortValue) @type(SupportMySortValueEvent), // column holds SupportMySortValueEvent events sorted by MySortValue\n" +
+                    "  myMaxByEver maxbyever(MySortValue) @type(SupportMySortValueEvent) // column holds the single SupportMySortValueEvent event that \n" +
+                    "        // provided the highest value of MySortValue ever\n" +
                     ")",
                     path);
 
@@ -136,47 +136,47 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@public context NineToFive create table AverageSpeedTable (CarId string primary key, avgSpeed avg(double))",
                     path);
                 env.CompileDeploy(
-                    "context NineToFive into table AverageSpeedTable select avg(speed) as avgSpeed from SupportTrafficEvent group by CarId",
+                    "context NineToFive into table AverageSpeedTable select avg(Speed) as avgSpeed from SupportTrafficEvent group by CarId",
                     path);
 
                 env.CompileDeploy(
                     "@public create table IntrusionCountTable (\n" +
-                    "  fromAddress string primary key,\n" +
-                    "  toAddress string primary key,\n" +
-                    "  countIntrusion10Sec count(*),\n" +
-                    "  countIntrusion60Sec count(*)," +
+                    "  FromAddress string primary key,\n" +
+                    "  ToAddress string primary key,\n" +
+                    "  CountIntrusion10Sec count(*),\n" +
+                    "  CountIntrusion60Sec count(*)," +
                     "  active boolean\n" +
                     ")",
                     path);
                 env.CompileDeploy(
                     "into table IntrusionCountTable\n" +
-                    "select count(*) as countIntrusion10Sec\n" +
+                    "select count(*) as CountIntrusion10Sec\n" +
                     "from SupportIntrusionEvent#time(10)\n" +
-                    "group by fromAddress, toAddress",
+                    "group by FromAddress, ToAddress",
                     path);
                 env.CompileDeploy(
                     "into table IntrusionCountTable\n" +
-                    "select count(*) as countIntrusion60Sec\n" +
+                    "select count(*) as CountIntrusion60Sec\n" +
                     "from SupportIntrusionEvent#time(60)\n" +
-                    "group by fromAddress, toAddress",
+                    "group by FromAddress, ToAddress",
                     path);
 
-                env.CompileDeploy("@public create table TotalIntrusionCountTable (totalIntrusions count(*))", path);
+                env.CompileDeploy("@public create table TotalIntrusionCountTable (TotalIntrusions count(*))", path);
                 env.CompileDeploy(
-                    "into table TotalIntrusionCountTable select count(*) as totalIntrusions from SupportIntrusionEvent",
+                    "into table TotalIntrusionCountTable select count(*) as TotalIntrusions from SupportIntrusionEvent",
                     path);
                 env.CompileDeploy(
-                    "expression alias totalIntrusions {count(*)}\n" +
-                    "select totalIntrusions from SupportIntrusionEvent",
+                    "expression alias TotalIntrusions {count(*)}\n" +
+                    "select TotalIntrusions from SupportIntrusionEvent",
                     path);
                 env.CompileDeploy(
-                    "select TotalIntrusionCountTable.totalIntrusions from pattern[every timer:interval(60 sec)]",
+                    "select TotalIntrusionCountTable.TotalIntrusions from pattern[every timer:interval(60 sec)]",
                     path);
 
                 env.CompileDeploy(
                     "@public create table MyTable (\n" +
                     "theWindow window(*) @type(SupportMySortValueEvent),\n" +
-                    "theSorted sorted(mySortValue) @type(SupportMySortValueEvent)\n" +
+                    "theSorted sorted(MySortValue) @type(SupportMySortValueEvent)\n" +
                     ")",
                     path);
                 env.CompileDeploy("select MyTable.theWindow.first(), MyTable.theSorted.maxBy() from SupportBean", path);
@@ -184,12 +184,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     "select\n" +
                     "  (select * from IntrusionCountTable as intr\n" +
-                    "   where intr.fromAddress = firewall.fromAddress and intr.toAddress = firewall.toAddress) \n" +
+                    "   where intr.FromAddress = firewall.FromAddress and intr.ToAddress = firewall.ToAddress) \n" +
                     "from SupportIntrusionEvent as firewall",
                     path);
                 env.CompileDeploy(
                     "select * from IntrusionCountTable as intr, SupportIntrusionEvent as firewall\n" +
-                    "where intr.fromAddress = firewall.fromAddress and intr.toAddress = firewall.toAddress",
+                    "where intr.FromAddress = firewall.FromAddress and intr.ToAddress = firewall.ToAddress",
                     path);
 
                 env.CompileDeploy(

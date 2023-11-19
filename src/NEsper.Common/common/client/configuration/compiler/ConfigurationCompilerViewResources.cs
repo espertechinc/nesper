@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Holds view resources settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerViewResources
     {
         /// <summary>

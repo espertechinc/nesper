@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -207,8 +208,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, value int);\n" +
-                    "insert into MyTable select intOne as k1, intTwo as k2, value from SupportEventWithManyArray(Id = 'I');\n" +
-                    "@name('s0') select MyTable[intOne, intTwo].Value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
+                    "insert into MyTable select IntOne as k1, IntTwo as k2, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                    "@name('s0') select MyTable[IntOne, IntTwo].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
                     "@name('s1') select MyTable.keys() as keys from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
@@ -266,8 +267,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create table MyTable(k int[primitive] primary key, value int);\n" +
-                          "insert into MyTable select intOne as k, value from SupportEventWithManyArray(Id = 'I');\n" +
-                          "@name('s0') select MyTable[intOne].Value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
+                          "insert into MyTable select IntOne as k, Value as value from SupportEventWithManyArray(Id = 'I');\n" +
+                          "@name('s0') select MyTable[IntOne].value as c0 from SupportEventWithManyArray(Id = 'Q');\n" +
                           "@name('s1') select MyTable.keys() as keys from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
@@ -286,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.AssertEventNew(
                     "s1",
                     @event => {
-                        var keys = (object[])@event.Get("keys");
+                        var keys = @event.Get("keys").UnwrapIntoArray<object>();
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             keys,
                             new object[] { new int[] { 2, 1 }, new int[] { 1, 2 }, new int[] { 1, 2, 1 } });
@@ -365,9 +366,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create table varaggFB (Total count(*))", path);
-                env.CompileDeploy("into table varaggFB select count(*) as Total from SupportBean_S0", path);
-                env.CompileDeploy("@name('s0') select * from SupportBean(varaggFB.Total = IntPrimitive)", path)
+                env.CompileDeploy("@public create table varaggFB (total count(*))", path);
+                env.CompileDeploy("into table varaggFB select count(*) as total from SupportBean_S0", path);
+                env.CompileDeploy("@name('s0') select * from SupportBean(varaggFB.total = IntPrimitive)", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(0));
@@ -402,7 +403,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@name('s0') select " +
-                    "varaggESC.keys()," +
+                    "varaggESC.Keys()," +
                     "varaggESC[P00].theEvents," +
                     "varaggESC[P00]," +
                     "varaggESC[P00].theEvents.last(*)," +
@@ -410,11 +411,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path);
 
                 var expectedAggType = new object[][] {
-                    new object[] { "varaggESC.keys()", typeof(object[]) },
+                    new object[] { "varaggESC.Keys()", typeof(object[]) },
                     new object[] { "varaggESC[P00].theEvents", typeof(SupportBean[]) },
                     new object[] { "varaggESC[P00]", typeof(IDictionary<string, object>) },
                     new object[] { "varaggESC[P00].theEvents.last(*)", typeof(SupportBean) },
-                    new object[] { "varaggESC[P00].theEvents.window(*).take(1)", typeof(ICollection<object>) },
+                    new object[] { "varaggESC[P00].theEvents.window(*).take(1)", typeof(ICollection<SupportBean>) },
                 };
                 env.AssertStatement(
                     "s0",
@@ -453,12 +454,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy(
                     soda,
                     "@public create table windowAndTotalTLP2K (" +
-                    "keyi int primary key, keys string primary key, thewindow window(*) @type('MyEventOA'), thetotal sum(int))",
+                    "keyi int primary key, keys string primary key, Thewindow window(*) @type('MyEventOA'), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     soda,
                     "into table windowAndTotalTLP2K " +
-                    "select window(*) as thewindow, sum(c2) as thetotal from MyEventOA#length(2) group by c0, c1",
+                    "select window(*) as Thewindow, sum(c2) as Thetotal from MyEventOA#length(2) group by c0, c1",
                     path);
 
                 env.CompileDeploy(
@@ -471,7 +472,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var e1 = new object[] { 10, "G1", 100 };
                 env.SendEventObjectArray(e1, "MyEventOA");
 
-                var fieldsInner = "thewindow,thetotal".SplitCsv();
+                var fieldsInner = "Thewindow,Thetotal".SplitCsv();
                 env.SendEventBean(new SupportBean_S0(10, "G1"));
                 env.AssertEventNew(
                     "s0",
@@ -525,7 +526,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertPropsNew(
                     "i1",
-                    "val0.thewindow,val0.thetotal".SplitCsv(),
+                    "val0.Thewindow,val0.Thetotal".SplitCsv(),
                     new object[] { new object[][] { e2, e3 }, 500 });
 
                 env.UndeployAll();
@@ -547,11 +548,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@public create table windowAndTotalTLRUG (" +
-                    "thewindow window(*) @type(MyEventOATLRU), thetotal sum(int))",
+                    "Thewindow window(*) @type(MyEventOATLRU), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table windowAndTotalTLRUG " +
-                    "select window(*) as thewindow, sum(c0) as thetotal from MyEventOATLRU#length(2)",
+                    "select window(*) as Thewindow, sum(c0) as Thetotal from MyEventOATLRU#length(2)",
                     path);
 
                 env.CompileDeploy("@name('s0') select windowAndTotalTLRUG as val0 from SupportBean_S0", path);
@@ -559,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventObjectArray(e1, "MyEventOATLRU");
 
-                var fieldsInner = "thewindow,thetotal".SplitCsv();
+                var fieldsInner = "Thewindow,Thetotal".SplitCsv();
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertEventNew(
                     "s0",
@@ -597,17 +598,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.UndeployModuleContaining("s0");
 
                 env.CompileDeploy(
-                        "create schema AggBean as " +
-                        typeof(AggBean).FullName +
-                        ";\n" +
-                        "@name('s0') insert into AggBean select windowAndTotalTLRUG as val0 from SupportBean_S0;\n",
+                        $"create schema AggBean as {typeof(AggBean).MaskTypeName()};\n" +
+                        "@name('s0') insert into AggBean select windowAndTotalTLRUG as Val0 from SupportBean_S0;\n",
                         path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
                 env.AssertPropsNew(
                     "s0",
-                    "val0.thewindow,val0.thetotal".SplitCsv(),
+                    "Val0.Thewindow,Val0.Thetotal".SplitCsv(),
                     new object[] { new object[][] { e2, e3 }, 50 });
 
                 env.UndeployAll();
@@ -719,8 +718,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplDeclare =
-                    "@public create table varTotalG2K (key0 string primary key, key1 int primary key, Total sum(long), cnt count(*))";
+                var eplDeclare = "@public create table varTotalG2K (key0 string primary key, key1 int primary key, Total sum(long), cnt count(*))";
                 env.CompileDeploy(eplDeclare, path);
 
                 var eplBind = "into table varTotalG2K " +
@@ -728,8 +726,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                               "from SupportBean group by TheString, IntPrimitive";
                 env.CompileDeploy(eplBind, path);
 
-                var eplUse =
-                    "@name('s0') select varTotalG2K[P00, id].Total as c0, varTotalG2K[P00, Id].cnt as c1 from SupportBean_S0";
+                var eplUse = "@name('s0') select varTotalG2K[P00, Id].Total as c0, varTotalG2K[P00, Id].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100);
@@ -765,7 +762,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@name('s0') select varTotalG3K[P00, id, 100L].Total as c0, varTotalG3K[P00, Id, 100L].cnt as c1 from SupportBean_S0";
+                    "@name('s0') select varTotalG3K[P00, Id, 100L].Total as c0, varTotalG3K[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);
@@ -1097,7 +1094,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "when matched and the_table[s0.P00].Total > 0" +
                     "  then update set value = 1",
                     path);
-                env.CompileDeploy("@name('s0') select the_table[P10].Value as c0 from SupportBean_S1", path)
+                env.CompileDeploy("@name('s0') select the_table[P10].value as c0 from SupportBean_S1", path)
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", -1));
@@ -1150,11 +1147,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.CompileDeploy(
                     "@public create table windowAndTotal (" +
-                    "thewindow window(*) @type(MyEvent), thetotal sum(int))",
+                    "Thewindow window(*) @type(MyEvent), Thetotal sum(int))",
                     path);
                 env.CompileDeploy(
                     "into table windowAndTotal " +
-                    "select window(*) as thewindow, sum(c0) as thetotal from MyEvent#length(2)",
+                    "select window(*) as Thewindow, sum(c0) as Thetotal from MyEvent#length(2)",
                     path);
 
                 env.CompileDeploy("@name('s0') select windowAndTotal as val0 from SupportBean_S0", path)
@@ -1165,7 +1162,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.Milestone(0);
 
-                var fieldsInner = "thewindow,thetotal".SplitCsv();
+                var fieldsInner = "Thewindow,Thetotal".SplitCsv();
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertEventNew(
                     "s0",
@@ -1365,8 +1362,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var fragType = stmt.EventType.GetFragmentType("val0");
             Assert.IsFalse(fragType.IsIndexed);
             Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("thewindow"));
-            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("thetotal"));
+            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("Thewindow"));
+            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("Thetotal"));
         }
 
         private static void AssertIntegerIndexed(

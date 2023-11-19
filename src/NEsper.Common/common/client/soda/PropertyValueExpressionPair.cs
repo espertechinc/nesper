@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Pair of expressions with "Equals" operator between.
     /// </summary>
-    [Serializable]
     public class PropertyValueExpressionPair
     {
         /// <summary>Ctor. </summary>

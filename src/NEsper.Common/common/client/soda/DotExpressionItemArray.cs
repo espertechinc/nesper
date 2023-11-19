@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// Dot-expression item representing an array operation.
     /// </summary>
     /// 
-    [Serializable]
     public class DotExpressionItemArray : DotExpressionItem
     {
         private IList<Expression> _indexes;

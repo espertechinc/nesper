@@ -12,7 +12,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
-    [Serializable]
     public class NullableDictionary<K,V> : IDictionary<K,V>
         where K : class
     {

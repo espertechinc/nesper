@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
-    [Serializable]
     public class FilterLockBackoffException : Exception
     {
         public FilterLockBackoffException()

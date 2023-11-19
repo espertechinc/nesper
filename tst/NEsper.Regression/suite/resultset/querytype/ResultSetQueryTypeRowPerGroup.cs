@@ -438,8 +438,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select sb.getTheString() as c0, sum(IntPrimitive) as c1 " +
-                          "from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                var epl = "@name('s0') select sb.TheString as c0, sum(IntPrimitive) as c1 " +
+                          "from SupportBean#length_batch(2) as sb group by sb.TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));

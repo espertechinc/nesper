@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "last" aggregation function.
     /// </summary>
-    [Serializable]
     public class LastProjectionExpression
         : AccessProjectionExpressionBase
     {

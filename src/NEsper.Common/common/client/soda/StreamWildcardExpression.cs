@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents "stream.*" in for example "mystream.*"
     /// </summary>
-    [Serializable]
     public class StreamWildcardExpression : ExpressionBase
     {
         private string streamName;

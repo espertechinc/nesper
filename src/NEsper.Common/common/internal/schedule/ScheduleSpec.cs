@@ -28,7 +28,6 @@ namespace com.espertech.esper.common.@internal.schedule
     ///     the specification for each unit minutes, hours, day of month, month, and day of week.
     ///     There is optionally an element in the specification for the unit seconds.
     /// </summary>
-    [Serializable]
     public sealed class ScheduleSpec
     {
         // Per unit hold the set of valid integer values, or null if wildcarded.

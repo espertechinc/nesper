@@ -27,7 +27,6 @@ namespace com.espertech.esper.common.client.soda
     ///     outer joins between
     ///     N streams, add N-1 <seealso cref="OuterJoinQualifier" /> qualifiers.
     /// </summary>
-    [Serializable]
     public class FromClause
     {
         private IList<OuterJoinQualifier> outerJoinQualifiers;

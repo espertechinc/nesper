@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -356,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 env.UndeployModuleContaining("s0");
 
-                fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue";
+                fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue";
                 env.CompileDeploy("@name('s0') select " + fields + " from MyVariantTwoTypedSB").AddListener("s0");
                 env.AssertStatement("s0", statement => AssertEventTypeDefault(statement.EventType));
 
@@ -712,7 +711,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
         private static void AssertEventTypeDefault(EventType eventType)
         {
-            var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,enumValue".SplitCsv();
+            var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".SplitCsv();
             var propertyNames = eventType.PropertyNames;
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
@@ -720,7 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
             Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
-            Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("enumValue"));
+            Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("EnumValue"));
             foreach (var expectedProp in expected) {
                 Assert.IsNotNull(eventType.GetGetter(expectedProp));
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
@@ -733,7 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 new SupportEventPropDesc("IntPrimitive", typeof(int?)),
                 new SupportEventPropDesc("LongPrimitive", typeof(long?)),
                 new SupportEventPropDesc("DoublePrimitive", typeof(double?)),
-                new SupportEventPropDesc("enumValue", typeof(SupportEnum)));
+                new SupportEventPropDesc("EnumValue", typeof(SupportEnum)));
         }
 
         public static object PreProcessEvent(object o)

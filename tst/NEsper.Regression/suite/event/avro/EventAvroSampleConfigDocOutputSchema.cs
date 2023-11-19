@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.@event.avro;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;

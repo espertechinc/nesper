@@ -124,7 +124,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prior
 
             var innerEval =
                 CodegenLegoMethodExpression.CodegenExpression(innerForge, method, codegenClassScope);
-            var eps = exprSymbol.GetAddEPS(method);
+            var eps = exprSymbol.GetAddEps(method);
 
             // see ExprPriorEvalStrategyBase
             var future = codegenClassScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(

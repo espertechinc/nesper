@@ -286,7 +286,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
 
             var method = parent.MakeChild(resultClass, typeof(ExprTableAccessNode), classScope);
 
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             var newData = symbols.GetAddIsNewData(method);
             CodegenExpression evalCtx = symbols.GetAddExprEvalCtx(method);
 

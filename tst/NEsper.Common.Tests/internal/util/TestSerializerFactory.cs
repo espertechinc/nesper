@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util.serde;
@@ -18,15 +19,17 @@ namespace com.espertech.esper.common.@internal.util
     [TestFixture]
     public class TestSerializerFactory : AbstractCommonTest
     {
-        [Serializable]
         public class MyBean
         {
             private readonly string id;
 
+            [JsonConstructor]
             public MyBean(string id)
             {
                 this.id = id;
             }
+
+            public string Id => id;
 
             public override bool Equals(object o)
             {

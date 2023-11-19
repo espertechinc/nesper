@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Followed-by for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternFollowedByExpr : PatternExprBase
     {
         /// <summary>

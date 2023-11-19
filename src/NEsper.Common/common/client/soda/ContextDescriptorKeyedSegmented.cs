@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Context dimension information for keyed segmented context.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorKeyedSegmented : ContextDescriptor
     {
         private IList<ContextDescriptorConditionFilter> initiationConditions;

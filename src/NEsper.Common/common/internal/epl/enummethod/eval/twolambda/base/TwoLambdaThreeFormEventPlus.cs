@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -89,15 +90,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
 
             InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
 
-            methodNode.Block.DeclareVar(
-                    typeof(ObjectArrayEventBean),
+            methodNode.Block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .DeclareVar<ObjectArrayEventBean>(
                     "indexEvent",
                     NewInstance(
                         typeof(ObjectArrayEventBean),
                         NewArrayByLength(typeof(object), Constant(_numParameters - 1)),
                         resultTypeMember))
                 .AssignArrayElement(REF_EPS, Constant(StreamNumLambda + 1), Ref("indexEvent"))
-                .DeclareVar(typeof(object[]), "props", ExprDotName(Ref("indexEvent"), "Properties"))
+                .DeclareVar<object[]>("props", ExprDotName(Ref("indexEvent"), "Properties"))
                 .DeclareVar<int>("count", Constant(-1));
             if (hasSize) {
                 methodNode.Block.AssignArrayElement(Ref("props"), Constant(1), ExprDotName(REF_ENUMCOLL, "Count"));

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     For use in expression as a placeholder to represent its child nodes.
     /// </summary>
-    [Serializable]
     public class ExpressionPlaceholder : ExpressionBase
     {
         public override ExpressionPrecedenceEnum Precedence => ExpressionPrecedenceEnum.MINIMUM;

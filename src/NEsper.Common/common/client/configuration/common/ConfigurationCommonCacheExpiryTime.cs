@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Expiring cache settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonCacheExpiryTime : ConfigurationCommonCache
     {
         /// <summary>

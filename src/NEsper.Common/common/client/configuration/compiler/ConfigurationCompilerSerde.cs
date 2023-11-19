@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Serialization and Deserialization options.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerSerde
     {
         private bool _enableExtendedBuiltin = true;

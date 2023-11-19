@@ -92,8 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.index.composite
                     classScope);
             }
 
-            method.Block.DeclareVar(
-                typeof(EventPropertyValueGetter[]),
+            method.Block.DeclareVar<EventPropertyValueGetter[]>(
                 "rangeGetters",
                 NewArrayByLength(typeof(EventPropertyValueGetter), Constant(rangeProps.Length)));
             for (var i = 0; i < rangeProps.Length; i++) {

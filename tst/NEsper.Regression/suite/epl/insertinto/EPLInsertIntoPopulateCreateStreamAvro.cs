@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 using com.espertech.esper.regressionlib.framework;
@@ -80,8 +79,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     new[] { "MyLong", "MyLongArray", "MyByteArray", "MyMap" },
                     new[] {
-                        typeof(long?),
-                        typeof(ICollection<long?>),
+                        typeof(long),
+                        typeof(ICollection<long>),
                         typeof(ByteBuffer),
                         typeof(IDictionary<string, string>)
                     });

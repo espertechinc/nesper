@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.Runtime.VariableService.SetVariableValue(id, variableName, value);
                 Assert.Fail();
             }
-            catch (VariableValueException ex) {
+            catch (VariableValueException) {
                 // expected
             }
         }

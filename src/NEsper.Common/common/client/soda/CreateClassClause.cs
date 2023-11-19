@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Clause for creating an application-provided class for use across one or more statements.
     /// </summary>
-    [Serializable]
     public class CreateClassClause
     {
         private ClassProvidedExpression _classProvidedExpression;

@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return CodegenEvaluateEventGetROCollectionScalar(
                 ArrayAtIndex(refEPS, Constant(_streamId)),
@@ -158,7 +158,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = methodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<object>),
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
@@ -208,7 +208,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethodBuild(method).Pass(@event).Pass(evalctx).Call();
         }
 
-        private FlexCollection EvaluateGetInternal(EventBean @event)
+        private ICollection<object> EvaluateGetInternal(EventBean @event)
         {
             return ConvertToCollection(_propertyName, _getter.Get(@event));
         }
@@ -239,7 +239,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return LocalMethodBuild(method).Pass(@event).Call();
         }
 
-        public static FlexCollection ConvertToCollection(
+        public static ICollection<object> ConvertToCollection(
             string propertyName,
             object value)
         {
@@ -249,11 +249,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             if (value is string stringValue) {
                 // Convert to a collection of characters
-                return FlexCollection.Of(
-                    stringValue
-                        .ToCharArray()
-                        .Cast<object>()
-                        .ToList());
+                return stringValue
+                    .ToCharArray()
+                    .Cast<object>()
+                    .ToList();
             }
 
             Log.Warn(

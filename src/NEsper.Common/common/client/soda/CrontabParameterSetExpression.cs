@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An expression for use in crontab provides all child expression as part of a parameter list.
     /// </summary>
-    [Serializable]
     public class CrontabParameterSetExpression : ExpressionBase
     {
         /// <summary>

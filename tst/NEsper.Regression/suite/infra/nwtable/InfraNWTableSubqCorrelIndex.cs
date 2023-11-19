@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using com.espertech.esper.common.@internal.epl.join.support;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
-using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
@@ -135,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a'}", 30);
 
                 var epl =
-                    "@name('s0') select (select v from MyInfra as mi where mi.k = ma.stringOne) as v from SupportEventWithManyArray as ma";
+                    "@name('s0') select (select v from MyInfra as mi where mi.k = ma.StringOne) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -204,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 Insert(env, path, "{'a'}", "{'c', 'd'}", 30);
 
                 var epl =
-                    "@name('s0') select (select v from MyInfra as mi where mi.k1 = ma.stringOne and mi.k2 = ma.stringTwo) as v from SupportEventWithManyArray as ma";
+                    "@name('s0') select (select v from MyInfra as mi where mi.k1 = ma.StringOne and mi.k2 = ma.StringTwo) as v from SupportEventWithManyArray as ma";
                 epl = namedWindow ? "@Hint('index(MyInfraIndex, bust)')" + epl : epl;
                 env.CompileDeploy(epl, path).AddListener("s0");
 

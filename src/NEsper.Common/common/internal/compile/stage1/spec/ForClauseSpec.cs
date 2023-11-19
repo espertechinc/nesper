@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class ForClauseSpec
     {
         public ForClauseSpec()

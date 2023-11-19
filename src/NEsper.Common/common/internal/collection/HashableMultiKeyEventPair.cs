@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.@internal.collection
     ///     The class allows a Map that uses MultiKeyUntyped entries for key values to use multiple objects as keys.
     ///     It calculates the hashCode from the key objects on construction and caches the hashCode.
     /// </summary>
-    [Serializable]
     public sealed class HashableMultiKeyEventPair
     {
         [JsonIgnore]

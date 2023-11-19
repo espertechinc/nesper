@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Previous function for obtaining property values of previous events.
     /// </summary>
-    [Serializable]
     public class PreviousExpression : ExpressionBase
     {
         private PreviousExpressionType _type = PreviousExpressionType.PREV;

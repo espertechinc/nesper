@@ -19,7 +19,6 @@ namespace com.espertech.esper.compiler.client
     ///     <para />
     ///     May carry information on individual items.
     /// </summary>
-    [Serializable]
     public class EPCompileException : Exception
     {
         /// <summary>

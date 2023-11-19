@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Configuration object for defining exception handling behavior.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeExceptionHandling
     {
         /// <summary>

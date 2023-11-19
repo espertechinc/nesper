@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <para/>
     /// Both expressions and scripts can be created using this clause.
     /// </summary>
-    [Serializable]
     public class CreateExpressionClause
     {
         /// <summary>Ctor. </summary>

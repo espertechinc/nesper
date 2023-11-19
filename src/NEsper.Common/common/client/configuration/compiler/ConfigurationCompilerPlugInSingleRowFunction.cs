@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom single-row function.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInSingleRowFunction
     {
         /// <summary>

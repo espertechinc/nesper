@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableConditionNegateConfirm
     {
-        private static readonly string HOOK = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, hook='" +
+        private static readonly string HOOK = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='" +
                                               typeof(SupportFilterPlanHook).FullName +
                                               "')";
 
@@ -1344,53 +1344,53 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                RunAssertion(env, "a=1 or (b=2 or c=3)", "a=1 or b=2 or c=3");
-                RunAssertion(env, "a=1 and (b=2 and c=3)", "a=1 and b=2 and c=3");
+                RunAssertion(env, "A=1 or (B=2 or C=3)", "A=1 or B=2 or C=3");
+                RunAssertion(env, "A=1 and (B=2 and C=3)", "A=1 and B=2 and C=3");
 
-                RunAssertion(env, "a=1 or (b=2 or (c=3 or d=4))", "a=1 or b=2 or c=3 or d=4");
-                RunAssertion(env, "a=1 or (b=2 or (c=3 or (d=4 or e=5)))", "a=1 or b=2 or c=3 or d=4 or e=5");
+                RunAssertion(env, "A=1 or (B=2 or (C=3 or D=4))", "A=1 or B=2 or C=3 or D=4");
+                RunAssertion(env, "A=1 or (B=2 or (C=3 or (D=4 or E=5)))", "A=1 or B=2 or C=3 or D=4 or E=5");
                 RunAssertion(
                     env,
-                    "a=1 or (b=2 or (c=3 or (d=4 or (e=5 or f=6))))",
-                    "a=1 or b=2 or c=3 or d=4 or e=5 or f=6");
+                    "A=1 or (B=2 or (C=3 or (D=4 or (E=5 or F=6))))",
+                    "A=1 or B=2 or C=3 or D=4 or E=5 or F=6");
                 RunAssertion(
                     env,
-                    "a=1 or (b=2 or (c=3 or (d=4 or (e=5 or f=6 or g=7))))",
-                    "a=1 or b=2 or c=3 or d=4 or e=5 or f=6 or g=7");
+                    "A=1 or (B=2 or (C=3 or (D=4 or (E=5 or F=6 or G=7))))",
+                    "A=1 or B=2 or C=3 or D=4 or E=5 or F=6 or G=7");
                 RunAssertion(
                     env,
-                    "(((a=1 or b=2) or c=3) or d=4 or e=5) or f=6 or g=7",
-                    "a=1 or b=2 or c=3 or d=4 or e=5 or f=6 or g=7");
+                    "(((A=1 or B=2) or C=3) or D=4 or E=5) or F=6 or G=7",
+                    "A=1 or B=2 or C=3 or D=4 or E=5 or F=6 or G=7");
 
-                RunAssertion(env, "a=1 and (b=2 and (c=3 and d=4))", "a=1 and b=2 and c=3 and d=4");
-                RunAssertion(env, "a=1 and (b=2 and (c=3 and (d=4 and e=5)))", "a=1 and b=2 and c=3 and d=4 and e=5");
+                RunAssertion(env, "A=1 and (B=2 and (C=3 and D=4))", "A=1 and B=2 and C=3 and D=4");
+                RunAssertion(env, "A=1 and (B=2 and (C=3 and (D=4 and E=5)))", "A=1 and B=2 and C=3 and D=4 and E=5");
                 RunAssertion(
                     env,
-                    "a=1 and (b=2 and (c=3 and (d=4 and (e=5 and f=6))))",
-                    "a=1 and b=2 and c=3 and d=4 and e=5 and f=6");
+                    "A=1 and (B=2 and (C=3 and (D=4 and (E=5 and F=6))))",
+                    "A=1 and B=2 and C=3 and D=4 and E=5 and F=6");
                 RunAssertion(
                     env,
-                    "a=1 and (b=2 and (c=3 and (d=4 and (e=5 and f=6))))",
-                    "a=1 and b=2 and c=3 and d=4 and e=5 and f=6");
+                    "A=1 and (B=2 and (C=3 and (D=4 and (E=5 and F=6))))",
+                    "A=1 and B=2 and C=3 and D=4 and E=5 and F=6");
                 RunAssertion(
                     env,
-                    "a=1 and (b=2 and (c=3 and (d=4 and (e=5 and f=6 and g=7))))",
-                    "a=1 and b=2 and c=3 and d=4 and e=5 and f=6 and g=7");
+                    "A=1 and (B=2 and (C=3 and (D=4 and (E=5 and F=6 and G=7))))",
+                    "A=1 and B=2 and C=3 and D=4 and E=5 and F=6 and G=7");
                 RunAssertion(
                     env,
-                    "(((a=1 and b=2) and c=3) and d=4 and e=5) and f=6 and g=7",
-                    "a=1 and b=2 and c=3 and d=4 and e=5 and f=6 and g=7");
+                    "(((A=1 and B=2) and C=3) and D=4 and E=5) and F=6 and G=7",
+                    "A=1 and B=2 and C=3 and D=4 and E=5 and F=6 and G=7");
 
                 RunAssertion(
                     env,
-                    "(a=1 and (b=2 and c=3)) or (d=4 or (e=5 or f=6))",
-                    "(a=1 and b=2 and c=3) or d=4 or e=5 or f=6");
-                RunAssertion(env, "((a=1 or b=2) or (c=3)) and (d=5 and e=6)", "(a=1 or b=2 or c=3) and d=5 and e=6");
-                RunAssertion(env, "a=1 or b=2 and c=3 or d=4 and e=5", "a=1 or (b=2 and c=3) or (d=4 and e=5)");
+                    "(A=1 and (B=2 and C=3)) or (D=4 or (E=5 or F=6))",
+                    "(A=1 and B=2 and C=3) or D=4 or E=5 or F=6");
+                RunAssertion(env, "((A=1 or B=2) or (C=3)) and (D=5 and E=6)", "(A=1 or B=2 or C=3) and D=5 and E=6");
+                RunAssertion(env, "A=1 or B=2 and C=3 or D=4 and E=5", "A=1 or (B=2 and C=3) or (D=4 and E=5)");
                 RunAssertion(
                     env,
-                    "((a=1 and b=2 and c=3 and d=4) and e=5) or (f=6 or (g=7 or h=8 or i=9))",
-                    "(a=1 and b=2 and c=3 and d=4 and e=5) or f=6 or g=7 or h=8 or i=9");
+                    "((A=1 and B=2 and C=3 and D=4) and E=5) or (F=6 or (G=7 or H=8 or I=9))",
+                    "(A=1 and B=2 and C=3 and D=4 and E=5) or F=6 or G=7 or H=8 or I=9");
             }
 
             private void RunAssertion(

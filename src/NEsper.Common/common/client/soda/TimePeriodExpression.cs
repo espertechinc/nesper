@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represent an expression
     /// </summary>
-    [Serializable]
     public class TimePeriodExpression : ExpressionBase
     {
         private bool hasYears;

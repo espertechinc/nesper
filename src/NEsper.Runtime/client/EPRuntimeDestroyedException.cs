@@ -19,7 +19,6 @@ namespace com.espertech.esper.runtime.client
     ///         This exception applies to destroyed runtime when a client attempts to use the runtime after it was destroyed.
     ///     </para>
     /// </summary>
-    [Serializable]
     public class EPRuntimeDestroyedException : EPRuntimeException
     {
         /// <summary>

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a list-compare of the format "expression operator all/any (expressions)".
     /// </summary>
-    [Serializable]
     public class CompareListExpression : ExpressionBase
     {
         private string _operator;

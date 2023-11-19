@@ -42,17 +42,17 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
             }
         }
 
-        public string Name { get; }
+        public string Name { get; set; }
 
-        public string Expression { get; }
+        public string Expression { get; set; }
 
-        public string[] ParameterNames { get; }
+        public string[] ParameterNames { get; set; }
 
-        public string OptionalReturnTypeName { get; }
+        public string OptionalReturnTypeName { get; set; }
 
-        public string OptionalEventTypeName { get; }
+        public string OptionalEventTypeName { get; set; }
 
-        public string OptionalDialect { get; }
+        public string OptionalDialect { get; set; }
 
         public string ModuleName { get; set; }
 

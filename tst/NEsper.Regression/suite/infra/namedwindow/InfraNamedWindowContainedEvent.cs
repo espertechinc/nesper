@@ -8,8 +8,6 @@
 
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>

@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client
 	/// <summary>
 	///     Deploy exception to indicate that the compiler version mismatches
 	/// </summary>
-	[Serializable]
 	public class EPDeployDeploymentVersionException : EPDeployException
     {
 	    /// <summary>

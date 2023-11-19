@@ -380,7 +380,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             Type generator,
             CodegenClassScope classScope)
         {
-            if (getterTypeUnboxed == null || optionalCoercionType == null) {
+            if (getterTypeUnboxed == typeof(object) || optionalCoercionType == typeof(object)) {
                 return ConstantNull();
             }
 
@@ -1952,7 +1952,7 @@ namespace com.espertech.esper.common.@internal.@event.core
         public static void ValidateEventBeanClassVisibility(Type clazz)
         {
             if (!clazz.IsPublic && !clazz.IsNestedPublic) {
-                throw new EventAdapterException("Event class '" + clazz.Name + "' does not have public visibility");
+                throw new EventAdapterException("Event class '" + clazz.CleanName() + "' does not have public visibility");
             }
         }
 

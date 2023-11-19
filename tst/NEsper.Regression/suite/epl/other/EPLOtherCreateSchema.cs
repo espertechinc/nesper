@@ -29,14 +29,13 @@ using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertPropEquals;
-//using static com.espertech.esper.regressionlib.support.events.SupportGenericColUtil;
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
+
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
-using com.espertech.esper.regressionlib.support.util;
 
 using Newtonsoft.Json.Linq;
 
@@ -258,14 +257,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create schema SchemaA (account string, foo " +
-                          typeof(MyLocalValueObject).Name +
+                          typeof(MyLocalValueObject).MaskTypeName() +
                           ");\n" +
                           "create schema SchemaB (Symbol string) copyfrom SchemaA;\n" +
                           "create schema SchemaC () copyfrom SchemaB;\n" +
                           "create schema SchemaD () copyfrom SchemaB;\n" +
                           "insert into SchemaD select account, " +
-                          typeof(EPLOtherCreateSchema).Name +
-                          ".getLocalValueObject() as foo, Symbol from SchemaC;\n";
+                          typeof(EPLOtherCreateSchema).MaskTypeName() +
+                          ".GetLocalValueObject() as foo, Symbol from SchemaC;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
         }
@@ -296,7 +295,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 catch (Exception ex) {
                     Assert.AreEqual(
-                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 Id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
+                        "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         ex.Message);
                 }
             }
@@ -407,8 +406,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@name('schema') @public @buseventtype create schema MySchema as (c0 int[primitive], c1 int[])",
                     soda,
                     env);
-                var expectedType = new object[][]
-                    { new object[] { "c0", typeof(int[]) }, new object[] { "c1", typeof(int?[]) } };
+                var expectedType = new object[][] {
+                    new object[] { "c0", typeof(int[]) },
+                    new object[] { "c1", typeof(int?[]) }
+                };
                 env.AssertStatement(
                     "schema",
                     statement => SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -450,7 +451,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 env.CompileDeploy(
-                        "@name('s0') insert into MySchema select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+                        "@name('s0') insert into MySchema select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
                 env.AssertPropsNew("s0", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
@@ -476,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     });
 
                 env.CompileDeploy(
-                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent",
+                    "@name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent",
                     path);
                 env.SendEventBean(theEvent);
                 env.AssertPropsNew("window", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
@@ -484,7 +485,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // insert pattern to named window
                 env.CompileDeploy(
-                    "@name('windowInsertOne') insert into MyWindow select sb as bean, s0Arr as beanarray from pattern [sb=SupportBean -> s0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
+                    "@name('windowInsertOne') insert into MyWindow select Sb as bean, S0Arr as beanarray from pattern [Sb=SupportBean -> S0Arr=SupportBean_S0 until SupportBean_S0(Id=0)]",
                     path);
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean_S0(10, "S0_1"));
@@ -498,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test configured Map type
                 env.CompileDeploy(
-                        "@name('s0') insert into MyConfiguredMap select sb as bean, s0Arr as beanarray from SupportBeanSourceEvent")
+                        "@name('s0') insert into MyConfiguredMap select Sb as bean, S0Arr as beanarray from SupportBeanSourceEvent")
                     .AddListener("s0");
                 env.SendEventBean(theEvent);
                 env.AssertPropsNew("s0", "bean.TheString,beanarray[0].Id".Split(","), new object[] { "E1", 2 });
@@ -597,8 +598,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 }
                 else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                     env.CompileDeploy(
-                        "@JsonSchema(className='" +
-                        typeof(MyLocalJsonProvidedMyType).FullName +
+                        "@JsonSchema(ClassName='" +
+                        typeof(MyLocalJsonProvidedMyType).MaskTypeName() +
                         "') @public create json schema MyType(a string, b string, c BaseOne, d BaseTwo[])",
                         path);
                 }
@@ -636,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         }
                         else if (eventRepresentationEnum.IsAvroEvent()) {
                             Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("c"));
-                            Assert.AreEqual(typeof(ICollection<object>), statement.EventType.GetPropertyType("d"));
+                            Assert.AreEqual(typeof(GenericRecord[]), statement.EventType.GetPropertyType("d"));
                             Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("f"));
                         }
                         else if (eventRepresentationEnum.IsJsonEvent()) {
@@ -744,7 +745,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EventRepresentationChoice eventRepresentationEnum)
             {
                 var expectedOne = !eventRepresentationEnum.IsAvroEvent()
-                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected System.Type or System.Collections.Generic.IDictionary or the name of a previously-declared event type ["
+                    ? "Nestable type configuration encountered an unexpected property type name 'xxxx' for property 'col1', expected Type or Dictionary or the name of a previously-declared event type ["
                     : "Type definition encountered an unexpected property type name 'xxxx' for property 'col1', expected the name of a previously-declared Avro type";
                 var prefix = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedDummy));
                 env.TryInvalidCompile(prefix + " create schema MyEventType as (col1 xxxx)", expectedOne);
@@ -768,7 +769,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.TryInvalidCompile(
                     prefix + " create schema MyEventTypeT3 as () inherits",
-                    "Incorrect syntax near end-of-input expecting an identifier but found end-of-input at line 1 column ");
+                    "Incorrect syntax near end-of-input expecting an identifier but found EOF at line 1 column");
 
                 env.UndeployAll();
             }
@@ -779,9 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 Schema schema = SchemaBuilder.Union(TypeBuilder.IntType(), TypeBuilder.StringType());
-                var epl = "@AvroSchemaField(name='CarId',schema='" +
-                          schema.ToString() +
-                          "') create avro schema MyEvent(CarId object)";
+                var epl = "@AvroSchemaField(Name='CarId',Schema='" + schema.ToString() + "') create avro schema MyEvent(CarId object)";
                 env.CompileDeploy(epl);
                 env.UndeployAll();
             }
@@ -808,7 +807,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         Assert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
                         Assert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
                         Assert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
-                        Assert.AreEqual(null, eventType.GetPropertyType("f4"));
+                        Assert.AreEqual(typeof(object), eventType.GetPropertyType("f4"));
                     });
 
                 env.UndeployAll();
@@ -821,10 +820,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var schema = "@name('c1') @public @buseventtype create schema SupportBeanOne as " +
-                             typeof(SupportBean_ST0).Name +
+                             typeof(SupportBean_ST0).MaskTypeName() +
                              ";\n" +
                              "@name('c2') @public @buseventtype create schema SupportBeanTwo as " +
-                             typeof(SupportBean_ST0).Name +
+                             typeof(SupportBean_ST0).MaskTypeName() +
                              ";\n";
                 env.CompileDeploy(schema, path);
 
@@ -1118,11 +1117,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var schema =
-                "@name('innerType') " +
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNestableArray)) +
+                "@name('innerType') " + eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNestableArray>() +
                 " @public create schema MyInnerType as (inn1 string[], inn2 int[]);\n" +
-                "@name('outerType') " +
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedNestableOuter)) +
+                "@name('outerType') " + eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNestableOuter>() +
                 " @public @buseventtype create schema MyOuterType as (col1 MyInnerType, col2 MyInnerType[]);\n";
             env.CompileDeploy(schema, path);
 
@@ -1130,13 +1127,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "innerType",
                 statement => {
                     var innerType = statement.EventType;
-                    Assert.AreEqual(
-                        eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(string[]),
-                        innerType.GetPropertyType("inn1"));
+                    Assert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
                     Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
-                    Assert.AreEqual(
-                        eventRepresentationEnum.IsAvroEvent() ? typeof(ICollection<object>) : typeof(int?[]),
-                        innerType.GetPropertyType("inn2"));
+                    Assert.AreEqual(typeof(int[]), innerType.GetPropertyType("inn2"));
                     Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
                     Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
                 });
@@ -1184,7 +1177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             else if (eventRepresentationEnum.IsJsonEvent() || eventRepresentationEnum.IsJsonProvidedClassEvent()) {
                 var inn1 = new JArray("abc", "def");
                 var inn2 = new JArray(1, 2);
-                var inn = new JObject("inn1", "inn2");
+                var inn = new JObject(new JProperty("inn1", inn1), new JProperty("inn2", inn2));
                 var outer = new JObject(new JProperty("col1", inn));
                 var col2 = new JArray(inn, inn);
                 outer.Add("col2", col2);
@@ -1246,72 +1239,62 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
         // ReSharper disable UnusedMember.Global
         // ReSharper disable InconsistentNaming
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEventTypeCol1To4
+        public class MyLocalJsonProvidedMyEventTypeCol1To4
         {
             public string col1;
             public int col2;
             public int col3col4;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEventTypCol34
+        public class MyLocalJsonProvidedMyEventTypCol34
         {
             public string col3;
             public int col4;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEventTypCol56
+        public class MyLocalJsonProvidedMyEventTypCol56
         {
             public string col5;
             public int col6;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedNestableArray
+        public class MyLocalJsonProvidedNestableArray
         {
             public string[] inn1;
-            public int?[] inn2;
+            public int[] inn2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedNestableOuter
+        public class MyLocalJsonProvidedNestableOuter
         {
             public MyLocalJsonProvidedNestableArray col1;
             public MyLocalJsonProvidedNestableArray[] col2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedBaseOne
+        public class MyLocalJsonProvidedBaseOne
         {
             public string prop1;
             public int prop2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedBaseTwo
+        public class MyLocalJsonProvidedBaseTwo
         {
             public long prop3;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedE1
+        public class MyLocalJsonProvidedE1
         {
             public string prop1;
             public int prop2;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedE2
+        public class MyLocalJsonProvidedE2
         {
             public string prop1;
             public int prop2;
             public long prop3;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedE3
+        public class MyLocalJsonProvidedE3
         {
             public string a;
             public string b;
@@ -1321,14 +1304,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public long e;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedDummy
+        public class MyLocalJsonProvidedDummy
         {
             public string col1;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyType
+        public class MyLocalJsonProvidedMyType
         {
             public string a;
             public string b;
@@ -1336,8 +1317,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public MyLocalJsonProvidedBaseTwo[] d;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMyEventTypeTwo
+        public class MyLocalJsonProvidedMyEventTypeTwo
         {
             public string col1;
             public int col2;
@@ -1353,7 +1333,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
         }
 
-        internal class MyLocalSchemaTypeParamEvent<T>
+        public class MyLocalSchemaTypeParamEvent<T>
         {
             private System.Collections.Generic.IList<string> listOfString;
             private System.Collections.Generic.IList<Optional<int?>> listOfOptionalInteger;

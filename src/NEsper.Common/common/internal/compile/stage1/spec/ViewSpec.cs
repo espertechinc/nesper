@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification for a view object consists of a namespace, name and view object parameters.
     /// </summary>
-    [Serializable]
     public class ViewSpec : ObjectSpec
     {
         public static readonly ViewSpec[] EMPTY_VIEWSPEC_ARRAY = Array.Empty<ViewSpec>();

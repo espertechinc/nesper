@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Configuration for metrics reporting.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeMetricsReporting
     {
         /// <summary>
@@ -142,7 +141,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
         /// <summary>
         ///     Class to configure statement metrics reporting for a group of one or more statements.
         /// </summary>
-        [Serializable]
         public class StmtGroupMetrics
         {
             /// <summary>

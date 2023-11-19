@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
     public class EPLVariablesOutputRate
@@ -189,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     SendTimer(env, 14000);
                     Assert.Fail();
                 }
-                catch (Exception ex) {
+                catch (Exception) {
                     // expected
                 }
 

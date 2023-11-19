@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Logical AND for use in pattern expressions.
     /// </summary>
-    [Serializable]
     public class PatternAndExpr : PatternExprBase
     {
         /// <summary>

@@ -16,7 +16,6 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     /// <summary>
     ///     A Double-typed value as a filter parameter representing a range.
     /// </summary>
-    [Serializable]
     public class SupportFilterForEvalConstantDouble : FilterSpecParamFilterForEvalDouble
     {
         /// <summary>

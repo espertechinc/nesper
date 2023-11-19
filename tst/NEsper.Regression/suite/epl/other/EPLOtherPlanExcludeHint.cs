@@ -6,14 +6,12 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.join.indexlookupplan;
 using com.espertech.esper.common.@internal.epl.join.querygraph;
 using com.espertech.esper.common.@internal.epl.join.queryplan;
-using com.espertech.esper.common.@internal.epl.join.support;
 using com.espertech.esper.common.@internal.epl.lookup;
 using com.espertech.esper.common.@internal.epl.lookupsubord;
 using com.espertech.esper.common.@internal.support;
@@ -23,8 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherPlanExcludeHint : IndexBackingTableInfo
@@ -86,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env.CompileDeploy(
                         "@Audit " +
                         hint +
-                        "select * from AEvent#keepall as a, BEvent#keepall as b where aprop = bprop",
+                        "select * from AEvent#keepall as a, BEvent#keepall as b where Aprop = Bprop",
                         path);
                 }
 
@@ -134,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     .Get();
 
                 // test "any"
-                var excludeAny = "@hint('exclude_plan(true)')";
+                var excludeAny = "@Hint('exclude_plan(true)')";
                 TryAssertionJoin(env, epl, planFullTableScan);
                 TryAssertionJoin(env, excludeAny + epl + " where P00 = P10", planFullTableScan);
                 TryAssertionJoin(env, excludeAny + epl + " where P00 = 'abc'", planFullTableScan);
@@ -330,7 +327,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class AEvent
         {
             private readonly string aprop;
@@ -349,7 +345,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class BEvent
         {
             private readonly string bprop;

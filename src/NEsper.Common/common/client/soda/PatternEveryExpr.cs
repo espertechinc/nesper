@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Pattern 'every' expression that controls the lifecycle of pattern sub-expressions. </summary>
-    [Serializable]
     public class PatternEveryExpr : PatternExprBase
     {
         /// <summary>Ctor - for use to create a pattern expression tree, without pattern child expression. </summary>

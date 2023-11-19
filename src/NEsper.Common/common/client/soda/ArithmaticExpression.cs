@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Arithmatic expression for addition, subtraction, multiplication, division and modulo.
     /// </summary>
-    [Serializable]
     public class ArithmaticExpression : ExpressionBase
     {
         private string _operator;

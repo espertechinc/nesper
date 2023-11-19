@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBean_S4
     {
         public SupportBean_S4(int id)

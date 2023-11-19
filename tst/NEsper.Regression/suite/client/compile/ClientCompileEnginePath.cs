@@ -10,7 +10,6 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -132,13 +131,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                "@public create window MyWindow#keepall as SupportBean_S0;\n" +
                                "@public create table MyTable(y string);\n" +
                                "@public create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
-                               "@public create expression myScript() [ 2 ];\n" +
-                               "@public create inlined_class \"\"\" public class MyClass { public static String doIt(String parameter) { return \"def\"; } }\"\"\";\n";
+                               "@public create expression myScript() [ return 2; ];\n" +
+                               "@public create inlined_class \"\"\" public class MyClass { public static string DoIt(string parameter) { return \"def\"; } }\"\"\";\n";
                 env.CompileDeploy(deployed, new RegressionPath());
 
                 var epl =
-                    "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2, preconfigured_variable as c3," +
-                    "MyClass.doIt(TheString) as c4 from SupportBean;\n" +
+                    "@name('s0') select " +
+                    "myvariable as c0, " +
+                    "myExpr() as c1, " +
+                    "myScript() as c2, " +
+                    "preconfigured_variable as c3," +
+                    "MyClass.DoIt(TheString) as c4 from SupportBean;\n" +
                     "select * from MySchema;" +
                     "on SupportBean_S1 delete from MyWindow;\n" +
                     "on SupportBean_S1 delete from MyTable;\n" +

@@ -18,7 +18,6 @@ namespace com.espertech.esper.compat.collections
     /// Description of LinkedHashSet.
     /// </summary>
 
-    [Serializable]
     public sealed class LinkedHashSet<T> 
         : ISet<T>
         , ISerializable

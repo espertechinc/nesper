@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.schedule
     /// <summary>
     /// This exception is thrown to indicate a problem with scheduling.
     /// </summary>
-    [Serializable]
     public class ScheduleServiceException : Exception
     {
         /// <summary> Constructor.</summary>

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     /// A comparator on objects that takes a bool array for ascending/descending.
     /// </summary>
-    [Serializable]
     public sealed class ObjectComparator
         : IComparer<object>
     {

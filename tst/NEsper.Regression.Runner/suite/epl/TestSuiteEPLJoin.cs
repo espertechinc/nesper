@@ -1325,6 +1325,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> typeInfo = new Dictionary<string, object>();
             typeInfo.Put("Id", typeof(string));
             typeInfo.Put("P00", typeof(int));

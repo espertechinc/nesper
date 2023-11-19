@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Configuration information for plugging in a custom enum-method.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerPlugInEnumMethod
     {
         private string _forgeClassName;

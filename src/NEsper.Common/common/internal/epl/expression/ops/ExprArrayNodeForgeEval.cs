@@ -187,12 +187,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<object>),
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar(
-                    typeof(ArrayDeque<object>),
+                .DeclareVar<ArrayDeque<object>>(
                     "resultList",
                     NewInstance(typeof(ArrayDeque<object>), Constant(children.Length)));
             var count = -1;

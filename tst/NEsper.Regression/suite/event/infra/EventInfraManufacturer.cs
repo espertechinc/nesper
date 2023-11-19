@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -151,7 +150,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int P2 { get; set; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string P1;

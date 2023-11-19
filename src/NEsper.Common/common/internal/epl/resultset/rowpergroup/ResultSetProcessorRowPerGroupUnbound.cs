@@ -155,8 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
         {
             if (!forge.IsSorting) {
                 method.Block
-                    .DeclareVar(
-                        typeof(IEnumerator<EventBean>),
+                    .DeclareVar<IEnumerator<EventBean>>(
                         "enumerator",
                         ExprDotMethod(Ref("groupReps"), "ValueEnumerator"))
                     .MethodReturn(

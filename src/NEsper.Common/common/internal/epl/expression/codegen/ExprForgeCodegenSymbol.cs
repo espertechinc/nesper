@@ -21,57 +21,57 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
 {
     public class ExprForgeCodegenSymbol : CodegenSymbolProvider
     {
-        private readonly bool allowUnderlyingReferences;
-        private readonly bool? newDataValue;
+        private readonly bool _allowUnderlyingReferences;
+        private readonly bool? _newDataValue;
 
-        private int currentParamNum;
-        private IDictionary<int, EventTypeWithOptionalFlag> underlyingStreamNums = EmptyDictionary<int, EventTypeWithOptionalFlag>.Instance;
-        private CodegenExpressionRef optionalEPSRef;
-        private CodegenExpressionRef optionalIsNewDataRef;
-        private CodegenExpressionRef optionalExprEvalCtxRef;
+        private int _currentParamNum;
+        private IDictionary<int, EventTypeWithOptionalFlag> _underlyingStreamNums = EmptyDictionary<int, EventTypeWithOptionalFlag>.Instance;
+        private CodegenExpressionRef _optionalEpsRef;
+        private CodegenExpressionRef _optionalIsNewDataRef;
+        private CodegenExpressionRef _optionalExprEvalCtxRef;
 
         public ExprForgeCodegenSymbol(
             bool allowUnderlyingReferences,
             bool? newDataValue)
         {
-            this.allowUnderlyingReferences = allowUnderlyingReferences;
-            this.newDataValue = newDataValue;
+            this._allowUnderlyingReferences = allowUnderlyingReferences;
+            this._newDataValue = newDataValue;
         }
 
-        public bool IsAllowUnderlyingReferences => allowUnderlyingReferences;
+        public bool IsAllowUnderlyingReferences => _allowUnderlyingReferences;
 
-        public CodegenExpressionRef GetAddEPS(CodegenMethodScope scope)
+        public CodegenExpressionRef GetAddEps(CodegenMethodScope scope)
         {
-            if (optionalEPSRef == null) {
-                optionalEPSRef = ExprForgeCodegenNames.REF_EPS;
+            if (_optionalEpsRef == null) {
+                _optionalEpsRef = ExprForgeCodegenNames.REF_EPS;
             }
 
-            scope.AddSymbol(optionalEPSRef);
-            return optionalEPSRef;
+            scope.AddSymbol(_optionalEpsRef);
+            return _optionalEpsRef;
         }
 
         public CodegenExpression GetAddIsNewData(CodegenMethodScope scope)
         {
-            if (newDataValue != null) { // new-data can be a const
-                return Constant(newDataValue);
+            if (_newDataValue != null) { // new-data can be a const
+                return Constant(_newDataValue);
             }
 
-            if (optionalIsNewDataRef == null) {
-                optionalIsNewDataRef = ExprForgeCodegenNames.REF_ISNEWDATA;
+            if (_optionalIsNewDataRef == null) {
+                _optionalIsNewDataRef = ExprForgeCodegenNames.REF_ISNEWDATA;
             }
 
-            scope.AddSymbol(optionalIsNewDataRef);
-            return optionalIsNewDataRef;
+            scope.AddSymbol(_optionalIsNewDataRef);
+            return _optionalIsNewDataRef;
         }
 
         public CodegenExpressionRef GetAddExprEvalCtx(CodegenMethodScope scope)
         {
-            if (optionalExprEvalCtxRef == null) {
-                optionalExprEvalCtxRef = ExprForgeCodegenNames.REF_EXPREVALCONTEXT;
+            if (_optionalExprEvalCtxRef == null) {
+                _optionalExprEvalCtxRef = ExprForgeCodegenNames.REF_EXPREVALCONTEXT;
             }
 
-            scope.AddSymbol(optionalExprEvalCtxRef);
-            return optionalExprEvalCtxRef;
+            scope.AddSymbol(_optionalExprEvalCtxRef);
+            return _optionalExprEvalCtxRef;
         }
 
         public CodegenExpressionRef GetAddRequiredUnderlying(
@@ -80,39 +80,39 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             EventType eventType,
             bool optionalEvent)
         {
-            if (underlyingStreamNums.IsEmpty()) {
-                underlyingStreamNums = new Dictionary<int, EventTypeWithOptionalFlag>();
+            if (_underlyingStreamNums.IsEmpty()) {
+                _underlyingStreamNums = new Dictionary<int, EventTypeWithOptionalFlag>();
             }
 
-            var existing = underlyingStreamNums.Get(streamNum);
+            var existing = _underlyingStreamNums.Get(streamNum);
             if (existing != null) {
                 scope.AddSymbol(existing.Ref);
                 return existing.Ref;
             }
 
-            var assigned = Ref("u" + currentParamNum);
-            underlyingStreamNums.Put(streamNum, new EventTypeWithOptionalFlag(assigned, eventType, optionalEvent));
-            currentParamNum++;
+            var assigned = Ref("u" + _currentParamNum);
+            _underlyingStreamNums.Put(streamNum, new EventTypeWithOptionalFlag(assigned, eventType, optionalEvent));
+            _currentParamNum++;
             scope.AddSymbol(assigned);
             return assigned;
         }
 
         public virtual void Provide(IDictionary<string, Type> symbols)
         {
-            if (optionalEPSRef != null) {
-                symbols.Put(optionalEPSRef.Ref, typeof(EventBean[]));
+            if (_optionalEpsRef != null) {
+                symbols.Put(_optionalEpsRef.Ref, typeof(EventBean[]));
             }
 
-            if (optionalExprEvalCtxRef != null) {
-                symbols.Put(optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
+            if (_optionalExprEvalCtxRef != null) {
+                symbols.Put(_optionalExprEvalCtxRef.Ref, typeof(ExprEvaluatorContext));
             }
 
-            if (optionalIsNewDataRef != null) {
-                symbols.Put(optionalIsNewDataRef.Ref, typeof(bool));
+            if (_optionalIsNewDataRef != null) {
+                symbols.Put(_optionalIsNewDataRef.Ref, typeof(bool));
             }
 
-            if (allowUnderlyingReferences) {
-                foreach (var entry in underlyingStreamNums) {
+            if (_allowUnderlyingReferences) {
+                foreach (var entry in _underlyingStreamNums) {
                     symbols.Put(entry.Value.Ref.Ref, entry.Value.EventType.UnderlyingType);
                 }
             }
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenBlock processBlock,
             CodegenClassScope codegenClassScope)
         {
-            foreach (var underlying in underlyingStreamNums) {
+            foreach (var underlying in _underlyingStreamNums) {
                 var underlyingType = underlying.Value.EventType.UnderlyingType;
                 var name = underlying.Value.Ref.Ref;
                 var arrayAtIndex = ArrayAtIndex(Ref(ExprForgeCodegenNames.NAME_EPS), Constant(underlying.Key));

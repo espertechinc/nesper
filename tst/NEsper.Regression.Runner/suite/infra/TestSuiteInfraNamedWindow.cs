@@ -65,6 +65,10 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.AddImportType(typeof(SupportBean_S0));
+            
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> outerMapInnerType = new Dictionary<string, object>();
             outerMapInnerType.Put("key", typeof(string));
             configuration.Common.AddEventType("InnerMap", outerMapInnerType);

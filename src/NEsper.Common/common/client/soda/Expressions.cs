@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.client.soda
     /// adding an unlimited number of additional sub-expressions to an expression. For those expressions
     /// there are additional add methods provided.
     /// </summary>
-    [Serializable]
     public class Expressions
     {
         /// <summary>

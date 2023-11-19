@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var fields = "c0".SplitCsv();
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("c0")));
+                    statement => Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("c0")));
 
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsNew("s0", fields, new object[] { 2.0m });

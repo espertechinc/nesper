@@ -39,6 +39,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz.Name, clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             configuration.Common.AddEventType(
                 "MyOAEventType",
                 new[] {"p0", "p1"},

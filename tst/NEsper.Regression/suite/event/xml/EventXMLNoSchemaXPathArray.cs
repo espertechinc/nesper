@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML;

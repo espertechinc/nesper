@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Holds scripting settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonScripting
     {
         /// <summary>

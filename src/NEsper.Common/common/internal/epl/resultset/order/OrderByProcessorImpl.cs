@@ -65,8 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            method.Block.DeclareVar(
-                typeof(int),
+            method.Block.DeclareVar<int>(
                 "num",
                 ExprDotName(REF_ORDERROLLUPLEVEL, "LevelNumber"));
             var blocks = method.Block.SwitchBlockOfLength(Ref("num"), forge.OrderByRollup.Length, true);
@@ -110,8 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
         {
             var createSortPropertiesWRollup = CreateSortPropertiesWRollupCodegen(forge, classScope, namedMethods);
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
-            method.Block.DeclareVar(
-                    typeof(IList<object>),
+            method.Block.DeclareVar<IList<object>>(
                     "sortValuesMultiKeys",
                     LocalMethod(
                         createSortPropertiesWRollup,
@@ -122,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                 .MethodReturn(
                     StaticMethod(
                         typeof(OrderByProcessorUtil),
-                        "sortGivenOutgoingAndSortKeys",
+                        "SortGivenOutgoingAndSortKeys",
                         REF_OUTGOINGEVENTS,
                         Ref("sortValuesMultiKeys"),
                         comparator));
@@ -157,8 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
             var createSortProperties = CreateSortPropertiesCodegen(forge, classScope, namedMethods);
             CodegenExpression comparator = classScope.AddOrGetDefaultFieldSharable(forge.IComparer);
             Consumer<CodegenMethod> code = method => {
-                method.Block.DeclareVar(
-                        typeof(IList<object>),
+                method.Block.DeclareVar<IList<object>>(
                         "sortValuesMultiKeys",
                         LocalMethod(
                             createSortProperties,
@@ -214,7 +211,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
                     NewArrayByLength(typeof(object), ArrayLength(REF_GENERATINGEVENTS)));
 
                 var elements = forge.OrderBy;
-                var forEach = method.Block.DeclareVar(typeof(int), "count", Constant(0))
+                var forEach = method.Block.DeclareVar<int>("count", Constant(0))
                     .ForEach(typeof(EventBean[]), "eventsPerStream", REF_GENERATINGEVENTS);
 
                 if (forge.IsNeedsGroupByKeys) {

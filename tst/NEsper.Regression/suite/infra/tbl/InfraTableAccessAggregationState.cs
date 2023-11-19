@@ -12,8 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -223,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var fields = "c0,c1".SplitCsv();
                 var eplUse =
-                    "@name('s0') select varTotal[P00, id, 100L].Total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
+                    "@name('s0') select varTotal[P00, Id, 100L].Total as c0, varTotal[P00, Id, 100L].cnt as c1 from SupportBean_S0";
                 env.CompileDeploy(eplUse, path).AddListener("s0");
 
                 MakeSendBean(env, "E1", 10, 100, 1000);

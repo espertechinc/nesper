@@ -257,8 +257,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create expression Id { e -> e };" +
-                          "@name('s0') select String.valueOf(Id(1)) as c0 from SupportBean;";
+                var epl =
+                    "create expression Id { e -> e };" +
+                    "@name('s0') select Convert.ToString(Id(1)) as c0 from SupportBean;";
                 env.CompileDeploy(epl).AddListener("s0");
                 env.SendEventBean(new SupportBean());
                 env.AssertEqualsNew("s0", "c0", "1");

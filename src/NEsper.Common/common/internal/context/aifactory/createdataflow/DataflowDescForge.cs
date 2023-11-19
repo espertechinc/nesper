@@ -99,8 +99,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent.MakeChild(
                 typeof(IList<LogicalChannel>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar(
-                typeof(IList<LogicalChannel>),
+            method.Block.DeclareVar<IList<LogicalChannel>>(
                 "chnl",
                 NewInstance(typeof(List<LogicalChannel>), Constant(logicalChannels.Count)));
             foreach (var channel in logicalChannels) {
@@ -119,8 +118,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createdataflow
         {
             var method = parent
                 .MakeChild(typeof(LinkedHashSet<int>), typeof(DataflowDescForge), classScope);
-            method.Block.DeclareVar(
-                typeof(LinkedHashSet<int>),
+            method.Block.DeclareVar<LinkedHashSet<int>>(
                 "order",
                 NewInstance(
                     typeof(LinkedHashSet<int>)));

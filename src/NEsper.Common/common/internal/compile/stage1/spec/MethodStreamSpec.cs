@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification object for historical data poll via database SQL statement.
     /// </summary>
-    [Serializable]
     public class MethodStreamSpec
         : StreamSpecBase,
             StreamSpecRaw,

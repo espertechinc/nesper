@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBeanStaticInnerTwo
     {
         public static string MyOtherString => "hello2";

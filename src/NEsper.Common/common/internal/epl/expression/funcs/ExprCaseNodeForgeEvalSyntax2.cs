@@ -208,15 +208,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         rhsClass));
             }
             else {
-                block.DeclareVar(
-                    typeof(object),
+                block.DeclareVar<object>(
                     "left",
                     forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsClass));
-                block.DeclareVar(
-                    typeof(object),
+                block.DeclareVar<object>(
                     "right",
                     forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsClass));
-                method = block.MethodReturn(ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                method = block.MethodReturn(ExprDotMethod(Ref("left"), "Equals", Ref("right")));
             }
 
             return LocalMethodBuild(method).Pass(lhs).Pass(rhs).Call();

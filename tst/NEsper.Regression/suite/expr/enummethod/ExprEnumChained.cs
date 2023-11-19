@@ -8,9 +8,6 @@
 
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.sales;
-using com.espertech.esper.regressionlib.support.util;
-
-using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {

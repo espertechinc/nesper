@@ -8,15 +8,12 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -108,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select Id, sum(value) as thesum from SupportEventWithIntArray group by array";
+                var epl = "@name('s0') select Id, sum(Value) as thesum from SupportEventWithIntArray group by Array";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertIntArray(env, "E1", new int[] { 1, 2 }, 5, 5);
@@ -133,8 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@name('s0') select sb.getLongPrimitive() as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.getTheString()";
+                var epl = "@name('s0') select sb.LongPrimitive as c0, sum(IntPrimitive) as c1 from SupportBean#length_batch(2) as sb group by sb.TheString";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 MakeSendSupportBean(env, "E1", 10, 100L);

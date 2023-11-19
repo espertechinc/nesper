@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             }
 
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var evalCtx = symbols.GetAddExprEvalCtx(method);
             var left = symbols.GetAddLeftResult(method);
 
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .IfRefNullReturnNull("rhs");
 
             if (coercer == null) {
-                method.Block.DeclareVar(typeof(bool?), "eq", ExprDotMethod(left, "Equals", Ref("rhs")));
+                method.Block.DeclareVar<bool>("eq", ExprDotMethod(left, "Equals", Ref("rhs")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }
@@ -86,15 +86,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 }
             }
             else {
-                method.Block.DeclareVar(
-                        typeof(object),
+                method.Block.DeclareVar<object>(
                         "left",
                         coercer.CoerceCodegen(left, symbols.LeftResultType))
-                    .DeclareVar(
-                        typeof(object),
+                    .DeclareVar<object>(
                         "right",
                         coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
-                    .DeclareVar(typeof(bool?), "eq", ExprDotMethod(Ref("left"), "equals", Ref("right")));
+                    .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                 }

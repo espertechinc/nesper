@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Returns true for insert stream and false for remove stream, same as the "istream()" builtin function.
     /// </summary>
-    [Serializable]
     public class IStreamBuiltinExpression : ExpressionBase
     {
         /// <summary>

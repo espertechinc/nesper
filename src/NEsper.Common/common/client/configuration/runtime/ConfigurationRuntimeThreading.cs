@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds threading settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeThreading
     {
         /// <summary>

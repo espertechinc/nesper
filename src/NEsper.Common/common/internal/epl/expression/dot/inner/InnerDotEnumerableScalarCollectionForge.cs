@@ -42,10 +42,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var collectionScalarCodegen =
-                rootLambdaForge.EvaluateGetROCollectionScalarCodegen(parentMethod, exprSymbol, codegenClassScope);
-            var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
-            return FlexCast(collectionType, collectionScalarCodegen);
+            var collectionScalarCodegen = rootLambdaForge.EvaluateGetROCollectionScalarCodegen(
+                parentMethod,
+                exprSymbol,
+                codegenClassScope);
+            
+            //var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
+            //return FlexCast(collectionType, collectionScalarCodegen);
+            return Unwrap(componentType, collectionScalarCodegen);
         }
 
         public CodegenExpression EvaluateGetROCollectionEventsCodegen(

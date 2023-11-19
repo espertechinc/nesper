@@ -56,29 +56,19 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 .AddParam<EPStatementInitServices>(EPStatementInitServicesConstants.REF.Ref);
             method.Block
                 .DeclareVarNewInstance(typeof(ScriptDescriptorRuntime), "sd")
-                .SetProperty(
-                    Ref("sd"), "OptionalDialect", Constant(optionalDialect))
-                .SetProperty(
-                    Ref("sd"), "ScriptName", Constant(scriptName))
-                .SetProperty(
-                    Ref("sd"), "Expression", Constant(expression))
-                .SetProperty(
-                    Ref("sd"), "ParameterNames", Constant(parameterNames))
-                .SetProperty(
-                    Ref("sd"),
-                    "EvaluationTypes",
-                    Constant(ExprNodeUtilityQuery.GetExprResultTypes(parameters)))
-                .SetProperty(
-                    Ref("sd"),
-                    "Parameters",
-                    ExprNodeUtilityCodegen.CodegenEvaluators(parameters, method, GetType(), classScope))
-                .SetProperty(
-                    Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
-                .SetProperty(
-                    Ref("sd"),
-                    "ImportService",
+                .SetProperty(Ref("sd"), "OptionalDialect", Constant(optionalDialect))
+                .SetProperty(Ref("sd"), "ScriptName", Constant(scriptName))
+                .SetProperty(Ref("sd"), "Expression", Constant(expression))
+                .SetProperty(Ref("sd"), "ParameterNames", Constant(parameterNames))
+                .SetProperty(Ref("sd"), "EvaluationTypes", Constant(ExprNodeUtilityQuery.GetExprResultTypes(parameters)))
+                .SetProperty(Ref("sd"), "Parameters", ExprNodeUtilityCodegen.CodegenEvaluators(parameters, method, GetType(), classScope))
+                .SetProperty(Ref("sd"), "DefaultDialect", Constant(_defaultDialect))
+                .SetProperty(Ref("sd"), "ImportService", 
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(EPStatementInitServicesConstants.IMPORTSERVICERUNTIME))
+                .SetProperty(Ref("sd"), "ScriptCompiler", 
+                    ExprDotMethodChain(EPStatementInitServicesConstants.REF)
+                        .Get(EPStatementInitServicesConstants.SCRIPTCOMPILER))
                 .SetProperty(
                     Ref("sd"),
                     "Coercer",

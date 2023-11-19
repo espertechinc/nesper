@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         innerForge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                     .IfCondition(Not(InstanceOf(Ref("result"), typeof(EventBean[]))))
                     .BlockReturn(ConstantNull())
-                    .DeclareVar(typeof(EventBean[]), "events", Cast(typeof(EventBean[]), Ref("result")))
+                    .DeclareVar<EventBean[]>("events", Cast(typeof(EventBean[]), Ref("result")))
                     .DeclareVar(arrayType, "values", NewArrayByLength(componentReturnType, ArrayLength(Ref("events"))))
                     .ForLoopIntSimple("i", ArrayLength(Ref("events")))
                     .AssignArrayElement(

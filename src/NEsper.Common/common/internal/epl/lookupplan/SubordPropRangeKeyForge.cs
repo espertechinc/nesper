@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.epl.join.querygraph;
 
 namespace com.espertech.esper.common.@internal.epl.lookupplan
 {
-    [Serializable]
     public class SubordPropRangeKeyForge
     {
         public SubordPropRangeKeyForge(

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.prev
             }
 
             var method = parent.MakeChild((Type)resultType, GetType(), classScope);
-            var eps = symbols.GetAddEPS(method);
+            var eps = symbols.GetAddEps(method);
             var strategy = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 previousStrategyFieldName,
                 typeof(RowRecogPreviousStrategy));

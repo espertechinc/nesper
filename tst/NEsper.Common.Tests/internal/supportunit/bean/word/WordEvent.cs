@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean.word
 {
-    [Serializable]
     public class WordEvent
     {
         public WordEvent(string word)

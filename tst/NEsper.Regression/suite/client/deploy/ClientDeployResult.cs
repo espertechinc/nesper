@@ -155,7 +155,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     statement => Assert.AreEqual(
                         "@Name(\"StmtOne\")" +
                         NEWLINE +
-                        "create schema MyEvent(Id String, val1 int, val2 int)",
+                        "create schema MyEvent(id String, val1 int, val2 int)",
                         statement.GetProperty(StatementProperty.EPL)));
                 env.AssertStatement(
                     "StmtTwo",

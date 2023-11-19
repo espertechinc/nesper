@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
@@ -19,9 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // tryInvalidFAFCompile
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -430,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create context MyContext partition by id from SupportBean_S0, Id from SupportBean_S1;\n" +
+                    "@public create context MyContext partition by Id from SupportBean_S0, Id from SupportBean_S1;\n" +
                     "@public context MyContext create window WinS0#keepall as SupportBean_S0;\n" +
                     "@public context MyContext create window WinS1#keepall as SupportBean_S1;\n" +
                     "context MyContext on SupportBean_S0 as s0 merge WinS0 insert select *;\n" +

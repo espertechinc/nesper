@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             var left = symbols.GetAddLeftResult(method);
-            method.Block.DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
+            method.Block.DeclareVar<bool>("hasNullRow", ConstantFalse());
             var foreachX = method.Block.ForEach(
                 typeof(EventBean),
                 "theEvent",
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        Cast(valueRightType, ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0)))));
+                        Cast(valueRightType, ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0)))));
                 }
 
                 var ifRight = foreachX.IfCondition(NotEqualsNull(Ref("valueRight")));
@@ -90,18 +90,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             .BlockReturn(Constant(!isNotIn));
                     }
                     else {
-                        ifRight.DeclareVar(
-                                typeof(object),
+                        ifRight.DeclareVar<object>(
                                 "left",
                                 coercer.CoerceCodegen(left, symbols.LeftResultType))
-                            .DeclareVar(
-                                typeof(object),
+                            .DeclareVar<object>(
                                 "right",
                                 coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
-                            .DeclareVar(
-                                typeof(bool?),
-                                "eq",
-                                ExprDotMethod(Ref("left"), "Equals", Ref("right")))
+                            .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")))
                             .IfCondition(Ref("eq"))
                             .BlockReturn(Constant(!isNotIn));
                     }

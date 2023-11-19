@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.view.timelengthbatch
             }
 
             method.Block
-                .DeclareVar(typeof(TimePeriodCompute), "eval", timePeriodCompute.MakeEvaluator(method, classScope))
+                .DeclareVar<TimePeriodCompute>("eval", timePeriodCompute.MakeEvaluator(method, classScope))
                 .SetProperty(factory, "Size", CodegenEvaluator(sizeForge, method, GetType(), classScope))
                 .SetProperty(factory, "TimePeriodCompute", Ref("eval"))
                 .SetProperty(factory, "ScheduleCallbackId", Constant(scheduleCallbackId))

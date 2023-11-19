@@ -22,7 +22,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for math op.
         /// </summary>
-        [Serializable]
         public class SubtractDecimalConvComputer : Computer
         {
             private readonly Coercer convOne;

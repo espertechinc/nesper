@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     ///     Represents a single item in a SELECT-clause, with a name assigned either by the
     ///     engine or by the user specifying an "as" tag name.
     /// </summary>
-    [Serializable]
     public class SelectClauseExprCompiledSpec : SelectClauseElementCompiled
     {
         /// <summary>

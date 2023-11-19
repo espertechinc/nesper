@@ -14,8 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
@@ -157,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     .AddWithAsProvidedName("LongBoxed", "value");
 
                 var stmtTextCreate =
-                    "@name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean";
+                    "@Name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean";
                 Assert.AreEqual(stmtTextCreate, model.ToEPL());
                 env.CompileDeploy(model, path).AddListener("create");
 

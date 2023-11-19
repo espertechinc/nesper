@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds match-recognize settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeMatchRecognize
     {
         /// <summary>

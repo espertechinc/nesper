@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.visitor
     /// <summary>
     /// Visitor for getting a list of identifier nodes with their parent node, which can be null if there is no parent node.
     /// </summary>
-    [Serializable]
     public class ExprNodeIdentVisitorWParent : ExprNodeVisitorWithParent
     {
         private readonly IList<Pair<ExprNode, ExprIdentNode>> _identNodes = new List<Pair<ExprNode, ExprIdentNode>>();

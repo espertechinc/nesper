@@ -7,9 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-using System.Linq;
 
-using com.espertech.esper.common.client.hook.aggmultifunc;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -145,7 +143,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 var expectedEnumEvent = new object[][] {
                     new object[] { "c0", typeof(SupportBean[]), typeof(SupportBean).FullName, true },
-                    new object[] { "c1", typeof(bool?), null, null }, new object[] { "c2", typeof(bool?), null, null }
+                    new object[] { "c1", typeof(bool?), null, null },
+                    new object[] { "c2", typeof(bool?), null, null }
                 };
                 env.AssertStatement(
                     "s0",
@@ -228,9 +227,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(eplScalarColl).AddListener("s0");
 
                 var expectedScalarColl = new object[][] {
-                    new object[] { "c0", typeof(ICollection<object>), null, null },
-                    new object[] { "c1", typeof(ICollection<object>), null, null },
-                    new object[] { "c2", typeof(bool?), null, null }, new object[] { "c3", typeof(bool?), null, null },
+                    new object[] { "c0", typeof(ICollection<string>), null, null },
+                    new object[] { "c1", typeof(ICollection<int?>), null, null },
+                    new object[] { "c2", typeof(bool?), null, null },
+                    new object[] { "c3", typeof(bool?), null, null },
                 };
                 env.AssertStatement(
                     "s0",
@@ -245,10 +245,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     @event => {
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] { "E1" },
-                            (ICollection<object>)@event.Get("c0"));
+                            @event.Get("c0").Unwrap<object>());
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] { 1 },
-                            (ICollection<object>)@event.Get("c1"));
+                            @event.Get("c1").Unwrap<object>());
                         EPAssertionUtil.AssertProps(@event, fieldsScalarColl, new object[] { true, true });
                     });
 
@@ -258,10 +258,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     @event => {
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] { "E1", "E2" },
-                            (ICollection<object>)@event.Get("c0"));
+                            @event.Get("c0").Unwrap<object>());
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] { 1, 2 },
-                            (ICollection<object>)@event.Get("c1"));
+                            @event.Get("c1").Unwrap<object>());
                         EPAssertionUtil.AssertProps(@event, fieldsScalarColl, new object[] { false, false });
                     });
 
@@ -285,7 +285,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 var expectedScalarArray = new object[][] {
                     new object[] { "c0", typeof(string[]), null, null },
                     new object[] { "c1", typeof(int?[]), null, null },
-                    new object[] { "c2", typeof(bool?), null, null }, new object[] { "c3", typeof(bool?), null, null },
+                    new object[] { "c2", typeof(bool?), null, null },
+                    new object[] { "c3", typeof(bool?), null, null },
                 };
                 env.AssertStatement(
                     "s0",
@@ -323,7 +324,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(eplScalar).AddListener("s0");
 
                 var expectedScalar = new object[][] {
-                    new object[] { "c0", typeof(string), null, null }, new object[] { "c1", typeof(int?), null, null }
+                    new object[] { "c0", typeof(string), null, null },
+                    new object[] { "c1", typeof(int?), null, null }
                 };
                 env.AssertStatement(
                     "s0",

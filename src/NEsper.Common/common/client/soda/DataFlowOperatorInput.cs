@@ -12,7 +12,6 @@ using System.Collections.Generic;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Represents an input port of an operator. </summary>
-    [Serializable]
     public class DataFlowOperatorInput
     {
         /// <summary>Ctor. </summary>

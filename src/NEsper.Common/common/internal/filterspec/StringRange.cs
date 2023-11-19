@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.filterspec
     /// <summary>
     ///     Holds a range of double values with a minimum (start) value and a maximum (end) value.
     /// </summary>
-    [Serializable]
     public class StringRange : Range
     {
         private readonly int _hashCode;

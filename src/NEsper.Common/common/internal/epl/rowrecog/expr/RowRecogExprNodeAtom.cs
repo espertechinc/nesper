@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Atom in a regex expression tree.
     /// </summary>
-    [Serializable]
     public class RowRecogExprNodeAtom : RowRecogExprNode
     {
         /// <summary>

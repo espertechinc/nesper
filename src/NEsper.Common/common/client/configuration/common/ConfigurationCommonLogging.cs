@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Holds view logging settings other then the Apache commons or Log4J settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonLogging
     {
         /// <summary>

@@ -218,7 +218,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 var path = new RegressionPath();
                 env.CompileDeploy("@public create variable int myrows = 2", path);
                 env.CompileDeploy("@public create variable int myoffset = 1", path);
-                env.CompileDeploy("on SupportBeanNumeric set myrows = intOne, myoffset = intTwo", path);
+                env.CompileDeploy("on SupportBeanNumeric set myrows = IntOne, myoffset = IntTwo", path);
 
                 string epl;
 

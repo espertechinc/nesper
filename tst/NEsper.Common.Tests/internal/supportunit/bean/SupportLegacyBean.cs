@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
     /// <summary>
     ///     Legacy Java class for testing non-JavaBean style accessor methods.
     /// </summary>
-    [Serializable]
     public class SupportLegacyBean
     {
         public string fieldLegacyVal;
@@ -85,7 +84,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             return legacyNested;
         }
 
-        [Serializable]
         public class LegacyNested
         {
             public string fieldNestedValue;

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.collection;
@@ -19,13 +20,13 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // Ref;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
 {
     public class EnumTakeWhileScalar : ThreeFormScalar
     {
-        private CodegenExpression innerValue;
+        private CodegenExpression _innerValue;
 
         public EnumTakeWhileScalar(
             ExprDotEvalParamLambda lambda,
@@ -87,12 +88,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<object>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
@@ -101,11 +103,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+            _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneScalar(
                 numParameters,
                 block,
-                innerValue,
+                _innerValue,
                 InnerExpression.EvaluationType);
         }
 
@@ -118,13 +120,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,
                 InnerExpression.EvaluationType,
-                innerValue);
+                _innerValue);
             block.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
         }
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
         }
     }
 } // end of namespace

@@ -61,12 +61,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<object>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
@@ -75,8 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar(
-                typeof(ArrayDeque<object>),
+            block.DeclareVar<ArrayDeque<object>>(
                 "result",
                 NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
         }
@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
         }
     }
 } // end of namespace

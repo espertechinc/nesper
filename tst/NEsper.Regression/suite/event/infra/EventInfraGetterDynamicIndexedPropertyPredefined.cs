@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -20,7 +19,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
 using NEsper.Avro.Extensions;
-using NEsper.Avro.Util.Support;
 
 using Newtonsoft.Json.Linq;
 
@@ -237,17 +235,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Assert.AreEqual(hasB, @event.Get("c5") != null);
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
 
-        [Serializable]
         public class LocalEventSubA : LocalEvent
         {
             public LocalEventSubA(LocalInnerEvent[] array)
@@ -258,13 +253,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent[] Array { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent[] Array;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
         }

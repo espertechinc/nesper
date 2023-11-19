@@ -24,7 +24,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// <summary>
     /// Expression for use within crontab to specify a wildcard.
     /// </summary>
-    [Serializable]
     public class ExprWildcardImpl : ExprNodeBase,
         ExprForge,
         ExprEvaluator,

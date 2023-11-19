@@ -11,7 +11,6 @@ using com.espertech.esper.common.client;
 
 namespace com.espertech.esper.runtime.client
 {
-    [Serializable]
     public class UpdateEventArgs : EventArgs
     {
         public UpdateEventArgs(

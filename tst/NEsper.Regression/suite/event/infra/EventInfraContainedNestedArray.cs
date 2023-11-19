@@ -6,12 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
@@ -20,9 +19,6 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
-
-using static NEsper.Avro.Core.AvroConstant;
-using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -40,13 +36,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.SendEventBean(new LocalEvent(property));
             };
             var beanepl = "@public @buseventtype create schema LocalLeafEvent as " +
-                          typeof(LocalLeafEvent).FullName +
+                          typeof(LocalLeafEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalInnerEvent as " +
-                          typeof(LocalInnerEvent).FullName +
+                          typeof(LocalInnerEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -85,8 +81,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, GetEpl("json"), json);
 
             // Json-Class-Provided
-            var eplJsonProvided = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var eplJsonProvided = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, eplJsonProvided, json);
 
@@ -148,7 +144,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class LocalLeafEvent
         {
             private readonly string id;
@@ -164,7 +159,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
             private readonly LocalLeafEvent leaf;
@@ -180,7 +174,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private LocalInnerEvent[] property;
@@ -196,19 +189,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent[] property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
             public MyLocalJsonProvidedLeafEvent leaf;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedLeafEvent
         {
             public string id;

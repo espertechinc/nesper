@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
                 .DeclareVar<EventBean>(
                     "item",
-                    Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
+                    ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(streamNumLambda), Ref("item"));
 
             block.DebugStack();
@@ -121,9 +121,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 blockSingle,
                 evaluationType,
                 innerValue,
-                EnumValue(typeof(FlexCollection), "Empty"));
+                EnumValue(typeof(EmptyList<EventBean>), "Instance"));
             blockSingle.BlockReturn(
-                FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
+                StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
             block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>());
         }
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
                 .DeclareVar<EventBean>(
                     "item",
-                    Cast(typeof(EventBean), ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")))
+                    ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(streamNumLambda), Ref("item"))
                 .AssignArrayElement("props", Constant(0), Constant(0));
             if (numParameters > 2) {
@@ -152,10 +152,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 blockSingle,
                 evaluationType,
                 innerValue,
-                EnumValue(typeof(FlexCollection), "Empty"));
+                EnumValue(typeof(EmptyList<EventBean>), "Instance"));
 
             blockSingle.BlockReturn(
-                FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
+                StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
             block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>());
         }

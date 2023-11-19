@@ -229,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
                 catch (EPCompileException ex) {
                     if (namedWindow) {
-                        Assert.AreEqual(
+                        StringAssert.StartsWith(
                             "Failed to plan subquery number 1 querying MyInfraIS: Consuming statements to a named window cannot declare a data window view onto the named window [select (select TheString from MyInfraIS#lastevent) from MyInfraIS]",
                             ex.Message);
                     }

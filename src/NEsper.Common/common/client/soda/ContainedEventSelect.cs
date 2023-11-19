@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a contained-event selection.
     /// </summary>
-    [Serializable]
     public class ContainedEventSelect
     {
         private string _optionalAsName;

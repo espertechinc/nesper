@@ -14,9 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML; // getDocument
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {

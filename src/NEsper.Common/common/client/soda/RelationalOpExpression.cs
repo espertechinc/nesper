@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Comparison using one of the relational operators (=, !=, &lt;, &lt;=, &gt;, &gt;=, is, is not).
     /// </summary>
-    [Serializable]
     public class RelationalOpExpression : ExpressionBase
     {
         private string @operator;

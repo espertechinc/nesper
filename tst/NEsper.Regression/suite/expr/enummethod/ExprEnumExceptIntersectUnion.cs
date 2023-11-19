@@ -18,8 +18,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumExceptIntersectUnion

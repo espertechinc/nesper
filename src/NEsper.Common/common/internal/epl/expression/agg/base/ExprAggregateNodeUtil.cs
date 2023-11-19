@@ -36,8 +36,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.agg.@base
                         optionalLocalGroupBy = new ExprAggregateLocalGroupByDesc(namedParameterNode.ChildNodes);
                     }
                     else if (paramNameLower.Equals("filter")) {
-                        if ((namedParameterNode.ChildNodes.Length != 1) |
-                            namedParameterNode.ChildNodes[0].Forge.EvaluationType.IsTypeBoolean()) {
+                        if ((namedParameterNode.ChildNodes.Length != 1) ||
+                            !namedParameterNode.ChildNodes[0].Forge.EvaluationType.IsTypeBoolean()) {
                             throw new ExprValidationException(
                                 "Filter named parameter requires a single expression returning a boolean-typed value");
                         }

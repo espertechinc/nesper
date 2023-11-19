@@ -6,14 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.common.@internal.support;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
     // For testing variant streams to act as a variant of SupportBean
-    [Serializable]
     public class SupportBeanVariantStream
     {
         public SupportBeanVariantStream(string theString)

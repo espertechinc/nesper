@@ -138,12 +138,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     MEMBER_EXPREVALCONTEXT,
                     MEMBER_AGGREGATIONSVC,
                     REF_VIEWABLE)
-                .DeclareVar(
-                    typeof(IEnumerator<EventBean>),
+                .DeclareVar<IEnumerator<EventBean>>(
                     "iterator",
                     LocalMethod(ObtainEnumeratorCodegen(forge, classScope, method), REF_VIEWABLE))
-                .DeclareVar(
-                    typeof(ArrayDeque<EventBean>),
+                .DeclareVar<ArrayDeque<EventBean>>(
                     "deque",
                     StaticMethod(typeof(ResultSetProcessorUtil), METHOD_ITERATORTODEQUE, Ref("iterator")))
                 .ExprDotMethod(MEMBER_AGGREGATIONSVC, "ClearResults", MEMBER_EXPREVALCONTEXT)
@@ -173,8 +171,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
 
             iterator.Block
                 .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
-                .DeclareVar(typeof(IList<EventBean>), "outgoingEvents", NewInstance(typeof(List<EventBean>)))
-                .DeclareVar(typeof(IList<object>), "orderKeys", NewInstance(typeof(List<object>)));
+                .DeclareVar<IList<EventBean>>("outgoingEvents", NewInstance(typeof(List<EventBean>)))
+                .DeclareVar<IList<object>>("orderKeys", NewInstance(typeof(List<object>)));
 
             {
                 var forEach = iterator.Block.ForEach<EventBean>("candidate", REF_VIEWABLE);
@@ -441,12 +439,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 var forEach = method.Block
                     .ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 forEach
-                    .DeclareVar(
-                        typeof(ISet<MultiKeyArrayOfKeys<EventBean>>),
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar(
-                        typeof(ISet<MultiKeyArrayOfKeys<EventBean>>),
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"));
                 if (forge.IsUnidirectional) {
@@ -596,12 +592,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 var forEach = method.Block
                     .ForEach(typeof(UniformPair<ISet<MultiKeyArrayOfKeys<EventBean>>>), "pair", REF_JOINEVENTSSET);
                 forEach
-                    .DeclareVar(
-                        typeof(ISet<MultiKeyArrayOfKeys<EventBean>>),
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "newData",
                         ExprDotName(Ref("pair"), "First"))
-                    .DeclareVar(
-                        typeof(ISet<MultiKeyArrayOfKeys<EventBean>>),
+                    .DeclareVar<ISet<MultiKeyArrayOfKeys<EventBean>>>(
                         "oldData",
                         ExprDotName(Ref("pair"), "Second"));
 
@@ -722,10 +716,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                     .ForEach(typeof(UniformPair<EventBean[]>), "pair", REF_VIEWEVENTSLIST);
                 forEach.DeclareVar<EventBean[]>(
                         "newData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "First")))
+                        ExprDotName(Ref("pair"), "First"))
                     .DeclareVar<EventBean[]>(
                         "oldData",
-                        Cast(typeof(EventBean[]), ExprDotName(Ref("pair"), "Second")))
+                        ExprDotName(Ref("pair"), "Second"))
                     .DeclareVar<EventBean[]>("eventsPerStream", NewArrayByLength(typeof(EventBean), Constant(1)))
                     .StaticMethod(
                         typeof(ResultSetProcessorUtil),

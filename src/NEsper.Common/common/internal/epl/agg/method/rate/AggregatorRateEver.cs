@@ -112,8 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             method.Block
                 .IfCondition(Not(ExprDotMethod(_points, "IsEmpty")))
                 .DeclareVar<long>("newest", ExprDotMethod(ExprDotName(_points, "Last"), "AsInt64"))
-                .DeclareVar(
-                    typeof(bool?),
+                .DeclareVar<bool>(
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),
@@ -180,8 +179,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.rate
             method.Block
                 .DeclareVar<long>("timestamp", ExprDotName(timeProvider, "Time"))
                 .ExprDotMethod(_points, "Add", Ref("timestamp"))
-                .DeclareVar(
-                    typeof(bool?),
+                .DeclareVar<bool>(
                     "leave",
                     StaticMethod(
                         typeof(AggregatorRateEver),

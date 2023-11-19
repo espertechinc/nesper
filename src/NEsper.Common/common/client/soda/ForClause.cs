@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A for-clause is a means to specify listener and observer delivery.
     /// </summary>
-    [Serializable]
     public class ForClause
     {
         /// <summary>

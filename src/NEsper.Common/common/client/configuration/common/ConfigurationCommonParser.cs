@@ -360,7 +360,7 @@ namespace com.espertech.esper.common.client.configuration.common
                 isConstant = bool.Parse(GetOptionalAttribute(element, "constant"));
             }
 
-            configuration.AddVariable(variableName, variableType, initValue, isConstant);
+            configuration.AddVariable(variableName, variableType.GetBoxedType(), initValue, isConstant);
         }
 
         private static void HandleEventTypes(

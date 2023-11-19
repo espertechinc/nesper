@@ -16,8 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
     public class EventJsonDocSamples

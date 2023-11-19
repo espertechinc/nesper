@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Property-exists checks if a dynamic property exists.
     /// </summary>
-    [Serializable]
     public class PropertyExistsExpression : ExpressionBase
     {
         /// <summary>

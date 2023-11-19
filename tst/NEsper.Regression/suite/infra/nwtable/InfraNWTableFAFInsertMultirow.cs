@@ -8,14 +8,10 @@
 
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.soda;
-using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;

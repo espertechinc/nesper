@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Count of (distinct) rows, equivalent to "count(*)"
     /// </summary>
-    [Serializable]
     public class CountStarProjectionExpression : ExpressionBase
     {
         /// <summary>

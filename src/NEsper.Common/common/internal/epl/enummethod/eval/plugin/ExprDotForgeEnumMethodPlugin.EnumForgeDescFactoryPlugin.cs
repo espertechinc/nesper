@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
     {
         private class EnumForgeDescFactoryPlugin : EnumForgeDescFactory
         {
-            private readonly EnumMethodModeStaticMethod mode;
-            private readonly string enumMethodUsedName;
-            private readonly DotMethodFP footprint;
-            private readonly IList<ExprNode> parameters;
-            private readonly EventType inputEventType;
-            private readonly Type collectionComponentType;
-            private readonly StatementRawInfo raw;
-            private readonly StatementCompileTimeServices services;
+            private readonly EnumMethodModeStaticMethod _mode;
+            private readonly string _enumMethodUsedName;
+            private readonly DotMethodFP _footprint;
+            private readonly IList<ExprNode> _parameters;
+            private readonly EventType _inputEventType;
+            private readonly Type _collectionComponentType;
+            private readonly StatementRawInfo _raw;
+            private readonly StatementCompileTimeServices _services;
 
             public EnumForgeDescFactoryPlugin(
                 EnumMethodModeStaticMethod mode,
@@ -41,24 +41,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 StatementRawInfo raw,
                 StatementCompileTimeServices services)
             {
-                this.mode = mode;
-                this.enumMethodUsedName = enumMethodUsedName;
-                this.footprint = footprint;
-                this.parameters = parameters;
-                this.inputEventType = inputEventType;
-                this.collectionComponentType = collectionComponentType;
-                this.raw = raw;
-                this.services = services;
+                this._mode = mode;
+                this._enumMethodUsedName = enumMethodUsedName;
+                this._footprint = footprint;
+                this._parameters = parameters;
+                this._inputEventType = inputEventType;
+                this._collectionComponentType = collectionComponentType;
+                this._raw = raw;
+                this._services = services;
             }
 
             public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
             {
-                var desc = footprint.Parameters[parameterNum];
+                var desc = _footprint.Parameters[parameterNum];
                 if (desc.LambdaParamNum == 0) {
                     return new EnumForgeLambdaDesc(Array.Empty<EventType>(), Array.Empty<string>());
                 }
 
-                var param = parameters[parameterNum];
+                var param = _parameters[parameterNum];
                 if (!(param is ExprLambdaGoesNode goes)) {
                     throw new IllegalStateException("Parameter " + parameterNum + " is not a lambda parameter");
                 }
@@ -71,44 +71,44 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 for (var i = 0; i < types.Length; i++) {
                     // obtain lambda parameter type
                     var lambdaParamType =
-                        mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(parameterNum, i));
+                        _mode.LambdaParameters.Invoke(new EnumMethodLambdaParameterDescriptor(parameterNum, i));
 
                     if (lambdaParamType is EnumMethodLambdaParameterTypeValue) {
-                        if (inputEventType == null) {
+                        if (_inputEventType == null) {
                             types[i] = ExprDotNodeUtility.MakeTransientOAType(
-                                enumMethodUsedName,
+                                _enumMethodUsedName,
                                 goesToNames[i],
-                                collectionComponentType,
-                                raw,
-                                services);
+                                _collectionComponentType,
+                                _raw,
+                                _services);
                         }
                         else {
-                            types[i] = inputEventType;
+                            types[i] = _inputEventType;
                         }
                     }
                     else if (lambdaParamType is EnumMethodLambdaParameterTypeIndex ||
                              lambdaParamType is EnumMethodLambdaParameterTypeSize) {
                         types[i] = ExprDotNodeUtility.MakeTransientOAType(
-                            enumMethodUsedName,
+                            _enumMethodUsedName,
                             goesToNames[i],
                             typeof(int),
-                            raw,
-                            services);
+                            _raw,
+                            _services);
                     }
                     else if (lambdaParamType is EnumMethodLambdaParameterTypeStateGetter getter) {
                         types[i] = ExprDotNodeUtility.MakeTransientOAType(
-                            enumMethodUsedName,
+                            _enumMethodUsedName,
                             goesToNames[i],
                             getter.Type,
-                            raw,
-                            services);
+                            _raw,
+                            _services);
                     }
                     else {
                         throw new UnsupportedOperationException(
                             "Unrecognized lambda parameter type " + lambdaParamType);
                     }
 
-                    if (types[i] == inputEventType) {
+                    if (types[i] == _inputEventType) {
                         names[i] = goesToNames[i];
                     }
                     else {
@@ -128,14 +128,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 IList<Type> parametersNext = new List<Type>();
 
                 // first parameter is always the state
-                parametersNext.Add(mode.StateClass);
+                parametersNext.Add(_mode.StateClass);
 
                 // second parameter is the value: EventBean for event collection or the collection component type
-                if (inputEventType != null) {
+                if (_inputEventType != null) {
                     parametersNext.Add(typeof(EventBean));
                 }
                 else {
-                    parametersNext.Add(collectionComponentType);
+                    parametersNext.Add(_collectionComponentType);
                 }
 
                 // remaining parameters are the result of each DotMethodFPParam that returns a lambda (non-lambda is passed to state), always Object typed
@@ -150,8 +150,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 MethodInfo serviceMethod;
                 try {
                     serviceMethod = MethodResolver.ResolveMethod(
-                        mode.ServiceClass,
-                        mode.MethodName,
+                        _mode.ServiceClass,
+                        _mode.MethodName,
                         parametersNext.ToArray(),
                         false,
                         noFlags,
@@ -159,19 +159,19 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 }
                 catch (MethodResolverNoSuchMethodException ex) {
                     throw new ExprValidationException(
-                        "Failed to find service method for enumeration-method '" + mode.MethodName + "': " + ex.Message,
+                        "Failed to find service method for enumeration-method '" + _mode.MethodName + "': " + ex.Message,
                         ex);
                 }
 
                 if (!serviceMethod.ReturnType.IsTypeVoid()) {
                     throw new ExprValidationException(
                         "Failed to validate service method for enumeration-method '" +
-                        mode.MethodName +
+                        _mode.MethodName +
                         "', expected void return type");
                 }
 
                 // obtain expected return type
-                var returnType = mode.ReturnType;
+                var returnType = _mode.ReturnType;
                 Type expectedStateReturnType;
                 if (returnType is EPChainableTypeClass @class) {
                     expectedStateReturnType = @class.Clazz;
@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                     expectedStateReturnType = typeof(EventBean);
                 }
                 else if (returnType is EPChainableTypeEventMulti) {
-                    expectedStateReturnType = typeof(FlexCollection);
+                    expectedStateReturnType = typeof(EventBean);
                 }
                 else if (returnType is EPChainableTypeNull) {
                     expectedStateReturnType = null;
@@ -190,10 +190,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 }
 
                 // check state-class
-                if (!TypeHelper.IsSubclassOrImplementsInterface(mode.StateClass, typeof(EnumMethodState))) {
+                if (!TypeHelper.IsSubclassOrImplementsInterface(_mode.StateClass, typeof(EnumMethodState))) {
                     throw new ExprValidationException(
                         "State class " +
-                        mode.StateClass.CleanName() +
+                        _mode.StateClass.CleanName() +
                         " does implement the " +
                         nameof(EnumMethodState) +
                         " interface");
@@ -201,10 +201,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
 
                 var forge = new EnumForgePlugin(
                     bodiesAndParameters,
-                    mode,
+                    _mode,
                     expectedStateReturnType,
                     streamCountIncoming,
-                    inputEventType);
+                    _inputEventType);
                 return new EnumForgeDesc(returnType, forge);
             }
         }

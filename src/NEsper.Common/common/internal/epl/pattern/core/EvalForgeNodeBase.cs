@@ -101,9 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                     "node",
                     ExprDotMethodChain(symbols.GetAddInitSvc(method))
                         .Get(EPStatementInitServicesConstants.PATTERNFACTORYSERVICE)
-                        .Add(
-                            NameOfFactory,
-                            StateMgmtSettings == null ? ConstantNull() : StateMgmtSettings.ToExpression()))
+                        .Add(NameOfFactory, StateMgmtSettings == null ? ConstantNull() : StateMgmtSettings.ToExpression()))
                 .SetProperty(Ref("node"), "FactoryNodeId", Constant(FactoryNodeId));
             if (IsAudit || classScope.IsInstrumented || _attachPatternText) {
                 var writer = new StringWriter();

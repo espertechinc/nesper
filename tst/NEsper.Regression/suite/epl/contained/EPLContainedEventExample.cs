@@ -119,24 +119,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             public void Run(RegressionEnvironment env)
             {
                 // Could have also used a mapping event however here we uses fire-and-forget to load the mapping instead:
-                //   @public @buseventtype create schema MappingEvent(foreignSymbol string, localSymbol string);
-                //   on MappingEvent merge Mapping insert select foreignSymbol, localSymbol;
+                //   @public @buseventtype create schema MappingEvent(ForeignSymbol string, LocalSymbol string);
+                //   on MappingEvent merge Mapping insert select ForeignSymbol, LocalSymbol;
                 // The events are:
-                //   MappingEvent={foreignSymbol="ABC", localSymbol="123"}
-                //   MappingEvent={foreignSymbol="DEF", localSymbol="456"}
-                //   MappingEvent={foreignSymbol="GHI", localSymbol="789"}
-                //   MappingEvent={foreignSymbol="JKL", localSymbol="666"}
-                //   ForeignSymbols={companies={{symbol='ABC', value=500}, new object[] {symbol='DEF', value=300}, new object[] {symbol='JKL', value=400}}}
-                //   LocalSymbols={companies={{symbol='123', value=600}, new object[] {symbol='456', value=100}, new object[] {symbol='789', value=200}}}
+                //   MappingEvent={ForeignSymbol="ABC", LocalSymbol="123"}
+                //   MappingEvent={ForeignSymbol="DEF", LocalSymbol="456"}
+                //   MappingEvent={ForeignSymbol="GHI", LocalSymbol="789"}
+                //   MappingEvent={ForeignSymbol="JKL", LocalSymbol="666"}
+                //   ForeignSymbols={companies={{symbol='ABC', Value=500}, new object[] {symbol='DEF', Value=300}, new object[] {symbol='JKL', Value=400}}}
+                //   LocalSymbols={companies={{symbol='123', Value=600}, new object[] {symbol='456', Value=100}, new object[] {symbol='789', Value=200}}}
                 var path = new RegressionPath();
                 var epl =
-                    "create schema Symbol(Symbol string, value double);\n" +
+                    "create schema Symbol(Symbol string, Value double);\n" +
                     "@public @buseventtype create schema ForeignSymbols(companies Symbol[]);\n" +
                     "@public @buseventtype create schema LocalSymbols(companies Symbol[]);\n" +
                     "\n" +
-                    "@public create table Mapping(foreignSymbol string primary key, localSymbol string primary key);\n" +
-                    "create index MappingIndexForeignSymbol on Mapping(foreignSymbol);\n" +
-                    "create index MappingIndexLocalSymbol on Mapping(localSymbol);\n" +
+                    "@public create table Mapping(ForeignSymbol string primary key, LocalSymbol string primary key);\n" +
+                    "create index MappingIndexForeignSymbol on Mapping(ForeignSymbol);\n" +
+                    "create index MappingIndexLocalSymbol on Mapping(LocalSymbol);\n" +
                     "\n" +
                     "insert into SymbolsPair select * from ForeignSymbols#lastevent as foreign, LocalSymbols#lastevent as local;\n" +
                     "on SymbolsPair\n" +
@@ -148,24 +148,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "  output all;\n" +
                     "\n" +
                     "create context SymbolsPairContext start SymbolsPairBeginEvent end SymbolsPairEndEvent;\n" +
-                    "context SymbolsPairContext create table Result(foreignSymbol string primary key, localSymbol string primary key, value double);\n" +
+                    "context SymbolsPairContext create table Result(ForeignSymbol string primary key, LocalSymbol string primary key, Value double);\n" +
                     "\n" +
-                    "context SymbolsPairContext on ForeignSymbolRow as fsr merge Result as result where result.foreignSymbol = fsr.Symbol\n" +
-                    "  when not matched then insert select fsr.Symbol as foreignSymbol,\n" +
-                    "    (select localSymbol from Mapping as mapping where mapping.foreignSymbol = fsr.Symbol) as localSymbol, fsr.Value as value\n" +
-                    "  when matched and fsr.Value > result.Value then update set value = fsr.Value;\n" +
+                    "context SymbolsPairContext on ForeignSymbolRow as fsr merge Result as result where result.ForeignSymbol = fsr.Symbol\n" +
+                    "  when not matched then insert select fsr.Symbol as ForeignSymbol,\n" +
+                    "    (select LocalSymbol from Mapping as mapping where mapping.ForeignSymbol = fsr.Symbol) as LocalSymbol, fsr.Value as Value\n" +
+                    "  when matched and fsr.Value > result.Value then update set Value = fsr.Value;\n" +
                     "\n" +
-                    "context SymbolsPairContext on LocalSymbolRow as lsr merge Result as result where result.localSymbol = lsr.Symbol\n" +
-                    "  when not matched then insert select (select foreignSymbol from Mapping as mapping where mapping.localSymbol = lsr.Symbol) as foreignSymbol," +
-                    "    lsr.Symbol as localSymbol, lsr.Value as value\n" +
-                    "  when matched and lsr.Value > result.Value then update set value = lsr.Value;\n" +
+                    "context SymbolsPairContext on LocalSymbolRow as lsr merge Result as result where result.LocalSymbol = lsr.Symbol\n" +
+                    "  when not matched then insert select (select ForeignSymbol from Mapping as mapping where mapping.LocalSymbol = lsr.Symbol) as ForeignSymbol," +
+                    "    lsr.Symbol as LocalSymbol, lsr.Value as Value\n" +
+                    "  when matched and lsr.Value > result.Value then update set Value = lsr.Value;\n" +
                     "\n" +
-                    "@name('out') context SymbolsPairContext on SymbolsPairOutputEvent select foreignSymbol, localSymbol, value from Result order by foreignSymbol asc;\n";
+                    "@name('out') context SymbolsPairContext on SymbolsPairOutputEvent select ForeignSymbol, LocalSymbol, Value from Result order by ForeignSymbol asc;\n";
                 env.CompileDeploy(epl, path).AddListener("out");
 
                 // load mapping table
                 var compiledFAF = env.CompileFAF(
-                    "insert into Mapping select ?::string as foreignSymbol, ?::string as localSymbol",
+                    "insert into Mapping select ?::string as ForeignSymbol, ?::string as LocalSymbol",
                     path);
                 var preparedFAF = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(compiledFAF);
                 LoadMapping(env, preparedFAF, "ABC", "123");
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
 
                 env.AssertPropsPerRowLastNew(
                     "out",
-                    "foreignSymbol,localSymbol,value".SplitCsv(),
+                    "ForeignSymbol,LocalSymbol,Value".SplitCsv(),
                     new object[][] {
                         new object[] { "ABC", "123", 600d }, new object[] { "DEF", "456", 300d },
                         new object[] { "GHI", "789", 200d }, new object[] { "JKL", "666", 400d }
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     var nameAndValue = pairs[i].Split("=");
                     var symbol = nameAndValue[0];
                     var value = double.Parse(nameAndValue[1]);
-                    companies[i] = CollectionUtil.BuildMap("Symbol", symbol, "value", value);
+                    companies[i] = CollectionUtil.BuildMap("Symbol", symbol, "Value", value);
                 }
 
                 return companies;
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var fields = "Category,SubEventType,AvgTime".SplitCsv();
                 var stmtText =
-                    "@name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime from SupportResponseEvent[select Category, * from subEvents]#time(1 min) group by Category, SubEventType order by Category, SubEventType";
+                    "@name('s0') select Category, SubEventType, avg(ResponseTimeMillis) as AvgTime from SupportResponseEvent[select Category, * from SubEvents]#time(1 min) group by Category, SubEventType order by Category, SubEventType";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.SendEventBean(

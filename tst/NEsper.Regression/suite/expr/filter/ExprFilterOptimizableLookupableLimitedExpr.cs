@@ -14,15 +14,13 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.filter;
-using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using static com.espertech.esper.common.@internal.filterspec.FilterOperator;
 using static
     com.espertech.esper.regressionlib.support.filter.SupportFilterOptimizableHelper; // hasFilterIndexPlanAdvanced
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableLookupableLimitedExpr

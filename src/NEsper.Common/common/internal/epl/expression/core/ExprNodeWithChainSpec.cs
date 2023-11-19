@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.epl.expression.chain;
@@ -14,6 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 {
     public interface ExprNodeWithChainSpec
     {
-        IList<Chainable> ChainSpec { get; }
+        IList<Chainable> ChainSpec {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
     }
 }

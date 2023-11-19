@@ -93,11 +93,12 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.ontri
                     "ResultSetProcessorFactoryProvider",
                     NewInstanceInner(
                         resultSetProcessorProviderClassName,
-                        symbols.GetAddInitSvc(method)))
+                        symbols.GetAddInitSvc(method),
+                        Ref("statementFields")))
                 .SetProperty(saiff, "InsertInto", Constant(insertInto))
                 .SetProperty(saiff, "AddToFront", Constant(addToFront))
                 .SetProperty(saiff, "SelectAndDelete", Constant(selectAndDelete))
-                .SetProperty(saiff, "Distinct", Constant(distinct))
+                .SetProperty(saiff, "IsDistinct", Constant(distinct))
                 .SetProperty(
                     saiff,
                     "DistinctKeyGetter",

@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Represents a create-schema syntax for creating a new event type. </summary>
-    [Serializable]
     public class CreateSchemaClause
     {
         /// <summary>Ctor. </summary>

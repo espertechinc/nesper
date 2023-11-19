@@ -10,7 +10,6 @@ using System;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplan
 {
-    [Serializable]
     public class IndexNameAndDescPair
     {
         public IndexNameAndDescPair(

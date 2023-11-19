@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.context.util
     /// <summary>
     /// Thrown to indicate a precondition violation for undeploy.
     /// </summary>
-    [Serializable]
     public class UndeployPreconditionException : Exception
     {
         /// <summary>

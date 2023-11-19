@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.context.util;
 
 namespace com.espertech.esper.runtime.@internal.kernel.service
 {
-	[Serializable]
 	public class EPStatementAgentInstanceHandleComparator : IComparer<EPStatementAgentInstanceHandle>
 	{
 		public static readonly EPStatementAgentInstanceHandleComparator INSTANCE =

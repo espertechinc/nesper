@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a substitution parameter
     /// </summary>
-    [Serializable]
     public class SubstitutionParameterExpression : ExpressionBase
     {
         private string optionalName;

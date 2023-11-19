@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// A clause to Update a named window based on a triggering event arriving and correlated
     /// to the named window events to be updated.
     /// </summary>
-    [Serializable]
     public class OnUpdateClause : OnClause
     {
         /// <summary>

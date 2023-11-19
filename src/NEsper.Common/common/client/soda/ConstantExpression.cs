@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Constant value returns a fixed value for use in expressions.
     /// </summary>
-    [Serializable]
     public class ConstantExpression : ExpressionBase
     {
         private object _constant;

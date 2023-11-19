@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 forge.EvaluationType,
                 typeof(ExprDotNodeForgeStreamEvalEventBean),
                 codegenClassScope);
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             var typeInformation = ConstantNull();
             if (codegenClassScope.IsInstrumented) {

@@ -494,8 +494,7 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
             return new Pair<IndexMultiKey, EventTableIndexEntryBase>(indexMultiKey, indexFound);
         }
 
-        [Serializable]
-        private class IndexComparatorShortestPath : IComparer<IndexMultiKey>
+        public class IndexComparatorShortestPath : IComparer<IndexMultiKey>
         {
             public int Compare(
                 IndexMultiKey o1,

@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotArrObjectToCollEval : ExprDotEvalRootChildInnerEval
     {
-        private readonly ExprEvaluator rootEvaluator;
+        private readonly ExprEvaluator _rootEvaluator;
 
         public InnerDotArrObjectToCollEval(ExprEvaluator rootEvaluator)
         {
-            this.rootEvaluator = rootEvaluator;
+            this._rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var array = rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var array = _rootEvaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (array == null) {
                 return null;
             }
@@ -49,20 +49,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var evalType = forge.rootForge.EvaluationType;
+            var elementType = evalType.GetComponentType();
+
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(ICollection<>).MakeGenericType(elementType),
                 typeof(InnerDotArrObjectToCollEval),
                 codegenClassScope);
 
-            var evalType = forge.rootForge.EvaluationType;
             methodNode.Block
                 .DeclareVar(
                     evalType,
                     "array",
                     forge.rootForge.EvaluateCodegen(evalType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("array")
-                .MethodReturn(
-                    Unwrap<object>(Ref("array")));
+                .MethodReturn(Unwrap(elementType, Ref("array")));
             return LocalMethod(methodNode);
         }
 

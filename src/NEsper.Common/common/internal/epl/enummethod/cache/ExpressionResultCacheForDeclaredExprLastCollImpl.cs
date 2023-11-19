@@ -6,6 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Collections.Generic;
+
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.@event.core;
@@ -37,7 +39,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.cache
         public void SaveDeclaredExpressionLastColl(
             object node,
             EventBean[] eventsPerStream,
-            FlexCollection result)
+            ICollection<EventBean> result)
         {
             var copy = EventBeanUtility.CopyArray(eventsPerStream);
             var entry = new ExpressionResultCacheEntryEventBeanArrayAndCollBean(copy, result);

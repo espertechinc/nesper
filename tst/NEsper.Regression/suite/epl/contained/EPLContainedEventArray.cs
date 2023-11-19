@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var epl = "create schema MyRow(Id String);\n" +
                           "@public @buseventtype create schema MyEvent(idsBefore string[], idsAfter string[]);\n" +
-                          "@name('s0') select id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where Id not in (idsBefore);\n";
+                          "@name('s0') select Id from MyEvent[select idsBefore, * from idsAfter@type(MyRow)] where Id not in (idsBefore);\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 AssertSend(env, "A,B,C", "D,E", new object[][] { new object[] { "D" }, new object[] { "E" } });

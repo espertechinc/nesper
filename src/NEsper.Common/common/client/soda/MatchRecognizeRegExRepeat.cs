@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Match-recognize pattern descriptor for repetition
     /// </summary>
-    [Serializable]
     public class MatchRecognizeRegExRepeat
     {
         /// <summary>

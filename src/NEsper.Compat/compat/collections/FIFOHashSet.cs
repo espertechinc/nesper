@@ -24,7 +24,6 @@ namespace com.espertech.esper.collection
     /// items are added to the set is preserved through iteration.
     /// </summary>
 
-    [Serializable]
     public sealed class FIFOHashSet<T> : ISet<T>
     {
 #if DIAGNOSTICS

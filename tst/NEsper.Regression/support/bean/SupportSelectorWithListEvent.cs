@@ -6,13 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
-    [Serializable]
     public class SupportSelectorWithListEvent
     {
         public SupportSelectorWithListEvent(string selector)

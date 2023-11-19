@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Usually an assignment is an equal-expression with the lhs being an event property or variable
     ///     and the rhs being the new value expression.
     /// </summary>
-    [Serializable]
     public class Assignment
     {
         private Expression value;

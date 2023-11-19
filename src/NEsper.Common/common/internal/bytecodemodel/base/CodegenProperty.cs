@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         public CodegenSymbolProvider OptionalSymbolProvider { get; }
 
-        public IList<CodegenMethod> Children { get; } = Collections.GetEmptyList<CodegenMethod>();
+        public IList<CodegenMethod> Children { get; set; } = Collections.GetEmptyList<CodegenMethod>();
 
         public IList<CodegenExpressionRef> Environment { get; private set; } =
             Collections.GetEmptyList<CodegenExpressionRef>();
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
-        public CodegenProperty MakeChild(
+        public CodegenMethod MakeChildMethod(
             Type returnType,
             Type generator,
             CodegenScope env)
@@ -129,10 +129,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Invalid null return type");
             }
 
-            return AddChild(new CodegenProperty(returnType, null, generator, null, env));
+            return AddChild(new CodegenMethod(returnType, null, generator, null, env));
         }
 
-        public CodegenProperty MakeChild(
+        public CodegenMethod MakeChildMethod(
             string returnType,
             Type generator,
             CodegenScope env)
@@ -141,10 +141,10 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Invalid null return type");
             }
 
-            return AddChild(new CodegenProperty(null, returnType, generator, null, env));
+            return AddChild(new CodegenMethod(null, returnType, generator, null, env));
         }
 
-        public CodegenProperty MakeChildWithScope(
+        public CodegenMethod MakeChildMethodWithScope(
             Type returnType,
             Type generator,
             CodegenSymbolProvider symbolProvider,
@@ -154,20 +154,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                 throw new ArgumentException("Invalid null return type");
             }
 
-            return AddChild(new CodegenProperty(returnType, null, generator, symbolProvider, env));
-        }
-
-        public CodegenProperty MakeChildWithScope(
-            string returnType,
-            Type generator,
-            CodegenSymbolProvider symbolProvider,
-            CodegenScope env)
-        {
-            if (returnType == null) {
-                throw new ArgumentException("Invalid null return type");
-            }
-
-            return AddChild(new CodegenProperty(null, returnType, generator, symbolProvider, env));
+            return AddChild(new CodegenMethod(returnType, null, generator, symbolProvider, env));
         }
 
         public static CodegenProperty MakePropertyNode<T>(
@@ -293,6 +280,16 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             Children.Add(propertyNode);
 #endif
             return propertyNode;
+        }
+
+        private CodegenMethod AddChild(CodegenMethod methodNode)
+        {
+            if (Children.IsEmpty()) {
+                Children = new List<CodegenMethod>();
+            }
+
+            Children.Add(methodNode);
+            return methodNode;
         }
     }
 

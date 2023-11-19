@@ -397,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "method:SupportJoinMethods.FetchVal('x', 1) as h0 " +
                              " on s0.P00 = h0.index " +
                              " left outer join " +
-                             "method:SupportJoinMethods.fetchVal(h0.val, 1) as h1 " +
+                             "method:SupportJoinMethods.FetchVal(h0.val, 1) as h1 " +
                              " on s0.P00 = h1.index";
                 env.TryInvalidCompile(
                     expression,
@@ -415,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 expression = "@name('s0') select s0.Id as s0id, s1.Id as s1id, h0.val as valh0 from " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " left outer join " +
-                             "method:SupportJoinMethods.fetchVal(s0.Id || 'H0', s0.P00) as h0 " +
+                             "method:SupportJoinMethods.FetchVal(s0.Id || 'H0', s0.P00) as h0 " +
                              " on s0.P01 = h0.index " +
                              " right outer join " +
                              "SupportBeanInt(Id like 'F%')#keepall as s1 " +
@@ -428,12 +428,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " on s1.P01 = s0.P01" +
                              " left outer join " +
-                             "method:SupportJoinMethods.fetchVal(s0.Id || 'H0', s0.P00) as h0 " +
+                             "method:SupportJoinMethods.FetchVal(s0.Id || 'H0', s0.P00) as h0 " +
                              " on s0.P01 = h0.index ";
                 TryAssertionSix(env, expression);
 
                 expression = "@name('s0') select s0.Id as s0id, s1.Id as s1id, h0.val as valh0 from " +
-                             "method:SupportJoinMethods.fetchVal(s0.Id || 'H0', s0.P00) as h0 " +
+                             "method:SupportJoinMethods.FetchVal(s0.Id || 'H0', s0.P00) as h0 " +
                              " right outer join " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " on s0.P01 = h0.index " +
@@ -506,20 +506,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 expression = "@name('s0') select s0.Id as s0id, h0.val as valh0, h1.val as valh1 from " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " right outer join " +
-                             "method:SupportJoinMethods.fetchVal('H0', 2) as h0 " +
+                             "method:SupportJoinMethods.FetchVal('H0', 2) as h0 " +
                              " on s0.P00 = h0.index " +
                              " right outer join " +
-                             "method:SupportJoinMethods.fetchVal('H1', 2) as h1 " +
+                             "method:SupportJoinMethods.FetchVal('H1', 2) as h1 " +
                              " on s0.P00 = h1.index";
                 TryAssertionSeven(env, expression);
 
                 expression = "@name('s0') select s0.Id as s0id, h0.val as valh0, h1.val as valh1 from " +
-                             "method:SupportJoinMethods.fetchVal('H1', 2) as h1 " +
+                             "method:SupportJoinMethods.FetchVal('H1', 2) as h1 " +
                              " left outer join " +
                              "SupportBeanInt(Id like 'E%')#keepall as s0 " +
                              " on s0.P00 = h1.index" +
                              " right outer join " +
-                             "method:SupportJoinMethods.fetchVal('H0', 2) as h0 " +
+                             "method:SupportJoinMethods.FetchVal('H0', 2) as h0 " +
                              " on s0.P00 = h0.index ";
                 TryAssertionSeven(env, expression);
             }

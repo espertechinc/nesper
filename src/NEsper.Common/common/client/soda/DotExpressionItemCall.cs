@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Dot-expression item representing a call that has an name and parameters.
     /// </summary>
-    [Serializable]
     public class DotExpressionItemCall : DotExpressionItem
     {
         private string _name;

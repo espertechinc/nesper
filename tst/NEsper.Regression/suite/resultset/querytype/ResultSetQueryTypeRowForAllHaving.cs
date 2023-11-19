@@ -12,9 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -91,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-"@name('s0') select istream avg(Price) as aprice from SupportMarketDataBean#unique(Symbol) having avg(Price) <= 0";
+                    "@name('s0') select istream avg(Price) as aprice from SupportMarketDataBean#unique(Symbol) having avg(Price) <= 0";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "A", -1);

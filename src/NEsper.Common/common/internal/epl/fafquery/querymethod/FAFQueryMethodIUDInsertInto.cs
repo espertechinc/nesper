@@ -17,11 +17,6 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
     /// </summary>
     public class FAFQueryMethodIUDInsertInto : FAFQueryMethodIUDBase
     {
-        public FAFQueryMethodIUDInsertInto(SelectExprProcessor[] insertHelpers)
-        {
-            InsertHelpers = insertHelpers;
-        }
-
         public SelectExprProcessor[] InsertHelpers { get; set; }
 
         protected override EventBean[] Execute(FireAndForgetInstance fireAndForgetProcessorInstance)

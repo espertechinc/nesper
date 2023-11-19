@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A clause to assign new values to variables based on a triggering event arriving.
     /// </summary>
-    [Serializable]
     public class OnSetClause : OnClause
     {
         /// <summary>

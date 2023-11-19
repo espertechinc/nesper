@@ -122,9 +122,9 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             string propertyName)
         {
             var text = "Implicit conversion from datatype '" +
-                       fromType.Name +
+                       fromType.CleanName() +
                        "' to '" +
-                       toType.Name +
+                       toType.CleanName() +
                        "' for property '" +
                        propertyName +
                        "' is not allowed (strict filter type coercion)";

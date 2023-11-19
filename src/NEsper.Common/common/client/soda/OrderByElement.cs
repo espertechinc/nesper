@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// A single entry in an order-by clause consisting of an expression and order ascending or descending flag.
     /// </summary>
-    [Serializable]
     public class OrderByElement
     {
         private Expression expression;

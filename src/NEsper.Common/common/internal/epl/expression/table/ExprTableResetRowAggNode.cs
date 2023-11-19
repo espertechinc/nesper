@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.table
                     typeof(ExprTableResetRowAggNode),
                     "TableAggReset",
                     Constant(StreamNum),
-                    symbols.GetAddEPS(method)));
+                    symbols.GetAddEps(method)));
             return LocalMethod(method);
         }
 

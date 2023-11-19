@@ -12,7 +12,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
-    [Serializable]
     public class ArrayDeque<T> : Deque<T>
     {
         private const int DEFAULT_INITIAL_CAPACITY = 256;

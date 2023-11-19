@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
-        [Serializable]
         public class SubtractDecimal : Computer
         {
             public object Compute(

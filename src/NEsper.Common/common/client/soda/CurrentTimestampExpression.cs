@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Current timestamp supplies the current runtime time in an expression.
     /// </summary>
-    [Serializable]
     public class CurrentTimestampExpression : ExpressionBase
     {
         /// <summary>

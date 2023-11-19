@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Concatenation of atoms in a regular expression tree.
     /// </summary>
-    [Serializable]
     public class RowRecogExprNodeConcatenation : RowRecogExprNode
     {
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.CONCATENATION;

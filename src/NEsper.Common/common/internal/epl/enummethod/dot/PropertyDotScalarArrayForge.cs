@@ -88,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var refEPS = exprSymbol.GetAddEPS(codegenMethodScope);
+            var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(codegenMethodScope);
             return CodegenEvaluateEventGetROCollectionScalar(
                 ArrayAtIndex(refEPS, Constant(streamId)),
@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope.MakeChild(
-                typeof(FlexCollection),
+                typeof(ICollection<object>),
                 typeof(PropertyDotScalarArrayForge),
                 codegenClassScope);
             method.Block
@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var method = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
                 .AddParam<EventBean>("@event")
                 .AddParam<ExprEvaluatorContext>("context")
                 .Block
@@ -245,7 +245,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(ICollection<EventBean>), typeof(PropertyDotScalarArrayForge), codegenClassScope)
                 .AddParam<EventBean>("@event")
                 .Block
                 .DeclareVar(
@@ -259,12 +259,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             if (ComponentTypeCollection.CanNotBeNull() ||
                 ComponentTypeCollection.GetUnboxedType().CanNotBeNull()) {
                 method = block.MethodReturn(
-                    FlexWrap(
-                        NewInstance<ArrayWrappingCollection>(
-                            Ref("value"))));
+                    NewInstance<ArrayWrappingCollection>(
+                        Ref("value")));
             }
             else {
-                method = block.MethodReturn(FlexWrap(Ref("value")));
+                method = block.MethodReturn(Ref("value"));
             }
 
             return LocalMethodBuild(method).Pass(@event).Call();

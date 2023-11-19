@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for creating an event type/schema.
     /// </summary>
-    [Serializable]
     public class CreateSchemaDesc
     {
         /// <summary>

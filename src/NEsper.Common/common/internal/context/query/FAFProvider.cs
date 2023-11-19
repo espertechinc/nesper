@@ -15,7 +15,9 @@ namespace com.espertech.esper.common.@internal.context.query
     {
         ModuleDependenciesRuntime ModuleDependencies { get; }
 
-        void InitializeEventTypes(EPModuleEventTypeInitServices svc);
+        void InitializeEventTypes(EPModuleEventTypeInitServices svc)
+        {
+        }
 
         void InitializeQuery(EPStatementInitServices epInitServices);
 

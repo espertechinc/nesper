@@ -13,7 +13,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Nested context. </summary>
-    [Serializable]
     public class ContextDescriptorNested : ContextDescriptor
     {
         /// <summary>Ctor. </summary>

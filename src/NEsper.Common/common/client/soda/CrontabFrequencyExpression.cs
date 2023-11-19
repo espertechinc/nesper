@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Frequency expression for use in crontab expressions.
     /// </summary>
-    [Serializable]
     public class CrontabFrequencyExpression : ExpressionBase
     {
         /// <summary>

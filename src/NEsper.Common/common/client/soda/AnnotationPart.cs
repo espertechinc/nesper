@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Represents a single annotation.
     /// </summary>
-    [Serializable]
     public class AnnotationPart
     {
         // Map of identifier name and value can be any of the following:

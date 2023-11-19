@@ -21,13 +21,13 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
 
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // Ref;
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
 {
     public class EnumTakeWhileEventPlus : ThreeFormEventPlus
     {
-        private CodegenExpression innerValue;
+        private CodegenExpression _innerValue;
 
         public EnumTakeWhileEventPlus(
             ExprDotEvalParamLambda lambda,
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                         isNewData,
                         context) => {
                         if (enumcoll.IsEmpty()) {
-                            return enumcoll;
+                            return EmptyList<EventBean>.Instance;
                         }
 
                         var beans = (ICollection<EventBean>)enumcoll;
@@ -62,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
                             if (pass == null || false.Equals(pass)) {
-                                return FlexCollection.Empty;
+                                return EmptyList<EventBean>.Instance;
                             }
 
-                            return FlexCollection.OfEvent(item);
+                            return Collections.SingletonList<EventBean>(item);
                         }
 
                         var result = new ArrayDeque<EventBean>();
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.Add(next);
                         }
 
-                        return FlexCollection.Of(result);
+                        return result;
                     }
                 };
             }
@@ -92,12 +92,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<EventBean>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumForgeCodegenNames.REF_ENUMCOLL;
+            //return EnumForgeCodegenNames.REF_ENUMCOLL;
+            return EnumValue(typeof(EmptyList<EventBean>), "Instance");
         }
 
         public override void InitBlock(
@@ -106,11 +107,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
+            _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneEventPlus(
                 numParameters,
                 block,
-                innerValue,
+                _innerValue,
                 StreamNumLambda,
                 InnerExpression.EvaluationType);
         }
@@ -124,13 +125,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,
                 InnerExpression.EvaluationType,
-                innerValue);
+                _innerValue);
             block.Expression(ExprDotMethod(Ref("result"), "Add", Ref("next")));
         }
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(Ref("result")));
+            block.MethodReturn(Ref("result"));
         }
     }
 } // end of namespace

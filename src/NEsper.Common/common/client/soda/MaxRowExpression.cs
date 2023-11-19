@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Maximum-value per-row expression (not aggregating) determines the maximum value among a set of values.
     /// </summary>
-    [Serializable]
     public class MaxRowExpression : ExpressionBase
     {
         /// <summary>

@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     LRU cache settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonCacheLRU : ConfigurationCommonCache
     {
         /// <summary>

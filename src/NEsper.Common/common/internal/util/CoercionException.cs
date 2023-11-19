@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     /// Exception to represent a Mismatch in types in an expression.
     /// </summary>
-    [Serializable]
     public class CoercionException : EPException
     {
         /// <summary> Ctor.</summary>

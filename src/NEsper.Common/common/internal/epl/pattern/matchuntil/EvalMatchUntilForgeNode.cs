@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.matchuntil
 
         protected override Type TypeOfFactory => typeof(EvalMatchUntilFactoryNode);
 
-        protected override string NameOfFactory => "matchUntil";
+        protected override string NameOfFactory => "MatchUntil";
 
         protected override void InlineCodegen(
             CodegenMethod method,

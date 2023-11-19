@@ -41,6 +41,7 @@ namespace com.espertech.esper.common.@internal.util.serde
                     new JsonConverterImport(),
                     new JsonConverterImportBuiltin(),
                     new JsonConverterDictionaryWithTypeInfo(),
+                    new JsonConverterListWithTypeInfo(),
                     new JsonConverterRuntimeType(_typeResolver),
                     new JsonConverterTimeZoneInfo()
                 }
@@ -73,7 +74,9 @@ namespace com.espertech.esper.common.@internal.util.serde
             }
 
             var typeName = obj.GetType().AssemblyQualifiedName;
-            Console.WriteLine(typeName);
+            
+            Console.WriteLine("ObjectDefaultConverter: " + typeName);
+            
             writer.WriteStartObject();
             writer.WriteString("__type", typeName);
             writer.WritePropertyName("__data");

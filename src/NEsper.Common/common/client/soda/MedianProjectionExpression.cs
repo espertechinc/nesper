@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Median projection (aggregation) in the distinct and regular form.
     /// </summary>
-    [Serializable]
     public class MedianProjectionExpression : ExpressionBase
     {
         private bool distinct;

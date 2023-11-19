@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Contains settings that apply to both the compile-time and the runtime.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommon
     {
         /// <summary>

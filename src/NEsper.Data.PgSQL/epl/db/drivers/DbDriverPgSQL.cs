@@ -20,7 +20,6 @@ namespace com.espertech.esper.epl.db.drivers
     /// <summary>
     /// A database driver specific to the NPGSQL driver.
     /// </summary>
-    [Serializable]
     public class DbDriverPgSQL : BaseDbDriver
     {
         /// <summary>

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Connection factory settings for using a DataSource.
     /// </summary>
-    [Serializable]
     public class DataSourceConnection : ConnectionFactoryDesc
     {
         /// <summary>

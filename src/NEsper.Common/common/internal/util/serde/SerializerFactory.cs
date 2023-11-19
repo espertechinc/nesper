@@ -23,6 +23,20 @@ namespace com.espertech.esper.common.@internal.util.serde
         private readonly IList<Serializer> _serializers;
         private readonly Serializer _defaultSerializer;
 
+        /// <summary>
+        /// Returns a barebones serializer factory.
+        /// </summary>
+        public static SerializerFactory Instance {
+            get { // use the default type resolver; nothing special
+                var typeResolver = TypeResolverDefault.INSTANCE;
+                // create an object serializer
+                var serializer = new ObjectSerializer(typeResolver);
+                // create a serializer factory
+                var serializerFactory = new SerializerFactory(serializer);
+                return serializerFactory;
+            }
+        }
+
         public static Serializer CreateDefaultSerializer(IContainer container)
         {
             TypeResolver typeResolver;

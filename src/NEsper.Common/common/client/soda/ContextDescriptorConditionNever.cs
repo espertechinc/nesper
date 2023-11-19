@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Context condition that starts/initiates immediately.</summary>
-    [Serializable]
     public class ContextDescriptorConditionNever : ContextDescriptorCondition
     {
         /// <summary>Ctor.</summary>

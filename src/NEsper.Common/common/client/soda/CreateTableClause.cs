@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a create-variable syntax for creating a new variable.
     /// </summary>
-    [Serializable]
     public class CreateTableClause
     {
         private string tableName;

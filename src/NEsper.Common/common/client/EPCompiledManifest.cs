@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client
     /// Manifest is part of the <seealso cref="EPCompiled" /> and provides information for the runtime that
     /// allows it to use the byte code.
     /// </summary>
-    [Serializable]
     public class EPCompiledManifest
     {
         private readonly string _compilerVersion;

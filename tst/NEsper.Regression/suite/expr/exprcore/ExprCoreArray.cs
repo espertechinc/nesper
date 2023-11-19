@@ -6,9 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
-using System.Linq;
 
 using Avro;
 
@@ -16,11 +14,9 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
-using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NEsper.Avro.Extensions;
@@ -31,18 +27,17 @@ using NUnit.Framework;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using Array = System.Array;
-using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps; // assertEquals
 
-// assertSame
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreArray
     {
         // for use in testing a static method accepting array parameters
-        private static int?[] callbackInts;
-        private static string[] callbackStrings;
-        private static object[] callbackObjects;
+        private static int?[] _callbackInts;
+        private static string[] _callbackStrings;
+        private static object[] _callbackObjects;
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -109,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Verify(
                         "c0",
                         value => {
-                            Assert.AreEqual(typeof(int?[]), value.GetType());
-                            EPAssertionUtil.AssertEqualsExactOrder(new int?[] { 1, 2 }, (int?[])value);
+                            Assert.AreEqual(typeof(int[]), value.GetType());
+                            EPAssertionUtil.AssertEqualsExactOrder(new int[] { 1, 2 }, value.Unwrap<int>());
                         });
 
                 builder.Run(env);
@@ -132,8 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "{1, 1.1d, 1e20} as doubleArray," +
                           "{5, 6L} as intLongArray," +
                           "{null} as nullArray," +
-                          typeof(ExprCoreArray).FullName +
-                          ".doIt({'a'}, new object[] {1}, new object[] {1, 'd', null, true}) as func," +
+                          typeof(ExprCoreArray).FullName + ".DoIt({'a'}, new object[] {1}, new object[] {1, 'd', null, true}) as func," +
                           "{true, false} as boolArray," +
                           "{IntPrimitive} as dynIntArr," +
                           "{IntPrimitive, LongPrimitive} as dynLongArr," +
@@ -151,57 +145,31 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (string[])@event.Get("stringArray"),
-                            new string[] { "a", "b" });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("emptyArray"),
-                            Array.Empty<object>());
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("oneEleArray"), new int?[] { 1 });
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("intArray"), new int?[] { 1, 2, 3 });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (int?[])@event.Get("intNullArray"),
-                            new int?[] { 1, null });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (long?[])@event.Get("longArray"),
-                            new long?[] { 1L, 10L });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("mixedArray"),
-                            new object[] { "a", 1, 1e20 });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (double?[])@event.Get("doubleArray"),
-                            new double?[] { 1d, 1.1, 1e20 });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (long?[])@event.Get("intLongArray"),
-                            new long?[] { 5L, 6L });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("nullArray"),
-                            new object[] { null });
-                        EPAssertionUtil.AssertEqualsExactOrder((string[])@event.Get("func"), new string[] { "a", "b" });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (bool[])@event.Get("boolArray"),
-                            new bool[] { true, false });
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("dynIntArr"), new int?[] { 10 });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (long?[])@event.Get("dynLongArr"),
-                            new long?[] { 10L, 999L });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("dynMixedArr"),
-                            new object[] { 10, "a" });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (int?[])@event.Get("dynCalcArr"),
-                            new int?[] { 10, 20, 30 });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("dynCalcArrNulls"),
-                            new object[] { null, null, "aa" });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("stringArray").Unwrap<string>(), new string[] { "a", "b" });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("emptyArray").Unwrap<object>(), Array.Empty<object>());
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("oneEleArray").Unwrap<int?>(), new int?[] { 1 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("intArray").Unwrap<int?>(), new int?[] { 1, 2, 3 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("intNullArray").Unwrap<int?>(), new int?[] { 1, null });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("longArray").Unwrap<long?>(), new long?[] { 1L, 10L });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("mixedArray").Unwrap<object>(), new object[] { "a", 1, 1e20 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("doubleArray").Unwrap<double?>(), new double?[] { 1d, 1.1, 1e20 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("intLongArray").Unwrap<long?>(), new long?[] { 5L, 6L });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("nullArray").Unwrap<object>(), new object[] { null });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("func").Unwrap<string>(), new string[] { "a", "b" });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("boolArray").Unwrap<bool>(), new bool[] { true, false });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("dynIntArr").Unwrap<int?>(), new int?[] { 10 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("dynLongArr").Unwrap<long?>(), new long?[] { 10L, 999L });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("dynMixedArr").Unwrap<object>(), new object[] { 10, "a" });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("dynCalcArr").Unwrap<int?>(), new int?[] { 10, 20, 30 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("dynCalcArrNulls").Unwrap<object>(), new object[] { null, null, "aa" });
                     });
 
                 // assert function parameters
                 env.AssertThat(
                     () => {
-                        EPAssertionUtil.AssertEqualsExactOrder(callbackInts, new int?[] { 1 });
-                        EPAssertionUtil.AssertEqualsExactOrder(callbackStrings, new string[] { "a" });
-                        EPAssertionUtil.AssertEqualsExactOrder(callbackObjects, new object[] { 1, "d", null, true });
+                        EPAssertionUtil.AssertEqualsExactOrder(_callbackInts, new int?[] { 1 });
+                        EPAssertionUtil.AssertEqualsExactOrder(_callbackStrings, new string[] { "a" });
+                        EPAssertionUtil.AssertEqualsExactOrder(_callbackObjects, new object[] { 1, "d", null, true });
                     });
 
                 env.UndeployAll();
@@ -225,14 +193,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (string[])@event.Get("stringArray"),
-                            new string[] { "a", "b" });
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("emptyArray"),
-                            Array.Empty<object>());
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("oneEleArray"), new int?[] { 1 });
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("intArray"), new int?[] { 1, 2, 3 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("stringArray").Unwrap<string>(), new string[] { "a", "b" });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("emptyArray").Unwrap<object>(), Array.Empty<object>());
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("oneEleArray").Unwrap<int?>(), new int?[] { 1 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("intArray").Unwrap<int?>(), new int?[] { 1, 2, 3 });
                     });
 
                 env.UndeployAll();
@@ -293,13 +257,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     @event => {
                         EPAssertionUtil.AssertEqualsExactOrder(
-                            (string[])@event.Get("stringArray"),
+                            @event.Get("stringArray").Unwrap<string>(),
                             new string[] { "a", "b" });
                         EPAssertionUtil.AssertEqualsExactOrder(
-                            (object[])@event.Get("emptyArray"),
+                            @event.Get("emptyArray").Unwrap<object>(),
                             Array.Empty<object>());
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("oneEleArray"), new int?[] { 1 });
-                        EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("intArray"), new int?[] { 1, 2, 3 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("oneEleArray").Unwrap<int?>(), new int?[] { 1 });
+                        EPAssertionUtil.AssertEqualsExactOrder(@event.Get("intArray").Unwrap<int?>(), new int?[] { 1, 2, 3 });
                     });
 
                 env.UndeployAll();
@@ -387,9 +351,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             int?[] ints,
             object[] objects)
         {
-            callbackInts = ints;
-            callbackStrings = strings;
-            callbackObjects = objects;
+            _callbackInts = ints;
+            _callbackStrings = strings;
+            _callbackObjects = objects;
             return new string[] { "a", "b" };
         }
     }

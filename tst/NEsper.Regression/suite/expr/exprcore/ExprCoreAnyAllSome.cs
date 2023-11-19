@@ -270,7 +270,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .WithExpression(fields[3], "DecimalPrimitive = any (2, 3)");
 
                 var bean = new SupportBean();
-                bean.BigInteger = new BigInteger(1);
+                bean.BigInteger = BigInteger.One;
                 bean.DecimalPrimitive = 1m;
                 builder.WithAssertion(bean).Expect(fields, true, false, true, false);
 

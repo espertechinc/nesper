@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification object to an element in the order-by expression.
     /// </summary>
-    [Serializable]
     public class OrderByItem
     {
         public static readonly OrderByItem[] EMPTY_ORDERBY_ARRAY = Array.Empty<OrderByItem>();

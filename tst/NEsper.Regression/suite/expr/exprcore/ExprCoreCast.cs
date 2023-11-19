@@ -8,16 +8,13 @@
 
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Numerics;
 using System.Text;
 
-using Avro.Util;
-
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.module;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
@@ -151,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     " cast(value, BigInteger) as c1 from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                SendAssert(env, 1, 1m, new BigInteger(1));
+                SendAssert(env, 1, 1m, BigInteger.One);
                 SendAssert(env, 2L, 2m, new BigInteger(2L));
                 SendAssert(env, 2.4d, 2.4m, new BigInteger(2.4d.AsInt64()));
 
@@ -225,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement("s0", statement => SupportGenericColUtil.AssertPropertyTypes(statement.EventType));
 
                 env.SendEventMap(SupportGenericColUtil.GetSampleEvent(), "MyEvent");
-                env.AssertEventNew("s0", @event => SupportGenericColUtil.Compare(@event));
+                env.AssertEventNew("s0", SupportGenericColUtil.Compare);
 
                 env.UndeployAll();
             }
@@ -255,9 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "arr_2dim_primitive System.Object, arr_2dim_object System.Object," +
                     "arr_3dim_primitive System.Object, arr_3dim_object System.Object" +
                     ");\n" +
-                    "@Public create schema MyArrayEvent as " +
-                    typeof(MyArrayEvent).FullName +
-                    ";\n";
+                    "@Public create schema MyArrayEvent as " + typeof(MyArrayEvent).MaskTypeName() + ";\n";
                 env.CompileDeploy(epl, path);
 
                 var insert = "@name('s0') insert into MyArrayEvent select " +
@@ -323,11 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 
@@ -342,10 +333,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                            "cast(anFloat, float) as floatVal, " +
                            "cast(anByte, byte) as byteVal, " +
                            "cast(anShort, short) as shortVal, " +
-                           "cast(IntPrimitive, int) as IntOne, " +
-                           "cast(IntBoxed, int) as intTwo, " +
-                           "cast(IntPrimitive, System.Int64) as longOne, " +
-                           "cast(IntBoxed, long) as longTwo " +
+                           "cast(intPrimitive, int) as intOne, " +
+                           "cast(intBoxed, int) as intTwo, " +
+                           "cast(intPrimitive, System.Int64) as longOne, " +
+                           "cast(intBoxed, long) as longTwo " +
                            "from StaticTypeMapEvent";
 
                 env.CompileDeploy(stmt).AddListener("s0");
@@ -357,8 +348,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 map.Put("anFloat", "1.001");
                 map.Put("anByte", "0x0A");
                 map.Put("anShort", "223");
-                map.Put("IntPrimitive", 10);
-                map.Put("IntBoxed", 11);
+                map.Put("intPrimitive", 10);
+                map.Put("intBoxed", 11);
 
                 env.SendEventMap(map, "StaticTypeMapEvent");
                 env.AssertEventNew(
@@ -370,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         Assert.AreEqual(1.001f, row.Get("floatVal"));
                         Assert.AreEqual((byte)10, row.Get("byteVal"));
                         Assert.AreEqual((short)223, row.Get("shortVal"));
-                        Assert.AreEqual(10, row.Get("IntOne"));
+                        Assert.AreEqual(10, row.Get("intOne"));
                         Assert.AreEqual(11, row.Get("intTwo"));
                         Assert.AreEqual(10L, row.Get("longOne"));
                         Assert.AreEqual(11L, row.Get("longTwo"));
@@ -414,7 +405,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var bean = new SupportBean("true", 1);
                 bean.DoublePrimitive = 1;
                 builder.WithAssertion(bean)
-                    .Expect(fields, 1.0f, (short)1, (byte)1, 't', true, new BigInteger(1), 1.0m, 1m, 't');
+                    .Expect(fields, 1.0f, (short)1, (byte)1, 't', true, BigInteger.One, 1.0m, 1m, 't');
 
                 builder.Run(env);
                 env.UndeployAll();
@@ -464,12 +455,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test cast with chained and null
                 var epl = "@name('s0') select" +
-                          " cast(One as " +
-                          typeof(SupportBean).FullName +
-                          ").GetTheString() as t0," +
-                          " cast(null, " +
-                          typeof(SupportBean).FullName +
-                          ") as t1" +
+                          " cast(One as " + typeof(SupportBean).FullName + ").GetTheString() as t0," +
+                          " cast(null, " + typeof(SupportBean).FullName + ") as t1" +
                           " from SupportBeanObject";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -566,30 +553,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select" +
-                          " cast(Item?, " +
-                          typeof(SupportMarkerInterface).FullName +
-                          ") as t0, " +
-                          " cast(Item?, " +
-                          typeof(ISupportA).FullName +
-                          ") as t1, " +
-                          " cast(Item?, " +
-                          typeof(ISupportBaseAB).FullName +
-                          ") as t2, " +
-                          " cast(Item?, " +
-                          typeof(ISupportBaseABImpl).FullName +
-                          ") as t3, " +
-                          " cast(Item?, " +
-                          typeof(ISupportC).FullName +
-                          ") as t4, " +
-                          " cast(Item?, " +
-                          typeof(ISupportD).FullName +
-                          ") as t5, " +
-                          " cast(Item?, " +
-                          typeof(ISupportAImplSuperG).FullName +
-                          ") as t6, " +
-                          " cast(Item?, " +
-                          typeof(ISupportAImplSuperGImplPlus).FullName +
-                          ") as t7 " +
+                          " cast(Item?, " + typeof(SupportMarkerInterface).FullName + ") as t0, " +
+                          " cast(Item?, " + typeof(ISupportA).FullName + ") as t1, " +
+                          " cast(Item?, " + typeof(ISupportBaseAB).FullName + ") as t2, " +
+                          " cast(Item?, " + typeof(ISupportBaseABImpl).FullName + ") as t3, " +
+                          " cast(Item?, " + typeof(ISupportC).FullName + ") as t4, " +
+                          " cast(Item?, " + typeof(ISupportD).FullName + ") as t5, " +
+                          " cast(Item?, " + typeof(ISupportAImplSuperG).FullName + ") as t6, " +
+                          " cast(Item?, " + typeof(ISupportAImplSuperGImplPlus).FullName + ") as t7 " +
                           " from SupportBeanDynRoot";
 
                 env.CompileDeploy(epl).AddListener("s0");
@@ -688,7 +659,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select cast(BoolPrimitive as java.lang.Boolean) as t0, " +
+                var epl = "@name('s0') select cast(BoolPrimitive as System.Boolean) as t0, " +
                           " cast(BoolBoxed | BoolPrimitive, boolean) as t1, " +
                           " cast(BoolBoxed, string) as t2 " +
                           " from SupportBean";
@@ -707,13 +678,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 bean.BoolPrimitive = true;
                 bean.BoolBoxed = true;
                 env.SendEventBean(bean);
-                env.AssertEventNew("s0", theEvent => AssertResults(theEvent, new object[] { true, true, "true" }));
+                env.AssertEventNew("s0", theEvent => AssertResults(theEvent, new object[] { true, true, "True" }));
 
                 bean = new SupportBean(null, 100);
                 bean.BoolPrimitive = false;
                 bean.BoolBoxed = false;
                 env.SendEventBean(bean);
-                env.AssertEventNew("s0", theEvent => AssertResults(theEvent, new object[] { false, false, "false" }));
+                env.AssertEventNew("s0", theEvent => AssertResults(theEvent, new object[] { false, false, "False" }));
 
                 bean = new SupportBean(null, 100);
                 bean.BoolPrimitive = true;
@@ -1013,7 +984,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             // not a valid named parameter
             env.TryInvalidCompile(
                 "select cast(TheString, datetime, x:1) from SupportBean",
-                "Failed to validate select-clause expression 'cast(TheString,datetime,x:1)': Unexpected named parameter 'x', expecting any of the following: [dateformat]");
+                "Failed to validate select-clause expression 'cast(TheString,datetime,x:1)': Unexpected named parameter 'x', expecting any of the following: System.String[]");
 
 #if INVALID // we do not validate date format patterns
 	        // invalid date format

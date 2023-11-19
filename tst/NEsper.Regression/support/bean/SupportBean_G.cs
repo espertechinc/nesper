@@ -6,11 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 namespace com.espertech.esper.regressionlib.support.bean
 {
-    [Serializable]
     public class SupportBean_G : SupportBeanAtoFBase
     {
         public SupportBean_G(string id) : base(id)

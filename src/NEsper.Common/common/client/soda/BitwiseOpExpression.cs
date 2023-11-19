@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Bitwise (binary) operator for binary AND, binary OR and binary XOR.
     /// </summary>
-    [Serializable]
     public class BitwiseOpExpression : ExpressionBase
     {
         /// <summary>

@@ -21,7 +21,6 @@ namespace com.espertech.esper.epl.db.drivers
     /// A database driver specific to the SQLite driver.  The SQLite driver
     /// is a named positional driver.
     /// </summary>
-    [Serializable]
     public class DbDriverSQLite : BaseDbDriver
     {
         /// <summary>

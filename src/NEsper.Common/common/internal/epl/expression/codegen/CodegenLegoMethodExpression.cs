@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
                     .DeclareVar(evaluationType, PASS_NAME, expression)
                     .IfRefNull(PASS_NAME)
                     .BlockReturn(ConstantFalse())
-                    .MethodReturn(Ref(PASS_NAME));
+                    .MethodReturn(ExprDotName(Ref(PASS_NAME), "Value"));
             }
 
             return exprMethod;

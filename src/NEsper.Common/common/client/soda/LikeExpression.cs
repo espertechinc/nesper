@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     SQL-Like expression for matching '%' and '_' wildcard strings following SQL standards.
     /// </summary>
-    [Serializable]
     public class LikeExpression : ExpressionBase
     {
         /// <summary>

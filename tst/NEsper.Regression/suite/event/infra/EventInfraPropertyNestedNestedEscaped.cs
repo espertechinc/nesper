@@ -6,8 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -146,7 +144,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Assert.IsNotNull(eventType.GetGetter(name));
         }
 
-        [Serializable]
         public class SupportLvl3
         {
             private readonly string vlvl3;
@@ -159,7 +156,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Vlvl3 => vlvl3;
         }
 
-        [Serializable]
         public class SupportLvl2
         {
             private readonly string vlvl2;
@@ -183,7 +179,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Vlvl2dyn => vlvl2dyn;
         }
 
-        [Serializable]
         public class SupportLvl1
         {
             private readonly SupportLvl2 lvl2;
@@ -196,7 +191,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public SupportLvl2 Lvl2 => lvl2;
         }
 
-        [Serializable]
         public class SupportLvl0
         {
             private readonly SupportLvl1 lvl1;

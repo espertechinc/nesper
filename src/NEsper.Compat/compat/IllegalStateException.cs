@@ -16,7 +16,6 @@ namespace com.espertech.esper.compat
     /// An exception that occurs when some illegal state occurs.
     /// </summary>
 
-    [Serializable]
     public class IllegalStateException : Exception
     {
         /// <summary>

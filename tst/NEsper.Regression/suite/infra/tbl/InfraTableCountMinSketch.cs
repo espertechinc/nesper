@@ -13,16 +13,15 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using static
-    com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // newInstance
-using NUnit.Framework; // assertEquals
+using NUnit.Framework;
 
-// assertFalse
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -80,12 +79,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("@public create table WordCountTable(wordcms countMinSketch())", path);
                 env.CompileDeploy(
                     "@public create table WordCountTable2(wordcms countMinSketch({\n" +
-                    "  epsOfTotalCount: 0.000002,\n" +
-                    "  confidence: 0.999,\n" +
-                    "  seed: 38576,\n" +
-                    "  topk: 20,\n" +
-                    "  agent: '" +
-                    typeof(CountMinSketchAgentStringUTF16Forge).FullName +
+                    "  EpsOfTotalCount: 0.000002,\n" +
+                    "  Confidence: 0.999,\n" +
+                    "  Seed: 38576,\n" +
+                    "  Topk: 20,\n" +
+                    "  Agent: '" +
+                    typeof(CountMinSketchAgentStringUTF16Forge).MaskTypeName() +
                     "'" +
                     "}))",
                     path);
@@ -109,21 +108,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 var eplTable = "@public create table MyApproxNS(bytefreq countMinSketch({" +
-                               "  epsOfTotalCount: 0.02," +
-                               "  confidence: 0.98," +
-                               "  topk: null," +
-                               "  agent: '" +
+                               "  EpsOfTotalCount: 0.02," +
+                               "  Confidence: 0.98," +
+                               "  Topk: null," +
+                               "  Agent: '" +
                                typeof(MyBytesPassthruAgentForge).FullName +
                                "'" +
                                "}))";
                 env.CompileDeploy(eplTable, path);
 
                 var eplInto =
-                    "into table MyApproxNS select countMinSketchAdd(body) as bytefreq from SupportByteArrEventStringId(Id='A')";
+                    "into table MyApproxNS select countMinSketchAdd(Body) as bytefreq from SupportByteArrEventStringId(Id='A')";
                 env.CompileDeploy(eplInto, path);
 
                 var eplRead =
-                    "@name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(body) as freq from SupportByteArrEventStringId(Id='B')";
+                    "@name('s0') select MyApproxNS.bytefreq.countMinSketchFrequency(Body) as freq from SupportByteArrEventStringId(Id='B')";
                 env.CompileDeploy(eplRead, path).AddListener("s0");
 
                 env.SendEventBean(new SupportByteArrEventStringId("A", new byte[] { 1, 2, 3 }));
@@ -224,19 +223,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.TryInvalidCompile(
                     path,
                     "create table MyTable(cms countMinSketch({xxx:3}))",
-                    "Failed to validate table-column expression 'countMinSketch({xxx=3})': Unrecognized parameter 'xxx' [");
+                    "Failed to validate table-column expression 'countMinSketch({\"xxx\"=3})': Unrecognized parameter 'xxx' [");
                 env.TryInvalidCompile(
                     path,
                     "create table MyTable(cms countMinSketch({epsOfTotalCount:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({epsOfTotalCount=a})': Property 'epsOfTotalCount' expects an Double but receives a value of type String [");
+                    "Failed to validate table-column expression 'countMinSketch({\"epsOfTotalCount\"=\"a\"})': Property 'epsOfTotalCount' expects an System.Nullable<System.Double> but receives a value of type System.String [");
                 env.TryInvalidCompile(
                     path,
                     "create table MyTable(cms countMinSketch({agent:'a'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=a})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
+                    "Failed to validate table-column expression 'countMinSketch({\"agent\"=\"a\"})': Failed to instantiate agent provider: Could not load class by name 'a', please check imports [");
                 env.TryInvalidCompile(
                     path,
                     "create table MyTable(cms countMinSketch({agent:'System.String'}))",
-                    "Failed to validate table-column expression 'countMinSketch({agent=System.String})': Failed to instantiate agent provider: Class 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
+                    "Failed to validate table-column expression 'countMinSketch({\"agent\"=\"System.Str...(41 chars)': Failed to instantiate agent provider: Type 'System.String' does not implement interface 'com.espertech.esper.common.client.util.CountMinSketchAgentForge' [");
 
                 // invalid "countMinSketchAdd" declarations
                 //
@@ -250,8 +249,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "Failed to validate select-clause expression 'countMinSketchAdd()': Count-min-sketch aggregation function 'countMinSketchAdd' requires a single parameter expression");
                 env.TryInvalidCompile(
                     path,
-                    "into table MyCMS select countMinSketchAdd(body) as wordcms from SupportByteArrEventStringId",
-                    "Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'countMinSketch()' and received 'countMinSketchAdd(body)': Mismatching parameter return type, expected any of [class System.String] but received byte[] [");
+                    "into table MyCMS select countMinSketchAdd(Body) as wordcms from SupportByteArrEventStringId",
+                    "Incompatible aggregation function for table 'MyCMS' column 'wordcms', expecting 'countMinSketch()' and received 'countMinSketchAdd(Body)': Mismatching parameter return type, expected any of [System.String] but received System.Byte[] [");
                 env.TryInvalidCompile(
                     path,
                     "into table MyCMS select countMinSketchAdd(distinct 'abc') as wordcms from SupportByteArrEventStringId",
@@ -281,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.TryInvalidCompile(
                     path,
                     "select MyCMS.wordcms.countMinSketchTopk(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
+                    "Failed to validate select-clause expression 'MyCMS.wordcms.countMinSketchTopk(Th...(43 chars)': Count-min-sketch aggregation function 'countMinSketchTopk' requires a no parameter expressions [");
 
                 env.UndeployAll();
             }
@@ -362,9 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public class MyBytesPassthruAgentForge : CountMinSketchAgentForge
         {
-            public Type[] AcceptableValueTypes {
-                get { return new Type[] { typeof(byte[]) }; }
-            }
+            public Type[] AcceptableValueTypes => new[] { typeof(byte[]) };
 
             public CodegenExpression CodegenMake(
                 CodegenMethod parent,

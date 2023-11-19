@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -437,7 +436,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create schema SecurityData (name String, roles String[]);\n" +
-                          "create window SecurityEvent#time(30 sec) (ipAddress string, UserId String, secData SecurityData, historySecData SecurityData[]);\n" +
+                          "create window SecurityEvent#time(30 sec) (ipAddress string, userId String, secData SecurityData, historySecData SecurityData[]);\n" +
                           "@name('create') create window MyWindowCTA#keepall (myvalue string[]);\n" +
                           "insert into MyWindowCTA select {'a','b'} as myvalue from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("create");
@@ -640,26 +639,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSchemaOne
         {
             public int col1;
             public int col2;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSchemaWindow
         {
             public MyLocalJsonProvidedSchemaOne s1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedEventTypeOne
         {
             public int hsi;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedEventTypeTwo
         {
             public MyLocalJsonProvidedEventTypeOne @event;

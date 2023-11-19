@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
@@ -123,8 +122,8 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 // ESPER-663
                 var epl =
-                    "@Audit @Name('CTX') create context Ctx partition by grp, subGrp from SupportGroupSubgroupEvent;\n" +
-                    "@Audit @Name('Window') context Ctx create window EventData#unique(type) as SupportGroupSubgroupEvent;" +
+                    "@Audit @Name('CTX') create context Ctx partition by Grp, SubGrp from SupportGroupSubgroupEvent;\n" +
+                    "@Audit @Name('Window') context Ctx create window EventData#unique(Type) as SupportGroupSubgroupEvent;" +
                     "@Audit @Name('Insert') context Ctx insert into EventData select * from SupportGroupSubgroupEvent;" +
                     "@Audit @Name('Test') context Ctx select irstream * from EventData;";
                 env.CompileDeploy(epl);
@@ -260,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.TryInvalidCompile(
                 path,
                 "context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0",
-                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0]");
+                "Segmented context 'Ctx' requires that any of the event types that are listed in the segmented context also appear in any of the filter expressions of the statement, type 'SupportBean_S0' is not one of the types listed [context Ctx create window MyInvalidWindow#unique(P00) as SupportBean_S0] [");
         }
     }
 } // end of namespace

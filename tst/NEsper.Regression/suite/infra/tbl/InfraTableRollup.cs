@@ -8,14 +8,12 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>

@@ -18,7 +18,6 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.@event;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
@@ -183,7 +182,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public int[] Indexed;

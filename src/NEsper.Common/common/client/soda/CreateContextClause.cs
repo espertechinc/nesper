@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Create a context. </summary>
-    [Serializable]
     public class CreateContextClause
     {
         /// <summary>Ctor. </summary>

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.compat.collections;
@@ -16,7 +15,6 @@ namespace com.espertech.esper.regressionlib.support.bean
     /// <summary>
     ///     Legacy Java class for testing non-JavaBean style accessor methods.
     /// </summary>
-    [Serializable]
     public class SupportLegacyBean
     {
         private readonly string _legacyBeanVal;
@@ -84,7 +82,6 @@ namespace com.espertech.esper.regressionlib.support.bean
             return _legacyNested;
         }
 
-        [Serializable]
         public class LegacyNested
         {
             public string fieldNestedValue;

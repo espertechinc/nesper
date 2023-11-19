@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalStreamInsertNamedWindow),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
 
             var method = EventTypeUtility.GetAdapterForMethodName(_namedWindowAsType);
             methodNode.Block

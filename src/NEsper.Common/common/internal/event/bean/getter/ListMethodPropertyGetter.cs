@@ -172,8 +172,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 .Block
                 .DeclareVar<object>("value", ExprDotMethod(Ref("@object"), method.Name))
                 .IfRefNotTypeReturnConst("value", typeof(IList<object>), null)
-                .DeclareVar(
-                    typeof(IList<object>),
+                .DeclareVar<IList<object>>(
                     "l",
                     Cast(typeof(IList<object>), Ref("value")))
                 .IfConditionReturnConst(Relational(ExprDotName(Ref("l"), "Count"), LE, Ref("index")), null)

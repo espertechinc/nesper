@@ -17,7 +17,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.expression.time.abacus
 {
-    [Serializable]
     public class TimeAbacusMicroseconds : TimeAbacus
     {
         public static readonly TimeAbacusMicroseconds INSTANCE = new TimeAbacusMicroseconds();

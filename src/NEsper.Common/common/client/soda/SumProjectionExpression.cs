@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Sum of the (distinct) values returned by an expression.
     /// </summary>
-    [Serializable]
     public class SumProjectionExpression : ExpressionBase
     {
         private bool distinct;

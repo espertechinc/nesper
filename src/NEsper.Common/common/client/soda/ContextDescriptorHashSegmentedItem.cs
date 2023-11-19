@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Context detail for a library-func and filter pair for the hash segmented context. </summary>
-    [Serializable]
     public class ContextDescriptorHashSegmentedItem : ContextDescriptor
     {
         /// <summary>Ctor. </summary>

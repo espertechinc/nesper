@@ -267,12 +267,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprSubselectEvalMatchSymbol symbols,
             CodegenClassScope classScope)
         {
-            var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var method = parent.MakeChild(typeof(ICollection<EventBean>), GetType(), classScope);
             method.Block
                 .ApplyTri(
                     new SubselectForgeCodegenUtil.ReturnIfNoMatch(
                         ConstantNull(),
-                        EnumValue(typeof(FlexCollection), "Empty")),
+                        EnumValue(typeof(EmptyList<EventBean>), "Instance")),
                     method,
                     symbols)
                 .MethodReturn(evalStrategy.EvaluateGetCollEventsCodegen(method, symbols, classScope));

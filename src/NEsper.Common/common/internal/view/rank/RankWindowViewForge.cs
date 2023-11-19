@@ -173,7 +173,7 @@ namespace com.espertech.esper.common.@internal.view.rank
                     Constant(isDescendingValues))
                 .SetProperty(
                     factory,
-                    "UseCollatorSort",
+                    "IsUseCollatorSort",
                     Constant(useCollatorSort))
                 .SetProperty(
                     factory,
@@ -182,7 +182,7 @@ namespace com.espertech.esper.common.@internal.view.rank
             ViewMultiKeyHelper.Assign(criteriaExpressions, multiKeyClassNames, method, factory, symbols, classScope);
         }
 
-        public override string ViewName => ViewEnum.RANK_WINDOW.GetName();
+        public override string ViewName => ViewEnum.RANK_WINDOW.GetViewName();
 
         public override AppliesTo AppliesTo()
         {

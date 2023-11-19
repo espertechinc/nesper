@@ -10,13 +10,11 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
-using com.espertech.esper.runtime.client.option;
 
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil; // assertStatelessStmt
 

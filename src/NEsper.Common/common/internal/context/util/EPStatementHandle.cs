@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.context.util
     /// requiring internal dispatch logic to not shortcut evaluation of all filters for the statement
     /// within one lock, requiring the callback handle to be sorted.
     /// </summary>
-    [Serializable]
     public class EPStatementHandle
     {
         private readonly string statementName;

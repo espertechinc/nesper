@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             CodegenExpression ctx = symbols.GetAddExprEvalCtx(method);
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(forge.Spec.StreamNum)))
                 .IfCondition(EqualsNull(Ref("theEvent")))
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .ExprDotMethod(currentMinMaxSerde, "Write", RowDotMember(row, currentMinMax), output, unitKey, writer)
                 .ExprDotMethod(
                     currentMinMaxBeanSerde,
-                    "write",
+                    "Write",
                     RowDotMember(row, currentMinMaxBean),
                     output,
                     unitKey,

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "countever" aggregation function.
     /// </summary>
-    [Serializable]
     public class CountEverProjectionExpression : ExpressionBase
     {
         private bool distinct;

@@ -340,7 +340,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var epl = "@name('ctx') @public create context CtxPartitionInitWCorrTerm " +
                           "partition by P20 from SupportBean_S2, P10 from SupportBean_S1, P00 from SupportBean_S0 " +
                           "initiated by SupportBean_S0 as s0, SupportBean_S1 as s1 " +
-                          "terminated by pattern[SupportBean_S0(id=s0.Id) or SupportBean_S1(Id=s1.Id)]";
+                          "terminated by pattern[SupportBean_S0(Id=s0.Id) or SupportBean_S1(Id=s1.Id)]";
                 env.CompileDeploy(epl, path);
 
                 env.CompileDeploy(
@@ -882,7 +882,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@Public create context MyTermByTimeout partition by P00 from SupportBean_S0, P10 from SupportBean_S1 terminated by pattern [SupportBean_S0(id<0) or SupportBean_S1(Id<0)]",
+                    "@Public create context MyTermByTimeout partition by P00 from SupportBean_S0, P10 from SupportBean_S1 terminated by pattern [SupportBean_S0(Id<0) or SupportBean_S1(Id<0)]",
                     path);
                 env.CompileDeploy(
                     "@name('s0') context MyTermByTimeout select coalesce(s0.P00, s1.P10) as key, count(*) as cnt from pattern [every (s0=SupportBean_S0 or s1=SupportBean_S1)] output last when terminated",
@@ -1115,10 +1115,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('ctx') @public create context ByP0 partition by a from ISupportA, b from ISupportB terminated by ISupportA(a='x')",
+                    "@name('ctx') @public create context ByP0 partition by A from ISupportA, B from ISupportB terminated by ISupportA(A='x')",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context ByP0 select coalesce(a.a, b.b) as p0, count(*) as cnt from pattern[every (a=ISupportA or b=ISupportB)]",
+                    "@name('s0') context ByP0 select coalesce(A.A, B.B) as p0, count(*) as cnt from pattern[every (A=ISupportA or B=ISupportB)]",
                     path);
 
                 env.AddListener("s0");

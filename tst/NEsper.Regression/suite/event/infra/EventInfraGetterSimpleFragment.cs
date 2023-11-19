@@ -8,10 +8,10 @@
 
 using System;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -20,9 +20,7 @@ using NEsper.Avro.Extensions;
 
 using Newtonsoft.Json.Linq;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -34,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<bool> bean = hasValue => {
                 env.SendEventBean(new LocalEvent(hasValue ? new LocalInnerEvent() : null));
             };
-            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).FullName + ";\n";
+            var beanepl = "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
             RunAssertion(env, beanepl, bean);
 
             // Map
@@ -68,8 +66,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
-            var jsonprovidedepl = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var jsonprovidedepl = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonprovidedepl, json);
 
@@ -131,12 +129,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private LocalInnerEvent property;
@@ -149,13 +145,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent Property => property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
         }

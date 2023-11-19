@@ -13,7 +13,6 @@ using System.Linq;
 
 namespace com.espertech.esper.compat.collections
 {
-    [Serializable]
     public class EmptySortedSet<T> : SortedSet<T>
     {
         public static readonly SortedSet<T> Instance = new SortedSet<T>(); 

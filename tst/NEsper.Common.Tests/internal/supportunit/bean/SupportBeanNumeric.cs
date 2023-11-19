@@ -11,7 +11,6 @@ using System.Numerics;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBeanNumeric
     {
         private decimal _decimalOne;

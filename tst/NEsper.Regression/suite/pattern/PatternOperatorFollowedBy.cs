@@ -242,7 +242,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var stmt = "@name('s0') select * from pattern [" +
-                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(id=a.Id) or SupportBean_C(Id=a.Id)))" +
+                           " every a=SupportBean_A -> (timer:interval(10 seconds) and not (SupportBean_B(Id=a.Id) or SupportBean_C(Id=a.Id)))" +
                            "] ";
 
                 SendTimer(0, env);
@@ -297,8 +297,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@name('s0') select * from pattern " +
-                                 "[every A=SupportCallEvent -> every B=SupportCallEvent(dest=A.dest, startTime in [A.startTime:A.endTime]) where timer:within (7200000)]" +
-                                 "where B.source != A.source";
+                                 "[every A=SupportCallEvent -> every B=SupportCallEvent(Dest=A.Dest, StartTime in [A.StartTime:A.EndTime]) where timer:within (7200000)]" +
+                                 "where B.Source != A.Source";
                 env.CompileDeploy(expression);
 
                 env.AddListener("s0");
@@ -354,10 +354,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             public void Run(RegressionEnvironment env)
             {
                 var expression = "@name('s0') select 'Tag May Be Broken' as alert, " +
-                                 "tagMayBeBroken.mac, " +
-                                 "tagMayBeBroken.zoneID " +
+                                 "tagMayBeBroken.Mac, " +
+                                 "tagMayBeBroken.ZoneID " +
                                  "from pattern [" +
-                                 "every tagMayBeBroken=SupportRFIDEvent -> (timer:interval(10 sec) and not SupportRFIDEvent(mac=tagMayBeBroken.mac))" +
+                                 "every tagMayBeBroken=SupportRFIDEvent -> (timer:interval(10 sec) and not SupportRFIDEvent(Mac=tagMayBeBroken.Mac))" +
                                  "]";
 
                 env.CompileDeploy(expression);
@@ -386,16 +386,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                /// <summary>
-                /// Every LR event with a zone of '1' activates a new sub-expression after
-                /// the followed-by operator. The sub-expression instance can end two different ways:
-                /// It ends when a LR for the same mac and a different exit-zone comes in, or
-                /// it ends when a LR for the same max and the same zone come in. The latter also starts the
-                /// sub-expression again.
-                /// </summary>
+                // Every LR event with a zone of '1' activates a new sub-expression after
+                // the followed-by operator. The sub-expression instance can end two different ways:
+                // It ends when a LR for the same mac and a different exit-zone comes in, or
+                // it ends when a LR for the same max and the same zone come in. The latter also starts the
+                // sub-expression again.
                 var expression = "@name('s0') select * " +
                                  "from pattern [" +
-                                 "every a=SupportRFIDEvent(zoneID='1') -> (b=SupportRFIDEvent(mac=a.mac,zoneID!='1') and not SupportRFIDEvent(mac=a.mac,zoneID='1'))" +
+                                 "every a=SupportRFIDEvent(ZoneID='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID!='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID='1'))" +
                                  "]";
                 env.CompileDeploy(expression).AddListener("s0");
 
@@ -431,16 +429,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             public void Run(RegressionEnvironment env)
             {
-                /// <summary>
-                /// Every LR event with a zone other then '1' activates a new sub-expression after
-                /// the followed-by operator. The sub-expression instance can end two different ways:
-                /// It ends when a LR for the same mac and the enter-zone comes in, or
-                /// it ends when a LR for the same max and the same zone come in. The latter also starts the
-                /// sub-expression again.
-                /// </summary>
+                // Every LR event with a zone other then '1' activates a new sub-expression after
+                // the followed-by operator. The sub-expression instance can end two different ways:
+                // It ends when a LR for the same mac and the enter-zone comes in, or
+                // it ends when a LR for the same max and the same zone come in. The latter also starts the
+                // sub-expression again.
                 var expression = "@name('s0') select * " +
                                  "from pattern [" +
-                                 "every a=SupportRFIDEvent(zoneID!='1') -> (b=SupportRFIDEvent(mac=a.mac,zoneID='1') and not SupportRFIDEvent(mac=a.mac,zoneID=a.zoneID))" +
+                                 "every a=SupportRFIDEvent(ZoneID!='1') -> (b=SupportRFIDEvent(Mac=a.Mac,ZoneID='1') and not SupportRFIDEvent(Mac=a.Mac,ZoneID=a.ZoneID))" +
                                  "]";
 
                 env.CompileDeploy(expression);

@@ -15,14 +15,11 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
 
-// fail
-using NUnit.Framework; // assertTrue
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoinEventRepresentation
@@ -63,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var path = new RegressionPath();
                 var jsonSchemas =
-                    $"@Public @buseventtype create json schema S0_JSON(id String, P00 int);\n@Public @buseventtype create json schema S1_JSON(Id String, P00 int);\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS0).FullName}') create json schema S0_JSONCLASSPROVIDED();\n@Public @buseventtype @JsonSchema(className='{typeof(MyLocalJsonProvidedS1).FullName}') create json schema S1_JSONCLASSPROVIDED();\n";
+                    $"@Public @buseventtype create json schema S0_JSON(Id String, P00 int);\n@Public @buseventtype create json schema S1_JSON(Id String, P00 int);\n@Public @buseventtype @JsonSchema(ClassName='{typeof(MyLocalJsonProvidedS0).FullName}') create json schema S0_JSONCLASSPROVIDED();\n@Public @buseventtype @JsonSchema(ClassName='{typeof(MyLocalJsonProvidedS1).FullName}') create json schema S1_JSONCLASSPROVIDED();\n";
                 env.CompileDeploy(jsonSchemas, path);
                 var milestone = new AtomicLong();
 
@@ -218,21 +215,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedS0
         {
             public string id;
             public int p00;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedS1
         {
             public string id;
             public int p00;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedWFields
         {
             public string s0id;
@@ -241,7 +235,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             public int s1p00;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedWildcard
         {
             public MyLocalJsonProvidedS0 s0;

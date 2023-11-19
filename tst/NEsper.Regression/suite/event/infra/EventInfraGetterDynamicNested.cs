@@ -6,9 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-using System.Collections.Generic;
-
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -42,10 +39,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 }
             };
             var beanepl = "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEventSubA as " +
-                          typeof(LocalEventSubA).FullName +
+                          typeof(LocalEventSubA).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -77,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, GetEPL("json"), json);
 
             // Json-Class-Provided
-            var jsonProvidedEPL = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var jsonProvidedEPL = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonProvidedEPL, json);
 
@@ -177,12 +174,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
             private readonly string id;
@@ -207,13 +202,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent Property => property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent property;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
             public string id;

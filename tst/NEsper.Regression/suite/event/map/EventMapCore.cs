@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                env.AssertThat(() => Assert.NotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap")));
+                env.AssertThat(() => Assert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap")));
                 env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMap")
                     .AddListener("s0");
 
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                         }
                         catch (EPException ex) {
                             Assert.AreEqual(
-                                "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a java.util.Map event type",
+                        "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a System.Collections.Generic.IDictionary<System.String, System.Object> event type",
                                 ex.Message);
                         }
                     });
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                             new SupportEventPropDesc("MyInt", typeof(int?)),
                             new SupportEventPropDesc("MyString", typeof(string)),
                             new SupportEventPropDesc("beanA", typeof(SupportBeanComplexProps)).WithFragment(),
-                            new SupportEventPropDesc("myStringArray", typeof(string[]))
+                            new SupportEventPropDesc("MyStringArray", typeof(string[]))
                                 .WithComponentType(typeof(string))
                                 .WithIndexed());
                     });
@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             {
                 var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
                                     "beanA.Nested.NestedValue as nested," +
-                                    "beanA.indexed[1] as indexed," +
+                                    "beanA.Indexed[1] as indexed," +
                                     "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from myMapEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("NestedValue", @event.Get("Nested"));
+                        Assert.AreEqual("NestedValue", @event.Get("nested"));
                         Assert.AreEqual(2, @event.Get("indexed"));
                         Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });
@@ -197,8 +197,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.TryInvalidCompile("select XXX from myMapEvent#length(5)", "skip");
-                env.TryInvalidCompile("select MyString * 2 from myMapEvent#length(5)", "skip");
-                env.TryInvalidCompile("select String.trim(MyInt) from myMapEvent#length(5)", "skip");
+                env.TryInvalidCompile("select myString * 2 from myMapEvent#length(5)", "skip");
+                env.TryInvalidCompile("select String.trim(myInt) from myMapEvent#length(5)", "skip");
             }
         }
 

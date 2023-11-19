@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     An stream that polls from a method.
     /// </summary>
-    [Serializable]
     public class MethodInvocationStream : Stream
     {
         private string className;

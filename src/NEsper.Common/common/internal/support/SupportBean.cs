@@ -9,13 +9,13 @@
 using System;
 using System.Linq;
 using System.Numerics;
+using System.Text.Json.Serialization;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBean
     {
         private bool? _boolBoxed;
@@ -145,6 +145,7 @@ namespace com.espertech.esper.common.@internal.support
             set => _enumValue = value;
         }
 
+        [JsonIgnore]
         public SupportBean This => this;
 
         public decimal? DecimalBoxed {

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents a wildcard in the select-clause.
     /// </summary>
-    [Serializable]
     public class SelectClauseWildcard : SelectClauseElement
     {
         /// <summary>Renders the element in textual representation.</summary>

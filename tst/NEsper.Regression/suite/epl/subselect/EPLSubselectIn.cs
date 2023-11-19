@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select Id in (select Id from SupportBean_S1#length(1000)) as Value from SupportBean_S0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
                 SupportAdminUtil.AssertStatelessStmt(env, "s0", false);
 
@@ -182,10 +182,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var model = new EPStatementObjectModel();
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
-                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("Id", subquery), "value");
+                model.SelectClause = SelectClause.Create().Add(Expressions.SubqueryIn("Id", subquery), "Value");
                 model = env.CopyMayFail(model);
 
-                var stmtText = "select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                var stmtText = "select Id in (select Id from SupportBean_S1#length(1000)) as Value from SupportBean_S0";
                 Assert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select Id in (select Id from SupportBean_S1#length(1000)) as Value from SupportBean_S0";
                 env.EplToModelCompileDeploy(stmtText).AddListener("s0");
 
                 RunTestInSelect(env);
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var fields = new string[] { "Id" };
-                var text = "@name('s0') select id from SupportBean_S0(id in (select Id from SupportBean_S1#length(2)))";
+                var text = "@name('s0') select Id from SupportBean_S0(Id in (select Id from SupportBean_S1#length(2)))";
                 env.CompileDeployAddListenerMileZero(text, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1));
@@ -265,26 +265,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select id in (select id from SupportBean_S1#length(1000) where Id > 0) as value from SupportBean_S0";
+                    "@name('s0') select Id in (select Id from SupportBean_S1#length(1000) where Id > 0) as Value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S1(-1));
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S0(-1));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S1(5));
                 env.SendEventBean(new SupportBean_S0(4));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S0(5));
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 env.UndeployAll();
             }
@@ -295,23 +295,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select 3*id in (select 2*Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select 3*Id in (select 2*Id from SupportBean_S1#length(1000)) as Value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S1(-1));
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S0(-1));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S1(6));
                 env.SendEventBean(new SupportBean_S0(4));
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 env.UndeployAll();
             }
@@ -322,20 +322,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select s0.AnyObject in (select * from SupportBean_S1#length(1000)) as value from SupportBeanArrayCollMap s0";
+                    "@name('s0') select s0.AnyObject in (select * from SupportBean_S1#length(1000)) as Value from SupportBeanArrayCollMap s0";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 var s1 = new SupportBean_S1(100);
                 var arrayBean = new SupportBeanArrayCollMap(s1);
                 env.SendEventBean(s1);
                 env.SendEventBean(arrayBean);
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 var s2 = new SupportBean_S2(100);
                 arrayBean.AnyObject = s2;
                 env.SendEventBean(s2);
                 env.SendEventBean(arrayBean);
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.UndeployAll();
             }
@@ -521,26 +521,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             public void Run(RegressionEnvironment env)
             {
                 var stmtText =
-                    "@name('s0') select not id in (select Id from SupportBean_S1#length(1000)) as value from SupportBean_S0";
+                    "@name('s0') select not Id in (select Id from SupportBean_S1#length(1000)) as Value from SupportBean_S0";
 
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 env.SendEventBean(new SupportBean_S1(-1));
                 env.SendEventBean(new SupportBean_S0(2));
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 env.SendEventBean(new SupportBean_S0(-1));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.SendEventBean(new SupportBean_S1(5));
                 env.SendEventBean(new SupportBean_S0(4));
-                env.AssertEqualsNew("s0", "value", true);
+                env.AssertEqualsNew("s0", "Value", true);
 
                 env.SendEventBean(new SupportBean_S0(5));
-                env.AssertEqualsNew("s0", "value", false);
+                env.AssertEqualsNew("s0", "Value", false);
 
                 env.UndeployAll();
             }
@@ -591,21 +591,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
         private static void RunTestInSelect(RegressionEnvironment env)
         {
             env.SendEventBean(new SupportBean_S0(2));
-            env.AssertEqualsNew("s0", "value", false);
+            env.AssertEqualsNew("s0", "Value", false);
 
             env.SendEventBean(new SupportBean_S1(-1));
             env.SendEventBean(new SupportBean_S0(2));
-            env.AssertEqualsNew("s0", "value", false);
+            env.AssertEqualsNew("s0", "Value", false);
 
             env.SendEventBean(new SupportBean_S0(-1));
-            env.AssertEqualsNew("s0", "value", true);
+            env.AssertEqualsNew("s0", "Value", true);
 
             env.SendEventBean(new SupportBean_S1(5));
             env.SendEventBean(new SupportBean_S0(4));
-            env.AssertEqualsNew("s0", "value", false);
+            env.AssertEqualsNew("s0", "Value", false);
 
             env.SendEventBean(new SupportBean_S0(5));
-            env.AssertEqualsNew("s0", "value", true);
+            env.AssertEqualsNew("s0", "Value", true);
         }
 
         private class EPLSubselectInvalid : RegressionExecution

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client
     /// <summary>
     /// This exception is thrown to indicate a problem in administration and runtime.
     /// </summary>
-    [Serializable]
     public class EPException : Exception
     {
         private static readonly Type MyType =

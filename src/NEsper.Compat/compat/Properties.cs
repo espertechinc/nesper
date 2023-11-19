@@ -20,8 +20,7 @@ namespace com.espertech.esper.compat
     /// Collection that maps a string to a string.
     /// </summary>
 
-    [Serializable]
-	public class Properties : Dictionary<string,string>
+    public class Properties : Dictionary<string,string>
 	{
         public Properties() {}
 

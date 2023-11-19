@@ -17,7 +17,6 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
-    [Serializable]
     public class QueryGraphValueEntryInKeywordSingleIdxForge : QueryGraphValueEntryForge
     {
         internal QueryGraphValueEntryInKeywordSingleIdxForge(ExprNode[] keyExprs)

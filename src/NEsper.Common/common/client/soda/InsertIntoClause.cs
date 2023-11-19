@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// An insert-into clause consists of a stream name and column names and an optional stream selector.
     /// </summary>
-    [Serializable]
     public class InsertIntoClause
     {
         private StreamSelector streamSelector;

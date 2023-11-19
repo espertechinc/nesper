@@ -8,9 +8,7 @@
 
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.annotation;
-using com.espertech.esper.common.client.dataflow.core;
 using com.espertech.esper.common.@internal.metrics.audit;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
@@ -20,8 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 
 using static com.espertech.esper.runtime.client.EPRuntimeProvider; // DEFAULT_RUNTIME_URI
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
     public class ClientInstrumentAudit
@@ -92,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                         Assert.AreEqual(1, callback.Audits.Count);
                         var cb = callback.Audits[0];
                         Assert.AreEqual(
-                            "SupportBean(TheString=...) inserted SupportBean[SupportBean(E1, 1)]",
+                            "SupportBean(TheString=...) inserted SupportBean[SupportBean(\"E1\", 1)]",
                             cb.Message);
                         Assert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
                         Assert.AreEqual("ABC", cb.StatementName);

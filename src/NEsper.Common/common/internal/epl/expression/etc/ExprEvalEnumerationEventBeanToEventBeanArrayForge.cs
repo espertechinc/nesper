@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 .DeclareVar<EventBean>("@event",
                     enumerationForge.EvaluateGetEventBeanCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("@event")
-                .DeclareVar(typeof(EventBean[]), "events", NewArrayByLength(typeof(EventBean), Constant(1)))
+                .DeclareVar<EventBean[]>("events", NewArrayByLength(typeof(EventBean), Constant(1)))
                 .AssignArrayElement(Ref("events"), Constant(0), Ref("@event"))
                 .MethodReturn(Ref("events"));
             return LocalMethod(methodNode);

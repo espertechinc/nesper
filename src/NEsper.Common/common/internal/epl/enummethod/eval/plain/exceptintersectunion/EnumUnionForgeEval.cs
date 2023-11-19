@@ -76,10 +76,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             CodegenClassScope codegenClassScope)
         {
             var namedParams = EnumForgeCodegenNames.PARAMS;
-            var returnType = typeof(FlexCollection);
-            var listType = forge.scalar
-                ? typeof(List<object>)
-                : typeof(List<EventBean>);
+
+            var elementType = forge.scalar
+                ? typeof(object)
+                : typeof(EventBean);
+            // PREVIOUSLY: FlexCollection
+            var returnType = typeof(ICollection<>).MakeGenericType(elementType);
+            var listType = typeof(List<>).MakeGenericType(elementType);
             var subProperty = forge.scalar
                 ? "ObjectCollection"
                 : "EventBeanCollection";
@@ -101,8 +104,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
 
-            block.IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
-                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
+            block
+                .IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
+                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { elementType }));
             block
                 .DebugStack()
                 .DeclareVar(listType, "result", NewInstance(listType))

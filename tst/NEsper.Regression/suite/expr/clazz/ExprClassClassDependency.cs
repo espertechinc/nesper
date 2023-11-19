@@ -11,10 +11,6 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
-using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
-
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
     public class ExprClassClassDependency

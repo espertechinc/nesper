@@ -12,8 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
     public class EventMapPropertyDynamic : RegressionExecution

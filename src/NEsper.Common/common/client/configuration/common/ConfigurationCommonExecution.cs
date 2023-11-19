@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Holds common execution-related settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonExecution
     {
         public ConfigurationCommonExecution()

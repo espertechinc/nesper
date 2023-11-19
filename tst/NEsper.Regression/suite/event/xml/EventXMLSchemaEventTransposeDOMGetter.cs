@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Xml;
 
 using com.espertech.esper.common.client;
@@ -20,8 +19,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLSchemaEventTransposeDOMGetter

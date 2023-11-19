@@ -6,12 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -19,8 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherForGroupDelivery
@@ -129,9 +125,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.AdvanceTime(0);
-                var fields = new string[] { "Id", "intOne" };
+                var fields = new string[] { "Id", "IntOne" };
                 var epl = "create context MyContext start @now end after 1 second;\n" +
-                          "@name('s0') context MyContext select * from SupportEventWithManyArray#keepall output snapshot when terminated for grouped_delivery (intOne)";
+                          "@name('s0') context MyContext select * from SupportEventWithManyArray#keepall output snapshot when terminated for grouped_delivery (IntOne)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, "E1", new int[] { 1, 2 });
@@ -175,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 env.TryInvalidCompile(
                     "select * from SupportBean for ",
-                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found end-of-input at line 1 column 29");
+                    "Incorrect syntax near end-of-input ('for' is a reserved keyword) expecting an identifier but found EOF at line 1 column 29");
 
                 env.TryInvalidCompile(
                     "select * from SupportBean for other_keyword",
@@ -360,9 +356,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test multiple criteria
                 env.UndeployAll();
                 var stmtText =
-                    "@name('s0') select TheString, DoubleBoxed, enumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, enumValue for grouped_delivery(DoubleBoxed, enumValue)";
+                    "@name('s0') select TheString, DoubleBoxed, EnumValue from SupportBean#time_batch(1) order by TheString, DoubleBoxed, EnumValue for grouped_delivery(DoubleBoxed, EnumValue)";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                var fields = "TheString,DoubleBoxed,enumValue".SplitCsv();
+                var fields = "TheString,DoubleBoxed,EnumValue".SplitCsv();
 
                 SendEvent(env, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
                 SendEvent(env, "E2", 11d, SupportEnum.ENUM_VALUE_1); // B (2)

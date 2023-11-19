@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(FlexCollection);
+            return typeof(ICollection<EventBean>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(FlexWrap(ExprDotName(Ref("distinct"), "Values")));
+            block.MethodReturn(ExprDotName(Ref("distinct"), "Values"));
         }
     }
 } // end of namespace

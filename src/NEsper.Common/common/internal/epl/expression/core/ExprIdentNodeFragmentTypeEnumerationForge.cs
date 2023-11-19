@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var method = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
             method.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEPS(method), Constant(_streamId)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(exprSymbol.GetAddEps(method), Constant(_streamId)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
                     Cast(

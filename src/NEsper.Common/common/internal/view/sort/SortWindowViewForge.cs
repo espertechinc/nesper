@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.view.sort
                     Constant(isDescendingValues))
                 .SetProperty(
                     factory,
-                    "UseCollatorSort",
+                    "IsUseCollatorSort",
                     Constant(useCollatorSort))
                 .SetProperty(
                     factory,

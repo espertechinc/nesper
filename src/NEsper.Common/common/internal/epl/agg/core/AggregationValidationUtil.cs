@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             else {
                 var boxedRequired = requiredParam.GetBoxedType();
                 var boxedProvided = providedParam.GetBoxedType();
-                matches = boxedRequired != boxedProvided &&
-                          !TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired);
+                matches = boxedRequired == boxedProvided || TypeHelper.IsSubclassOrImplementsInterface(boxedProvided, boxedRequired);
             }
 
             if (!matches) {

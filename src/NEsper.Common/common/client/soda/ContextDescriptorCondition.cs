@@ -7,6 +7,9 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.IO;
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -14,6 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// For use with overlapping or non-overlapping contexts, implementations represents a
     /// condition for starting/initiating or ending/terminating a context.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<ContextDescriptorCondition>))]
     public interface ContextDescriptorCondition
     {
         /// <summary>Populate the EPL. </summary>

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.variable
     /// <summary>
     /// Indicates that a variable value could not be assigned.
     /// </summary>
-    [Serializable]
     public class VariableValueException : EPException
     {
         /// <summary>Ctor. </summary>

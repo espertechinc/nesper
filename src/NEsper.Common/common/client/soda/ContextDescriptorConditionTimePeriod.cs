@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Context condition that start/initiated or ends/terminates context partitions based on a time period. </summary>
-    [Serializable]
     public class ContextDescriptorConditionTimePeriod : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>

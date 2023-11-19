@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype create schema MyEvent as " +
-                          typeof(SupportEventWithListOfObject).Name +
+                          typeof(SupportEventWithListOfObject).MaskTypeName() +
                           ";\n" +
                           "@name('update') update istream MyEvent set updated = true where mylist.anyOf(e -> e is not null); \n" +
                           "@name('s0') select updated from MyEvent;\n";
@@ -301,13 +301,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.TryInvalidCompile(
                     path,
                     "update istream MySchema set doublearray[null]=1",
-                    "Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null' for expression 'doublearray'");
+                    "Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null (any type)' for expression 'doublearray'");
 
                 // type incompatible cannot assign
                 env.TryInvalidCompile(
                     path,
                     "update istream MySchema set intarray[notAnArray]='x'",
-                    "Failed to validate assignment expression 'intarray[notAnArray]=\"x\"': Invalid assignment of column '\"x\"' of type 'String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
+                    "Failed to validate assignment expression 'intarray[notAnArray]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'System.Int32', column and parameter types mismatch [update istream MySchema set intarray[notAnArray]='x']");
 
                 // not-an-array
                 env.TryInvalidCompile(
@@ -362,14 +362,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@public @buseventtype create map schema MyEvent(a int, b int);\n" +
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
-                    "    public static void swap(System.Collections.Generic.IDictionary @event) {\n" +
-                    "      Object temp = @event.Get(\"a\");\n" +
-                    "      event.put(\"a\", @event.Get(\"b\"));\n" +
-                    "      event.put(\"b\", temp);\n" +
+                    "    public static void Swap(System.Collections.Generic.IDictionary<string, object> @event) {\n" +
+                    "      var temp = @event[\"a\"];\n" +
+                    "      @event[\"a\"] = @event[\"b\"];\n" +
+                    "      @event[\"b\"] = temp;\n" +
                     "    }\n" +
                     "  }\n" +
                     "\"\"\"\n" +
-                    "update istream MyEvent as me set Helper.swap(me);\n" +
+                    "update istream MyEvent as me set Helper.Swap(me);\n" +
                     "@name('s0') select * from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -436,8 +436,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@public @buseventtype create schema Arriving(value int);\n" +
-                          "update istream Arriving set value = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array);\n" +
+                var epl = "@public @buseventtype create schema Arriving(Value int);\n" +
+                          "update istream Arriving set Value = (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array);\n" +
                           "@name('s0') select * from Arriving;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -463,7 +463,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 int? expected)
             {
                 env.SendEventMap(new Dictionary<string, object>(), "Arriving");
-                env.AssertEqualsNew("s0", "value", expected);
+                env.AssertEqualsNew("s0", "Value", expected);
             }
         }
 
@@ -541,7 +541,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStream set IntPrimitive=LongPrimitive",
-                    "Failed to validate assignment expression 'IntPrimitive=LongPrimitive': Invalid assignment of column 'LongPrimitive' of type 'Long' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
+                    "Failed to validate assignment expression 'IntPrimitive=LongPrimitive': Invalid assignment of column 'LongPrimitive' of type 'System.Nullable<System.Int64>' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [update istream SupportBeanStream set IntPrimitive=LongPrimitive]");
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStream set xxx='abc'",
@@ -549,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStream set IntPrimitive=null",
-                    "Failed to validate assignment expression 'IntPrimitive=null': Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'int', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
+                    "Failed to validate assignment expression 'IntPrimitive=null': Invalid assignment of column 'null' of null type to event property 'IntPrimitive' typed as 'System.Int32', nullable type mismatch [update istream SupportBeanStream set IntPrimitive=null]");
                 env.TryInvalidCompile(
                     path,
                     "update istream SupportBeanStreamTwo set a.IntPrimitive=10",
@@ -580,8 +580,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set value='1']");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)",
-                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=p3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select p0 from MyMapTypeInv#lastevent where TheString=p3)]");
+                    "update istream SupportBean set LongPrimitive=(select P0 from MyMapTypeInv#lastevent where TheString=P3)",
+                    "Failed to plan subquery number 1 querying MyMapTypeInv: Failed to validate filter expression 'TheString=P3': Property named 'TheString' must be prefixed by a stream name, use the stream name itself or use the as-clause to name the stream with the property in the format \"stream.property\" [update istream SupportBean set LongPrimitive=(select P0 from MyMapTypeInv#lastevent where TheString=P3)]");
                 env.TryInvalidCompile(
                     path,
                     "update istream XYZ.GYH set a=1",
@@ -699,26 +699,26 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('insert') @public insert into MyStreamII select * from MyMapTypeII", path)
                     .AddListener("insert");
 
-                var update = env.Compile("@name('update') update istream MyStreamII set p0=p1, p1=p0", path);
+                var update = env.Compile("@name('update') update istream MyStreamII set P0=P1, P1=P0", path);
                 env.Deploy(update);
 
                 env.CompileDeploy("@name('s0') select * from MyStreamII", path).AddListener("s0");
 
-                var fields = "p0,p1,p2".SplitCsv();
-                env.SendEventMap(MakeMap("p0", 10L, "p1", 1L, "p2", 100L), "MyMapTypeII");
+                var fields = "P0,P1,P2".SplitCsv();
+                env.SendEventMap(MakeMap("P0", 10L, "P1", 1L, "P2", 100L), "MyMapTypeII");
                 env.AssertPropsNew("s0", fields, new object[] { 1L, 10L, 100L });
                 env.AssertPropsNew("insert", fields, new object[] { 10L, 1L, 100L });
 
                 env.UndeployModuleContaining("update");
                 env.Deploy(update).AddListener("update");
 
-                env.SendEventMap(MakeMap("p0", 5L, "p1", 4L, "p2", 101L), "MyMapTypeII");
+                env.SendEventMap(MakeMap("P0", 5L, "P1", 4L, "P2", 101L), "MyMapTypeII");
                 env.AssertPropsNew("s0", fields, new object[] { 4L, 5L, 101L });
                 env.AssertPropsNew("insert", fields, new object[] { 5L, 4L, 101L });
 
                 env.UndeployModuleContaining("update");
 
-                env.SendEventMap(MakeMap("p0", 20L, "p1", 0L, "p2", 102L), "MyMapTypeII");
+                env.SendEventMap(MakeMap("P0", 20L, "P1", 0L, "P2", 102L), "MyMapTypeII");
                 env.AssertPropsNew("s0", fields, new object[] { 20L, 0L, 102L });
                 env.AssertPropsNew("insert", fields, new object[] { 20L, 0L, 102L });
 
@@ -742,73 +742,63 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create schema BaseInterface as " +
-                    typeof(BaseInterface).Name +
-                    ";\n" +
-                    "@public create schema BaseOne as " +
-                    typeof(BaseOne).Name +
-                    ";\n" +
-                    "@public create schema BaseOneA as " +
-                    typeof(BaseOneA).Name +
-                    ";\n" +
-                    "@public create schema BaseOneB as " +
-                    typeof(BaseOneB).Name +
-                    ";\n" +
-                    "@public create schema BaseTwo as " +
-                    typeof(BaseTwo).Name +
-                    ";\n";
+                    "@public create schema BaseInterface as " + typeof(BaseInterface).MaskTypeName() + ";\n" +
+                    "@public create schema BaseOne as " + typeof(BaseOne).MaskTypeName() + ";\n" +
+                    "@public create schema BaseOneA as " + typeof(BaseOneA).MaskTypeName() + ";\n" +
+                    "@public create schema BaseOneB as " + typeof(BaseOneB).MaskTypeName() + ";\n" +
+                    "@public create schema BaseTwo as " + typeof(BaseTwo).MaskTypeName() + ";\n";
                 env.CompileDeploy(epl, path);
 
                 // test update applies to child types via interface
                 env.CompileDeploy(
-                    "@name('insert') insert into BaseOne select p0 as i, p1 as p from MyMapTypeIDB",
+                    "@name('insert') insert into BaseOne select P0 as I, P1 as P from MyMapTypeIDB",
                     path);
-                env.CompileDeploy("@name('a') update istream BaseInterface set i='XYZ' where i like 'E%'", path);
+                env.CompileDeploy("@name('a') update istream BaseInterface set I='XYZ' where I like 'E%'", path);
                 env.CompileDeploy("@name('s0') select * from BaseOne", path).AddListener("s0");
 
-                var fields = "i,p".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeIDB");
+                var fields = "I,P".SplitCsv();
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "XYZ", "E1" });
 
-                env.SendEventMap(MakeMap("p0", "F1", "p1", "E2"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "F1", "P1", "E2"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "F1", "E2" });
 
-                env.CompileDeploy("@Priority(2) @Name('b') update istream BaseOne set i='BLANK'", path);
+                env.CompileDeploy("@Priority(2) @Name('b') update istream BaseOne set I='BLANK'", path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E3"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E3"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "BLANK", "E3" });
 
-                env.CompileDeploy("@Priority(3) @Name('c') update istream BaseOneA set i='FINAL'", path);
+                env.CompileDeploy("@Priority(3) @Name('c') update istream BaseOneA set I='FINAL'", path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E4"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E4"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "BLANK", "E4" });
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@name('insert') insert into BaseOneA select p0 as i, p1 as p, 'a' as pa from MyMapTypeIDB",
+                    "@name('insert') insert into BaseOneA select P0 as I, P1 as P, 'a' as pa from MyMapTypeIDB",
                     path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E5"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E5"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "FINAL", "E5" });
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@name('insert') insert into BaseOneB select p0 as i, p1 as p, 'b' as pb from MyMapTypeIDB",
+                    "@name('insert') insert into BaseOneB select P0 as I, P1 as P, 'b' as pb from MyMapTypeIDB",
                     path);
 
-                env.SendEventMap(MakeMap("p0", "somevalue", "p1", "E6"), "MyMapTypeIDB");
+                env.SendEventMap(MakeMap("P0", "somevalue", "P1", "E6"), "MyMapTypeIDB");
                 env.AssertPropsNew("s0", fields, new object[] { "BLANK", "E6" });
 
                 env.UndeployModuleContaining("insert");
                 env.CompileDeploy(
-                    "@name('insert') insert into BaseTwo select p0 as i, p1 as p from MyMapTypeIDB",
+                    "@name('insert') insert into BaseTwo select P0 as I, P1 as P from MyMapTypeIDB",
                     path);
 
                 env.UndeployModuleContaining("s0");
                 env.CompileDeploy("@name('s0') select * from BaseInterface", path).AddListener("s0");
 
-                env.SendEventMap(MakeMap("p0", "E2", "p1", "E7"), "MyMapTypeIDB");
-                env.AssertPropsNew("s0", new string[] { "i" }, new object[] { "XYZ" });
+                env.SendEventMap(MakeMap("P0", "E2", "P1", "E7"), "MyMapTypeIDB");
+                env.AssertPropsNew("s0", new string[] { "I" }, new object[] { "XYZ" });
 
                 env.UndeployAll();
             }
@@ -818,7 +808,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p0,p1".SplitCsv();
+                var fields = "P0,P1".SplitCsv();
                 var path = new RegressionPath();
 
                 env.CompileDeploy(
@@ -828,11 +818,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('insert') insert into AWindow select * from MyMapTypeNW", path)
                     .AddListener("insert");
                 env.CompileDeploy("@name('select') select * from AWindow", path).AddListener("select");
-                env.CompileDeploy("update istream AWindow set p1='newvalue'", path);
+                env.CompileDeploy("update istream AWindow set P1='newvalue'", path);
 
                 env.Milestone(0);
 
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "oldvalue"), "MyMapTypeNW");
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "oldvalue"), "MyMapTypeNW");
                 env.AssertPropsNew("window", fields, new object[] { "E1", "newvalue" });
                 env.AssertPropsNew("insert", fields, new object[] { "E1", "oldvalue" });
                 env.AssertPropsNew("select", fields, new object[] { "E1", "newvalue" });
@@ -855,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.Milestone(2);
 
-                env.CompileDeploy("update istream MyOtherStream set p0='a', p1='b'", path);
+                env.CompileDeploy("update istream MyOtherStream set P0='a', P1='b'", path);
                 env.CompileDeploy("@name('s0') select * from MyOtherStream", path).AddListener("s0");
                 env.SendEventBean(new SupportBean("B", 1));
                 env.AssertPropsNew("oninsert", fields, new object[] { "E1", "newvalue" });
@@ -892,25 +882,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 // test map
                 env.CompileDeploy("@name('s0') select * from MyMapTypeSR").AddListener("s0");
-                env.CompileDeploy("update istream MyMapTypeSR set p0='a'");
+                env.CompileDeploy("update istream MyMapTypeSR set P0='a'");
 
-                var fields = "p0,p1".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeSR");
+                var fields = "P0,P1".SplitCsv();
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSR");
                 env.AssertPropsNew("s0", fields, new object[] { "a", "E1" });
 
-                env.SendEventMap(MakeMap("p0", "E2", "p1", "E2"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E2", "P1", "E2"), "MyMapTypeSR");
                 env.AssertPropsNew("s0", fields, new object[] { "a", "E2" });
 
                 env.CompileDeploy("@name('trigger') select * from SupportBean");
                 env.Statement("trigger").Events += (
                     sender,
-                    args) => env.EventService.RouteEventMap(MakeMap("p0", "E3", "p1", "E3"), "MyMapTypeSR");
+                    args) => env.EventService.RouteEventMap(MakeMap("P0", "E3", "P1", "E3"), "MyMapTypeSR");
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsNew("s0", fields, new object[] { "a", "E3" });
 
-                env.CompileDeploy("@Drop @name('drop') update istream MyMapTypeSR set p0='a'");
-                env.SendEventMap(MakeMap("p0", "E4", "p1", "E4"), "MyMapTypeSR");
-                env.SendEventMap(MakeMap("p0", "E5", "p1", "E5"), "MyMapTypeSR");
+                env.CompileDeploy("@Drop @name('drop') update istream MyMapTypeSR set P0='a'");
+                env.SendEventMap(MakeMap("P0", "E4", "P1", "E4"), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "E5", "P1", "E5"), "MyMapTypeSR");
                 env.SendEventBean(new SupportBean());
                 env.AssertListenerNotInvoked("s0");
 
@@ -933,13 +923,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Statement("trigger").Events += ((
                     sender,
                     args) => env.EventService.RouteEventBean(new SupportBean("E3", 0), "SupportBean"));
-                env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "", "P1", ""), "MyMapTypeSR");
                 env.AssertPropsNew("s0", fields, new object[] { "E3", 999 });
 
                 env.CompileDeploy("@Drop update istream SupportBean set IntPrimitive=1");
                 env.SendEventBean(new SupportBean("E4", 0));
                 env.SendEventBean(new SupportBean("E4", 0));
-                env.SendEventMap(MakeMap("p0", "", "p1", ""), "MyMapTypeSR");
+                env.SendEventMap(MakeMap("P0", "", "P1", ""), "MyMapTypeSR");
                 env.AssertListenerNotInvoked("s0");
 
                 env.UndeployAll();
@@ -958,23 +948,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var model = new EPStatementObjectModel();
                 model.UpdateClause = UpdateClause.Create(
                     "MyMapTypeSODA",
-                    Expressions.Eq(Expressions.Property("p1"), Expressions.Constant("newvalue")));
+                    Expressions.Eq(Expressions.Property("P1"), Expressions.Constant("newvalue")));
                 model.UpdateClause.OptionalAsClauseStreamName = "mytype";
-                model.UpdateClause.OptionalWhereClause = Expressions.Eq("p0", "E1");
+                model.UpdateClause.OptionalWhereClause = Expressions.Eq("P0", "E1");
                 Assert.AreEqual(
-                    "update istream MyMapTypeSODA as mytype set p1=\"newvalue\" where p0=\"E1\"",
+                    "update istream MyMapTypeSODA as mytype set P1=\"newvalue\" where P0=\"E1\"",
                     model.ToEPL());
 
                 // test map
                 env.CompileDeploy("@name('s0') select * from MyMapTypeSODA").AddListener("s0");
                 env.CompileDeploy(model);
 
-                var fields = "p0,p1".SplitCsv();
-                env.SendEventMap(MakeMap("p0", "E1", "p1", "E1"), "MyMapTypeSODA");
+                var fields = "P0,P1".SplitCsv();
+                env.SendEventMap(MakeMap("P0", "E1", "P1", "E1"), "MyMapTypeSODA");
                 env.AssertPropsNew("s0", fields, new object[] { "E1", "newvalue" });
 
                 // test unmap
-                var text = "update istream MyMapTypeSODA as mytype set p1=\"newvalue\" where p0=\"E1\"";
+                var text = "update istream MyMapTypeSODA as mytype set P1=\"newvalue\" where P0=\"E1\"";
                 env.EplToModelCompileDeploy(text);
 
                 env.UndeployAll();
@@ -990,15 +980,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public insert into ABCStreamXML select 1 as valOne, 2 as valTwo, * from MyXMLEvent",
+                    "@public insert into ABCStreamXML select 1 as ValOne, 2 as ValTwo, * from MyXMLEvent",
                     path);
                 env.CompileDeploy(
-                    "update istream ABCStreamXML set valOne = 987, valTwo=123 where prop1='SAMPLE_V1'",
+                    "update istream ABCStreamXML set ValOne = 987, ValTwo=123 where prop1='SAMPLE_V1'",
                     path);
                 env.CompileDeploy("@name('s0') select * from ABCStreamXML", path).AddListener("s0");
 
                 env.SendEventXMLDOM(simpleDoc, "MyXMLEvent");
-                env.AssertPropsNew("s0", "valOne,valTwo,prop1".SplitCsv(), new object[] { 987, 123, "SAMPLE_V1" });
+                env.AssertPropsNew("s0", "ValOne,ValTwo,prop1".SplitCsv(), new object[] { 987, 123, "SAMPLE_V1" });
 
                 env.UndeployAll();
             }
@@ -1010,25 +1000,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@public insert into ABCStreamWO select 1 as valOne, 2 as valTwo, * from SupportBean",
+                    "@public insert into ABCStreamWO select 1 as ValOne, 2 as ValTwo, * from SupportBean",
                     path);
-                env.CompileDeploy("@name('update') update istream ABCStreamWO set valOne = 987, valTwo=123", path);
+                env.CompileDeploy("@name('update') update istream ABCStreamWO set ValOne = 987, ValTwo=123", path);
                 env.CompileDeploy("@name('s0') select * from ABCStreamWO", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 987, 123, "E1" });
+                env.AssertPropsNew("s0", "ValOne,ValTwo,TheString".SplitCsv(), new object[] { 987, 123, "E1" });
 
                 env.UndeployModuleContaining("update");
                 env.CompileDeploy("@name('update') update istream ABCStreamWO set TheString = 'A'", path);
 
                 env.SendEventBean(new SupportBean("E2", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 1, 2, "A" });
+                env.AssertPropsNew("s0", "ValOne,ValTwo,TheString".SplitCsv(), new object[] { 1, 2, "A" });
 
                 env.UndeployModuleContaining("update");
-                env.CompileDeploy("update istream ABCStreamWO set TheString = 'B', valOne = 555", path);
+                env.CompileDeploy("update istream ABCStreamWO set TheString = 'B', ValOne = 555", path);
 
                 env.SendEventBean(new SupportBean("E3", 0));
-                env.AssertPropsNew("s0", "valOne,valTwo,TheString".SplitCsv(), new object[] { 555, 2, "B" });
+                env.AssertPropsNew("s0", "ValOne,ValTwo,TheString".SplitCsv(), new object[] { 555, 2, "B" });
 
                 env.UndeployAll();
             }
@@ -1040,11 +1030,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var path = new RegressionPath();
                 env.CompileDeploy("@public insert into ABCStreamCM select * from SupportBeanCopyMethod", path);
-                env.CompileDeploy("update istream ABCStreamCM set valOne = 'x', valTwo='y'", path);
+                env.CompileDeploy("update istream ABCStreamCM set ValOne = 'x', ValTwo='y'", path);
                 env.CompileDeploy("@name('s0') select * from ABCStreamCM", path).AddListener("s0");
 
                 env.SendEventBean(new SupportBeanCopyMethod("1", "2"));
-                env.AssertPropsNew("s0", "valOne,valTwo".SplitCsv(), new object[] { "x", "y" });
+                env.AssertPropsNew("s0", "ValOne,ValTwo".SplitCsv(), new object[] { "x", "y" });
 
                 env.UndeployAll();
             }
@@ -1310,7 +1300,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             // test update-istream with bean
             var path = new RegressionPath();
             env.CompileDeploy(
-                "@public @buseventtype create schema MyMapPropEvent as " + typeof(MyMapPropEvent).Name,
+                "@public @buseventtype create schema MyMapPropEvent as " + typeof(MyMapPropEvent).MaskTypeName(),
                 path);
             env.CompileDeploy("@public insert into MyStream select * from MyMapPropEvent", path);
             env.CompileDeploy("@name('s0') update istream MyStream set props('abc') = 1, array[2] = 10", path)
@@ -1621,7 +1611,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public string I { get; set; }
         }
 
-        [Serializable]
         public class BaseOne : BaseInterface
         {
             private string i;
@@ -1650,7 +1639,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        [Serializable]
         public class BaseTwo : BaseInterface
         {
             private string i;
@@ -1727,8 +1715,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             sb.IntBoxed = value;
         }
 
-        [Serializable]
-        internal class MyMapPropEvent
+        public class MyMapPropEvent
         {
             private IDictionary<string, object> props = new Dictionary<string, object>();
             private object[] array = new object[10];
@@ -1763,16 +1750,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedMapProp
+        public class MyLocalJsonProvidedMapProp
         {
             public string simple;
             public int?[] myarray;
             public IDictionary<string, object> mymap;
         }
 
-        [Serializable]
-        internal class MyLocalJsonProvidedSB
+        public class MyLocalJsonProvidedSB
         {
             public string theString;
             public int intPrimitive;
@@ -1782,8 +1767,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization
         /// is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
-        internal class SupportEventWithListOfObject
+        public class SupportEventWithListOfObject
         {
             private IList<object> mylist;
             private bool updated;

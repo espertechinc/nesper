@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -209,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "@public @public create context MyCtx as start SupportBean_S0 s0 end SupportBean_S1(Id=s0.Id)",
                     path);
                 env.CompileDeploy(
-                    "@name('s0') context MyCtx select context.Id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
+                    "@name('s0') context MyCtx select context.id as c0, context.s0.P00 as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#keepall group by TheString",
                     path);
 
                 env.AdvanceTime(1000);
@@ -1488,11 +1487,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "(0, 9, *, *, *, *), (0, 12, *, *, *, *)",
                     new TimeRangePair[] {
                         new TimeRangePair("2002-05-30T09:30:00.000", null, false),
-                        new TimeRangePair("2002-05-30T010:00:00.000", "2002-05-30T011:59:59.999", true),
-                        new TimeRangePair("2002-05-30T012:00:00.000", "2002-05-31T07:59:59.999", false),
+                        new TimeRangePair("2002-05-30T10:00:00.000", "2002-05-30T11:59:59.999", true),
+                        new TimeRangePair("2002-05-30T12:00:00.000", "2002-05-31T07:59:59.999", false),
                         new TimeRangePair("2002-05-31T08:00:00.000", "2002-05-31T08:59:59.999", true),
                         new TimeRangePair("2002-05-31T09:00:00.000", "2002-05-31T09:59:59.999", false),
-                        new TimeRangePair("2002-05-31T010:00:00.000", "2002-05-31T010:10:00.000", true)
+                        new TimeRangePair("2002-05-31T10:00:00.000", "2002-05-31T10:10:00.000", true)
                     });
 
                 RunAssertionMultiCrontab(
@@ -1539,13 +1538,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             string endList,
             TimeRangePair[] pairs)
         {
-            var epl = "create context Ctx " +
-                      "start " +
-                      startList +
-                      "end " +
-                      endList +
-                      ";\n" +
-                      "@name('s0') context Ctx select * from SupportBean";
+            var epl =
+                $"create context Ctx start {startList} end {endList};\n" +
+                "@name('s0') context Ctx select * from SupportBean";
 
             SendTimeEvent(env, pairs[0].Start);
             Assert.IsNull(pairs[0].End);
@@ -1631,25 +1626,21 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         private class TimeRangePair
         {
-            private readonly string start;
-            private readonly string end;
-            private readonly bool expected;
-
             public TimeRangePair(
                 string start,
                 string end,
                 bool expected)
             {
-                this.start = start;
-                this.end = end;
-                this.expected = expected;
+                Start = start;
+                End = end;
+                IsExpected = expected;
             }
 
-            public string Start => start;
+            public string Start { get; }
 
-            public string End => end;
+            public string End { get; }
 
-            public bool IsExpected => expected;
+            public bool IsExpected { get; }
         }
     }
 } // end of namespace

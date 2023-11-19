@@ -13,7 +13,6 @@ using com.espertech.esper.common.@internal.util.serde;
 
 namespace com.espertech.esper.common.client.soda
 {
-    [Serializable]
     public class AnnotationAttribute
     {
         private string name;

@@ -57,6 +57,9 @@ namespace com.espertech.esper.common.@internal.settings
             try {
                 resolved = importService.ResolveType(typeName, false, extension);
             }
+            catch (ImportException) {
+                // expected
+            }
             catch (TypeLoadException) {
                 // expected
             }

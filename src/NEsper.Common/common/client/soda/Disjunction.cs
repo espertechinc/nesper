@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Disjunction represents a logical OR allowing multiple sub-expressions to be connected by OR.
     /// </summary>
-    [Serializable]
     public class Disjunction : Junction
     {
         /// <summary>

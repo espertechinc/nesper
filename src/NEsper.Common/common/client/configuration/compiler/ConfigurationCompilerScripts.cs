@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     /// Holder for script settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerScripts
     {
         /// <summary>

@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.dataflow.core
     /// <summary>
     ///     Options for use when instantiating a data flow in <seealso cref="EPDataFlowService" />.
     /// </summary>
-    [Serializable]
     public class EPDataFlowInstantiationOptions
     {
         private bool _cpuStatistics;

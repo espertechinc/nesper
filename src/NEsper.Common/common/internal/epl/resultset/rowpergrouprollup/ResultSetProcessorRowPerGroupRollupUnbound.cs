@@ -48,16 +48,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateGroupKeysView = GenerateGroupKeysViewCodegen(forge, classScope, instance);
 
             method.Block
-                .DeclareVar(
-                    typeof(object[][]),
+                .DeclareVar<object[][]>(
                     "newDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
                         ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
-                .DeclareVar(
-                    typeof(object[][]),
+                .DeclareVar<object[][]>(
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
@@ -106,16 +104,14 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             var generateOutputEventsView = GenerateOutputEventsViewCodegen(forge, classScope, instance);
 
             method.Block
-                .DeclareVar(
-                    typeof(object[][]),
+                .DeclareVar<object[][]>(
                     "newDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,
                         REF_NEWDATA,
                         ExprDotName(Ref(NAME_UNBOUNDHELPER), "Buffer"),
                         ConstantTrue()))
-                .DeclareVar(
-                    typeof(object[][]),
+                .DeclareVar<object[][]>(
                     "oldDataMultiKey",
                     LocalMethod(
                         generateGroupKeysView,

@@ -387,8 +387,8 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context PartitionByArray partition by Id, array from SupportEventWithIntArray;\n" +
-                          "@name('s0') context PartitionByArray select sum(value) as thesum from SupportEventWithIntArray;\n";
+                var epl = "create context PartitionByArray partition by Id, Array from SupportEventWithIntArray;\n" +
+                          "@name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertArray(env, "G1", new int[] { 1, 2 }, 1, 1);
@@ -442,8 +442,8 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "create context PartitionByArray partition by array from SupportEventWithIntArray;\n" +
-                          "@name('s0') context PartitionByArray select sum(value) as thesum from SupportEventWithIntArray;\n";
+                var epl = "create context PartitionByArray partition by Array from SupportEventWithIntArray;\n" +
+                          "@name('s0') context PartitionByArray select sum(Value) as thesum from SupportEventWithIntArray;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertArray(env, "E1", new int[] { 1, 2 }, 10, 10);
@@ -605,17 +605,18 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
 
                 var stmtContext =
-                    "@public create context SegmentedBySession partition by sessionId from SupportWebEvent";
+                    "@public create context SegmentedBySession partition by SessionId from SupportWebEvent";
                 env.CompileDeploy(stmtContext, path);
 
-                var epl = "@name('s0') context SegmentedBySession " +
-                          " select rstream A.pageName as pageNameA , A.sessionId as sessionIdA, B.pageName as pageNameB, C.pageName as pageNameC from " +
-                          "SupportWebEvent(pageName='Start')#time(30) A " +
-                          "full outer join " +
-                          "SupportWebEvent(pageName='Middle')#time(30) B on A.sessionId = B.sessionId " +
-                          "full outer join " +
-                          "SupportWebEvent(pageName='End')#time(30) C on A.sessionId  = C.sessionId " +
-                          "where A.pageName is not null and (B.pageName is null or C.pageName is null) ";
+                var epl = 
+                    "@name('s0') context SegmentedBySession " +
+                    " select rstream A.PageName as PageNameA , A.SessionId as SessionIdA, B.PageName as PageNameB, C.PageName as PageNameC from " +
+                    "SupportWebEvent(PageName='Start')#time(30) A " +
+                    "full outer join " +
+                    "SupportWebEvent(PageName='Middle')#time(30) B on A.SessionId = B.SessionId " +
+                    "full outer join " +
+                    "SupportWebEvent(PageName='End')#time(30) C on A.SessionId  = C.SessionId " +
+                    "where A.PageName is not null and (B.PageName is null or C.PageName is null) ";
                 env.CompileDeploy(epl, path);
 
                 env.AddListener("s0");
@@ -757,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "create context SegmentedByAString partition by TheString from SupportBean, Id from SupportBean_S0";
                 env.TryInvalidCompile(
                     epl,
-                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'String' compared to property 'Id' of type 'Integer' [");
+                    "For context 'SegmentedByAString' for context 'SegmentedByAString' found mismatch of property types, property 'TheString' of type 'System.String' compared to property 'Id' of type 'System.Nullable<System.Int32>' [");
 
                 // duplicate type specification
                 epl =
@@ -767,7 +768,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "For context 'SegmentedByAString' the event type 'SupportBean' is listed twice [");
 
                 // duplicate type: subtype
-                epl = "create context SegmentedByAString partition by baseAB from ISupportBaseAB, a from ISupportA";
+                epl = "create context SegmentedByAString partition by BaseAB from ISupportBaseAB, A from ISupportA";
                 env.TryInvalidCompile(
                     epl,
                     "For context 'SegmentedByAString' the event type 'ISupportA' is listed twice: Event type 'ISupportA' is a subtype or supertype of event type 'ISupportBaseAB' [");
@@ -1005,7 +1006,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var fields = "col1".Split(",");
                 var epl =
-                    "@name('context') create context SegmentedByString partition by baseAB from ISupportBaseAB;\n" +
+                    "@name('context') create context SegmentedByString partition by BaseAB from ISupportBaseAB;\n" +
                     "@name('s0') context SegmentedByString select count(*) as col1 from ISupportA;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -1448,7 +1449,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var ctx = "SegmentedByString";
                 env.CompileDeploy(
                     "@name('s0') context SegmentedByString " +
-                    "select context.name as c1, context.Id as c2, context.key1 as c3, TheString as c4 " +
+                    "select context.name as c1, context.id as c2, context.key1 as c3, TheString as c4 " +
                     "from SupportBean#length(2) as Items",
                     path);
                 env.AddListener("s0");

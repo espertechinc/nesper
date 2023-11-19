@@ -12,7 +12,6 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class GroupByClauseElementExpr : GroupByClauseElement
     {
         public GroupByClauseElementExpr(ExprNode expr)

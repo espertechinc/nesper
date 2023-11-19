@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                     whereClause == null
                         ? ConstantNull()
                         : ExprNodeUtilityCodegen.CodegenEvaluator(whereClause.Forge, method, GetType(), classScope))
-                .SetProperty(Ref("eval"), "NamedWindowInsert", Constant(isNamedWindowInsert))
+                .SetProperty(Ref("eval"), "IsNamedWindowInsert", Constant(isNamedWindowInsert))
                 .SetProperty(
                     Ref("eval"),
                     "InsertIntoTable",
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 .SetProperty(
                     Ref("eval"),
                     "RspFactoryProvider",
-                    CodegenExpressionBuilder.NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method)))
+                    CodegenExpressionBuilder.NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(
                     Ref("eval"),
                     "PropertyEvaluator",

@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.type
         /// <summary>
         ///     Computer for type-specific arith. operations.
         /// </summary>
-        [Serializable]
         public class MultiplyDouble : Computer
         {
             public object Compute(

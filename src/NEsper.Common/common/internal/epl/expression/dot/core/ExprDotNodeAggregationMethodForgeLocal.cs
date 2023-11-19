@@ -56,7 +56,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         future,
                         "GetAggregationRow",
                         ExprDotName(symbols.GetAddExprEvalCtx(parent), "AgentInstanceId"),
-                        symbols.GetAddEPS(parent),
+                        symbols.GetAddEps(parent),
                         symbols.GetAddIsNewData(parent),
                         symbols.GetAddExprEvalCtx(parent)))
                 .IfRefNullReturnNull("row")
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             readerMethodName,
                             Constant(agg.Column),
                             Ref("row"),
-                            symbols.GetAddEPS(method),
+                            symbols.GetAddEps(method),
                             symbols.GetAddIsNewData(method),
                             symbols.GetAddExprEvalCtx(method))));
             return LocalMethod(method);

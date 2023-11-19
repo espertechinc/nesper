@@ -12,6 +12,8 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregateFirstEverLastEver

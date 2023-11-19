@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(innerWrapperType, EPStatementInitServicesConstants.REF));
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             return StaticMethod(
                 GetType(),
                 "WildcardNestedWrapper",

@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Holds default settings for stream selection in the select-clause.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerStreamSelection
     {
         /// <summary>

@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     /// Represents an equals-for-group (= ANY/ALL/SOME (expression list)) comparator in a expression tree.
     /// </summary>
-    [Serializable]
     public class ExprEqualsAllAnyNode : ExprNodeBase
     {
         [JsonIgnore]

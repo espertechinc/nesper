@@ -18,7 +18,6 @@ namespace com.espertech.esper.common.client.soda
     ///     An output limit clause defines how to limit output of statements and consists of
     ///     a selector specifiying which events to select to output, a frequency and a unit.
     /// </summary>
-    [Serializable]
     public class OutputLimitClause
     {
         protected internal int? afterNumberOfEvents;

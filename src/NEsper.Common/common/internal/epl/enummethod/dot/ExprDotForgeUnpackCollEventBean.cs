@@ -43,10 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 return null;
             }
             else if (target is FlexCollection flexCollection) {
-                return new EventUnderlyingCollection(flexCollection);
+                return new EventUnderlyingCollection<object>(flexCollection.EventBeanCollection);
             }
 
-            return new EventUnderlyingCollection(target.Unwrap<EventBean>());
+            return new EventUnderlyingCollection<object>(target.Unwrap<EventBean>());
         }
 
         public CodegenExpression Codegen(
@@ -56,14 +56,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var returnType = typeof(ICollection<EventBean>);
+            var returnType = TypeInfo.GetCodegenReturnType();
             var methodNode = parent
                 .MakeChild(returnType, typeof(ExprDotForgeUnpackCollEventBean), classScope)
-                .AddParam<FlexCollection>("target");
+                .AddParam(innerType, "target");
 
+            var collectionType = typeof(EventUnderlyingCollection<>).MakeGenericType(returnType.GetComponentType());
+            
             methodNode.Block
                 .IfRefNullReturnNull("target")
-                .MethodReturn(NewInstance<EventUnderlyingCollection>(Ref("target")));
+                .MethodReturn(NewInstance(collectionType, Ref("target")));
+            
             return LocalMethod(methodNode, inner);
         }
 

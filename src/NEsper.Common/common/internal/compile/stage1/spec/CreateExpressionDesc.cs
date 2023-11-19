@@ -12,7 +12,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
-    [Serializable]
     public class CreateExpressionDesc
     {
         public CreateExpressionDesc(ExpressionDeclItem expression)

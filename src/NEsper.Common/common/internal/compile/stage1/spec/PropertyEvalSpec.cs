@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for property evaluation.
     /// </summary>
-    [Serializable]
     public class PropertyEvalSpec
     {
         /// <summary>

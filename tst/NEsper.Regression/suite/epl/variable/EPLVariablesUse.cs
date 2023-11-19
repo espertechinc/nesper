@@ -15,6 +15,7 @@ using com.espertech.esper.common.client.variable;
 using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.concurrency;
 using com.espertech.esper.compat.threading;
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select * from SupportBean(varargsTestClient.functionWithVarargs(LongBoxed, varargsTestClient.getTestObject(TheString))) as t";
+                    "@name('s0') select * from SupportBean(varargsTestClient.FunctionWithVarargs(LongBoxed, varargsTestClient.getTestObject(TheString))) as t";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var sb = new SupportBean("5", 0);
@@ -144,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select * from MyVariableCustomEvent(name=my_variable_custom_typed)")
+                env.CompileDeploy("@name('s0') select * from MyVariableCustomEvent(Name=my_variable_custom_typed)")
                     .AddListener("s0");
 
                 env.SendEventBean(new MyVariableCustomEvent(MyVariableCustomType.Of("abc")));
@@ -205,11 +206,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                env.RuntimeSetVariable(null, "mySimpleVariableService", new EPLVariablesUse.MySimpleVariableService());
+                env.RuntimeSetVariable(null, "mySimpleVariableService", new MySimpleVariableService());
 
-                var epStatement =
-                    env.CompileDeploy("@name('s0') select mySimpleVariableService.doSomething() as c0 from SupportBean")
-                        .Statement("s0");
+                var epStatement = env
+                    .CompileDeploy("@name('s0') select mySimpleVariableService.DoSomething() as c0 from SupportBean")
+                    .Statement("s0");
 
                 var latch = new CountDownLatch(1);
                 IList<string> values = new List<string>();
@@ -256,8 +257,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // exercise
                 var epl = "@name('s0') select " +
-                          "myService.doSomething() as c0, " +
-                          "myInitService.doSomething() as c1 " +
+                          "myService.DoSomething() as c0, " +
+                          "myInitService.DoSomething() as c1 " +
                           "from SupportBean";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -530,7 +531,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 // try ESPER-653
                 env.CompileDeploy(
-                    "@name('s0') @public create constant variable java.util.Date START_TIME = java.util.Calendar.getInstance().getTime()");
+                    "@Name('s0') create constant variable com.espertech.esper.compat.DateTimeEx START_TIME = com.espertech.esper.compat.DateTimeEx.NowUtc()");
+                
                 env.AssertIterator("s0", en => Assert.IsNotNull(en.Advance().Get("START_TIME")));
                 env.UndeployModuleContaining("s0");
 
@@ -612,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "var_enumone = enumValue",
+                    "var_enumone = EnumValue",
                     new object[][] {
                         new object[] { SupportEnum.ENUM_VALUE_3, false },
                         new object[] { SupportEnum.ENUM_VALUE_2, true },
@@ -625,14 +627,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 TryOperator(
                     env,
                     path,
-                    "enumValue in (var_enumarr, var_enumone)",
+                    "EnumValue in (var_enumarr, var_enumone)",
                     new object[][] {
                         new object[] { SupportEnum.ENUM_VALUE_3, false },
                         new object[] { SupportEnum.ENUM_VALUE_2, true }, new object[] { SupportEnum.ENUM_VALUE_1, true }
                     });
 
                 env.CompileDeploy("@public create variable SupportEnum var_enumtwo = SupportEnum.ENUM_VALUE_2", path);
-                env.CompileDeploy("on SupportBean set var_enumtwo = enumValue", path);
+                env.CompileDeploy("on SupportBean set var_enumtwo = EnumValue", path);
 
                 env.UndeployAll();
             }
@@ -746,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type Integer cannot be assigned a value of type String",
+                        "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.String",
                         ex.Message);
                 }
 
@@ -757,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'dummy' of declared type Integer cannot be assigned a value of type Long",
+                        "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.Int64",
                         ex.Message);
                 }
 
@@ -768,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 catch (VariableValueException ex) {
                     // expected
                     Assert.AreEqual(
-                        "Variable 'var2' of declared type String cannot be assigned a value of type Integer",
+                        "Variable 'var2' of declared type System.String cannot be assigned a value of type System.Int32",
                         ex.Message);
                 }
 
@@ -977,7 +979,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             }
         }
 
-        [Serializable]
         public class A
         {
             public string GetValue()
@@ -1078,7 +1079,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         /// <summary>
         /// Test service; only serializable because it *may* go over the wire some time when running tests and serialization is just convenient
         /// </summary>
-        [Serializable]
         public class MySimpleVariableService
         {
             public string DoSomething()
@@ -1112,7 +1112,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyVariableCustomEvent
         {
             private readonly MyVariableCustomType name;
@@ -1131,7 +1130,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyVariableCustomType
         {
             private readonly string name;
@@ -1168,7 +1166,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class SupportVarargsObject
         {
             private long? value;

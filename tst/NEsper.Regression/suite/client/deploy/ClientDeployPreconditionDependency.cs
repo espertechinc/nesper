@@ -10,15 +10,13 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
-using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
     public class ClientDeployPreconditionDependency
@@ -131,11 +129,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') @public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\";\n",
+                    "@name('infra') @public create inlined_class \"\"\" public class MyClass { public static stringDoIt() { return \"def\"; } }\"\"\";\n",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency application-inlined class 'MyClass'";
-                TryInvalidDeploy(env, path, "select MyClass.doIt() from SupportBean", text);
+                TryInvalidDeploy(env, path, "select MyClass.DoIt() from SupportBean", text);
             }
 
             public ISet<RegressionFlag> Flags()
@@ -432,7 +430,6 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
         }
 
-        [Serializable]
         public class SomeEvent
         {
         }

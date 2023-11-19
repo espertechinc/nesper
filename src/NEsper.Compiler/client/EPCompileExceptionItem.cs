@@ -17,7 +17,6 @@ namespace com.espertech.esper.compiler.client
     /// <summary>
     ///     Exception information.
     /// </summary>
-    [Serializable]
     public class EPCompileExceptionItem : EPException
     {
         /// <summary>

@@ -10,8 +10,6 @@ namespace com.espertech.esper.compat.collections.btree
     {
         public class Node
         {
-            public long Id = DebugId<Node>.NewId();
-            
             private Func<TV,TK> _accessor;
             private Node _parent;
             
@@ -590,7 +588,6 @@ namespace com.espertech.esper.compat.collections.btree
             public override string ToString()
             {
                 return
-                    $"{nameof(Id)}: {Id}, " +
                     $"{nameof(Position)}: {Position}, {nameof(MaxCount)}: {MaxCount}, {nameof(Count)}: {Count}, " +
                     $"{nameof(Size)}: {Size}, {nameof(IsLeaf)}: {IsLeaf}, {nameof(IsRoot)}: {IsRoot}";
             }
@@ -623,7 +620,6 @@ namespace com.espertech.esper.compat.collections.btree
                     textWriter.Write(") [");
                     textWriter.Write(level);
                     textWriter.Write("]: ");
-                    textWriter.Write(Id);
                     textWriter.Write("\n");
                 }
 

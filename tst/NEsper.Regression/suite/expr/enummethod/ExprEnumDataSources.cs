@@ -22,8 +22,6 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
-using Microsoft.CodeAnalysis;
-
 using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -292,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype create schema MyLocalEventWithInts as " +
-                          typeof(MyLocalEventWithInts).Name +
+                          typeof(MyLocalEventWithInts).MaskTypeName() +
                           ";\n" +
                           "@public create context MyContext " +
                           "  context ACtx start MyLocalEventWithInts as mle end SupportBean_S0,\n" +
@@ -449,65 +447,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "@public @buseventtype create schema MyLocalEvent as " +
                     typeof(MyLocalEvent).MaskTypeName() +
                     ";\n" +
-                    "@name('s0') select cast(value.someCollection?, `System.Collections.Generic.ICollection<object>`).countOf() as cnt from MyLocalEvent";
+                    "@name('s0') select cast(Value.SomeCollection?, `System.Collections.Generic.ICollection<object>`).countOf() as cnt from MyLocalEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new MyLocalEvent(new MyLocalWithCollection(Collections.List<object>("a", "b"))));
                 env.AssertEqualsNew("s0", "cnt", 2);
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprEnumPropertySchema : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@public @buseventtype create schema OrderDetail(ItemId string);\n" +
-                    "@public @buseventtype create schema OrderEvent(details OrderDetail[]);\n" +
-                    "@name('s0') select details.where(i => i.ItemId = '001') as c0 from OrderEvent;\n";
-                env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
-
-                var detailOne = CollectionUtil.PopulateNameValueMap("ItemId", "002");
-                var detailTwo = CollectionUtil.PopulateNameValueMap("ItemId", "001");
-                env.SendEventMap(
-                    CollectionUtil.PopulateNameValueMap(
-                        "details",
-                        new IDictionary<string, object>[] { detailOne, detailTwo }),
-                    "OrderEvent");
-
-                env.AssertEventNew(
-                    "s0",
-                    @event => {
-                        var c = @event.Get("c0").Unwrap<IDictionary<string, object>>();
-                        EPAssertionUtil.AssertEqualsExactOrder(
-                            c.ToArray(),
-                            new IDictionary<string, object>[] { detailTwo });
-                    });
-
-                env.UndeployAll();
-            }
-        }
-
-        internal class ExprEnumPropertyInsertIntoAtEventBean : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@public @buseventtype create objectarray schema StockTick(Id string, Price int);\n" +
-                    "insert into TicksLarge select window(*).where(e => e.Price > 100) @eventbean as ticksLargePrice\n" +
-                    "from StockTick#time(10) having count(*) > 2;\n" +
-                    "@name('s0') select ticksLargePrice.where(e => e.Price < 200) as ticksLargeLess200 from TicksLarge;\n";
-                env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
-
-                env.SendEventObjectArray(new object[] { "E1", 90 }, "StockTick");
-                env.SendEventObjectArray(new object[] { "E2", 120 }, "StockTick");
-                env.SendEventObjectArray(new object[] { "E3", 95 }, "StockTick");
-
-                env.AssertEventNew(
-                    "s0",
-                    @event => Assert.AreEqual(1, @event.Get("ticksLargeLess200").Unwrap<object>().Count));
 
                 env.UndeployAll();
             }
@@ -518,10 +462,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@public @buseventtype create schema MyEvent(Id string, value int);\n" +
+                    "@public @buseventtype create schema MyEvent(id string, value int);\n" +
                     "insert into StreamWithAll select * from pattern[[4] me=MyEvent];\n" +
-                    "insert into StreamGreaterZero select me.where(v => v.Value>0) @eventbean as megt from StreamWithAll;\n" +
-                    "insert into StreamLessThenTen select megt.where(v => v.Value<10) @eventbean as melt from StreamGreaterZero;\n" +
+                    "insert into StreamGreaterZero select me.where(v => v.value>0) @eventbean as megt from StreamWithAll;\n" +
+                    "insert into StreamLessThenTen select megt.where(v => v.value<10) @eventbean as melt from StreamGreaterZero;\n" +
                     "@name('s0') select * from StreamLessThenTen;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -547,9 +491,61 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 string id,
                 int value)
             {
-                var @event = CollectionUtil.BuildMap("Id", id, "value", value);
+                var @event = CollectionUtil.BuildMap("id", id, "value", value);
                 env.SendEventMap(@event, "MyEvent");
                 return @event;
+            }
+        }
+
+        internal class ExprEnumPropertySchema : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create schema OrderDetail(itemId string);\n" +
+                    "@public @buseventtype create schema OrderEvent(details OrderDetail[]);\n" +
+                    "@name('s0') select details.where(i => i.itemId = '001') as c0 from OrderEvent;\n";
+                env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
+
+                var detailOne = CollectionUtil.PopulateNameValueMap("itemId", "002");
+                var detailTwo = CollectionUtil.PopulateNameValueMap("itemId", "001");
+                env.SendEventMap(
+                    CollectionUtil.PopulateNameValueMap(
+                        "details",
+                        new IDictionary<string, object>[] { detailOne, detailTwo }),
+                    "OrderEvent");
+
+                env.AssertEventNew(
+                    "s0",
+                    @event => {
+                        var c = @event.Get("c0").Unwrap<IDictionary<string, object>>();
+                        EPAssertionUtil.AssertEqualsExactOrder(c.ToArray(), new[] { detailTwo });
+                    });
+
+                env.UndeployAll();
+            }
+        }
+        
+        internal class ExprEnumPropertyInsertIntoAtEventBean : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@public @buseventtype create objectarray schema StockTick(Id string, Price int);\n" +
+                    "insert into TicksLarge select window(*).where(e => e.Price > 100) @eventbean as ticksLargePrice\n" +
+                    "from StockTick#time(10) having count(*) > 2;\n" +
+                    "@name('s0') select ticksLargePrice.where(e => e.Price < 200) as ticksLargeLess200 from TicksLarge;\n";
+                env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
+
+                env.SendEventObjectArray(new object[] { "E1", 90 }, "StockTick");
+                env.SendEventObjectArray(new object[] { "E2", 120 }, "StockTick");
+                env.SendEventObjectArray(new object[] { "E3", 95 }, "StockTick");
+
+                env.AssertEventNew(
+                    "s0",
+                    @event => Assert.AreEqual(1, @event.Get("ticksLargeLess200").Unwrap<object>().Count));
+
+                env.UndeployAll();
             }
         }
 
@@ -566,12 +562,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
                 if (!select) {
-                    epl = "select ids from SupportBean match_recognize ( " +
-                          "  measures A.selectFrom(o -> o.TheString) as ids ";
+                    epl = "select Ids from SupportBean match_recognize ( " +
+                          "  measures A.selectFrom(o -> o.TheString) as Ids ";
                 }
                 else {
                     epl =
-                        "select a.selectFrom(o -> o.TheString) as ids from SupportBean match_recognize (measures A as a ";
+                        "select a.selectFrom(o -> o.TheString) as Ids from SupportBean match_recognize (measures A as a ";
                 }
 
                 epl = "@name('s0') " + epl + " pattern (A{3}) define A as A.IntPrimitive = 1)";
@@ -582,14 +578,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E3", 1));
-                env.AssertEventNew("s0", @event => AssertColl("E1,E2,E3", @event.Get("ids")));
+                env.AssertEventNew("s0", @event => AssertColl("E1,E2,E3", @event.Get("Ids")));
 
                 env.SendEventBean(new SupportBean("E4", 1));
                 env.SendEventBean(new SupportBean("E5", 1));
                 env.AssertListenerNotInvoked("s0");
 
                 env.SendEventBean(new SupportBean("E6", 1));
-                env.AssertEventNew("s0", @event => AssertColl("E4,E5,E6", @event.Get("ids")));
+                env.AssertEventNew("s0", @event => AssertColl("E4,E5,E6", @event.Get("Ids")));
 
                 env.UndeployAll();
             }
@@ -681,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 // try define-clause
-                var fieldsOne = "a_array[0].TheString,a_array[1].TheString,b.TheString".Split(",");
+                var fieldsOne = new[] {"a_array[0].TheString", "a_array[1].TheString", "b.TheString"};
                 var textOne = "@name('s0') select * from SupportBean " +
                               "match_recognize (" +
                               " measures A as a_array, B as b " +
@@ -737,8 +733,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".Split(",");
                 var epl = "@name('s0') select " +
-                          "SupportEnumTwo.ENUM_VALUE_1.getMystrings().anyOf(v => v = Id) as c0, " +
-                          "value.getMystrings().anyOf(v => v = '2') as c1 " +
+                          "SupportEnumTwo.ENUM_VALUE_1.GetMystrings().anyOf(v => v = Id) as c0, " +
+                          "Value.GetMystrings().anyOf(v => v = '2') as c1 " +
                           "from SupportEnumTwoEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -780,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@name('s0') select * from SupportSelectorEvent#keepall as sel, SupportContainerEvent#keepall as cont " +
-                    "where cont.Items.anyOf(i => sel.selector = i.selected)";
+                    "where cont.Items.anyOf(i => sel.Selector = i.Selected)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportSelectorEvent("S1", "sel1"));
@@ -795,7 +791,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select prevwindow(st0) as val0, prevwindow(st0).esperInternalNoop() as val1 " +
+                var epl = "@name('s0') select prevwindow(st0) as val0, prevwindow(st0).EsperInternalNoop() as val1 " +
                           "from SupportBean_ST0#sort(3, P00 asc) as st0";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -873,7 +869,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test named window correlated
                 var eplNamedWindowCorrelated =
-                    "@name('s0') select MyWindow(key0 = sb.TheString).allOf(x => x.P00 < 5) as allOfX from SupportBean#keepall sb";
+                    "@name('s0') select MyWindow(Key0 = sb.TheString).allOf(x => x.P00 < 5) as allOfX from SupportBean#keepall sb";
                 env.CompileDeploy(eplNamedWindowCorrelated, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -924,7 +920,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test subselect-correlated scalar return
                 var eplSubselectScalarCorrelated =
-                    "@name('s0') select (select key0 from SupportBean_ST0#keepall st0 where st0.Id = sb.TheString).allOf(x => x  like '%hello%') as allOfX from SupportBean#keepall sb";
+                    "@name('s0') select (select Key0 from SupportBean_ST0#keepall st0 where st0.Id = sb.TheString).allOf(x => x  like '%hello%') as allOfX from SupportBean#keepall sb";
                 env.CompileDeploy(eplSubselectScalarCorrelated).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_ST0("A1", "hello", 0));
@@ -1068,8 +1064,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test array and iterable
                 var fields = "val0,val1".Split(",");
-                eplFragment = "@name('s0') select intarray.sumof() as val0, " +
-                              "intiterable.sumOf() as val1 " +
+                eplFragment = "@name('s0') select Intarray.sumof() as val0, " +
+                              "Intiterable.sumOf() as val1 " +
                               " from SupportCollection#keepall";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
@@ -1115,8 +1111,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 RunAssertionMethodInvoke(
                     env,
                     "select " +
-                    typeof(SupportSelectorWithListEvent).Name +
-                    ".ConvertToArray(theList).anyOf(v => v = Selector) as flag from SupportSelectorWithListEvent e");
+                    typeof(SupportSelectorWithListEvent).FullName +
+                    ".ConvertToArray(TheList).anyOf(v => v = Selector) as flag from SupportSelectorWithListEvent e");
 
                 env.UndeployAll();
             }
@@ -1248,8 +1244,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // test UDF returning scalar values collection
                 var eplScalar = "@name('s0') select " +
-                                "SupportCollection.makeSampleListString().where(x => x != 'E1') as val0, " +
-                                "SupportCollection.makeSampleArrayString().where(x => x != 'E1') as val1, " +
+                                "SupportCollection.MakeSampleListString().where(x => x != 'E1') as val0, " +
+                                "SupportCollection.MakeSampleArrayString().where(x => x != 'E1') as val1, " +
                                 "makeSampleListString().where(x => x != 'E1') as val2, " +
                                 "makeSampleArrayString().where(x => x != 'E1') as val3 " +
                                 "from SupportBean#length(2) as sb";
@@ -1350,34 +1346,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             EPAssertionUtil.AssertEqualsExactOrder(expected.Split(","), value.UnwrapIntoArray<object>());
         }
 
-        [Serializable]
-        internal class MyLocalEvent
+        public class MyLocalEvent
         {
-            private object value;
-
             public MyLocalEvent(object value)
             {
-                this.value = value;
+                this.Value = value;
             }
 
-            public object Value => value;
+            public object Value { get; }
         }
 
-        [Serializable]
-        internal class MyLocalEventWithInts
+        public class MyLocalEventWithInts
         {
-            private readonly ISet<int> intValues;
-
             public MyLocalEventWithInts(ISet<int> intValues)
             {
-                this.intValues = intValues;
+                this.IntValues = intValues;
             }
 
-            public ISet<int> IntValues => intValues;
+            public ISet<int> IntValues { get; }
 
             public bool MyFunc()
             {
-                foreach (var val in intValues) {
+                foreach (var val in IntValues) {
                     if (val > 0) {
                         return true;
                     }
@@ -1387,21 +1377,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             }
         }
 
-        [Serializable]
-        internal class MyLocalWithCollection
+        public class MyLocalWithCollection
         {
-            private readonly ICollection<object> someCollection;
-
             public MyLocalWithCollection(ICollection<object> someCollection)
             {
-                this.someCollection = someCollection;
+                this.SomeCollection = someCollection;
             }
 
-            public ICollection<object> SomeCollection => someCollection;
+            public ICollection<object> SomeCollection { get; }
         }
 
-        [Serializable]
-        internal class SupportEventWithMapOfCollOfString
+        public class SupportEventWithMapOfCollOfString
         {
             private readonly IDictionary<string, ICollection<string>> mymap;
 

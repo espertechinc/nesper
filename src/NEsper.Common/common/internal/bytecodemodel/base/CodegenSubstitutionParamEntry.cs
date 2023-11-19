@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             }
 
             if (fields.Count <= targetMethodComplexity) {
-                PopulateSet(enclosingBlock, fields, 0);
+                PopulateSet(enclosingBlock, stmtFieldsInstance, fields, 0);
                 return;
             }
 
@@ -74,12 +74,11 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
                     .MakeChild(typeof(void), typeof(CodegenSubstitutionParamEntry), classScope)
                     .AddParam<int>("index")
                     .AddParam<object>("value");
-                PopulateSet(leaf.Block, assignment, i * targetMethodComplexity);
+                PopulateSet(leaf.Block, stmtFieldsInstance, assignment, i * targetMethodComplexity);
                 leafs.Add(leaf);
             }
 
-            enclosingBlock.DeclareVar(
-                typeof(int),
+            enclosingBlock.DeclareVar<int>(
                 "lidx",
                 Op(Op(Ref("index"), "-", Constant(1)), "/", Constant(targetMethodComplexity)));
             var blocks = enclosingBlock.SwitchBlockOfLength(Ref("lidx"), assignments.Count, false);
@@ -90,14 +89,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
 
         private static void PopulateSet(
             CodegenBlock block,
+            CodegenExpression stmtFieldsInstance,
             IList<CodegenSubstitutionParamEntry> fields,
             int offset)
         {
-            block.DeclareVar(typeof(int), "zidx", Op(Ref("index"), "-", Constant(1)));
+            block.DeclareVar<int>("zidx", Op(Ref("index"), "-", Constant(1)));
             var blocks = block.SwitchBlockOfLength(Ref("zidx"), fields.Count, false, offset);
             for (var i = 0; i < blocks.Length; i++) {
                 var param = fields[i];
-                blocks[i].AssignRef(Field(param.Field), Cast(param.EntryType.GetBoxedType(), Ref("value")));
+                blocks[i].AssignRef(
+                    ExprDotName(stmtFieldsInstance, param.Field.Name), 
+                    Cast(param.EntryType.GetBoxedType(), Ref("value")));
             }
         }
     }

@@ -468,12 +468,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     milestone,
                     new IndexAssertion[] {
                         new IndexAssertion(
-                            "k0 = keyLong",
+                            "k0 = KeyLong",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertion),
                         new IndexAssertion(
-                            "k0 = keyLong",
+                            "k0 = KeyLong",
                             "varagg",
                             typeof(FullTableScanUniquePerKeyLookupPlanForge),
                             eventSendAssertion),
@@ -586,14 +586,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     var text = "@name('s0')" + epl;
                     env.AssertThat(
                         () => {
-                            try {
-                                env.CompileWCheckedEx(text, path);
-                                Assert.Fail();
-                            }
-                            catch (EPCompileException ex) {
-                                // no assertion, expected
-                                Assert.IsTrue(ex.Message.Contains("index hint busted"));
-                            }
+                            var ex = Assert.Throws<EPCompileException>(() => env.CompileWCheckedEx(text, path));
+                            // no assertion, expected
+                            StringAssert.Contains("index hint busted", ex.Message);
                         });
                     continue;
                 }

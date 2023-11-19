@@ -12,7 +12,6 @@ using System.Runtime.Serialization;
 namespace com.espertech.esper.common.@internal.epl.pattern.guard
 {
     /// <summary>Thrown to indicate a validation error in guard parameterization.</summary>
-    [Serializable]
     public class GuardParameterException : Exception
     {
         /// <summary>Ctor.</summary>

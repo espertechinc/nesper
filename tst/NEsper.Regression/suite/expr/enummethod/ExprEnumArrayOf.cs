@@ -92,10 +92,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var builder = new SupportEvalBuilder("SupportCollection");
                 builder.WithExpression(fields[0], "Strvals.arrayOf()");
                 builder.WithExpression(fields[1], "Strvals.arrayOf(v => v)");
-                builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Integer.toString(i))");
+                builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Convert.ToString(i))");
                 builder.WithExpression(
                     fields[3],
-                    "Strvals.arrayOf( (v, i, s) => v || '_' || Integer.toString(i) || '_' || Integer.toString(s))");
+                    "Strvals.arrayOf( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
                 builder.WithExpression(fields[4], "Strvals.arrayOf( (v, i) => i)");
 
                 builder.WithStatementConsumer(
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var builder = new SupportEvalBuilder("SupportCollection");
                 builder.WithExpression(
                     fields[0],
-                    "Strvals.selectfrom((v, i) => v || '-' || Integer.toString(i)).arrayOf()");
+                    "Strvals.selectfrom((v, i) => v || '-' || Convert.ToString(i)).arrayOf()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(string[])));
 

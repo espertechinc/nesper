@@ -296,7 +296,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         internal static EventBean FirstBean(KeyValuePair<object, object>? entry)
         {
-            return entry == null ? null : AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value);
+            return entry.HasValue ? AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value) : null;
         }
 
         internal static EventBean FirstBean(object value)

@@ -11,8 +11,10 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
+using com.espertech.esper.common.@internal.bytecodemodel.core;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
@@ -54,10 +56,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+#if true
+            return StaticMethod(typeof(EnumFirstOf), "FirstValue", args.Expressions); 
+#else            
             var type = _resultType.GetCodegenReturnType();
+            var collectionType = typeof(ICollection<>).MakeGenericType(type);
+            //var collectionType = typeof(ICollection<EventBean>).MakeGenericType(type);
             var method = codegenMethodScope
                 .MakeChild(type, typeof(EnumFirstOf), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(new CodegenNamedParam(collectionType, EnumForgeCodegenNames.REF_ENUMCOLL))
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
                 .IfCondition(
                     Or(
@@ -66,6 +76,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .BlockReturn(ConstantNull())
                 .MethodReturn(FlexCast(type, ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First")));
             return LocalMethod(method, args.Expressions);
+#endif
+        }
+
+        public static T FirstValue<T>(
+            EventBean[] eventsPerStream,
+            ICollection<T> enumcoll,
+            bool isNewData,
+            ExprEvaluatorContext exprEvalCtx)
+        {
+            if ((enumcoll == null || enumcoll.IsEmpty())) {
+                return default;
+            }
+
+            return enumcoll.FirstOrDefault();
         }
     }
 } // end of namespace

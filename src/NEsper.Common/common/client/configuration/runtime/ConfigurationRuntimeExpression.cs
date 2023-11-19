@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Expression evaluation settings in the runtime are for results of expressions.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeExpression
     {
         /// <summary>

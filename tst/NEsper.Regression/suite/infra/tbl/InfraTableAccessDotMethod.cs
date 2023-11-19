@@ -6,18 +6,17 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -86,54 +85,46 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 bool soda,
                 AtomicLong milestone)
             {
-                var myBean = typeof(MyBean).FullName;
+                var myBean = typeof(MyBean).MaskTypeName();
                 var path = new RegressionPath();
-                var eplType = "@public @buseventtype create objectarray schema MyEvent as (p0 string);" +
-                              "@public @buseventtype create objectarray schema PopulateEvent as (" +
-                              "key string, ts long" +
-                              ", mb " +
-                              myBean +
-                              ", mbarr " +
-                              myBean +
-                              "[]" +
-                              ", me MyEvent, mearr MyEvent[])";
+                var eplType =
+                    $"@public @buseventtype create objectarray schema MyEvent as (p0 string);" +
+                    $"@public @buseventtype create objectarray schema PopulateEvent as (" +
+                    $" key string," +
+                    $" ts long," +
+                    $" mb {myBean}," +
+                    $" mbarr {myBean}[]," +
+                    $" me MyEvent," +
+                    $" mearr MyEvent[])";
                 env.CompileDeploy(eplType, path);
 
-                var eplDeclare = "@public create table varaggPWD (key string" +
-                                 (grouped ? " primary key" : "") +
-                                 ", ts long" +
-                                 ", mb " +
-                                 myBean +
-                                 ", mbarr " +
-                                 myBean +
-                                 "[]" +
-                                 ", me MyEvent, mearr MyEvent[])";
+                var primaryKey = (grouped ? "primary key" : "");
+                var eplDeclare = 
+                    "@public create table varaggPWD" +
+                    $"(key string {primaryKey}" +
+                    $", ts long" +
+                    $", mb {myBean}" +
+                    $", mbarr {myBean}[]" +
+                    $", me MyEvent" +
+                    $", mearr MyEvent[])";
                 env.CompileDeploy(soda, eplDeclare, path);
 
                 var key = grouped ? "[\"E1\"]" : "";
-                var eplSelect = "@name('s0') select " +
-                                "varaggPWD" +
-                                key +
-                                ".ts.getMinuteOfHour() as c0, " +
-                                "varaggPWD" +
-                                key +
-                                ".mb.getMyProperty() as c1, " +
-                                "varaggPWD" +
-                                key +
-                                ".mbarr.takeLast(1) as c2, " +
-                                "varaggPWD" +
-                                key +
-                                ".me.p0 as c3, " +
-                                "varaggPWD" +
-                                key +
-                                ".mearr.selectFrom(i => i.p0) as c4 " +
-                                "from SupportBean_S0";
+                var eplSelect =
+                    "@name('s0') select " +
+                    $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " +
+                    $"varaggPWD{key}.mb.getMyProperty() as c1, "  +
+                    $"varaggPWD{key}.mbarr.takeLast(1) as c2, "  +
+                    $"varaggPWD{key}.me.p0 as c3, " +
+                    $"varaggPWD{key}.mearr.selectFrom(i => i.p0) as c4 " +
+                    $" from SupportBean_S0";
                 env.CompileDeploy(eplSelect, path);
                 env.AddListener("s0");
 
-                var eplMerge = "on PopulateEvent merge varaggPWD " +
-                               "when not matched then insert " +
-                               "select key, ts, mb, mbarr, me, mearr";
+                var eplMerge =
+                    "on PopulateEvent merge varaggPWD " +
+                    "when not matched then insert " +
+                    "select key, ts, mb, mbarr, me, mearr";
                 env.CompileDeploy(soda, eplMerge, path);
 
                 env.MilestoneInc(milestone);
@@ -187,20 +178,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             var key = grouped ? "[\"E1\"]" : "";
             var eplSelect = "@name('s0') select " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.last(*).IntPrimitive as c0, " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.window(*).countOf() as c1, " +
-                            "varaggNDM" +
-                            key +
-                            ".windowSupportBean.window(IntPrimitive).take(1) as c2" +
+                            "varaggNDM" + key + ".windowSupportBean.last(*).IntPrimitive as c0, " +
+                            "varaggNDM" + key + ".windowSupportBean.window(*).countOf() as c1, " +
+                            "varaggNDM" + key + ".windowSupportBean.window(IntPrimitive).take(1) as c2" +
                             " from SupportBean_S0";
             env.CompileDeploy(soda, eplSelect, path).AddListener("s0");
             var expectedAggType = new object[][] {
-                new object[] { "c0", typeof(int?) }, new object[] { "c1", typeof(int?) },
-                new object[] { "c2", typeof(ICollection<object>) }
+                new object[] { "c0", typeof(int?) },
+                new object[] { "c1", typeof(int?) },
+                new object[] { "c2", typeof(ICollection<int?>) }
             };
             env.AssertStatement(
                 "s0",
@@ -309,7 +295,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(bean);
         }
 
-        [Serializable]
         public class MyBean
         {
             public string GetMyProperty()

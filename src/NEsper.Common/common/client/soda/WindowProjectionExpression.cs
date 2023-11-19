@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Represents the "window" aggregation function.
     /// </summary>
-    [Serializable]
     public class WindowProjectionExpression : AccessProjectionExpressionBase
     {
         /// <summary>Ctor. </summary>

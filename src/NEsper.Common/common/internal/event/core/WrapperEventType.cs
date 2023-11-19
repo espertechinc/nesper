@@ -248,8 +248,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                             .AddParam<EventBean>("theEvent")
                             .AddParam<string>("mapKey")
                             .Block
-                            .DeclareVar(
-                                typeof(DecoratingEventBean),
+                            .DeclareVar<DecoratingEventBean>(
                                 "wrapperEvent",
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
                             .DeclareVar(
@@ -322,8 +321,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                             .AddParam<EventBean>("theEvent")
                             .AddParam<int>("index")
                             .Block
-                            .DeclareVar(
-                                typeof(DecoratingEventBean),
+                            .DeclareVar<DecoratingEventBean>(
                                 "wrapperEvent",
                                 Cast(typeof(DecoratingEventBean), Ref("theEvent")))
                             .DeclareVar(

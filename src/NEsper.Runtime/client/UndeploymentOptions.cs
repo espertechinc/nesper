@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     /// Option holder for use with <seealso cref="EPDeploymentService.Undeploy(string)" />
     /// </summary>
-    [Serializable]
     public class UndeploymentOptions
     {
         public UndeploymentOptions()

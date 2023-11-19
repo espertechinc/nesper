@@ -9,16 +9,12 @@
 using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.client.render;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.@event;
 
-using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
@@ -89,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
 
             // Json-Class-Provided
-            var schemas = "@JsonSchema(className='" +
+            var schemas = "@JsonSchema(ClassName='" +
                           typeof(MyLocalJsonProvided).FullName +
                           "') " +
                           "@public @buseventtype @name('schema') create json schema " +
@@ -127,7 +123,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class MyEvent
         {
             public MyEvent(
@@ -147,7 +142,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public MyInsideEvent Nested { get; }
         }
 
-        [Serializable]
         public class MyInsideEvent
         {
             public MyInsideEvent(int myInsideInt)
@@ -158,7 +152,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int MyInsideInt { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public int MyInt;
@@ -166,7 +159,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public MyLocalJsonProvidedNested Nested;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNested
         {
             public int MyInsideInt;

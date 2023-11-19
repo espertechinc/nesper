@@ -72,9 +72,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 .MethodReturn(
                     ExprDotMethod(
                         eventToPublic,
-                        "convertToUnd",
+                        "ConvertToUnd",
                         Ref("filtered"),
-                        symbols.GetAddEPS(method),
+                        symbols.GetAddEps(method),
                         symbols.GetAddIsNewData(method),
                         symbols.GetAddExprEvalCtx(method)));
             return LocalMethod(method);

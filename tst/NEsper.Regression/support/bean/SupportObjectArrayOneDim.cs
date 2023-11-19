@@ -6,13 +6,10 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.bean
 {
-    [Serializable]
     public class SupportObjectArrayOneDim
     {
         private string _id;

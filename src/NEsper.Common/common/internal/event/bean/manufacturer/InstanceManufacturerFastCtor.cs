@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                         typeof(InstanceManufacturerFastCtor),
                         "GetTargetExceptionAsEPException",
                         Constant(targetClass.FullName),
-                        Ref("t")))
+                        Ref("ex")))
                 .MethodEnd();
             return LocalMethod(methodNode);
         }

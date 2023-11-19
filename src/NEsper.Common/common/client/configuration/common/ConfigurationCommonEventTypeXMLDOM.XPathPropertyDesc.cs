@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Descriptor class for event properties that are resolved via XPath-expression.
         /// </summary>
-        [Serializable]
         public class XPathPropertyDesc
         {
             /// <summary>

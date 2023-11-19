@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.module
     /// <summary>
     /// Exception indicates a problem when determining delpoyment order and uses-dependency checking.
     /// </summary>
-    [Serializable]
     public class ModuleOrderException : Exception
     {
         /// <summary>

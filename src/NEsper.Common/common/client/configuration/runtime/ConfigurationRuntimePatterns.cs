@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds pattern settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimePatterns
     {
         /// <summary>

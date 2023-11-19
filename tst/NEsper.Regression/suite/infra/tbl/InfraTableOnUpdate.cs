@@ -6,18 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
+using System.Linq;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -71,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var epl =
                     "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, v int);\n" +
                     "on SupportBean_S0 update MyTable set v = Id where k1 = toIntArray(P00) and k2 = toIntArray(P01);\n" +
-                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
+                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select IntOne as k1, IntTwo as k2, Value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1 }, new int[] { 1, 2 }, 10);
@@ -125,8 +123,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "@name('tbl') create table MyTable(k1 int[primitive] primary key, k2 int[primitive] primary key, v int);\n" +
-                    "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = value where k1 = intOne and k2 = intTwo;\n" +
-                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, intTwo as k2, value as v;\n";
+                    "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = Value where k1 = IntOne and k2 = IntTwo;\n" +
+                    "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select IntOne as k1, IntTwo as k2, Value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1 }, new int[] { 1, 2 }, 10);
@@ -170,8 +168,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('tbl') create table MyTable(k1 int[primitive] primary key, v int);\n" +
-                          "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = value where k1 = intOne;\n" +
-                          "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select intOne as k1, value as v;\n";
+                          "on SupportEventWithManyArray(Id like 'U%') update MyTable set v = Value where k1 = IntOne;\n" +
+                          "on SupportEventWithManyArray(Id like 'I%') insert into MyTable select IntOne as k1, Value as v;\n";
                 env.CompileDeploy(epl);
 
                 SendManyArray(env, "I1", new int[] { 1, 2 }, 10);
@@ -225,8 +223,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.CompileDeploy("@name('s0') select varagg[P00, Id].p0 as value from SupportBean_S0", path)
                     .AddListener("s0");
                 env.CompileDeploy(
-                        "@name('update') on SupportTwoKeyEvent update varagg set p0 = newValue " +
-                        "where k1 = keyOne and k2 = keyTwo",
+                        "@name('update') on SupportTwoKeyEvent update varagg set p0 = NewValue " +
+                        "where K1 = keyOne and K2 = keyTwo",
                         path)
                     .AddListener("update");
 
@@ -256,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 // try property method invocation
                 env.CompileDeploy("@public create table MyTableSuppBean as (sb SupportBean)", path);
-                env.CompileDeploy("on SupportBean_S0 update MyTableSuppBean sb set sb.setLongPrimitive(10)", path);
+                env.CompileDeploy("on SupportBean_S0 update MyTableSuppBean sb set sb.SetLongPrimitive(10)", path);
                 env.UndeployAll();
             }
         }
@@ -268,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             Assert.AreEqual(keys.Length, values.Length);
             for (var i = 0; i < keys.Length; i++) {
-                env.SendEventBean(new SupportBean_S0((int)keys[i][1], (string)keys[i][0]));
+                env.SendEventBean(new SupportBean_S0(keys[i][1].AsInt32(), (string)keys[i][0]));
                 var index = i;
                 env.AssertEventNew(
                     "s0",
@@ -281,13 +279,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         public static int[] ToIntArray(string text)
         {
-            var split = text.SplitCsv();
-            var ints = new int[split.Length];
-            for (var i = 0; i < split.Length; i++) {
-                ints[i] = int.Parse(split[i].Trim());
-            }
-
-            return ints;
+            return text.SplitCsv()
+                .Select(_ => int.Parse(_.Trim()))
+                .ToArray();
         }
     }
 } // end of namespace

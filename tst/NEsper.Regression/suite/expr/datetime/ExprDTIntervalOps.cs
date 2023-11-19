@@ -331,10 +331,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // wrong target
                 env.TryInvalidCompile(
                     "select TheString.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property but received String");
+                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received String");
                 env.TryInvalidCompile(
                     "select b.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a Calendar, Date, long, LocalDateTime or ZonedDateTime value as input or events of an event type that declares a timestamp property");
+                    "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property");
                 env.TryInvalidCompile(
                     "select a.get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
                     "Failed to validate select-clause expression 'a.get(\"month\").before(a)': Failed to resolve method 'get': Could not find enumeration method, date-time method, instance method or property named 'get'");
@@ -409,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "a.longdateStart.before(b.longdateStart) as c0," +
+                          "a.longdateStart.before(b.LongdateStart) as c0," +
                           "a.before(b) as c1 " +
                           " from SupportTimeStartEndA#lastevent as a, " +
                           "      SupportTimeStartEndB#lastevent as b";
@@ -444,20 +444,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "a.before(b)",
                     "a.before(b, 1 millisecond)",
                     "a.before(b, 1 millisecond, 1000000000L)",
-                    "a.longdateStart.before(b)",
+                    "a.LongdateStart.before(b)",
                     "a.utildateStart.before(b)",
                     "a.caldateStart.before(b)",
-                    "a.before(b.longdateStart)",
+                    "a.before(b.LongdateStart)",
                     "a.before(b.utildateStart)",
                     "a.before(b.caldateStart)",
-                    "a.longdateStart.before(b.longdateStart)",
-                    "a.longdateStart.before(b.longdateStart)",
+                    "a.longdateStart.before(b.LongdateStart)",
+                    "a.longdateStart.before(b.LongdateStart)",
                     "a.utildateStart.before(b.utildateStart)",
                     "a.caldateStart.before(b.caldateStart)",
                     "a.utildateStart.before(b.caldateStart)",
-                    "a.utildateStart.before(b.longdateStart)",
+                    "a.utildateStart.before(b.LongdateStart)",
                     "a.caldateStart.before(b.utildateStart)",
-                    "a.caldateStart.before(b.longdateStart)",
+                    "a.caldateStart.before(b.LongdateStart)",
                     "a.ldtStart.before(b.ldtStart)",
                     "a.zdtStart.before(b.zdtStart)"
                 };

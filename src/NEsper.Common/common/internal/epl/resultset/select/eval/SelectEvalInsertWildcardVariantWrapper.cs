@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 true,
                 typeof(EventType),
                 EventTypeUtility.ResolveTypeCodegen(wrappingEventType, EPStatementInitServicesConstants.REF));
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             var wrapped = ExprDotMethod(
                 eventBeanFactory,
                 "AdapterForTypedWrapper",

@@ -6,11 +6,16 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text.Json.Serialization;
+
+using com.espertech.esper.common.@internal.util.serde;
+
 namespace com.espertech.esper.common.client.configuration.common
 {
     /// <summary>
     /// Marker interface for different cache settings.
     /// </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<ConfigurationCommonCache>))]
     public interface ConfigurationCommonCache
     {
     }

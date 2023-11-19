@@ -9,11 +9,8 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.context;
-using com.espertech.esper.common.client.fireandforget;
 using com.espertech.esper.common.client.scopetest;
-using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -363,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         catch (UnsupportedOperationException ex) {
                             Assert.AreEqual(
                                 ex.Message,
-                                "Iterator with context selector is only supported for statements under context");
+                                "Enumerator with context selector is only supported for statements under context");
                         }
 
                         try {
@@ -373,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         catch (UnsupportedOperationException ex) {
                             Assert.AreEqual(
                                 ex.Message,
-                                "Iterator with context selector is only supported for statements under context");
+                                "Enumerator with context selector is only supported for statements under context");
                         }
                     });
 

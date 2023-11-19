@@ -11,7 +11,6 @@ using System.Runtime.Serialization;
 
 namespace com.espertech.esper.container
 {
-    [Serializable]
     public class ItemNotFoundException : Exception
     {
         public ItemNotFoundException()

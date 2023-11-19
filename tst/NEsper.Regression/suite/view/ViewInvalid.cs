@@ -15,7 +15,6 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 
 using static com.espertech.esper.regressionlib.framework.RegressionFlag; // INVALIDITY
 using NUnit.Framework;
@@ -162,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 $"select * from {EVENT_ALLTYPES}#length(1) where TheString > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Failed to validate expression: Failed to validate filter expression 'TheString>5': Implicit conversion from datatype 'System.String' to numeric is not allowed ");
 
             // where-clause has aggregation function
             exception = GetStatementExceptionView(
@@ -176,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, $"select 2 * 's' from {EVENT_ALLTYPES}#length(1)");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed");
 
             // invalid property in select
             exception = GetStatementExceptionView(env, $"select a[2].m('a') from {EVENT_ALLTYPES}#length(1)");
@@ -286,7 +285,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             exception = GetStatementExceptionView(env, $"select * from {EVENT_NUM}#length(1) as aStr order by X");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate Order-by-clause expression 'X': Property named 'X' is not valid in any stream");
+                "Failed to validate order-by-clause expression 'X': Property named 'X' is not valid in any stream");
 
             // insert into with wildcard - not allowed
             exception = GetStatementExceptionView(
@@ -294,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 $"insert into Google (a, b) select * from {EVENT_NUM}#length(1) as aStr");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Wildcard not allowed when insert-into specifies column Order");
+                "Wildcard not allowed when insert-into specifies column order");
 
             // insert into with duplicate column names
             exception = GetStatementExceptionView(
@@ -386,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.CompileWCheckedEx(epl);
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 // Expected exception
             }
         }

@@ -203,9 +203,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEventAssertEventsAsList(env, "X1", "[]");
-                SendEventAssertEventsAsList(env, "A1", "[SupportBean(A1, 0)]");
-                SendEventAssertEventsAsList(env, "A2", "[SupportBean(A1, 0), SupportBean(A2, 0)]");
-                SendEventAssertEventsAsList(env, "X2", "[SupportBean(A1, 0), SupportBean(A2, 0)]");
+                SendEventAssertEventsAsList(env, "A1", "[SupportBean(\"A1\", 0)]");
+                SendEventAssertEventsAsList(env, "A2", "[SupportBean(\"A1\", 0), SupportBean(\"A2\", 0)]");
+                SendEventAssertEventsAsList(env, "X2", "[SupportBean(\"A1\", 0), SupportBean(\"A2\", 0)]");
 
                 env.UndeployAll();
             }
@@ -235,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var epl = "create table WordCountTable(wordcms countMinSketch());\n" +
                           "into table WordCountTable select countMinSketchAdd(TheString, filter:IntPrimitive > 0) as wordcms from SupportBean;\n" +
-                          "@name('s0') select WordCountTable.wordcms.countMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
+                          "@name('s0') select WordCountTable.wordcms.CountMinSketchFrequency(P00) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendEvent(env, "hello", 0);
@@ -522,11 +522,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "join=" +
-                       join +
-                       '}';
+                return $"{this.GetType().Name}{{join={join}}}";
             }
         }
 
@@ -650,11 +646,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "join=" +
-                       join +
-                       '}';
+                return $"{this.GetType().Name}{{join={join}}}";
             }
         }
 
@@ -736,11 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "join=" +
-                       join +
-                       '}';
+                return $"{this.GetType().Name}{{join={join}}}";
             }
         }
 
@@ -820,11 +808,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "join=" +
-                       join +
-                       '}';
+                return $"{this.GetType().Name}{{join={join}}}";
             }
         }
 
@@ -873,11 +857,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "join=" +
-                       join +
-                       '}';
+                return $"{this.GetType().Name}{{join={join}}}";
             }
         }
 
@@ -1087,11 +1067,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Qualifies a join by providing the outer join type (full/left/right) and joined-on properties.
     /// </summary>
-    [Serializable]
     public class OuterJoinQualifier
     {
         private IList<PropertyValueExpressionPair> additionalProperties;

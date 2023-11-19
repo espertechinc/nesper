@@ -23,7 +23,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// <summary>
     ///     Represents the EXISTS(property) function in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprPropertyExistsNode : ExprNodeBase,
         ExprEvaluator,
         ExprForgeInstrumentable
@@ -62,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             var methodNode = codegenMethodScope.MakeChild(typeof(bool?), GetType(), codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
                 .IfRefNullReturnNull("@event")

@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -19,9 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using NEsper.Avro.Extensions;
 
-// record
-using NUnit.Framework; // fail
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
@@ -175,25 +172,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedStartValueEvent
         {
             public string dummy;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTestForwardEvent
         {
             public string prop1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTestInputEvent
         {
             public string dummy;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNamedWin
         {
             public string prop1;

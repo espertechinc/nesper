@@ -205,7 +205,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.grouped
                     .DeclareVar<object[]>(
                         "keys",
                         NewArrayByLength(typeof(object), ExprDotName(Ref("resultSet"), "Count")))
-                    .DeclareVar(typeof(int), "count", Constant(0))
+                    .DeclareVar<int>("count", Constant(0))
                     .ForEach(typeof(MultiKeyArrayOfKeys<EventBean>), "eventsPerStream", Ref("resultSet"))
                     .AssignArrayElement(
                         "keys",

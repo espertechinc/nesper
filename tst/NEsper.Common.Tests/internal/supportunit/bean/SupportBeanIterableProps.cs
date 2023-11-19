@@ -14,7 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.supportunit.bean
 {
-    [Serializable]
     public class SupportBeanIterableProps : SupportMarkerInterface
     {
         public IEnumerable<int> IterableInteger => Arrays.AsList(10, 20);
@@ -58,7 +57,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             }
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNested
         {
             public SupportBeanSpecialGetterNested(
@@ -104,7 +102,6 @@ namespace com.espertech.esper.common.@internal.supportunit.bean
             }
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNestedNested
         {
             public SupportBeanSpecialGetterNestedNested(string nestedNestedValue)

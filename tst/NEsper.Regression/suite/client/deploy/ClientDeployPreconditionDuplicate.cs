@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     opt.SetAccessModifierInlinedClass(ctx => NameAccessModifier.PUBLIC);
                 var path = new RegressionPath();
                 var epl =
-                    "@public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\"";
+                    "@public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\"";
                 env.CompileDeploy(epl, path);
                 TryInvalidDeploy(
                     env,

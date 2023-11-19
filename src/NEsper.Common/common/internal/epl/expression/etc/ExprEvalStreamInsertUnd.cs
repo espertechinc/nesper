@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalStreamInsertUnd),
                 codegenClassScope);
 
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .IfCondition(EqualsNull(refEPS))
                 .BlockReturn(ConstantNull())

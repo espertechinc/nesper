@@ -31,11 +31,21 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
 
     public static class SelectClauseStreamSelectorEnumExtensions
     {
+        public static bool IsSelectsRStream(this SelectClauseStreamSelectorEnum? value)
+        {
+            return value != null && IsSelectsRStream(value.Value);
+        }
+
         public static bool IsSelectsRStream(this SelectClauseStreamSelectorEnum value)
         {
             return value != SelectClauseStreamSelectorEnum.ISTREAM_ONLY;
         }
 
+        public static bool IsSelectsIStream(this SelectClauseStreamSelectorEnum? value)
+        {
+            return value != null && IsSelectsIStream(value.Value);
+        }
+        
         public static bool IsSelectsIStream(this SelectClauseStreamSelectorEnum value)
         {
             return value != SelectClauseStreamSelectorEnum.RSTREAM_ONLY;

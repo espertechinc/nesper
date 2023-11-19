@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
@@ -117,211 +116,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             return execs;
         }
 
-        private class InfraOnMergeSetRHSEvent : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var epl =
-                    "@name('window') create window RecentWindow#time(30 seconds) (Id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
-                    "on SimpleEventWithId as sewid\n" +
-                    "  merge RecentWindow as recent where recent.Id = sewid.Id\n" +
-                    "  when not matched then insert select sewid.Id as Id, sewid as currentSewid, sewid as prevSewid\n" +
-                    "  when matched then update set prevSewid = currentSewid, currentSewid = sewid;\n";
-                env.CompileDeploy(epl);
-
-                var sewidOne = new object[] { "Id", "A" };
-                env.SendEventObjectArray(sewidOne, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidOne, sewidOne);
-
-                var sewidTwo = new object[] { "Id", "B" };
-                env.SendEventObjectArray(sewidTwo, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidTwo, sewidOne);
-
-                var sewidThree = new object[] { "Id", "B" };
-                env.SendEventObjectArray(sewidThree, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidThree, sewidTwo);
-
-                env.UndeployAll();
-            }
-
-            private void AssertWindow(
-                RegressionEnvironment env,
-                string id,
-                object[] currentSewid,
-                object[] prevSewid)
-            {
-                env.AssertIterator(
-                    "window",
-                    iterator => {
-                        var @event = iterator.Advance();
-                        Assert.AreEqual(id, @event.Get("Id"));
-                        Assert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
-                        Assert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
-                    });
-            }
-        }
-
-        private class InfraOnMergeWhere1Eq2InsertSelectStar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunAssertionInsertSelectStar(
-                    env,
-                    "on SBStream merge MyWindow where 1=2 when not matched then insert select *;\n");
-            }
-        }
-
-        private class InfraOnMergeNoWhereClauseInsertSelectStar : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunAssertionInsertSelectStar(env, "on SBStream as sbs merge MyWindow insert select *;\n");
-            }
-        }
-
-        private class InfraOnMergeNoWhereClauseInsertTranspose : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                RunAssertionInsertSelectStar(env, "on SBStream as sbs merge MyWindow insert select transpose(sbs);\n");
-            }
-        }
-
-        private class InfraNamedWindowOnMergeUpdateNonPropertySet : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy("@public create window MyWindowUNP#keepall as SupportBean", path);
-                env.CompileDeploy("insert into MyWindowUNP select * from SupportBean", path);
-                env.CompileDeploy(
-                    "@name('merge') on SupportBean_S0 as sb " +
-                    "merge MyWindowUNP as mywin when matched then " +
-                    "update set mywin.setDoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
-                    path);
-                env.AddListener("merge");
-                var fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".SplitCsv();
-
-                env.SendEventBean(MakeSupportBean("E1", 10, 2));
-                env.SendEventBean(new SupportBean_S0(5, "E1"));
-                env.AssertPropsPerRowLastNew("merge", fields, new object[][] { new object[] { 11, 5d, 5d } });
-
-                // try a case-statement
-                var eplCase = "on SupportBean_S0 merge MyWindowUNP " +
-                              "when matched then update set TheString = " +
-                              "case IntPrimitive when 1 then 'a' else 'b' end";
-                env.CompileDeploy(eplCase, path);
-
-                env.UndeployAll();
-            }
-        }
-
-        private class InfraMergeTriggeredByAnotherWindow : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-
-                // test dispatch between named windows
-                env.CompileDeploy("@name('A') @public create window A#unique(id) as (Id int)", path);
-                env.CompileDeploy("@name('B') @public create window B#unique(id) as (Id int)", path);
-                env.CompileDeploy(
-                    "@name('C') on A merge B when not matched then insert select 1 as id when matched then insert select 1 as Id",
-                    path);
-
-                env.CompileDeploy("@name('D') select * from B", path).AddListener("D");
-                env.CompileDeploy("@name('E') insert into A select IntPrimitive as Id from SupportBean", path);
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                env.AssertListenerInvoked("D");
-                env.UndeployAll();
-
-                // test insert-stream only, no remove stream
-                var fields = "c0,c1".SplitCsv();
-                var epl = "create window W1#lastevent as SupportBean;\n" +
-                          "insert into W1 select * from SupportBean;\n" +
-                          "create window W2#lastevent as SupportBean;\n" +
-                          "on W1 as a merge W2 as b when not matched then insert into OutStream select a.TheString as c0, istream() as c1;\n" +
-                          "@name('s0') select * from OutStream;\n";
-                env.CompileDeploy(epl).AddListener("s0");
-
-                env.SendEventBean(new SupportBean("E1", 1));
-                env.AssertPropsNew("s0", fields, new object[] { "E1", true });
-
-                env.SendEventBean(new SupportBean("E2", 2));
-                env.AssertPropsNew("s0", fields, new object[] { "E2", true });
-
-                env.UndeployAll();
-            }
-        }
-
-        private class InfraDocExample : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    TryAssertionDocExample(env, rep);
-                }
-            }
-        }
-
-        private class InfraPropertyInsertBean : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@name('window') @public create window MergeWindow#unique(TheString) as SupportBean",
-                    path);
-
-                var epl =
-                    "@name('merge') on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select IntPrimitive";
-                env.CompileDeploy(epl, path);
-                env.SendEventBean(new SupportBean("E1", 10));
-
-                env.AssertIterator(
-                    "window",
-                    iterator => {
-                        var theEvent = iterator.Advance();
-                        EPAssertionUtil.AssertProps(
-                            theEvent,
-                            "TheString,IntPrimitive".SplitCsv(),
-                            new object[] { null, 10 });
-                    });
-                env.UndeployModuleContaining("merge");
-
-                epl =
-                    "on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select TheString, IntPrimitive";
-                env.CompileDeploy(epl, path);
-                env.SendEventBean(new SupportBean("E2", 20));
-
-                env.AssertPropsPerRowIterator(
-                    "window",
-                    "TheString,IntPrimitive".SplitCsv(),
-                    new object[][] { new object[] { null, 10 }, new object[] { "E2", 20 } });
-
-                env.UndeployAll();
-            }
-        }
-
-        private class InfraSubselect : RegressionExecution
-        {
-            public void Run(RegressionEnvironment env)
-            {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    TryAssertionSubselect(env, rep);
-                }
-            }
-        }
-
         private static void TryAssertionSubselect(
             RegressionEnvironment env,
             EventRepresentationChoice eventRepresentationEnum)
         {
             var fields = "col1,col2".SplitCsv();
-            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMyEvent)) +
+            var epl = eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMyEvent>() +
                       " @public @buseventtype create schema MyEvent as (in1 string, in2 int);\n";
-            epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedMySchema)) +
+            epl += eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedMySchema>() +
                    " @public @buseventtype create schema MySchema as (col1 string, col2 int);\n";
             epl += "@name('create') @public create window MyWindowSS#lastevent as MySchema;\n";
             epl += "on SupportBean_A delete from MyWindowSS;\n";
@@ -422,23 +224,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
         {
             var path = new RegressionPath();
             var baseModuleEPL =
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedOrderEvent)) +
-                " @public @buseventtype create schema OrderEvent as (OrderId string, ProductId string, Price double, quantity int, deletedFlag boolean)";
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOrderEvent>() +
+                " @public @buseventtype create schema OrderEvent as (OrderId string, ProductId string, Price double, Quantity int, DeletedFlag boolean)";
             env.CompileDeploy(baseModuleEPL, path);
 
             var appModuleOne =
-                eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedProductTotalRec)) +
-                " create schema ProductTotalRec as (ProductId string, totalPrice double);" +
+                eventRepresentationEnum.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedProductTotalRec>() +
+                " create schema ProductTotalRec as (ProductId string, TotalPrice double);" +
                 "" +
                 "@name('nwProd') @public create window ProductWindow#unique(ProductId) as ProductTotalRec;" +
                 "" +
                 "on OrderEvent oe\n" +
                 "merge ProductWindow pw\n" +
-                "where pw.productId = oe.ProductId\n" +
+                "where pw.ProductId = oe.ProductId\n" +
                 "when matched\n" +
-                "then update set totalPrice = totalPrice + oe.Price\n" +
+                "then update set TotalPrice = TotalPrice + oe.Price\n" +
                 "when not matched\n" +
-                "then insert select ProductId, Price as totalPrice;";
+                "then insert select ProductId, Price as TotalPrice;";
             env.CompileDeploy(appModuleOne, path);
 
             var appModuleTwo = "@name('nwOrd') create window OrderWindow#keepall as OrderEvent;" +
@@ -448,10 +250,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                                "  where pw.OrderId = oe.OrderId\n" +
                                "  when not matched \n" +
                                "    then insert select *\n" +
-                               "  when matched and oe.deletedFlag=true\n" +
+                               "  when matched and oe.DeletedFlag=true\n" +
                                "    then delete\n" +
                                "  when matched\n" +
-                               "    then update set pw.quantity = oe.quantity, pw.Price = oe.Price";
+                               "    then update set pw.Quantity = oe.Quantity, pw.Price = oe.Price";
 
             env.CompileDeploy(appModuleTwo, path);
 
@@ -460,11 +262,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             SendOrderEvent(env, eventRepresentationEnum, "O2", "P2", 3, 300, false);
             env.AssertPropsPerRowIteratorAnyOrder(
                 "nwProd",
-                "ProductId,totalPrice".SplitCsv(),
+                "ProductId,TotalPrice".SplitCsv(),
                 new object[][] { new object[] { "P1", 21d }, new object[] { "P2", 3d } });
             env.AssertPropsPerRowIteratorAnyOrder(
                 "nwOrd",
-                "OrderId,quantity".SplitCsv(),
+                "OrderId,Quantity".SplitCsv(),
                 new object[][] { new object[] { "O1", 200 }, new object[] { "O2", 300 } });
 
             var module = "create schema StreetCarCountSchema (streetid string, carcount int);" +
@@ -499,8 +301,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 theEvent.Put("OrderId", orderId);
                 theEvent.Put("ProductId", productId);
                 theEvent.Put("Price", price);
-                theEvent.Put("quantity", quantity);
-                theEvent.Put("deletedFlag", deletedFlag);
+                theEvent.Put("Quantity", quantity);
+                theEvent.Put("DeletedFlag", deletedFlag);
                 env.SendEventMap(theEvent, "OrderEvent");
             }
             else if (eventRepresentationEnum.IsAvroEvent()) {
@@ -508,8 +310,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 theEvent.Put("OrderId", orderId);
                 theEvent.Put("ProductId", productId);
                 theEvent.Put("Price", price);
-                theEvent.Put("quantity", quantity);
-                theEvent.Put("deletedFlag", deletedFlag);
+                theEvent.Put("Quantity", quantity);
+                theEvent.Put("DeletedFlag", deletedFlag);
                 env.SendEventAvro(theEvent, "OrderEvent");
             }
             else {
@@ -517,8 +319,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 @object.Add("OrderId", orderId);
                 @object.Add("ProductId", productId);
                 @object.Add("Price", price);
-                @object.Add("quantity", quantity);
-                @object.Add("deletedFlag", deletedFlag);
+                @object.Add("Quantity", quantity);
+                @object.Add("DeletedFlag", deletedFlag);
                 env.SendEventJson(@object.ToString(), "OrderEvent");
             }
         }
@@ -527,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             RegressionEnvironment env,
             string onInsert)
         {
-            var epl = "insert into SBStream select * from SupportBean_Container[beans];\n" +
+            var epl = "insert into SBStream select * from SupportBean_Container[Beans];\n" +
                       "@name('window') create window MyWindow#keepall as SupportBean;\n" +
                       onInsert;
             env.CompileDeploy(epl);
@@ -551,35 +353,228 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             updatedBean.DoubleBoxed = updatedBean.DoublePrimitive;
         }
 
-        [Serializable]
+        private class InfraOnMergeSetRHSEvent : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var epl =
+                    "@name('window') create window RecentWindow#time(30 seconds) (Id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
+                    "on SimpleEventWithId as sewid\n" +
+                    "  merge RecentWindow as recent where recent.Id = sewid.Id\n" +
+                    "  when not matched then insert select sewid.Id as Id, sewid as currentSewid, sewid as prevSewid\n" +
+                    "  when matched then update set prevSewid = currentSewid, currentSewid = sewid;\n";
+                env.CompileDeploy(epl);
+
+                var sewidOne = new object[] { "Id", "A" };
+                env.SendEventObjectArray(sewidOne, "SimpleEventWithId");
+                AssertWindow(env, "Id", sewidOne, sewidOne);
+
+                var sewidTwo = new object[] { "Id", "B" };
+                env.SendEventObjectArray(sewidTwo, "SimpleEventWithId");
+                AssertWindow(env, "Id", sewidTwo, sewidOne);
+
+                var sewidThree = new object[] { "Id", "B" };
+                env.SendEventObjectArray(sewidThree, "SimpleEventWithId");
+                AssertWindow(env, "Id", sewidThree, sewidTwo);
+
+                env.UndeployAll();
+            }
+
+            private void AssertWindow(
+                RegressionEnvironment env,
+                string id,
+                object[] currentSewid,
+                object[] prevSewid)
+            {
+                env.AssertIterator(
+                    "window",
+                    iterator => {
+                        var @event = iterator.Advance();
+                        Assert.AreEqual(id, @event.Get("Id"));
+                        Assert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
+                        Assert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
+                    });
+            }
+        }
+
+        private class InfraOnMergeWhere1Eq2InsertSelectStar : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionInsertSelectStar(
+                    env,
+                    "on SBStream merge MyWindow where 1=2 when not matched then insert select *;\n");
+            }
+        }
+
+        private class InfraOnMergeNoWhereClauseInsertSelectStar : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionInsertSelectStar(env, "on SBStream as sbs merge MyWindow insert select *;\n");
+            }
+        }
+
+        private class InfraOnMergeNoWhereClauseInsertTranspose : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                RunAssertionInsertSelectStar(env, "on SBStream as sbs merge MyWindow insert select transpose(sbs);\n");
+            }
+        }
+
+        private class InfraNamedWindowOnMergeUpdateNonPropertySet : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy("@public create window MyWindowUNP#keepall as SupportBean", path);
+                env.CompileDeploy("insert into MyWindowUNP select * from SupportBean", path);
+                env.CompileDeploy(
+                    "@name('merge') on SupportBean_S0 as sb " +
+                    "merge MyWindowUNP as mywin when matched then " +
+                    "update set mywin.SetDoublePrimitive(Id), increaseIntCopyDouble(initial, mywin)",
+                    path);
+                env.AddListener("merge");
+                var fields = "IntPrimitive,DoublePrimitive,DoubleBoxed".SplitCsv();
+
+                env.SendEventBean(MakeSupportBean("E1", 10, 2));
+                env.SendEventBean(new SupportBean_S0(5, "E1"));
+                env.AssertPropsPerRowLastNew("merge", fields, new object[][] { new object[] { 11, 5d, 5d } });
+
+                // try a case-statement
+                var eplCase = "on SupportBean_S0 merge MyWindowUNP " +
+                              "when matched then update set TheString = " +
+                              "case IntPrimitive when 1 then 'a' else 'b' end";
+                env.CompileDeploy(eplCase, path);
+
+                env.UndeployAll();
+            }
+        }
+
+        private class InfraMergeTriggeredByAnotherWindow : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+
+                // test dispatch between named windows
+                env.CompileDeploy("@name('A') @public create window A#unique(Id) as (Id int)", path);
+                env.CompileDeploy("@name('B') @public create window B#unique(Id) as (Id int)", path);
+                env.CompileDeploy(
+                    "@name('C') on A merge B when not matched then insert select 1 as Id when matched then insert select 1 as Id",
+                    path);
+
+                env.CompileDeploy("@name('D') select * from B", path).AddListener("D");
+                env.CompileDeploy("@name('E') insert into A select IntPrimitive as Id from SupportBean", path);
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertListenerInvoked("D");
+                env.UndeployAll();
+
+                // test insert-stream only, no remove stream
+                var fields = "c0,c1".SplitCsv();
+                var epl = "create window W1#lastevent as SupportBean;\n" +
+                          "insert into W1 select * from SupportBean;\n" +
+                          "create window W2#lastevent as SupportBean;\n" +
+                          "on W1 as a merge W2 as b when not matched then insert into OutStream select a.TheString as c0, istream() as c1;\n" +
+                          "@name('s0') select * from OutStream;\n";
+                env.CompileDeploy(epl).AddListener("s0");
+
+                env.SendEventBean(new SupportBean("E1", 1));
+                env.AssertPropsNew("s0", fields, new object[] { "E1", true });
+
+                env.SendEventBean(new SupportBean("E2", 2));
+                env.AssertPropsNew("s0", fields, new object[] { "E2", true });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class InfraDocExample : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionDocExample(env, rep);
+                }
+            }
+        }
+
+        private class InfraPropertyInsertBean : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                var path = new RegressionPath();
+                env.CompileDeploy(
+                    "@name('window') @public create window MergeWindow#unique(TheString) as SupportBean",
+                    path);
+
+                var epl =
+                    "@name('merge') on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select IntPrimitive";
+                env.CompileDeploy(epl, path);
+                env.SendEventBean(new SupportBean("E1", 10));
+
+                env.AssertIterator(
+                    "window",
+                    iterator => {
+                        var theEvent = iterator.Advance();
+                        EPAssertionUtil.AssertProps(
+                            theEvent,
+                            "TheString,IntPrimitive".SplitCsv(),
+                            new object[] { null, 10 });
+                    });
+                env.UndeployModuleContaining("merge");
+
+                epl =
+                    "on SupportBean as up merge MergeWindow as mv where mv.TheString=up.TheString when not matched then insert select TheString, IntPrimitive";
+                env.CompileDeploy(epl, path);
+                env.SendEventBean(new SupportBean("E2", 20));
+
+                env.AssertPropsPerRowIterator(
+                    "window",
+                    "TheString,IntPrimitive".SplitCsv(),
+                    new object[][] { new object[] { null, 10 }, new object[] { "E2", 20 } });
+
+                env.UndeployAll();
+            }
+        }
+
+        private class InfraSubselect : RegressionExecution
+        {
+            public void Run(RegressionEnvironment env)
+            {
+                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
+                    TryAssertionSubselect(env, rep);
+                }
+            }
+        }
+
         public class MyLocalJsonProvidedMyEvent
         {
             public string in1;
             public int in2;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMySchema
         {
             public string col1;
             public int col2;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedOrderEvent
         {
-            public string orderId;
-            public string productId;
-            public double price;
-            public int quantity;
-            public bool deletedFlag;
+            public string OrderId;
+            public string ProductId;
+            public double Price;
+            public int Quantity;
+            public bool DeletedFlag;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedProductTotalRec
         {
-            public string productId;
-            public double totalPrice;
+            public string ProductId;
+            public double TotalPrice;
         }
     }
 } // end of namespace

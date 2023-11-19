@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avedev
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            method.Block.MethodReturn(StaticMethod(typeof(AggregatorAvedev), "computeAvedev", valueSet, sum));
+            method.Block.MethodReturn(StaticMethod(typeof(AggregatorAvedev), "ComputeAvedev", valueSet, sum));
         }
 
         protected override void WriteWODistinct(

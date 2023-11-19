@@ -375,7 +375,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     " from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                AssertType(env, typeof(IOrderedDictionary<object, object>), "nmr");
+                AssertType(env, typeof(IOrderedDictionary<ICollection<object>, EventBean>), "nmr");
 
                 var treemap = new BTreeDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9

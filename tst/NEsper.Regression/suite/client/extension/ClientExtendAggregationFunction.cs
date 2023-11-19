@@ -9,14 +9,12 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client.hook.aggfunc;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 
 using NUnit.Framework;
@@ -306,12 +304,12 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(textTwo).AddListener("s0");
 
                 env.SendEventBean(new SupportBean("d", -1));
-                env.AssertPropsNew("s0", "val".SplitCsv(), new object[] { "SupportBean(d, -1)" });
+                env.AssertPropsNew("s0", "val".SplitCsv(), new object[] { "SupportBean(\"d\", -1)" });
 
                 env.MilestoneInc(milestone);
 
                 env.SendEventBean(new SupportBean("e", 2));
-                env.AssertPropsNew("s0", "val".SplitCsv(), new object[] { "SupportBean(d, -1) SupportBean(e, 2)" });
+                env.AssertPropsNew("s0", "val".SplitCsv(), new object[] { "SupportBean(\"d\", -1) SupportBean(\"e\", 2)" });
 
                 env.TryInvalidCompile(
                     "select concatstring(*) as val from SupportBean#lastevent, SupportBean unidirectional",
@@ -351,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 SupportSupportBeanAggregationFunctionFactory.InstanceCount = 0;
                 var fields = "val0,val1".SplitCsv();
                 env.CompileDeploy(
-                        "@name('s0') select (myagg(id)).getTheString() as val0, (myagg(Id)).getIntPrimitive() as val1 from SupportBean_A")
+                        "@name('s0') select (myagg(Id)).GetTheString() as val0, (myagg(Id)).GetIntPrimitive() as val1 from SupportBean_A")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("A1"));
@@ -477,7 +475,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             {
                 env.TryInvalidCompile(
                     "select * from SupportBean group by invalidAggFuncForge(1)",
-                    "Error resolving aggregation: Class by name 'System.String' does not implement the AggregationFunctionForge interface");
+                    "Error resolving aggregation: Class by name 'System.TimeSpan' does not implement the AggregationFunctionForge interface");
 
                 env.TryInvalidCompile(
                     "select * from SupportBean group by nonExistAggFuncForge(1)",

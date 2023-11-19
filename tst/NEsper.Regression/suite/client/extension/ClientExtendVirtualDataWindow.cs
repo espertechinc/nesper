@@ -294,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test multi-criteria join
             env.CompileDeploy(
                 "@name('s0') select vdw.TheString from MyVDW vdw, SupportBeanRange#lastevent st0 " +
-                "where vdw.TheString = st0.Id and LongPrimitive = keyLong and IntPrimitive between rangeStart and rangeEnd",
+                "where vdw.TheString = st0.Id and LongPrimitive = keyLong and IntPrimitive between RangeStart and RangeEnd",
                 path);
             env.AddListener("s0");
             AssertIndexSpec(
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test multi-criteria subquery
             env.CompileDeploy(
                     "@name('s0') select " +
-                    "(select col1 from MyVDW vdw where col1=r.Id and col2=r.key and col3 between r.rangeStart and r.rangeEnd) as val0 " +
+                    "(select col1 from MyVDW vdw where col1=r.Id and col2=r.key and col3 between r.RangeStart and r.RangeEnd) as val0 " +
                     "from SupportBeanRange r",
                     path)
                 .AddListener("s0");
@@ -524,7 +524,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test multie-criteria on-delete
             env.CompileDeploy(
                     "@name('s0') on SupportBeanRange r delete " +
-                    "from MyVDW vdw where col1=r.Id and col2=r.key and col3 between r.rangeStart and r.rangeEnd",
+                    "from MyVDW vdw where col1=r.Id and col2=r.key and col3 between r.RangeStart and r.RangeEnd",
                     path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "col1=(String)|col2=(String)", "col3[,](Integer)");

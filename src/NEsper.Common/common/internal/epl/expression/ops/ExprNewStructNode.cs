@@ -19,7 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents the "new {...}" operator in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprNewStructNode : ExprNodeBase
     {
         private ExprNewStructNodeForge _forge;

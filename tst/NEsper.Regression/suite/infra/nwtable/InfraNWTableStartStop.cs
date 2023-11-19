@@ -11,10 +11,8 @@ using System.Collections.Generic;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.runtime.client.scopetest;
 
-using NUnit.Framework; // assertFalse
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableStartStop

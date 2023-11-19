@@ -6,12 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
@@ -36,10 +35,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.SendEventBean(new LocalEvent(inners));
             };
             var beanepl = "@public @buseventtype create schema LocalInnerEvent as " +
-                          typeof(LocalInnerEvent).FullName +
+                          typeof(LocalInnerEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -84,8 +83,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
-            var jsonProvidedEpl = "@JsonSchema(className='" +
-                                  typeof(MyLocalJsonProvided).FullName +
+            var jsonProvidedEpl = "@JsonSchema(ClassName='" +
+                                  typeof(MyLocalJsonProvided).MaskTypeName() +
                                   "') @public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, jsonProvidedEpl, json);
 
@@ -129,7 +128,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class LocalInnerEvent
         {
             private readonly string id;
@@ -142,7 +140,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public string Id => id;
         }
 
-        [Serializable]
         public class LocalEvent
         {
             public LocalEvent(LocalInnerEvent[] indexed)
@@ -153,13 +150,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public LocalInnerEvent[] Indexed { get; }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedInnerEvent[] indexed;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerEvent
         {
             public string id;

@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Part of a select-clause to describe individual select-clause expressions.
     /// </summary>
-    [Serializable]
     public class SelectClauseExpression : SelectClauseElement
     {
         /// <summary>Ctor. </summary>

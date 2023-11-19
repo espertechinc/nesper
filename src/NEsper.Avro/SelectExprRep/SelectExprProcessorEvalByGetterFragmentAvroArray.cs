@@ -70,7 +70,7 @@ namespace NEsper.Avro.SelectExprRep
                 typeof(ICollection<object>),
                 GetType(),
                 codegenClassScope);
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEps(methodNode);
 
             methodNode.Block
                 .DeclareVar<EventBean>(

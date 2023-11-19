@@ -18,7 +18,6 @@ namespace com.espertech.esper.compat.collections
 	/// <typeparam name="TK"></typeparam>
 	/// <typeparam name="TV"></typeparam>
 
-	[Serializable]
 	public class BaseMap<TK, TV> : IDictionary<TK, TV>
 	{
 		private IDictionary<TK, TV> _subDictionary;

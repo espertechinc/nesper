@@ -28,7 +28,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents the between-clause function in an expression tree.
     /// </summary>
-    [Serializable]
     public class ExprBetweenNodeImpl : ExprNodeBase,
         ExprBetweenNode
     {

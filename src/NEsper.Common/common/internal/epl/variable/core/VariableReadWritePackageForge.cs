@@ -33,22 +33,22 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
     /// </summary>
     public partial class VariableReadWritePackageForge
     {
-        private readonly ExprAssignment[] assignments;
-        private readonly IDictionary<EventTypeSPI, EventBeanCopyMethodForge> copyMethods;
-        private readonly bool[] mustCoerce;
-        private readonly VariableMetaData[] variables;
-        private readonly IDictionary<string, object> variableTypes;
-        private readonly VariableTriggerWriteForge[] writers;
+        private readonly ExprAssignment[] _assignments;
+        private readonly VariableMetaData[] _variables;
+        private readonly bool[] _mustCoerce;
+        private readonly VariableTriggerWriteForge[] _writers;
+        private readonly IDictionary<EventTypeSPI, EventBeanCopyMethodForge> _copyMethods;
+        private readonly IDictionary<string, object> _variableTypes;
 
         public VariableReadWritePackageForge(
             IList<OnTriggerSetAssignment> assignments,
             string statementName,
             StatementCompileTimeServices services)
         {
-            variables = new VariableMetaData[assignments.Count];
-            mustCoerce = new bool[assignments.Count];
-            writers = new VariableTriggerWriteForge[assignments.Count];
-            variableTypes = new Dictionary<string, object>();
+            _variables = new VariableMetaData[assignments.Count];
+            _mustCoerce = new bool[assignments.Count];
+            _writers = new VariableTriggerWriteForge[assignments.Count];
+            _variableTypes = new Dictionary<string, object>();
             IDictionary<EventTypeSPI, CopyMethodDesc> eventTypeWrittenProps =
                 new Dictionary<EventTypeSPI, CopyMethodDesc>();
             var count = 0;
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                                 "Variable by name '" + variableName + "' has not been created or configured");
                         }
 
-                        variables[count] = variableMetadata;
+                        _variables[count] = variableMetadata;
                         var expressionType = assignment.Rhs.Forge.EvaluationType;
                         if (assignment.Lhs is ExprAssignmentLHSIdent) {
                             // determine types
@@ -87,34 +87,33 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                                         "'");
                                 }
 
-                                variableTypes.Put(variableName, variableMetadata.EventType.UnderlyingType);
+                                _variableTypes.Put(variableName, variableMetadata.EventType.UnderlyingType);
                             }
                             else {
                                 var variableType = variableMetadata.Type;
-                                variableTypes.Put(variableName, variableMetadata.Type);
+                                _variableTypes.Put(variableName, variableMetadata.Type);
                                 // determine if the expression type can be assigned
                                 if (variableType != typeof(object)) {
-                                    if (expressionType != null &&
-                                        variableType != expressionType.GetBoxedType()) {
-                                        var expressionClass = expressionType;
-                                        if (!variableType.IsTypeNumeric() ||
-                                            !expressionType.IsTypeNumeric()) {
+                                    if ((expressionType.GetBoxedType() != variableType.GetBoxedType()) &&
+                                        (expressionType != null)) {
+                                        if ((!TypeHelper.IsTypeNumeric(variableType)) ||
+                                            (!TypeHelper.IsTypeNumeric(expressionType))) {
                                             throw new ExprValidationException(
                                                 VariableUtil.GetAssigmentExMessage(
                                                     variableName,
                                                     variableType,
-                                                    expressionClass));
+                                                    expressionType));
                                         }
 
-                                        if (!expressionClass.CanCoerce(variableType)) {
+                                        if (!expressionType.CanCoerce(variableType)) {
                                             throw new ExprValidationException(
                                                 VariableUtil.GetAssigmentExMessage(
                                                     variableName,
                                                     variableType,
-                                                    expressionClass));
+                                                    expressionType));
                                         }
 
-                                        mustCoerce[count] = true;
+                                        _mustCoerce[count] = true;
                                     }
                                 }
                             }
@@ -153,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                             }
 
                             var fullVariableName = variableName + "." + subPropertyName;
-                            variableTypes.Put(fullVariableName, spi.GetPropertyType(subPropertyName));
+                            _variableTypes.Put(fullVariableName, spi.GetPropertyType(subPropertyName));
                             var writtenProps = eventTypeWrittenProps.Get(spi);
                             if (writtenProps == null) {
                                 writtenProps = new CopyMethodDesc(variableName, new List<string>());
@@ -161,7 +160,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                             }
 
                             writtenProps.PropertiesCopied.Add(subPropertyName);
-                            writers[count] = new VariableTriggerWriteDescForge(
+                            _writers[count] = new VariableTriggerWriteDescForge(
                                 spi,
                                 variableName,
                                 writer,
@@ -191,7 +190,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                                 throw new ExprValidationException(ex.Message, ex);
                             }
 
-                            writers[count] = new VariableTriggerWriteArrayElementForge(
+                            _writers[count] = new VariableTriggerWriteArrayElementForge(
                                 variableName,
                                 arrayAssign.IndexExpression.Forge,
                                 widener);
@@ -214,17 +213,17 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         }
 
                         var variable = variableVisitor.VariableNames.First();
-                        variables[count] = variable.Value;
-                        writers[count] = new VariableTriggerWriteCurlyForge(variable.Key, curly.Expression.Forge);
+                        _variables[count] = variable.Value;
+                        _writers[count] = new VariableTriggerWriteCurlyForge(variable.Key, curly.Expression.Forge);
                     }
                     else {
                         throw new IllegalStateException("Unrecognized assignment expression " + assignmentDesc);
                     }
 
-                    if (variables[count].IsConstant) {
+                    if (_variables[count].IsConstant) {
                         throw new ExprValidationException(
                             "Variable by name '" +
-                            variables[count].VariableName +
+                            _variables[count].VariableName +
                             "' is declared constant and may not be set");
                     }
 
@@ -240,13 +239,13 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 }
             }
 
-            this.assignments = assignmentList.ToArray();
+            _assignments = assignmentList.ToArray();
             if (eventTypeWrittenProps.IsEmpty()) {
-                copyMethods = EmptyDictionary<EventTypeSPI, EventBeanCopyMethodForge>.Instance;
+                _copyMethods = EmptyDictionary<EventTypeSPI, EventBeanCopyMethodForge>.Instance;
                 return;
             }
 
-            copyMethods = new Dictionary<EventTypeSPI, EventBeanCopyMethodForge>();
+            _copyMethods = new Dictionary<EventTypeSPI, EventBeanCopyMethodForge>();
             foreach (var entry in eventTypeWrittenProps) {
                 var propsWritten = entry.Value.PropertiesCopied;
                 var props = propsWritten.ToArray();
@@ -260,7 +259,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                         "' cannot be assigned to");
                 }
 
-                copyMethods.Put(entry.Key, copyMethod);
+                _copyMethods.Put(entry.Key, copyMethod);
             }
         }
 
@@ -271,19 +270,19 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             var method = parent.MakeChild(typeof(VariableReadWritePackage), GetType(), classScope);
             var @ref = Ref("rw");
-            method.Block.DeclareVarNewInstance(typeof(VariableReadWritePackage), @ref.Ref)
-                .SetProperty(@ref, "CopyMethods", MakeCopyMethods(copyMethods, method, symbols, classScope))
+            method.Block.DeclareVarNewInstance<VariableReadWritePackage>(@ref.Ref)
+                .SetProperty(@ref, "CopyMethods", MakeCopyMethods(_copyMethods, method, symbols, classScope))
                 .SetProperty(
                     @ref,
                     "Assignments",
-                    MakeAssignments(assignments, variables, method, symbols, classScope))
-                .SetProperty(@ref, "Variables", MakeVariables(variables, method, symbols, classScope))
-                .SetProperty(@ref, "Writers", MakeWriters(writers, method, symbols, classScope))
+                    MakeAssignments(_assignments, _variables, method, symbols, classScope))
+                .SetProperty(@ref, "Variables", MakeVariables(_variables, method, symbols, classScope))
+                .SetProperty(@ref, "Writers", MakeWriters(_writers, method, symbols, classScope))
                 .SetProperty(
                     @ref,
                     "ReadersForGlobalVars",
-                    MakeReadersForGlobalVars(variables, method, symbols, classScope))
-                .SetProperty(@ref, "MustCoerce", Constant(mustCoerce))
+                    MakeReadersForGlobalVars(_variables, method, symbols, classScope))
+                .SetProperty(@ref, "MustCoerce", Constant(_mustCoerce))
                 .MethodReturn(@ref);
             return LocalMethod(method);
         }
@@ -295,15 +294,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(VariableReader[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(VariableReader[]),
+            method.Block.DeclareVar<VariableReader[]>(
                 "readers",
                 NewArrayByLength(typeof(VariableReader), Constant(variables.Length)));
             for (var i = 0; i < variables.Length; i++) {
                 if (variables[i].OptionalContextName == null) {
                     var resolve = StaticMethod(
                         typeof(VariableDeployTimeResolver),
-                        "resolveVariableReader",
+                        "ResolveVariableReader",
                         Constant(variables[i].VariableName),
                         Constant(variables[i].VariableVisibility),
                         Constant(variables[i].VariableModuleName),
@@ -327,8 +325,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 typeof(VariableTriggerWrite[]),
                 typeof(VariableReadWritePackageForge),
                 classScope);
-            method.Block.DeclareVar(
-                typeof(VariableTriggerWrite[]),
+            method.Block.DeclareVar<VariableTriggerWrite[]>(
                 "writers",
                 NewArrayByLength(typeof(VariableTriggerWrite), Constant(writers.Length)));
             for (var i = 0; i < writers.Length; i++) {
@@ -347,8 +344,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             CodegenClassScope classScope)
         {
             var method = parent.MakeChild(typeof(Variable[]), typeof(VariableReadWritePackageForge), classScope);
-            method.Block.DeclareVar(
-                typeof(Variable[]),
+            method.Block.DeclareVar<Variable[]>(
                 "vars",
                 NewArrayByLength(typeof(Variable), Constant(variables.Length)));
             for (var i = 0; i < variables.Length; i++) {
@@ -373,16 +369,14 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 typeof(VariableTriggerSetDesc[]),
                 typeof(VariableReadWritePackageForge),
                 classScope);
-            method.Block.DeclareVar(
-                typeof(VariableTriggerSetDesc[]),
+            method.Block.DeclareVar<VariableTriggerSetDesc[]>(
                 "sets",
                 NewArrayByLength(typeof(VariableTriggerSetDesc), Constant(assignments.Length)));
             for (var i = 0; i < assignments.Length; i++) {
                 CodegenExpression set;
                 if (assignments[i] is ExprAssignmentStraight) {
                     var straightAssignment = (ExprAssignmentStraight)assignments[i];
-                    set = NewInstance(
-                        typeof(VariableTriggerSetDesc),
+                    set = NewInstance<VariableTriggerSetDesc>(
                         Constant(straightAssignment.Lhs.FullIdentifier),
                         ExprNodeUtilityCodegen.CodegenEvaluator(
                             straightAssignment.Rhs.Forge,
@@ -391,8 +385,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                             classScope));
                 }
                 else {
-                    set = NewInstance(
-                        typeof(VariableTriggerSetDesc),
+                    set = NewInstance<VariableTriggerSetDesc>(
                         Constant(variables[i].VariableName),
                         ConstantNull());
                 }
@@ -418,12 +411,9 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 				typeof(IDictionary<EventTypeSPI, EventBeanCopyMethod>),
                 typeof(VariableReadWritePackageForge),
                 classScope);
-            method.Block.DeclareVar(
-                typeof(IDictionary<EventTypeSPI, EventBeanCopyMethod>),
+            method.Block.DeclareVar<IDictionary<EventTypeSPI, EventBeanCopyMethod>>(
                 "methods",
-                NewInstance(
-                    typeof(Dictionary<EventTypeSPI, EventBeanCopyMethod>),
-                    Constant(copyMethods.Count)));
+                NewInstance<Dictionary<EventTypeSPI, EventBeanCopyMethod>>(Constant(copyMethods.Count)));
             foreach (var entry in copyMethods) {
                 var type = EventTypeUtility.ResolveTypeCodegen(entry.Key, symbols.GetAddInitSvc(method));
                 var copyMethod = entry.Value.MakeCopyMethodClassScoped(classScope);
@@ -434,6 +424,6 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             return LocalMethod(method);
         }
 
-        public IDictionary<string, object> VariableTypes => variableTypes;
+        public IDictionary<string, object> VariableTypes => _variableTypes;
     }
 } // end of namespace

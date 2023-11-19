@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     ///     Exception for resolution of a method failed.
     /// </summary>
-    [Serializable]
     public class MethodResolverNoSuchCtorException : Exception
     {
         [JsonIgnore]

@@ -11,8 +11,6 @@ using System.Text;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin20Stream : RegressionExecution

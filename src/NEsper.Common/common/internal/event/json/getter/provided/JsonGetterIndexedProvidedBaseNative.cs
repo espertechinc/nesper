@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
         {
             return StaticMethod(
                 typeof(CollectionUtil),
-                "arrayValueAtIndex",
+                "ArrayValueAtIndex",
                 ExprDotName(underlyingExpression, field.Name),
                 Constant(index));
         }
@@ -83,7 +83,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
         {
             return StaticMethod(
                 typeof(CollectionUtil),
-                "arrayExistsAtIndex",
+                "ArrayExistsAtIndex",
                 ExprDotName(underlyingExpression, field.Name),
                 Constant(index));
         }

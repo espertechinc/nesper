@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.expr
     /// <summary>
     ///     Or-condition in a regex expression tree.
     /// </summary>
-    [Serializable]
     public class RowRecogExprNodeAlteration : RowRecogExprNode
     {
         public override RowRecogExprNodePrecedenceEnum Precedence => RowRecogExprNodePrecedenceEnum.ALTERNATION;

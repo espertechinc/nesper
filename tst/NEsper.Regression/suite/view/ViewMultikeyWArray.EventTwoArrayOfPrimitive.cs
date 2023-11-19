@@ -1,12 +1,9 @@
-﻿using System;
-
-using com.espertech.esper.compat.collections;
+﻿using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
     public partial class ViewMultikeyWArray
     {
-        [Serializable]
         public class EventTwoArrayOfPrimitive
         {
             private readonly string id;

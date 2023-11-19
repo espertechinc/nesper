@@ -14,9 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertNull
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -296,7 +294,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportBean#unique(Math.abs(IntPrimitive))";
+                var epl = "@name('s0') select * from SupportBean#unique(Math.Abs(IntPrimitive))";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 SendSupportBean(env, "E1", 10);

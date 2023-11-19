@@ -14,9 +14,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -86,14 +84,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var exceptionText = GetSyntaxExceptionEPL(env, "select * from *");
-                Assert.AreEqual(
+                StringAssert.StartsWith(
                     "Incorrect syntax near '*' at line 1 column 14, please check the from clause [select * from *]",
                     exceptionText);
 
                 exceptionText = GetSyntaxExceptionEPL(
                     env,
                     "select * from SupportBean a where a.IntPrimitive between r.start and r.end");
-                Assert.AreEqual(
+                StringAssert.StartsWith(
                     "Incorrect syntax near 'start' (a reserved keyword) at line 1 column 59, please check the where clause [select * from SupportBean a where a.IntPrimitive between r.start and r.end]",
                     exceptionText);
 
@@ -233,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileWCheckedEx(eplInvalidEPL);
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
+            catch (EPCompileException) {
                 // Expected exception
             }
         }

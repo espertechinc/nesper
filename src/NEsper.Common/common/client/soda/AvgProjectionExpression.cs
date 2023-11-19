@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// Average of the (distinct) values returned by an expression.
     /// <para />Expects a single child expression providing the values to aggregate.
     /// </summary>
-    [Serializable]
     public class AvgProjectionExpression : ExpressionBase
     {
         private bool distinct;

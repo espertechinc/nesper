@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.client.context
     /// <summary>
     ///     Context partition identifier for overlapping and non-overlapping contexts.
     /// </summary>
-    [Serializable]
     public class ContextPartitionIdentifierInitiatedTerminated : ContextPartitionIdentifier
     {
         /// <summary>

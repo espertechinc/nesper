@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.epl.expression.time.node;
 namespace com.espertech.esper.common.@internal.compile.stage1.spec
 {
     /// <summary>Spec for defining an output rate </summary>
-    [Serializable]
     public class OutputLimitSpec
     {
         /// <summary>

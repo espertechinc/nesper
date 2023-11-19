@@ -30,18 +30,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotForgeEnumMethodEval : ExprDotEval
     {
-        private readonly ExprDotForgeEnumMethodBase forge;
-        private readonly EnumEval enumEval;
-        private readonly int enumEvalNumRequiredEvents;
+        private readonly ExprDotForgeEnumMethodBase _forge;
+        private readonly EnumEval _enumEval;
+        private readonly int _enumEvalNumRequiredEvents;
 
         public ExprDotForgeEnumMethodEval(
             ExprDotForgeEnumMethodBase forge,
             EnumEval enumEval,
             int enumEvalNumRequiredEvents)
         {
-            this.forge = forge;
-            this.enumEval = enumEval;
-            this.enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
+            this._forge = forge;
+            this._enumEval = enumEval;
+            this._enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
         }
 
         public object Evaluate(
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             var eventsLambda = eventsPerStream == null
                 ? Array.Empty<EventBean>()
-                : AllocateCopyEventLambda(eventsPerStream, enumEvalNumRequiredEvents);
-            return enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
+                : AllocateCopyEventLambda(eventsPerStream, _enumEvalNumRequiredEvents);
+            return _enumEval.EvaluateEnumMethod(eventsLambda, coll, isNewData, exprEvaluatorContext);
         }
 
         public static CodegenExpression Codegen(
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
-            var refEPS = exprSymbol.GetAddEPS(methodNode);
+            var refEps = exprSymbol.GetAddEps(methodNode);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
             var refExprEvalCtx = exprSymbol.GetAddExprEvalCtx(methodNode);
             var forgeMember = codegenClassScope.AddDefaultFieldUnshared(
@@ -86,10 +86,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 NewInstance(typeof(object)));
             var block = methodNode.Block;
             if (innerType == typeof(EventBean)) {
-                block.DeclareVar<FlexCollection>("coll", FlexEvent(Ref("param")));
+                block.DeclareVar<ICollection<EventBean>>(
+                    "coll",
+                    StaticMethod(typeof(Collections), "SingletonList", new[] { typeof(EventBean) }, Ref("param")));
             }
             else if (innerType == typeof(object[])) {
-                block.DeclareVar<FlexCollection>("coll", FlexWrap(Ref("param")));
+                block.DeclareVar<ICollection<object>>("coll", Unwrap<object>(Ref("param")));
             }
             else if (innerType.IsGenericCollection()) {
                 block.DeclareVar(innerType, "coll", Ref("param"));
@@ -124,7 +126,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         StaticMethod(
                             typeof(ExprDotForgeEnumMethodEval),
                             "AllocateCopyEventLambda",
-                            refEPS,
+                            refEps,
                             Constant(forge.EnumEvalNumRequiredEvents)))
                     .DeclareVar(
                         forge.TypeInfo.GetCodegenReturnType(),
@@ -152,7 +154,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                         StaticMethod(
                             typeof(ExprDotForgeEnumMethodEval),
                             "AllocateCopyEventLambda",
-                            refEPS,
+                            refEps,
                             Constant(forge.EnumEvalNumRequiredEvents)))
                     .TryReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, returnInvocation))
                     .TryFinally()
@@ -179,8 +181,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             return eventsLambda;
         }
 
-        public EPChainableType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => _forge.TypeInfo;
 
-        public ExprDotForge DotForge => forge;
+        public ExprDotForge DotForge => _forge;
     }
 } // end of namespace

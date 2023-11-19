@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AssertStatement(
                     "s0",
                     statement => Assert.AreEqual(
-                        "@name('s0') " + stmtText,
+                        "@Name('s0') " + stmtText,
                         statement.GetProperty(StatementProperty.EPL)));
 
                 env.UndeployAll();

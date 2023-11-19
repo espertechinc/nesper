@@ -11,7 +11,6 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.common.@internal.context.util
 {
-    [Serializable]
     public class AgentInstanceComparator : IComparer<AgentInstance>
     {
         public static AgentInstanceComparator INSTANCE = new AgentInstanceComparator();

@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// The group-by clause consists of a list of expressions that provide the grouped-by values.
     /// </summary>
-    [Serializable]
     public class GroupByClause
     {
         private readonly IList<GroupByClauseExpression> _groupByExpressions;

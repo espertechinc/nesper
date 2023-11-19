@@ -14,7 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBeanComplexProps : SupportMarkerInterface
     {
         public static readonly string[] PROPERTIES = {
@@ -147,7 +146,6 @@ namespace com.espertech.esper.common.@internal.support
             return Nested;
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNested
         {
             private string _nestedValue;
@@ -197,7 +195,6 @@ namespace com.espertech.esper.common.@internal.support
             }
         }
 
-        [Serializable]
         public class SupportBeanSpecialGetterNestedNested
         {
             private string _nestedNestedValue;

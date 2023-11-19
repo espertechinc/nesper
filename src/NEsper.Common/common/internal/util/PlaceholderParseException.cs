@@ -12,7 +12,6 @@ using System;
 namespace com.espertech.esper.common.@internal.util
 {
     /// <summary> Exception to indicate a parse error in parsing placeholders.</summary>
-    [Serializable]
     public class PlaceholderParseException : Exception
     {
         /// <summary> Ctor.</summary>

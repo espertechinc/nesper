@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Time source configuration, the default in MILLI (millisecond resolution from System.currentTimeMillis).
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeTimeSource
     {
         /// <summary>

@@ -15,21 +15,23 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             this ISet<Type> typeSet,
             Type type)
         {
-            if (type != null && typeSet.Add(type)) {
-                if (type.IsArray) {
-                    AddToSet(typeSet, type.GetElementType());
-                }
-                else if (type.IsGenericType) {
-                    foreach (var genericArgument in type.GetGenericArguments()) {
-                        AddToSet(typeSet, genericArgument);
+            if (type is { IsGenericParameter: false }) {
+                if (typeSet.Add(type)) {
+                    if (type.IsArray) {
+                        AddToSet(typeSet, type.GetElementType());
                     }
-
-                    try {
-                        foreach (var genericParameterConstraint in type.GetGenericParameterConstraints()) {
-                            AddToSet(typeSet, genericParameterConstraint);
+                    else if (type.IsGenericType) {
+                        foreach (var genericArgument in type.GetGenericArguments()) {
+                            AddToSet(typeSet, genericArgument);
                         }
-                    }
-                    catch (InvalidOperationException) {
+
+                        try {
+                            foreach (var genericParameterConstraint in type.GetGenericParameterConstraints()) {
+                                AddToSet(typeSet, genericParameterConstraint);
+                            }
+                        }
+                        catch (InvalidOperationException) {
+                        }
                     }
                 }
             }

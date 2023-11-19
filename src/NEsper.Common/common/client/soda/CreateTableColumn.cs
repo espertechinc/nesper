@@ -14,7 +14,6 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.client.soda
 {
-    [Serializable]
     public class CreateTableColumn
     {
         private string columnName;

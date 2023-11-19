@@ -13,9 +13,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
-using NUnit.Framework; // assertEquals
-
-// fail
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -350,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('clazz') @public create inlined_class \"\"\" public class MyClass { public static String doIt() { return \"def\"; } }\"\"\"",
+                    "@name('clazz') @public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\"",
                     path);
 
                 var text = "Application-inlined class 'MyClass'";
@@ -358,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     env,
                     path,
                     "clazz",
-                    "@name('A') select MyClass.doIt() as col from SupportBean",
+                    "@name('A') select MyClass.DoIt() as col from SupportBean",
                     "A",
                     text);
 
@@ -482,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }
             }
-            catch (EPUndeployException ex) {
+            catch (EPUndeployException) {
                 Assert.Fail();
             }
         }

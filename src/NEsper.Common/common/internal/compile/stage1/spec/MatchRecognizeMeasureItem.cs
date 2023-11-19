@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for measure definition item within match_recognize.
     /// </summary>
-    [Serializable]
     public class MatchRecognizeMeasureItem
     {
         /// <summary>Ctor. </summary>

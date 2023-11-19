@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.@internal.support;
@@ -24,9 +23,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using static com.espertech.esper.common.@internal.support.EventRepresentationChoice; // MAP
-// values
-using NUnit.Framework; // fail
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreTypeOf
@@ -366,27 +363,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             return theEvent;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedInnerSchema
         {
             public string key;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMySchema
         {
             public MyLocalJsonProvidedInnerSchema inside;
             public MyLocalJsonProvidedInnerSchema[] insidearr;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedOut
         {
             public string t0;
             public string t1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedWKey
         {
             public string key;

@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     /// Specification for a pattern guard object consists of a namespace, name and guard object parameters.
     /// </summary>
-    [Serializable]
     public class PatternGuardSpec : ObjectSpec
     {
         /// <summary>

@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.compiler
     /// <summary>
     ///     Holds execution-related settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationCompilerExecution
     {
         /// <summary>

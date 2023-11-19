@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -115,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "new double[][] {{1}} as c1, " +
                           "new int[][] {{1},{IntPrimitive,10}} as c2, " +
                           "new float[][] {{},{1},{2.0f}} as c3, " +
-                          "new long[][] {{1L,Long.MaxValue,-1L}} as c4, " +
+                          "new long[][] {{1L,Int64.MaxValue,-1L}} as c4, " +
                           "new String[][] {} as c5, " +
                           "new String[][] {{},{},{\"x\"},{}} as c6, " +
                           "new String[][] {{\"x\",\"y\"},{\"z\"}} as c7, " +
-                          "new Integer[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
+                          "new Int32[][] {{IntPrimitive,IntPrimitive+1},{IntPrimitive+2,IntPrimitive+3}} as c8, " +
                           $"new {typeof(DateTimeEx).FullName}[][] {{}} as c9, " +
                           "new Object[][] {{}} as c10, " +
                           "new Object[][] {{1}} as c11, " +
@@ -175,11 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 
@@ -200,14 +195,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .WithExpression(fields[1], "new double[] {1}")
                     .WithExpression(fields[2], "new int[] {1,IntPrimitive,10}")
                     .WithExpression(fields[3], "new float[] {1,2.0f}")
-                    .WithExpression(fields[4], "new long[] {1L,Long.MAX_VALUE,-1L}")
+                    .WithExpression(fields[4], "new long[] {1L,Int64.MaxValue,-1L}")
                     .WithExpression(fields[5], "new String[] {}")
                     .WithExpression(fields[6], "new String[] {\"x\"}")
                     .WithExpression(fields[7], "new String[] {\"x\",\"y\"}")
-                    .WithExpression(
-                        fields[8],
-                        "new Integer[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
-                    .WithExpression(fields[9], "new java.util.Calendar[] {}")
+                    .WithExpression(fields[8], "new Int32[] {IntPrimitive,IntPrimitive+1,IntPrimitive+2,IntPrimitive+3}")
+					.WithExpression(fields[9], "new " + typeof(DateTimeEx).FullName + "[] {}")
                     .WithExpression(fields[10], "new Object[] {}")
                     .WithExpression(fields[11], "new Object[] {1}")
                     .WithExpression(fields[12], "new Object[] {\"x\",1,10L}");
@@ -254,11 +247,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 
@@ -275,49 +264,47 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var fields = "c0,c1,c2,c3,c4,c5".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
-                    .WithExpression(fields[0], "new ArrayList<String>()")
-                    .WithExpression(fields[1], "new HashMap<String,Integer>()")
-                    .WithExpression(fields[2], "new ArrayList<String>(20)")
-                    .WithExpression(fields[3], "new ArrayList<String>[5]")
-                    .WithExpression(
-                        fields[4],
-                        "new ArrayList<String>[] {new ArrayList<String>(),new ArrayList<String>()}")
-                    .WithExpression(fields[5], "new ArrayList<String[][]>[2][]");
+                    .WithExpression(fields[0], "new List<String>()")
+                    .WithExpression(fields[1], "new Dictionary<String,Integer>()")
+                    .WithExpression(fields[2], "new List<String>(20)")
+                    .WithExpression(fields[3], "new List<String>[5]")
+                    .WithExpression(fields[4], "new List<String>[] {new List<String>(),new List<String>()}")
+                    .WithExpression(fields[5], "new List<String[][]>[2][]");
 
                 builder.WithStatementConsumer(
                     stmt => {
                         var @out = stmt.EventType;
-                        Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(Dictionary<string, int>), @out.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(List<string>), @out.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c3"));
-                        Assert.AreEqual(typeof(List<string>[]), @out.GetPropertyType("c4"));
-                        Assert.AreEqual(typeof(List<string>[][]), @out.GetPropertyType("c5"));
+                        Assert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c0"));
+                        Assert.AreEqual(typeof(IDictionary<string, int>), @out.GetPropertyType("c1"));
+                        Assert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c2"));
+                        Assert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c3"));
+                        Assert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c4"));
+                        Assert.AreEqual(typeof(IList<string>[][]), @out.GetPropertyType("c5"));
                     });
 
                 builder.WithAssertion(new SupportBean("E1", 2))
-                    .Verify("c0", value => Assert.IsTrue(value is List<object>))
-                    .Verify("c1", value => Assert.IsTrue(value is Dictionary<string, object>))
-                    .Verify("c2", value => Assert.IsTrue(value is List))
+                    .Verify("c0", Assert.IsInstanceOf<IList<object>>)
+                    .Verify("c1", Assert.IsInstanceOf<IDictionary<string, object>>)
+                    .Verify("c2", Assert.IsInstanceOf<IList<string>>)
                     .Verify(
                         "c3",
                         value => {
-                            var array = (List<string>[])value;
+                            var array = (IList<string>[])value;
                             Assert.AreEqual(5, array.Length);
                         })
                     .Verify(
                         "c4",
                         value => {
-                            var array = (List<string>[])value;
+                            var array = (IList<string>[])value;
                             Assert.AreEqual(2, array.Length);
                             for (var i = 0; i < 2; i++) {
-                                Assert.IsTrue(array[i] is List<string>);
+                                Assert.IsInstanceOf<IList<string>>(array[i]);
                             }
                         })
                     .Verify(
                         "c5",
                         value => {
-                            var array = (List<string>[][])value;
+                            var array = (IList<string>[][])value;
                             Assert.AreEqual(2, array.Length);
                         });
 
@@ -327,11 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 
@@ -351,9 +334,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpression(fields[0], "new double[1]")
                     .WithExpression(fields[1], "new Integer[2*2]")
-                    .WithExpression(fields[2], $"new {dateTimeEx}[intPrimitive]")
+                    .WithExpression(fields[2], $"new {dateTimeEx}[IntPrimitive]")
                     .WithExpression(fields[3], "new double[1][2]")
-                    .WithExpression(fields[4], $"new {dateTimeEx}[intPrimitive][intPrimitive]");
+                    .WithExpression(fields[4], $"new {dateTimeEx}[IntPrimitive][IntPrimitive]");
 
                 builder.WithStatementConsumer(
                     stmt => {
@@ -380,11 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 
@@ -404,22 +383,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.TryInvalidCompile(
                     "select new double['a'] from SupportBean",
-                    "Failed to validate select-clause expression 'new double[\"a\"]': New-keyword with an array-type result requires an Integer-typed dimension but received type 'String'");
+                    "Failed to validate select-clause expression 'new double[\"a\"]': New-keyword with an array-type result requires an Integer-typed dimension but received type 'System.String'");
                 env.TryInvalidCompile("select new double[1]['a'] from SupportBean", "skip");
 
                 // Initializers-provided
                 //
                 env.TryInvalidCompile(
                     "select new double[] {null} from SupportBean",
-                    "Failed to validate select-clause expression 'new double[] {null}': Array element type mismatch: Expecting type double but received null");
+                    "Failed to validate select-clause expression 'new double[] {null}': Array element type mismatch: Expecting type System.Double but received null");
 
                 env.TryInvalidCompile(
                     "select new String[] {1} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {1}': Array element type mismatch: Expecting type String but received type int");
+                    "Failed to validate select-clause expression 'new String[] {1}': Array element type mismatch: Expecting type System.String but received type System.Int32");
 
                 env.TryInvalidCompile(
                     "select new String[] {IntPrimitive} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {IntPrimitive}': Array element type mismatch: Expecting type String but received type Integer");
+                    "Failed to validate select-clause expression 'new String[] {IntPrimitive}': Array element type mismatch: Expecting type System.String but received type System.Nullable<System.Int32>");
 
                 env.TryInvalidCompile(
                     "select new String[][] {IntPrimitive} from SupportBean",
@@ -427,11 +406,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.TryInvalidCompile(
                     "select new String[][] {{IntPrimitive}} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {{IntPrimitive}}': Array element type mismatch: Expecting type String but received type Integer");
+                    "Failed to validate select-clause expression 'new String[] {{IntPrimitive}}': Array element type mismatch: Expecting type System.String but received type System.Nullable<System.Int32>");
 
                 env.TryInvalidCompile(
                     "select new String[] {{'x'}} from SupportBean",
-                    "Failed to validate select-clause expression 'new String[] {{\"x\"}}': Array element type mismatch: Expecting type String but received type String[]");
+                    "Failed to validate select-clause expression 'new String[] {{\"x\"}}': Array element type mismatch: Expecting type System.String but received type System.String[]");
 
                 // Runtime null handling
                 //
@@ -467,14 +446,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
+                var atomicLong = typeof(AtomicLong).FullName;
+                
                 // try variable
-                env.CompileDeploy(
-                    "create constant variable java.util.concurrent.atomic.AtomicLong cnt = new java.util.concurrent.atomic.AtomicLong(1)");
+				env.CompileDeploy($"create constant variable {atomicLong} cnt = new {atomicLong}(1)");
 
                 // try shallow invalid cases
                 env.TryInvalidCompile(
                     "select new Dummy() from SupportBean",
-                    "Failed to validate select-clause expression 'new Dummy()': Failed to resolve type parameter 'Dummy'");
+					"Failed to validate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
 
                 env.TryInvalidCompile(
                     "select new SupportPrivateCtor() from SupportBean",
@@ -516,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "new SupportBean(\"A\",IntPrimitive) as c0, " +
                           "new SupportBean(\"B\",IntPrimitive+10), " +
                           "new SupportBean() as c2, " +
-                          "new SupportBean(\"ABC\",0).getTheString() as c3 " +
+				          "new SupportBean(\"ABC\",0).GetTheString() as c3 " +
                           "from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
                 var expectedAggType = new object[][] {
@@ -537,8 +517,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     @event => {
                         AssertSupportBean(@event.Get("c0"), new object[] { "A", 10 });
                         AssertSupportBean(
-                            ((IDictionary<string, object>)@event.Underlying).Get(
-                                "new SupportBean(\"B\",IntPrimitive+10)"),
+                            @event.Underlying.AsStringDictionary().Get("new SupportBean(\"B\",IntPrimitive+10)"),
                             new object[] { "B", 20 });
                         AssertSupportBean(@event.Get("c2"), new object[] { null, 0 });
                         Assert.AreEqual("ABC", @event.Get("c3"));
@@ -549,11 +528,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
 
             private void AssertSupportBean(

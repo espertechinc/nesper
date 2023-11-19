@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
     /// <summary>
     ///     Represents an attribute in a schema.
     /// </summary>
-    [Serializable]
     public class SchemaItemAttribute : SchemaItem
     {
         /// <summary>

@@ -65,6 +65,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             IDictionary<string, object> myMapTypeInv = new Dictionary<string, object>();
             myMapTypeInv.Put("P0", typeof(long));
             myMapTypeInv.Put("P1", typeof(long));

@@ -44,8 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationCollToUnderlyingArrayForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar(
-                    typeof(ICollection<EventBean>),
+                .DeclareVar<ICollection<EventBean>>(
                     "events",
                     enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("events")
@@ -53,13 +52,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                     TypeHelper.GetArrayType(targetType.UnderlyingType),
                     "array",
                     NewArrayByLength(targetType.UnderlyingType, ExprDotName(Ref("events"), "Count")))
-                .DeclareVar(
-                    typeof(IEnumerator<EventBean>),
+                .DeclareVar<IEnumerator<EventBean>>(
                     "en",
                     ExprDotMethod(Ref("events"), "GetEnumerator"))
                 .DeclareVar<int>("index", Constant(0))
                 .WhileLoop(ExprDotMethod(Ref("en"), "MoveNext"))
-                .DeclareVar<EventBean>("@event", Cast(typeof(EventBean), ExprDotMethod(Ref("en"), "next")))
+                .DeclareVar<EventBean>("@event", Cast(typeof(EventBean), ExprDotName(Ref("en"), "Current")))
                 .AssignArrayElement(
                     "array",
                     Ref("index"),

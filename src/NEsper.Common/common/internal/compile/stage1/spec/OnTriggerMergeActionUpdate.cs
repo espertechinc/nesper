@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage1.spec
     /// <summary>
     ///     Specification for the merge statement update-part.
     /// </summary>
-    [Serializable]
     public class OnTriggerMergeActionUpdate : OnTriggerMergeAction
     {
         public OnTriggerMergeActionUpdate(

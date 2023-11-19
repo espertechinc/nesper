@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// For use with on-merge clauses, deletes from a named window if matching rows are found.
     /// </summary>
-    [Serializable]
     public class OnMergeMatchedDeleteAction : OnMergeMatchedAction
     {
         /// <summary>Ctor. </summary>
@@ -37,7 +36,7 @@ namespace com.espertech.esper.common.client.soda
 
         public void ToEPL(TextWriter writer)
         {
-            writer.Write("then delete");
+            writer.Write("delete");
             if (WhereClause != null) {
                 writer.Write(" where ");
                 WhereClause.ToEPL(writer, ExpressionPrecedenceEnum.MINIMUM);

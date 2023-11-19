@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.module
     /// <summary>
     /// Exception thrown when an EPL text could not be parsed.
     /// </summary>
-    [Serializable]
     public class ParseException : Exception
     {
         /// <summary>Ctor. </summary>

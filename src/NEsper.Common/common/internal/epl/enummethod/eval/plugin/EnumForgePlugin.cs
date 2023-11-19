@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.hook.enummethod;
@@ -70,10 +71,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var inputType = args.EnumcollType;
+            
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
-                .AddParam(PARAMS);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(inputType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+            
             methodNode.Block.DeclareVar(_mode.StateClass, "state", NewInstance(_mode.StateClass));
 
             // call set-parameter for each non-lambda expression
@@ -111,6 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                             var eventName = GetNameExt("resultEvent", indexParameter, i);
                             var propName = GetNameExt("props", indexParameter, i);
                             methodNode.Block
+                                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                                 .DeclareVar<ObjectArrayEventBean>(
                                     eventName,
                                     NewInstance(

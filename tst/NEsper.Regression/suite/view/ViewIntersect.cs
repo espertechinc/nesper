@@ -1038,7 +1038,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(type)#time(1 hour)#unique(device)#sort(1, measurement desc) as high order by measurement asc";
+                    "@name('s0') SELECT irstream * FROM SupportSensorEvent#groupwin(Type)#time(1 hour)#unique(Device)#sort(1, Measurement desc) as high order by Measurement asc";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventOne = new SupportSensorEvent(1, "Temperature", "Device1", 5.0, 96.5);

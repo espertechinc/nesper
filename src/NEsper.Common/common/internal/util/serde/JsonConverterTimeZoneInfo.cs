@@ -15,12 +15,12 @@ namespace com.espertech.esper.common.@internal.util.serde
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            var timeZoneId = reader.GetString();
-            if (timeZoneId == null) {
+            var serializedTimeZoneInfo = reader.GetString();
+            if (serializedTimeZoneInfo == null) {
                 return null;
             }
 
-            return TimeZoneInfo.FindSystemTimeZoneById(timeZoneId);
+            return TimeZoneInfo.FromSerializedString(serializedTimeZoneInfo);
         }
 
         public override void Write(
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.util.serde
                 writer.WriteNullValue();
             }
             else {
-                writer.WriteStringValue(value.Id.AsSpan());
+                writer.WriteStringValue(value.ToSerializedString().AsSpan());
             }
         }
     }

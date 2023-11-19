@@ -10,10 +10,8 @@ using System;
 using System.Collections.Generic;
 using System.Xml;
 
-using Avro;
 using Avro.Generic;
 
-using com.espertech.esper.common.client;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -27,8 +25,7 @@ using static com.espertech.esper.common.@internal.util.CollectionUtil; // twoEnt
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyDynamicNestedRootedNonSimple : RegressionExecution
@@ -179,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         Exists(1), Exists(2), NotExists(), Exists(3), Exists(4), NotExists()
                     })
             };
-            var schemasJsonProvided = "@JsonSchema(className='" +
+            var schemasJsonProvided = "@JsonSchema(ClassName='" +
                                       typeof(MyLocalJsonProvided).FullName +
                                       "') @public @buseventtype @name('schema') @JsonSchema(dynamic=true) create json schema " +
                                       JSONPROVIDED_TYPENAME +
@@ -239,13 +236,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.UndeployAll();
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public MyLocalJsonProvidedItem item;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedItem
         {
             public object[] indexed;

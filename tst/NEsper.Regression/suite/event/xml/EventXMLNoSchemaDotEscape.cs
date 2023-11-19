@@ -10,8 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.regressionlib.framework;
 
-using NUnit.Framework;
-
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml

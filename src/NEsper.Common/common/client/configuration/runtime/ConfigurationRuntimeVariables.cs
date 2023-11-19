@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds variables settings.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimeVariables
     {
         /// <summary>

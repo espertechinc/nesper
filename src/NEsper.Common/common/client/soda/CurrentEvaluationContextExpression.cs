@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Current execution context supplies the current expression execution context.
     /// </summary>
-    [Serializable]
     public class CurrentEvaluationContextExpression : ExpressionBase
     {
         /// <summary>

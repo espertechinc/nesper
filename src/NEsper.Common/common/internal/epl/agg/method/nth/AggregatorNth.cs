@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
         {
             method.Block.StaticMethod(
                 typeof(AggregatorNthSerde),
-                "write",
+                "Write",
                 output,
                 unitKey,
                 writer,
@@ -142,7 +142,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.nth
                     state.Ref,
                     StaticMethod(
                         typeof(AggregatorNthSerde),
-                        "read",
+                        "Read",
                         input,
                         unitKey,
                         serdeValue,

@@ -33,6 +33,6 @@ namespace com.espertech.esper.common.@internal.@event.path
     {
         public const string RESOLVE_METHOD = "Resolve";
         public const string RESOLVE_PRIVATE_BEAN_METHOD = "ResolvePrivateBean";
-        public const string GETEVENTSERDEFACTORY = "GetEventSerdeFactory";
+        public const string EVENTSERDEFACTORY = "EventSerdeFactory";
     }
 } // end of namespace

@@ -854,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "insert into MyWindowDSI select * from SupportOverrideOneA;\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportOverrideOneA("1a", "1", "base"));
-                env.AssertIterator("create", iterator => Assert.AreEqual("1a", iterator.Advance().Get("val")));
+                env.AssertIterator("create", iterator => Assert.AreEqual("1a", iterator.Advance().Get("Val")));
                 env.UndeployAll();
             }
         }
@@ -4148,7 +4148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create variable
                 env.CompileDeploy("@public create variable string var_1_1_1", path);
-                env.CompileDeploy("on SupportVariableSetEvent(variableName='var_1_1_1') set var_1_1_1 = value", path);
+                env.CompileDeploy("on SupportVariableSetEvent(VariableName='var_1_1_1') set var_1_1_1 = value", path);
 
                 // fill window
                 var stringValues = new string[] { "c0", "c1", "c2" };
@@ -4361,7 +4361,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var epl = "@name('create') create window MyWindowPS#keepall as MySimpleKeyValueMap;\n" +
                           "insert into MyWindowPS select TheString as key, LongBoxed as value from SupportBean;\n" +
                           "@name('s0') select prior(1, key) as priorKeyOne, prior(2, key) as priorKeyTwo from MyWindowPS;\n" +
-                          "@name('s3') select Average from MyWindowPS#uni(value);\n";
+                          "@name('s3') select average from MyWindowPS#uni(value);\n";
                 env.CompileDeploy(epl).AddListener("create").AddListener("s0").AddListener("s3");
 
                 env.AssertStatement(
@@ -4426,7 +4426,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 SendSupportBean(env, "E2", 2L);
                 env.AssertPropsNew("create", fieldsWin, new object[] { "E2", 2L });
 
-                var stmtTextSelectOne = "@name('s0') select irstream Average from MyWindowLCL#uni(value)";
+                var stmtTextSelectOne = "@name('s0') select irstream average from MyWindowLCL#uni(value)";
                 env.CompileDeploy(stmtTextSelectOne, path).AddListener("s0");
                 env.AssertPropsPerRowIterator("s0", fieldsStat, new object[][] { new object[] { 1.5d } });
 
@@ -4484,7 +4484,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // This replays into MyWindow
                 var stmtTextSelectTwo = "@name('s2') select key, value, Symbol from MyWindowLCJ as s0" +
                                         " left outer join SupportMarketDataBean#keepall as s1" +
-                                        " on s0.Value = s1.Volume";
+                                        " on s0.value = s1.Volume";
                 env.CompileDeploy(stmtTextSelectTwo, path).AddListener("s2");
                 env.AssertListenerNotInvoked("s2");
                 env.AssertPropsPerRowIterator(
@@ -4553,7 +4553,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             {
                 var fields = new string[] { "key", "value" };
                 var epl = "@name('create') create window MyWindowPAT#keepall as MySimpleKeyValueMap;\n" +
-                          "@name('s0') select a.key as key, a.Value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')];\n" +
+                          "@name('s0') select a.key as key, a.value as value from pattern [every a=MyWindowPAT(key='S1') or a=MyWindowPAT(key='S2')];\n" +
                           "insert into MyWindowPAT select TheString as key, LongBoxed as value from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 

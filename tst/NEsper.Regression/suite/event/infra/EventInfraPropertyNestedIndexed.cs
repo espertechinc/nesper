@@ -89,13 +89,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Json-Class-Provided
             var eplJsonProvided =
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJSONProvidedLvl4).FullName +
                 "')" +
                 " create json schema " +
                 JSONPROVIDED_TYPENAME +
                 "_4();\n" +
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJSONProvidedLvl3).FullName +
                 "')" +
                 " create json schema " +
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "_3(lvl3 int, l4 " +
                 JSONPROVIDED_TYPENAME +
                 "_4[]);\n" +
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJSONProvidedLvl2).FullName +
                 "')" +
                 " create json schema " +
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "_2(lvl2 int, l3 " +
                 JSONPROVIDED_TYPENAME +
                 "_3[]);\n" +
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJSONProvidedLvl1).FullName +
                 "')" +
                 " create json schema " +
@@ -119,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "_1(lvl1 int, l2 " +
                 JSONPROVIDED_TYPENAME +
                 "_2[]);\n" +
-                "@JsonSchema(className='" +
+                "@JsonSchema(ClassName='" +
                 typeof(MyLocalJSONProvidedTop).FullName +
                 "') @name('types') @public @buseventtype" +
                 " create json schema " +
@@ -477,7 +477,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             int lvl3,
             int lvl4);
 
-        [Serializable]
         public class InfraNestedIndexPropTop
         {
             private InfraNestedIndexedPropLvl1[] l1;
@@ -490,7 +489,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public InfraNestedIndexedPropLvl1[] L1 => l1;
         }
 
-        [Serializable]
         public class InfraNestedIndexedPropLvl1
         {
             private InfraNestedIndexedPropLvl2[] l2;
@@ -509,7 +507,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl1 => lvl1;
         }
 
-        [Serializable]
         public class InfraNestedIndexedPropLvl2
         {
             private InfraNestedIndexedPropLvl3[] l3;
@@ -528,7 +525,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl2 => lvl2;
         }
 
-        [Serializable]
         public class InfraNestedIndexedPropLvl3
         {
             private InfraNestedIndexedPropLvl4[] l4;
@@ -547,7 +543,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl3 => lvl3;
         }
 
-        [Serializable]
         public class InfraNestedIndexedPropLvl4
         {
             private int lvl4;
@@ -560,34 +555,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             public int Lvl4 => lvl4;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedTop
         {
             public MyLocalJSONProvidedLvl1[] l1;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl1
         {
             public MyLocalJSONProvidedLvl2[] l2;
             public int lvl1;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl2
         {
             public MyLocalJSONProvidedLvl3[] l3;
             public int lvl2;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl3
         {
             public MyLocalJSONProvidedLvl4[] l4;
             public int lvl3;
         }
 
-        [Serializable]
         public class MyLocalJSONProvidedLvl4
         {
             public int lvl4;

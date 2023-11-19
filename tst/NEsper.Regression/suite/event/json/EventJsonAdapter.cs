@@ -6,27 +6,21 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Text.Json;
 
-using Avro.Util;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.json.util;
 using com.espertech.esper.common.client.module;
-using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
-using Newtonsoft.Json;
-
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
     public class EventJsonAdapter
@@ -139,15 +133,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@Public @buseventtype create schema LocalEvent as " +
-                    typeof(LocalEvent).FullName +
-                    ";\n" +
-                    "@JsonSchemaField(name=mydate, adapter=" +
-                    nameof(SupportJsonFieldAdapterStringDate) +
-                    ") " +
-                    "@JsonSchemaField(name=point, adapter=" +
-                    nameof(SupportJsonFieldAdapterStringPoint) +
-                    ") " +
+                    "@Public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n" +
+                    "@JsonSchemaField(name=mydate, adapter=" + nameof(SupportJsonFieldAdapterStringDate) + ") " +
+                    "@JsonSchemaField(name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
                     EventRepresentationChoice.JSON.GetAnnotationText() +
                     " insert into JsonEvent select point, mydate from LocalEvent;\n" +
                     "@name('s0') select point, mydate from JsonEvent;\n" +
@@ -163,8 +151,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 DoAssert(
                     env,
                     jsonFilled,
-                    new object[]
-                        { new Point(7, 14), DateTimeParsingFunctions.ParseDefaultEx("2002-05-1T08:00:01.999") });
+                    new object[] {
+                        new Point(7, 14),
+                        DateTimeParsingFunctions.ParseDefaultEx("2002-05-1T08:00:01.999")
+                    });
 
                 env.UndeployAll();
             }
@@ -174,16 +164,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@Public @buseventtype " +
-                          "@JsonSchemaField(name=point, adapter=" +
-                          nameof(SupportJsonFieldAdapterStringPoint) +
-                          ") " +
-                          "@JsonSchemaField(name=mydate, adapter=" +
-                          nameof(SupportJsonFieldAdapterStringDate) +
-                          ") " +
-                          "create json schema JsonEvent(point java.awt.Point, mydate Date);\n" +
-                          "@name('s0') select point, mydate from JsonEvent;\n" +
-                          "@name('s1') select * from JsonEvent;\n";
+                var point = typeof(Point);
+                var epl =
+                    "@public @buseventtype " +
+                    "@JsonSchemaField(name=point, adapter=" + nameof(SupportJsonFieldAdapterStringPoint) + ") " +
+                    "@JsonSchemaField(name=mydate, adapter=" + nameof(SupportJsonFieldAdapterStringDate) + ") " +
+                    "create json schema JsonEvent(point " + point + ", mydate DateTime);\n" + 
+                    "@name('s0') select point, mydate from JsonEvent;\n" +
+                    "@name('s1') select * from JsonEvent;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
                 var jsonFilled = "{\"point\":\"7,14\",\"mydate\":\"2002-05-01T08:00:01.999\"}";
@@ -191,7 +179,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     env,
                     jsonFilled,
                     new object[]
-                        { new Point(7, 14), DateTimeParsingFunctions.ParseDefaultEx("2002-05-1T08:00:01.999") });
+                    {
+                        new Point(7, 14), DateTimeParsingFunctions.ParseDefaultEx("2002-05-1T08:00:01.999")
+                    });
 
                 var jsonNulled = "{\"point\":null,\"mydate\":null}";
                 SendAssert(env, jsonNulled, new object[] { null, null });
@@ -224,7 +214,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 });
         }
 
-        [Serializable]
         public class LocalEvent
         {
             private readonly Point point;

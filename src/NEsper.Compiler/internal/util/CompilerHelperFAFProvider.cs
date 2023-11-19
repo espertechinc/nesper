@@ -257,8 +257,6 @@ namespace com.espertech.esper.compiler.@internal.util
 				classScope,
 				new List<CodegenTypedParam>());
 
-			ctor.Block.AssignRef(Ref("statementFields"), NewInstanceInner(statementFieldsClassName));
-
 			// initialize-event-types
 			var initializeEventTypesMethod = MakeInitEventTypesOptional(classScope, compileTimeServices);
 
@@ -272,7 +270,10 @@ namespace com.espertech.esper.compiler.@internal.util
 				.AddParam(typeof(EPStatementInitServices), EPStatementInitServicesConstants.REF.Ref);
 			initializeQueryMethod.Block.AssignMember(
 				MEMBERNAME_QUERY_METHOD_PROVIDER,
-				NewInstanceInner(queryMethodProviderClassName, EPStatementInitServicesConstants.REF));
+				NewInstanceInner(
+					queryMethodProviderClassName,
+					EPStatementInitServicesConstants.REF,
+					Ref("statementFields")));
 
 			// get-execute
 			var queryMethodProviderProperty = CodegenProperty.MakePropertyNode(
@@ -297,6 +298,7 @@ namespace com.espertech.esper.compiler.@internal.util
 				"ModuleDependencies",
 				methods,
 				properties);
+			
 			if (initializeEventTypesMethod != null) {
 				CodegenStackGenerator.RecursiveBuildStack(
 					initializeEventTypesMethod,
@@ -317,8 +319,10 @@ namespace com.espertech.esper.compiler.@internal.util
 				properties);
 
 			IList<CodegenTypedParam> members = new List<CodegenTypedParam>();
-			members.Add(
-				new CodegenTypedParam(typeof(FAFQueryMethodProvider), MEMBERNAME_QUERY_METHOD_PROVIDER).WithFinal(false));
+			members.Add(new CodegenTypedParam(typeof(FAFQueryMethodProvider), MEMBERNAME_QUERY_METHOD_PROVIDER).WithFinal(false));
+			members.Add(new CodegenTypedParam(statementFieldsClassName, "statementFields", false, false)
+				.WithFinal(true)
+				.WithInitializer(NewInstanceInner(statementFieldsClassName)));
 
 			var clazz = new CodegenClass(
 				CodegenClassType.FAFPROVIDER,

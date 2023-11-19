@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                 .DeclareVar<ExprFilterSpecLookupable>(
                     "lookupable",
                     LocalMethod(lookupable.MakeCodegen(method, symbols, classScope)))
-                .DeclareVar(typeof(FilterOperator), "filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
+                .DeclareVar<FilterOperator>("filterOperator", EnumValue(typeof(FilterOperator), filterOperator.GetName()));
 
             // var getFilterValue = CodegenMethod.MakeParentNode(typeof(FilterValueSetParam), GetType(), classScope)
             //     .AddParam(FilterSpecParam.GET_FILTER_VALUE_FP);
@@ -141,7 +141,7 @@ namespace com.espertech.esper.common.@internal.filterspec
                         classScope));
             }
 
-            getFilterValue.Block.MethodReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
+            getFilterValue.Block.BlockReturn(FilterValueSetParamImpl.CodegenNew(Ref("value")));
 
             method.Block.MethodReturn(param);
             return LocalMethod(method);

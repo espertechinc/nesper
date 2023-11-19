@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.configuration.runtime
     /// <summary>
     ///     Holds configuration for a plugin such as an input/output adapter loader.
     /// </summary>
-    [Serializable]
     public class ConfigurationRuntimePluginLoader
     {
         /// <summary>

@@ -18,8 +18,6 @@ using NUnit.Framework;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
-//using SupportBean_A = com.espertech.esper.common.@internal.support.SupportBean_A;
-
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternCompositeSelect

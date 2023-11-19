@@ -13,6 +13,8 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -20,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCastNodeForgeNonConstEval : ExprEvaluator
     {
-        private readonly ExprCastNodeForge forge;
-        private readonly ExprEvaluator evaluator;
-        private readonly ExprCastNode.CasterParserComputer casterParserComputer;
+        private readonly ExprCastNode.CasterParserComputer _casterParserComputer;
+        private readonly ExprEvaluator _evaluator;
+        private readonly ExprCastNodeForge _forge;
 
         public ExprCastNodeForgeNonConstEval(
             ExprCastNodeForge forge,
             ExprEvaluator evaluator,
             ExprCastNode.CasterParserComputer casterParserComputer)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
-            this.casterParserComputer = casterParserComputer;
+            _forge = forge;
+            _evaluator = evaluator;
+            _casterParserComputer = casterParserComputer;
         }
 
         public object Evaluate(
@@ -39,9 +41,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
+            var result = _evaluator.Evaluate(eventsPerStream, isNewData, context);
             if (result != null) {
-                result = casterParserComputer.Compute(result, eventsPerStream, isNewData, context);
+                result = _casterParserComputer.Compute(result, eventsPerStream, isNewData, context);
             }
 
             return result;
@@ -53,35 +55,41 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (forge.EvaluationType == null) {
+            var forgeEvaluationType = forge.EvaluationType;
+            if (forgeEvaluationType == null) {
                 return ConstantNull();
             }
 
-            ExprNode child = forge.ForgeRenderableCast.ChildNodes[0];
-            var type = child.Forge.EvaluationType;
-            if (type == null) {
+            var child = forge.ForgeRenderableCast.ChildNodes[0];
+            var childType = child.Forge.EvaluationType;
+            if (childType == null) {
                 return ConstantNull();
             }
 
-            var typeClass = type;
+            // TBD: Should all generated classes be boxed to nullable to allow
+            //    for nullable values in case we do primitive conversion?
+            if (childType.CanBeNull()) {
+                forgeEvaluationType = forgeEvaluationType.GetBoxedType();
+            }
+            
             var methodNode = codegenMethodScope.MakeChild(
-                forge.EvaluationType,
+                forgeEvaluationType,
                 typeof(ExprCastNodeForgeNonConstEval),
                 codegenClassScope);
 
             var block = methodNode.Block
                 .DeclareVar(
-                    typeClass,
+                    childType,
                     "result",
-                    child.Forge.EvaluateCodegen(typeClass, methodNode, exprSymbol, codegenClassScope));
-            if (!typeClass.IsPrimitive) {
+                    child.Forge.EvaluateCodegen(childType, methodNode, exprSymbol, codegenClassScope));
+            if (childType.CanBeNull()) {
                 block.IfRefNullReturnNull("result");
             }
 
             var cast = forge.CasterParserComputerForge.CodegenPremade(
-                forge.EvaluationType,
+                forgeEvaluationType,
                 Ref("result"),
-                typeClass,
+                childType,
                 methodNode,
                 exprSymbol,
                 codegenClassScope);

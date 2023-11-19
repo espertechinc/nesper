@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
     {
         public const string DYNAMIC_PROP_FIELD = "__dyn";
         
-        private readonly string className;
-        private readonly string classNameFull;
-        private readonly CodegenNamespaceScope namespaceScope;
-        private readonly StmtClassForgeableJsonDesc desc;
+        private readonly string _className;
+        private readonly string _classNameFull;
+        private readonly CodegenNamespaceScope _namespaceScope;
+        private readonly StmtClassForgeableJsonDesc _desc;
 
         public StmtClassForgeableJsonUnderlying(
             string className,
@@ -44,10 +44,10 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             CodegenNamespaceScope namespaceScope,
             StmtClassForgeableJsonDesc desc)
         {
-            this.className = className;
-			this.classNameFull = classNameFull;
-            this.namespaceScope = namespaceScope;
-            this.desc = desc;
+            _className = className;
+			_classNameFull = classNameFull;
+            _namespaceScope = namespaceScope;
+            _desc = desc;
         }
 
         public CodegenClass Forge(
@@ -65,15 +65,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
             var properties = new CodegenClassProperties();
             var methods = new CodegenClassMethods();
-            var classScope = new CodegenClassScope(includeDebugSymbols, namespaceScope, className);
-            IList<CodegenTypedParam> explicitMembers = new List<CodegenTypedParam>(desc.PropertiesThisType.Count);
+            var classScope = new CodegenClassScope(includeDebugSymbols, _namespaceScope, _className);
+            IList<CodegenTypedParam> explicitMembers = new List<CodegenTypedParam>(_desc.PropertiesThisType.Count);
             if (needDynamic) {
                 explicitMembers.Add(new CodegenTypedParam(typeof(IDictionary<string, object>), DYNAMIC_PROP_FIELD, false, true));
             }
 
             // add members
-            foreach (var property in desc.PropertiesThisType) {
-                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+            foreach (var property in _desc.PropertiesThisType) {
+                var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
                 explicitMembers.Add(new CodegenTypedParam(field.PropertyType, field.FieldName, false, true));
             }
 
@@ -82,42 +82,66 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             // --------------------------------------------------------------------------------
 
 			var nativeCountProperty = CodegenProperty
-				.MakePropertyNode(typeof(int), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakePropertyNode(typeof(int), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
 			nativeCountProperty.GetterBlock
-				.BlockReturn(Constant(desc.PropertiesThisType.Count + desc.NumFieldsSupertype));
+				.BlockReturn(Constant(_desc.PropertiesThisType.Count + _desc.NumFieldsSupertype));
 			CodegenStackGenerator.RecursiveBuildStack(nativeCountProperty, "NativeCount", methods, properties);
 
 			// --------------------------------------------------------------------------------
-			// - TryGetNativeEntry(string, out KeyValuePair<string, object>
+			// - TryGetNativeEntry(int, out KeyValuePair<string, object>
 			// --------------------------------------------------------------------------------
 
 			var tryGetNativeEntryMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(string), "name")
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(int), "index")
 				.AddParam(new CodegenNamedParam(typeof(KeyValuePair<string, object>), "value").WithOutputModifier())
 				.WithOverride();
 			MakeTryGetNativeEntry(tryGetNativeEntryMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(tryGetNativeEntryMethod, "TryGetNativeEntry", methods, properties);
 
 			// --------------------------------------------------------------------------------
-			// - TrySetNativeValue(string, object)
+			// - TrySetNativeValue(int, object)
 			// --------------------------------------------------------------------------------
 
 			var trySetNativeValueMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(string), "name")
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(int), "index")
 				.AddParam(typeof(object), "value")
 				.WithOverride();
 			MakeTrySetNativeValue(trySetNativeValueMethod, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(trySetNativeValueMethod, "TrySetNativeValue", methods, properties);
 
 			// --------------------------------------------------------------------------------
-			// - NativeEnumerable => IEnumerable<KeyValuePair<string, object>>
+			// TryGetNativeKey(string propertyName, out int index)
+			// --------------------------------------------------------------------------------
+
+			var tryGetNativeKeyMethod = CodegenMethod
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(string), "name")
+				.AddParam(new CodegenNamedParam(typeof(int), "index").WithOutputModifier())
+				.WithOverride();
+			MakeTryGetNativeKey(tryGetNativeKeyMethod, classScope);
+			CodegenStackGenerator.RecursiveBuildStack(tryGetNativeKeyMethod, "TryGetNativeKey", methods, properties);
+			
+			// --------------------------------------------------------------------------------
+			// TryGetNativeKeyName(int index, out string propertyName)
+			// --------------------------------------------------------------------------------
+
+			var tryGetNativeKeyNameMethod = CodegenMethod
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(int), "index")
+				.AddParam(new CodegenNamedParam(typeof(string), "name").WithOutputModifier())
+				.WithOverride();
+			MakeTryGetNativeKeyName(tryGetNativeKeyNameMethod, classScope);
+			CodegenStackGenerator.RecursiveBuildStack(tryGetNativeKeyNameMethod, "TryGetNativeKeyName", methods, properties);
+
+			// --------------------------------------------------------------------------------
+			// - NativeEnumerable => IEnumerable<KeyValuePair<int, object>>
 			// --------------------------------------------------------------------------------
 
 			var nativeEnumerable = CodegenProperty
-				.MakePropertyNode(typeof(IEnumerable<KeyValuePair<string, object>>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakePropertyNode(typeof(IEnumerable<KeyValuePair<int, object>>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.WithOverride();
 			MakeNativeEnumerable(nativeEnumerable, classScope);
 			CodegenStackGenerator.RecursiveBuildStack(nativeEnumerable, "NativeEnumerable", methods, properties);
@@ -127,8 +151,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeContainsKeyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
-				.AddParam(typeof(string), "name")
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.AddParam(typeof(int), "index")
 				.WithOverride();
 			MakeNativeContainsKey(nativeContainsKeyMethod);
 			CodegenStackGenerator.RecursiveBuildStack(nativeContainsKeyMethod, "NativeContainsKey", methods, properties);
@@ -138,7 +162,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var nativeWriteMethod = CodegenMethod
-				.MakeParentNode(typeof(void), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(void), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(typeof(JsonSerializationContext), "context")
 				.WithOverride();
 			MakeNativeWrite(nativeWriteMethod, classScope);
@@ -162,29 +186,37 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
                 // - JsonValues => IDictionary<string, object>
                 var jsonValuesProperty = CodegenProperty
-                    .MakePropertyNode(typeof(IDictionary<string, object>), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+                    .MakePropertyNode(typeof(IDictionary<string, object>), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
                     .WithOverride();
-                jsonValuesProperty.GetterBlock.BlockReturn(Ref(DYNAMIC_PROP_FIELD));
+                MakeJsonValues(needDynamic, jsonValuesProperty);
                 CodegenStackGenerator.RecursiveBuildStack(jsonValuesProperty, "JsonValues", methods, properties);
             }
 
             var clazz = new CodegenClass(
                 CodegenClassType.JSONEVENT,
-                className,
+                _className,
                 classScope,
                 explicitMembers,
                 ctor,
                 methods,
                 properties,
                 EmptyList<CodegenInnerClass>.Instance);
-            if (desc.OptionalSupertype == null) {
+            if (_desc.OptionalSupertype == null) {
 				clazz.BaseList.AssignType(typeof(JsonEventObjectBase));
             }
             else {
-				clazz.BaseList.AssignType(desc.OptionalSupertype.UnderlyingType);
+				clazz.BaseList.AssignType(_desc.OptionalSupertype.UnderlyingType);
             }
 
             return clazz;
+        }
+
+        private static void MakeJsonValues(
+	        bool needDynamic,
+	        CodegenProperty property)
+        {
+	        property.GetterBlock.BlockReturn(
+		        needDynamic ? Ref(DYNAMIC_PROP_FIELD) : EnumValue(typeof(EmptyDictionary<string, object>), "Instance"));
         }
 
         private void MakeNativeEnumerable(
@@ -193,15 +225,17 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
         {
             var getter = nativeEnumerable.GetterBlock;
 			
-            getter.DeclareVar<IList<KeyValuePair<string, object>>>("result", NewInstance<List<KeyValuePair<string, object>>>());
+            getter.DeclareVar<IList<KeyValuePair<int, object>>>("result", NewInstance<List<KeyValuePair<int, object>>>());
 
-            foreach (var property in desc.PropertiesThisType) {
-                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-                var name = Constant(property.Key);
+            var index = 0;
+            foreach (var property in _desc.PropertiesThisType) {
+                var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                //var name = Constant(property.Key);
                 var value = Ref(field.FieldName);
-                var entry = NewInstance(typeof(KeyValuePair<string, object>), name, value);
+                var entry = NewInstance(typeof(KeyValuePair<int, object>), Constant(index), value);
 
                 getter.ExprDotMethod(Ref("result"), "Add", entry);
+                index++;
             }
 
             // Enumerable.Concat(result, base.NativeEnumerable);
@@ -223,7 +257,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             CodegenMethod method,
             CodegenClassScope classScope)
         {
-            if (desc.OptionalSupertype != null && !desc.OptionalSupertype.Types.IsEmpty()) {
+            if (_desc.OptionalSupertype != null && !_desc.OptionalSupertype.Types.IsEmpty()) {
                 method.Block
                     .ExprDotMethod(Ref("base"), "NativeWrite", Ref("context"));
             }
@@ -231,9 +265,9 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
             method.Block
                 .DeclareVar<Utf8JsonWriter>("writer", ExprDotName(Ref("context"), "Writer"));
 			
-            foreach (var property in desc.PropertiesThisType) {
-                var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
-                var forge = desc.Forges.Get(property.Key);
+            foreach (var property in _desc.PropertiesThisType) {
+                var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
+                var forge = _desc.Forges.Get(property.Key);
                 var fieldName = field.FieldName;
                 var write = forge.SerializerForge.CodegenSerialize(
                     new JsonSerializerForgeRefs(Ref("context"), Ref(fieldName), Constant(property.Key)),
@@ -250,27 +284,27 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenClassScope classScope)
 		{
 			var toEntry = method
-				.MakeChild(typeof(KeyValuePair<string, object>), this.GetType(), classScope)
+				.MakeChild(typeof(KeyValuePair<string, object>), GetType(), classScope)
 				.AddParam(typeof(string), "name")
 				.AddParam(typeof(object), "value");
 			toEntry.Block.MethodReturn(NewInstance(typeof(KeyValuePair<string, object>), Ref("name"), Ref("value")));
-
-			var cases = GetCasesNumberNtoM(desc);
-			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			
+			var cases = GetCasesNumberNtoM(_desc);
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("index"), cases, true, false);
 
 			if (method.IsOverride) {
 				switchStmt.DefaultBlock
-					.BlockReturn(ExprDotMethod(Ref("base"), "TryGetNativeEntry", Ref("name"), OutputVariable("value")));
+					.BlockReturn(ExprDotMethod(Ref("base"), "TryGetNativeEntry", Ref("index"), OutputVariable("value")));
 			}
 			else {
 				switchStmt.DefaultBlock
 					.AssignRef("value", DefaultValue())
 					.BlockReturn(ConstantFalse());
 			}
-
+			
 			var index = 0;
-			foreach (var property in desc.PropertiesThisType) {
-				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+			foreach (var property in _desc.PropertiesThisType) {
+				var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
 				switchStmt.Blocks[index]
 					.AssignRef("value", LocalMethod(toEntry, Constant(property.Key), Ref(field.FieldName)))
 					.BlockReturn(ConstantTrue());
@@ -282,13 +316,13 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			CodegenMethod method,
 			CodegenClassScope classScope)
 		{
-			var cases = GetCasesNumberNtoM(desc);
-			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			var cases = GetCasesNumberNtoM(_desc);
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("index"), cases, true, false);
 			
 			if (method.IsOverride) {
 				switchStmt
 					.DefaultBlock
-					.BlockReturn(ExprDotMethod(Ref("base"), "TrySetNativeValue", Ref("name"), Ref("value")));
+					.BlockReturn(ExprDotMethod(Ref("base"), "TrySetNativeValue", Ref("index"), Ref("value")));
 			}
 			else {
 				switchStmt
@@ -297,8 +331,8 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 
 			var index = 0;
-			foreach (var property in desc.PropertiesThisType) {
-				var field = desc.FieldDescriptorsInclSupertype.Get(property.Key);
+			foreach (var property in _desc.PropertiesThisType) {
+				var field = _desc.FieldDescriptorsInclSupertype.Get(property.Key);
 				var valueExpression = CodegenLegoCast.CastSafeFromObjectType(field.PropertyType, Ref("value"));
 
 				switchStmt
@@ -308,33 +342,110 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			}
 		}
 
+		/// <summary>
+		/// TryGetNativeKey(string name, out int index)
+		/// </summary>
+		/// <param name="method"></param>
+		/// <param name="classScope"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		private void MakeTryGetNativeKey(
+			CodegenMethod method,
+			CodegenClassScope classScope)
+		{
+			// convert to an array because we need repeatable unmodifiable values
+			var descPropertiesThisType = _desc.PropertiesThisType.ToList();
+			
+			// create the unique cases
+			var cases = descPropertiesThisType
+				.Select(_ => Constant(_.Key))
+				.ToArray();
+			
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("name"), cases, true, false);
+			
+			if (method.IsOverride) {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ExprDotMethod(Ref("base"), "TryGetNativeKey", Ref("name"), OutputVariable("index")));
+			}
+			else {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ConstantFalse());
+			}
+
+			for (var ii = 0; ii < descPropertiesThisType.Count; ii++) {
+				var propertyName = descPropertiesThisType[ii].Key;
+				var propertyIndex = _desc.FieldDescriptorsInclSupertype.Get(propertyName).PropertyNumber;
+				switchStmt.Blocks[ii]
+					.AssignRef(Ref("index"), Constant(propertyIndex))
+					.BlockReturn(ConstantTrue());
+			}
+		}
+		
+		/// <summary>
+		/// TryGetNativeKeyName(int index, out string name)
+		/// </summary>
+		/// <param name="method"></param>
+		/// <param name="classScope"></param>
+		/// <exception cref="NotImplementedException"></exception>
+		private void MakeTryGetNativeKeyName(
+			CodegenMethod method,
+			CodegenClassScope classScope)
+		{
+			// convert to an array because we need repeatable unmodifiable values
+			var descPropertiesThisType = _desc.PropertiesThisType.ToList();
+			
+			// create the unique cases
+			var cases = descPropertiesThisType
+				.Select(_ => Constant(_desc.FieldDescriptorsInclSupertype.Get(_.Key).PropertyNumber))
+				.ToArray();
+			
+			var switchStmt = method.Block.SwitchBlockExpressions(Ref("index"), cases, true, false);
+			
+			if (method.IsOverride) {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ExprDotMethod(Ref("base"), "TryGetNativeKeyName", Ref("index"), OutputVariable("name")));
+			}
+			else {
+				switchStmt
+					.DefaultBlock
+					.BlockReturn(ConstantFalse());
+			}
+
+			for (var ii = 0; ii < descPropertiesThisType.Count; ii++) {
+				var propertyName = descPropertiesThisType[ii].Key;
+				switchStmt.Blocks[ii]
+					.AssignRef(Ref("name"), Constant(propertyName))
+					.BlockReturn(ConstantTrue());
+			}
+		}
+
 		private void MakeNativeContainsKey(CodegenMethod method)
 		{
-			if (desc.OptionalSupertype != null) {
+			if (_desc.OptionalSupertype != null) {
 				method.Block
-					.DeclareVar<bool>("parent", ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("name")))
+					.DeclareVar<bool>("parent", ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("index")))
 					.IfCondition(Ref("parent"))
 					.BlockReturn(ConstantTrue());
 			}
 
-			if (desc.PropertiesThisType.IsEmpty()) {
+			if (_desc.PropertiesThisType.IsEmpty()) {
 				method.Block.MethodReturn(ConstantFalse());
 				return;
 			}
 
-			var names = desc.PropertiesThisType.Keys;
-			var enumerator = names.GetEnumerator();
-			enumerator.MoveNext();
+			var numbers = _desc.PropertiesThisType
+				.Select(_ => _desc.FieldDescriptorsInclSupertype.Get(_.Key))
+				.Select(_ => Op(Ref("index"), "==", Constant(_.PropertyNumber)));
 
-			var or = ExprDotMethod(Ref("name"), "Equals", Constant(enumerator.Current));
-			while (enumerator.MoveNext()) {
-				or = Or(or, ExprDotMethod(Ref("name"), "Equals", Constant(enumerator.Current)));
-			}
+			var or = numbers.Aggregate<CodegenExpression, CodegenExpression>(
+				null, (current, expression) => current == null ? expression : Or(current, expression));
 
 			if (method.IsOverride) {
 				method.Block.IfCondition(or)
 					.BlockReturn(ConstantTrue())
-					.MethodReturn(ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("name")));
+					.MethodReturn(ExprDotMethod(Ref("base"), "NativeContainsKey", Ref("index")));
 			}
 			else {
 				method.Block.MethodReturn(or);
@@ -343,15 +454,15 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 
         private bool NeedDynamic()
         {
-            return desc.IsDynamic && !ParentDynamic();
+            return _desc.IsDynamic && !ParentDynamic();
         }
 
         private bool ParentDynamic()
         {
-            return desc.OptionalSupertype != null && desc.OptionalSupertype.Detail.IsDynamic;
+            return _desc.OptionalSupertype != null && _desc.OptionalSupertype.Detail.IsDynamic;
         }
 
-        public string ClassName => className;
+        public string ClassName => _className;
 
         public StmtClassForgeableType ForgeableType => StmtClassForgeableType.JSONEVENT;
     }

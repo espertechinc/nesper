@@ -9,6 +9,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Linq;
 using System.Reflection;
 
 using com.espertech.esper.common.client;
@@ -502,7 +503,7 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
 
             var timestamp = timeProvider.Time;
             // apply all uncommitted changes
-            foreach (var uncommittedEntry in entry.Uncommitted) {
+            foreach (var uncommittedEntry in entry.Uncommitted.ToArray()) {
                 var cps = variableVersionsPerCP[uncommittedEntry.Key];
                 var reader = cps.Get(uncommittedEntry.Value.First);
                 var versions = reader.VersionsLow;

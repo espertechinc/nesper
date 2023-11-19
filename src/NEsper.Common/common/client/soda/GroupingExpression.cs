@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Grouping-function for use with rollup, cube or grouping sets.
     /// </summary>
-    [Serializable]
     public class GroupingExpression : ExpressionBase
     {
         /// <summary>

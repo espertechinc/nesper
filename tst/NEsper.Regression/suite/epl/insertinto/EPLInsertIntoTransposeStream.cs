@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -551,7 +549,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return result;
         }
 
-        [Serializable]
         public class E1
         {
             private readonly string id;
@@ -570,7 +567,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string OtherId => otherId;
         }
 
-        [Serializable]
         public class E2
         {
             private readonly string id;
@@ -589,7 +585,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string Value => value;
         }
 
-        [Serializable]
         public class EnrichedE2
         {
             private readonly E2 @event;
@@ -608,7 +603,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string OtherId => otherId;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMySchema
         {
             public string p0;

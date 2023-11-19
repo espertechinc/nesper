@@ -97,8 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             AggregationClassNames classNames)
         {
             var timeAbacus = classScope.AddOrGetDefaultFieldSharable(TimeAbacusField.INSTANCE);
-            method.Block.DeclareVar(
-                    typeof(long),
+            method.Block.DeclareVar<long>(
                     "currentTime",
                     ExprDotMethodChain(REF_EXPREVALCONTEXT).Get("TimeProvider").Get("Time"))
                 .IfCondition(Or(EqualsNull(REF_NEXTSWEEPTIME), Relational(REF_NEXTSWEEPTIME, LE, Ref("currentTime"))))
@@ -150,13 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             var method = parent.MakeChild(typeof(void), typeof(AggSvcGroupByReclaimAgedImpl), classScope)
                 .AddParam(typeof(long), "currentTime")
                 .AddParam(typeof(long), REF_CURRENTMAXAGE.Ref);
-            method.Block.DeclareVar(
-                    typeof(ArrayDeque<object>),
+            method.Block.DeclareVar<ArrayDeque<object>>(
                     "removed",
                     NewInstance(typeof(ArrayDeque<object>)))
                 .ForEach(typeof(KeyValuePair<object, object>), "entry", MEMBER_AGGREGATORSPERGROUP)
-                .DeclareVar(
-                    typeof(long),
+                .DeclareVar<long>(
                     "age",
                     Op(
                         Ref("currentTime"),

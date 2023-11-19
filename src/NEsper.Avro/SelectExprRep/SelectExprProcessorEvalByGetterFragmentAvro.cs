@@ -57,7 +57,7 @@ namespace NEsper.Avro.SelectExprRep
         {
             CodegenMethod methodNode = codegenMethodScope.MakeChild(_returnType, GetType(), codegenClassScope);
 
-            CodegenExpressionRef refEPS = exprSymbol.GetAddEPS(methodNode);
+            CodegenExpressionRef refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
                 .DeclareVar<EventBean>(
                     "streamEvent",

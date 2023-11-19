@@ -47,8 +47,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
             var method = parent.MakeChild(typeof(bool?), GetType(), classScope);
             method.Block
-                .DeclareVar(typeof(bool?), "hasRows", ConstantFalse())
-                .DeclareVar(typeof(bool?), "hasNullRow", ConstantFalse());
+                .DeclareVar<bool>("hasRows", ConstantFalse())
+                .DeclareVar<bool>("hasNullRow", ConstantFalse());
             var foreachX = method.Block.ForEach(
                 typeof(EventBean),
                 "subselectEvent",
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     foreachX.DeclareVar(
                         valueRightType,
                         "valueRight",
-                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEPS(method), Constant(0))));
+                        ExprDotUnderlying(ArrayAtIndex(symbols.GetAddEps(method), Constant(0))));
                 }
 
                 foreachX.IfRefNull("valueRight")

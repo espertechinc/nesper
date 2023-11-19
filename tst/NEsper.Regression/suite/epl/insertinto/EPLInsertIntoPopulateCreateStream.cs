@@ -6,11 +6,9 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -26,7 +24,6 @@ using Newtonsoft.Json.Linq;
 // record
 using NUnit.Framework;
 
-using static NEsper.Avro.Extensions.SchemaBuilder;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -250,13 +247,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return record;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyEvent
         {
             public int? myId;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedCompositeEvent
         {
             public MyLocalJsonProvidedMyEvent c1;
@@ -264,7 +259,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public string rule;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedAllMyEvent
         {
             public MyLocalJsonProvidedMyEvent myEvent;
@@ -272,20 +266,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public bool reverse;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSuspectMyEvent
         {
             public MyLocalJsonProvidedMyEvent myEvent;
             public string clazz;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNode
         {
             public string nid;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedNodePlus
         {
             public string npid;

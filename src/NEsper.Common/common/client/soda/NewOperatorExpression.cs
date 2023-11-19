@@ -20,7 +20,6 @@ namespace com.espertech.esper.common.client.soda
     ///     Column names are part of the state and the number of column names must match the number of sub-expressions to the
     ///     expression.
     /// </summary>
-    [Serializable]
     public class NewOperatorExpression : ExpressionBase
     {
         private IList<string> columnNames;

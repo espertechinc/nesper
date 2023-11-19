@@ -97,6 +97,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+            
             var innerMapDef = Collections.SingletonDataMap("p", typeof(string));
             configuration.Common.AddEventType("MyInnerMap", innerMapDef);
             var outerMapDef = Collections.SingletonDataMap("i", "MyInnerMap[]");

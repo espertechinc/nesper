@@ -109,7 +109,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             if (coercionClass != typeof(string)) {
                 if (!coercionClass.IsTypeNumeric()) {
                     throw new ExprValidationException(
-                        "Implicit conversion from datatype '" + coercionClass + "' to numeric is not allowed");
+                        "Implicit conversion from datatype '" + coercionClass.CleanName() + "' to numeric is not allowed");
                 }
             }
 

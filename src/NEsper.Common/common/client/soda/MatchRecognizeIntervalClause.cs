@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Interval used within match recognize. </summary>
-    [Serializable]
     public class MatchRecognizeIntervalClause
     {
         /// <summary>Ctor. </summary>

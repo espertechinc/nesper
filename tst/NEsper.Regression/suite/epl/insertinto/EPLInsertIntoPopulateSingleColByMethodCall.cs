@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client.json.util;
@@ -47,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path,
                 "Bean",
                 "SupportBean",
-                "convertEvent",
+                "ConvertEvent",
                 typeof(BeanEventType),
                 typeof(SupportBean),
                 "SupportMarketDataBean",
@@ -65,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path,
                 "Map",
                 "MapOne",
-                "convertEventMap",
+                "ConvertEventMap",
                 typeof(WrapperEventType),
                 typeof(IDictionary<string, object>),
                 "MapTwo",
@@ -81,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 path,
                 "MapOne",
-                "convertEventMap",
+                "ConvertEventMap",
                 "MapTwo",
                 typeof(MappedEventBean),
                 typeof(Dictionary<string, object>),
@@ -96,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path,
                 "OA",
                 "OAOne",
-                "convertEventObjectArray",
+                "ConvertEventObjectArray",
                 typeof(WrapperEventType),
                 typeof(object[]),
                 "OATwo",
@@ -108,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 path,
                 "OAOne",
-                "convertEventObjectArray",
+                "ConvertEventObjectArray",
                 "OATwo",
                 typeof(ObjectArrayBackedEventBean),
                 typeof(object[]),
@@ -127,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path,
                 "Avro",
                 "AvroOne",
-                "convertEventAvro",
+                "ConvertEventAvro",
                 typeof(WrapperEventType),
                 typeof(GenericRecord),
                 "AvroTwo",
@@ -144,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 path,
                 "AvroOne",
-                "convertEventAvro",
+                "ConvertEventAvro",
                 "AvroTwo",
                 typeof(AvroGenericDataBackedEventBean),
                 typeof(GenericRecord),
@@ -164,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 path,
                 "Json",
                 "JsonOne",
-                "convertEventJson",
+                "ConvertEventJson",
                 typeof(WrapperEventType),
                 typeof(JsonEventObject),
                 "JsonTwo",
@@ -178,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env,
                 path,
                 "JsonOne",
-                "convertEventJson",
+                "ConvertEventJson",
                 "JsonTwo",
                 typeof(object),
                 typeof(object),

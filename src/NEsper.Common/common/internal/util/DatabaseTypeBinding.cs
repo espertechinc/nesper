@@ -46,7 +46,6 @@ namespace com.espertech.esper.common.@internal.util
     ///     Implementation of the DataTypeBinding that uses delegates
     /// </summary>
     /// <typeparam name="T"></typeparam>
-    [Serializable]
     public class ProxyDatabaseTypeBinding<T> : DatabaseTypeBinding
     {
         private readonly DataRetriever dataRetriever;

@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     EvaluationType,
                     typeof(ExprForgeJoinWildcard),
                     codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
+                var refEPS = exprSymbol.GetAddEps(methodNode);
                 methodNode.Block
                     .DeclareVar<EventBean>(
                         "bean",

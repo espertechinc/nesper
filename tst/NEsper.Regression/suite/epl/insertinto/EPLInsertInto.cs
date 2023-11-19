@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -367,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 model = env.CopyMayFail(model);
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
-                var epl = "@name('s0') insert rstream into Event_1_RSOM " +
+                var epl = "@Name('s0') insert rstream into Event_1_RSOM " +
                           "select IntPrimitive, IntBoxed " +
                           "from SupportBean";
                 Assert.AreEqual(epl, model.ToEPL());
@@ -394,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 TryAssertsVariant(env, null, model, "Event_1_OMS");
 
-                var epl = "@name('fl') @public insert into Event_1_OMS(delta, product) " +
+                var epl = "@Name('fl') @public insert into Event_1_OMS(delta, product) " +
                           "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                           "from SupportBean#length(100)";
                 Assert.AreEqual(epl, model.ToEPL());
@@ -457,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var stmtText = "insert into Event_1W (delta, product) " +
                                "select * from SupportBean#length(100)";
-                env.TryInvalidCompile(stmtText, "Wildcard not allowed when insert-into specifies column Order");
+                env.TryInvalidCompile(stmtText, "Wildcard not allowed when insert-into specifies column order");
 
                 // test insert wildcard to wildcard
                 var stmtSelectText = "@name('i0') insert into ABCStream select * from SupportBean";
@@ -505,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     env.CompileWCheckedEx(stmtText);
                     Assert.Fail();
                 }
-                catch (EPCompileException ex) {
+                catch (EPCompileException) {
                     // Expected
                 }
             }
@@ -1090,21 +1089,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtOneTxt = "@name('s1') @public insert into InZone " +
-                                 "select 111 as statementId, mac, locationReportId " +
+                                 "select 111 as statementId, Mac, LocationReportId " +
                                  "from SupportRFIDEvent " +
-                                 "where mac in ('1','2','3') " +
-                                 "and zoneID = '10'";
+                                 "where Mac in ('1','2','3') " +
+                                 "and ZoneID = '10'";
                 env.CompileDeploy(stmtOneTxt, path).AddListener("s1");
 
                 var stmtTwoTxt = "@name('s2') @public insert into OutOfZone " +
-                                 "select 111 as statementId, mac, locationReportId " +
+                                 "select 111 as statementId, Mac, LocationReportId " +
                                  "from SupportRFIDEvent " +
-                                 "where mac in ('1','2','3') " +
-                                 "and zoneID != '10'";
+                                 "where Mac in ('1','2','3') " +
+                                 "and ZoneID != '10'";
                 env.CompileDeploy(stmtTwoTxt, path).AddListener("s2");
 
-                var stmtThreeTxt = "@name('s3') select 111 as eventSpecId, A.locationReportId as locationReportId " +
-                                   " from pattern [every A=InZone -> (timer:interval(1 sec) and not OutOfZone(mac=A.mac))]";
+                var stmtThreeTxt = "@name('s3') select 111 as eventSpecId, A.LocationReportId as LocationReportId " +
+                                   " from pattern [every A=InZone -> (timer:interval(1 sec) and not OutOfZone(Mac=A.Mac))]";
                 env.CompileDeploy(stmtThreeTxt, path).AddListener("s3");
 
                 // try the alert case with 1 event for the mac in question
@@ -1113,7 +1112,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertListenerNotInvoked("s3");
                 env.AdvanceTime(1000);
 
-                env.AssertEqualsNew("s3", "locationReportId", "LR1");
+                env.AssertEqualsNew("s3", "LocationReportId", "LR1");
                 env.ListenerReset("s1");
                 env.ListenerReset("s2");
 
@@ -1127,7 +1126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AdvanceTime(2000);
 
-                env.AssertEqualsNew("s3", "locationReportId", "LR2");
+                env.AssertEqualsNew("s3", "LocationReportId", "LR2");
 
                 env.UndeployAll();
             }
@@ -1297,10 +1296,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                          "@name('schema2') @buseventtype @public create json schema S1 as (Id string);\n";
             }
             else if (rep.Value.IsJsonProvidedClassEvent()) {
-                schema = "@name('schema1') @buseventtype @public @JsonSchema(className='" +
+                schema = "@name('schema1') @buseventtype @public @JsonSchema(ClassName='" +
                          typeof(MyLocalJsonProvidedS0).MaskTypeName() +
                          "') create json schema S0 as ();\n" +
-                         "@name('schema2') @buseventtype @public @JsonSchema(className='" +
+                         "@name('schema2') @buseventtype @public @JsonSchema(ClassName='" +
                          typeof(MyLocalJsonProvidedS1).MaskTypeName() +
                          "') create json schema S1 as ();\n";
             }
@@ -1436,11 +1435,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else {
                 env.CompileDeploy(
-                    targetType.Value.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedTargetContainedSchema)) +
+                    targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetContainedSchema>() +
                     "@public create schema TargetContainedSchema as (c0 int)",
                     path);
                 env.CompileDeploy(
-                    targetType.Value.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedTargetSchema)) +
+                    targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetSchema>() +
                     "@public create schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)",
                     path);
             }
@@ -1496,7 +1495,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyP0P1EventSource
         {
             private readonly string p0;
@@ -1524,7 +1522,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyP0P1EventTarget
         {
             private string p0;
@@ -1565,7 +1562,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string theString;
@@ -1575,7 +1571,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyLocalJsonProvidedS0
         {
             public string theString;
@@ -1589,7 +1584,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// <summary>
         /// Test event; only serializable because it *may* go over the wire  when running remote tests and serialization is just convenient. Serialization generally not used for HA and HA testing.
         /// </summary>
-        [Serializable]
         public class MyLocalJsonProvidedS1
         {
             public string id;
@@ -1600,27 +1594,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedJoin
         {
             public MyLocalJsonProvidedS0 s0;
             public MyLocalJsonProvidedS1 s1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedSourceSchema
         {
             public string p0;
             public int p1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTargetContainedSchema
         {
             public int c0;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedTargetSchema
         {
             public string p0;

@@ -15,8 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.suite.resultset.aggregate.ResultSetAggregationMethodSorted; // assertType
-using NUnit.Framework; // assertEquals
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregationMethodWindow
@@ -210,12 +209,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.TryInvalidCompile(
                     path,
                     "select MyTable.windowcol.first(Id) from SupportBean_S0",
-                    "Failed to validate select-clause expression 'MyTable.windowcol.first(id)': Failed to validate aggregation function parameter expression 'id': Property named 'Id' is not valid in any stream");
+                    "Failed to validate select-clause expression 'MyTable.windowcol.first(Id)': Failed to validate aggregation function parameter expression 'Id': Property named 'Id' is not valid in any stream");
 
                 env.TryInvalidCompile(
                     path,
                     "select MyTable.windowcol.listReference(IntPrimitive) from SupportBean_S0",
-                    "Failed to validate select-clause expression 'MyTable.windowcol.listReference(int...(45 chars)': Invalid number of parameters");
+                    "Failed to validate select-clause expression 'MyTable.windowcol.listReference(Int...(45 chars)': Invalid number of parameters");
 
                 env.UndeployAll();
             }

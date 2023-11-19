@@ -14,9 +14,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertEquals
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -86,13 +84,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                "inner join ST0 st0 on st0.key0 = a.key " +
                                "inner join ST1 st1 on st1.key1 = a.key " +
                                "where " +
-                               "st0.P00 between rangeStart and rangeEnd and st1.P10 between rangeStart and rangeEnd";
+                               "st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 TryAssertion(env, path, eplQuery);
 
                 eplQuery =
                     "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
                     "where st0.key0 = a.key and st1.key1 = a.key and " +
-                    "st0.P00 between rangeStart and rangeEnd and st1.P10 between rangeStart and rangeEnd";
+                    "st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 TryAssertion(env, path, eplQuery);
 
                 env.UndeployAll();
@@ -128,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
-                               "where st0.P00 between rangeStart and rangeEnd and st1.P10 between rangeStart and rangeEnd";
+                               "where st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
@@ -178,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var eplQuery = "@name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
                                "where st0.key0 = a.key and st1.key1 = a.key and " +
-                               "st1.P10 between rangeStart and rangeEnd";
+                               "st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat

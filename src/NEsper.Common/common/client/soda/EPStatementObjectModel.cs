@@ -43,7 +43,6 @@ namespace com.espertech.esper.common.client.soda
     ///         Please see the documentation set for further examples.
     ///     </para>
     /// </summary>
-    [Serializable]
     public class EPStatementObjectModel
     {
         private IList<AnnotationPart> annotations;

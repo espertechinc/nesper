@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.@internal.view.core
     /// <summary>
     /// This exception is thrown to indicate a problem with a view expression.
     /// </summary>
-    [Serializable]
     public sealed class ViewProcessingException : Exception
     {
         /// <summary>

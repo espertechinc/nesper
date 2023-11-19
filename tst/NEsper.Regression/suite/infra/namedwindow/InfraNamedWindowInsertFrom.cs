@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -460,14 +459,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             return SupportInfraUtil.GetDataWindowCountNoContext(env, statementName, windowName);
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyWindowIWOM
         {
             public string a;
             public int b;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedMyWindowIWOMThree
         {
             public string a;

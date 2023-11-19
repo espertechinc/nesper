@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         _propertyGetter.UnderlyingGetCodegen(underlying, method, codegenClassScope)));
             }
             else {
-                var refEPS = exprSymbol.GetAddEPS(method);
+                var refEPS = exprSymbol.GetAddEps(method);
                 method.Block.DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)));
                 if (_optionalEvent) {
                     if (castTargetType.CanNotBeNull()) {

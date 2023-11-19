@@ -29,7 +29,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
     /// Expression for use within crontab to specify a range.
     /// <para/>Differs from the between-expression since the value returned by evaluating is a cron-value object.
     /// </summary>
-    [Serializable]
     public class ExprNumberSetRange : ExprNodeBase,
         ExprForge,
         ExprEvaluator
@@ -148,7 +147,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             if (!upperType.IsPrimitive) {
                 block.IfRefNull("valueUpper")
                     .StaticMethod(typeof(ExprNumberSetRange), METHOD_HANDLENUMBERSETRANGEUPPERNULL)
-                    .AssignRef("valueUpper", EnumValue(typeof(int?), "MAX_VALUE"))
+                    .AssignRef("valueUpper", EnumValue(typeof(int), "MaxValue"))
                     .BlockEnd();
             }
 

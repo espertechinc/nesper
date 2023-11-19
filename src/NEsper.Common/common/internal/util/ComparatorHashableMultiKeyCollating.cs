@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.util
     ///     A comparator on multikeys with string values and using the Collator for comparing. The multikeys must contain the
     ///     same number of values.
     /// </summary>
-    [Serializable]
     public sealed class ComparatorHashableMultiKeyCollating : IComparer<HashableMultiKey>
     {
         [JsonIgnore]

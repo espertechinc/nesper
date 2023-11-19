@@ -14,7 +14,6 @@ namespace com.espertech.esper.compiler.client
     /// <summary>
     ///     Indicates a syntax exception
     /// </summary>
-    [Serializable]
     public class EPCompileExceptionSyntaxItem : EPCompileExceptionItem
     {
         /// <summary>

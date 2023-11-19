@@ -1572,7 +1572,7 @@ namespace com.espertech.esper.common.@internal.util
             switch (typeNameLower) {
                 case "bool":
                 case "boolean":
-                case "system.bool":
+                case "system.boolean":
                     return typeof(bool);
 
                 case "char":

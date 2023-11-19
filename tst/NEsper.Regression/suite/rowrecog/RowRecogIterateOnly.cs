@@ -14,9 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using static com.espertech.esper.regressionlib.framework.RegressionFlag; // PERFORMANCE
-using NUnit.Framework; // assertFalse
-
-// assertTrue
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {

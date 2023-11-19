@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.@internal.util
     /// <summary>
     ///  Utility for performing a SQL Like comparsion.
     /// </summary>
-    [Serializable]
     public class LikeUtil
     {
         private const int UNDERSCORE_CHAR = 1;

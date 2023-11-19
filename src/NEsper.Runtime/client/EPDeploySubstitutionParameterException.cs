@@ -14,7 +14,6 @@ namespace com.espertech.esper.runtime.client
     /// <summary>
     /// Deploy exception to indicate that substitution parameter values have not been provided
     /// </summary>
-    [Serializable]
     public class EPDeploySubstitutionParameterException : EPDeployException
     {
         /// <summary>

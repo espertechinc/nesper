@@ -183,8 +183,8 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null event type");
             }
             
-            return new EPChainableTypeEventMulti(typeof(FlexCollection), eventTypeOfCollectionEvents);
-            //return new EventMultiValuedEPType(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
+            //return new EPChainableTypeEventMulti(typeof(FlexCollection), eventTypeOfCollectionEvents);
+            return new EPChainableTypeEventMulti(typeof(ICollection<EventBean>), eventTypeOfCollectionEvents);
         }
 
         /// <summary>
@@ -264,17 +264,25 @@ namespace com.espertech.esper.common.@internal.rettype
 
         public static Type GetNormalizedType(this EPChainableType theType)
         {
-            if (theType is EPChainableTypeEventMulti multi) {
-                var underlyingType = multi.Component.UnderlyingType;
-                return underlyingType.GetComponentType();
-            } else if (theType is EPChainableTypeEventSingle single) {
-                return single.EventType.UnderlyingType;
-            } else if (theType is EPChainableTypeClass type) {
-                return type.Clazz;
-            } else if (theType is EPChainableTypeNull) {
-                return null;
+            switch (theType) {
+                case EPChainableTypeEventMulti multi: {
+                    var underlyingType = multi.Component.UnderlyingType;
+                    return underlyingType.MakeArrayType(1);
+                    //return underlyingType.GetComponentType();
+                }
+
+                case EPChainableTypeEventSingle single:
+                    return single.EventType.UnderlyingType;
+
+                case EPChainableTypeClass type:
+                    return type.Clazz;
+
+                case EPChainableTypeNull _:
+                    return null;
+
+                default:
+                    throw new ArgumentException("Unrecognized type " + theType);
             }
-            throw new ArgumentException("Unrecognized type " + theType);
         }
 
         public static Type GetCodegenReturnType(this EPChainableType theType)
@@ -283,7 +291,12 @@ namespace com.espertech.esper.common.@internal.rettype
                 if (multi.Container.IsArray) {
                     return typeof(EventBean[]);
                 }
-                return multi.Container.MakeGenericType(typeof(EventBean));
+
+                if (multi.Container.IsGenericTypeDefinition) {
+                    return multi.Container.MakeGenericType(typeof(EventBean));
+                }
+
+                return multi.Container;
             } else if (theType is EPChainableTypeEventSingle) {
                 return typeof(EventBean);
             } else if (theType is EPChainableTypeClass type) {

@@ -93,7 +93,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             //     init.Block,
             //     typeof(EventBeanManufacturer));
 
-            var manufacturer = NewInstance<ProxyMapEventBeanManufacturer>(eventType, factory, makeUndFunc);
+            var manufacturer = NewInstance<ProxyObjectArrayEventBeanManufacturer>(eventType, factory, makeUndFunc);
 
             // Make(): this is provided by ProxyJsonEventBeanManufacturer
             // 

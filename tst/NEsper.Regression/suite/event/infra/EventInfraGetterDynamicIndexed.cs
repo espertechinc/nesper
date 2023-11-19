@@ -6,9 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
-
-using Avro;
 using Avro.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,7 +20,6 @@ using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
 
-using static NEsper.Avro.Core.AvroConstant;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using Array = System.Array;
@@ -44,10 +40,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 }
             };
             var beanepl = "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).FullName +
+                          typeof(LocalEvent).MaskTypeName() +
                           ";\n" +
                           "@public @buseventtype create schema LocalEventSubA as " +
-                          typeof(LocalEventSubA).FullName +
+                          typeof(LocalEventSubA).MaskTypeName() +
                           ";\n";
             RunAssertion(env, beanepl, bean);
 
@@ -95,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Json-Class-Provided
             RunAssertion(
                 env,
-                "@JsonSchema(className='" +
-                typeof(MyLocalJsonProvided).FullName +
+                "@JsonSchema(ClassName='" +
+                typeof(MyLocalJsonProvided).MaskTypeName() +
                 "') @public @buseventtype @JsonSchema() create json schema LocalEvent();\n",
                 json);
 
@@ -214,7 +210,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 });
         }
 
-        [Serializable]
         public class LocalEvent
         {
         }
@@ -234,7 +229,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvided
         {
             public string[] array;

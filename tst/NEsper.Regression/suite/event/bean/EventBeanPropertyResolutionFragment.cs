@@ -975,7 +975,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 theEvent.Get(property);
                 Assert.Fail();
             }
-            catch (PropertyAccessException ex) {
+            catch (PropertyAccessException) {
                 // expected
             }
         }

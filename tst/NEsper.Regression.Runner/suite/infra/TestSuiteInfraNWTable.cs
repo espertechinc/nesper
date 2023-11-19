@@ -51,6 +51,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
             configuration.Common.Logging.IsEnableQueryPlan = true;
 
             configuration.Compiler.AddPlugInSingleRowFunction("doubleInt", typeof(InfraNWTableFAF), "DoubleInt");

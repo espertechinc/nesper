@@ -16,7 +16,6 @@ namespace com.espertech.esper.common.@internal.compile.stage2
     /// <summary>
     ///     Sort comparator for filter parameters that sorts filter parameters according to filter operator type.
     /// </summary>
-    [Serializable]
     public class FilterSpecParamComparator
         : IComparer<FilterOperator>
     {

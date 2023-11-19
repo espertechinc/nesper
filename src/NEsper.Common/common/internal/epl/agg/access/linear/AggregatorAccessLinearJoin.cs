@@ -118,7 +118,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam<int>("index");
-            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
+            method.Block
+                .IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
@@ -144,7 +145,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                     CodegenSymbolProviderEmpty.INSTANCE,
                     classScope)
                 .AddParam<int>("index");
-            method.Block.IfCondition(Relational(Ref("index"), LT, Constant(0)))
+            method.Block
+                .IfCondition(Relational(Ref("index"), LT, Constant(0)))
                 .BlockReturn(ConstantNull())
                 .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
@@ -166,7 +168,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
+            method.Block
+                .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .DeclareVar<KeyValuePair<EventBean, object>>(
                     "entry",
@@ -188,7 +191,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
                 typeof(AggregatorAccessLinearJoin),
                 CodegenSymbolProviderEmpty.INSTANCE,
                 classScope);
-            method.Block.IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
+            method.Block
+                .IfCondition(ExprDotMethod(_refSet, "IsEmpty"))
                 .BlockReturn(ConstantNull())
                 .IfCondition(EqualsNull(_array))
                 .LocalMethod(initArray)
@@ -251,7 +255,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             var addEvent = AddEventCodegen(method, classScope);
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")
@@ -265,7 +269,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.linear
             CodegenClassScope classScope,
             CodegenNamedMethods namedMethods)
         {
-            CodegenExpression eps = symbols.GetAddEPS(method);
+            CodegenExpression eps = symbols.GetAddEps(method);
             var removeEvent = RemoveEventCodegen(method, classScope);
             method.Block.DeclareVar<EventBean>("theEvent", ArrayAtIndex(eps, Constant(_forge.StreamNum)))
                 .IfRefNull("theEvent")

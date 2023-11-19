@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 TableDeployTimeResolver.MakeTableEventToPublicField(tableMetadata, classScope, GetType());
             var methodNode = parent.MakeChild(typeof(object[]), typeof(ExprDotForgeUnpackBeanTable), classScope)
                 .AddParam<EventBean>("target");
-            var refEPS = symbols.GetAddEPS(methodNode);
+            var refEPS = symbols.GetAddEps(methodNode);
             var refIsNewData = symbols.GetAddIsNewData(methodNode);
             var refExprEvalCtx = symbols.GetAddExprEvalCtx(methodNode);
             methodNode.Block.IfRefNullReturnNull("target")

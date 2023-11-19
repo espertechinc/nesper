@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     ///     Context condition that start/initiated or ends/terminates context partitions based on a crontab expression.
     /// </summary>
-    [Serializable]
     public class ContextDescriptorConditionCrontab : ContextDescriptorCondition
     {
         /// <summary>Ctor. </summary>

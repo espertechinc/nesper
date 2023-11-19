@@ -82,15 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(EventBean),
                 typeof(PropertyDotNonLambdaFragmentIndexedForge),
                 classScope);
-            var refEps = symbols.GetAddEPS(method);
+            var refEps = symbols.GetAddEps(method);
             method.Block
                 .DeclareVar<EventBean>("@event", ArrayAtIndex(refEps, Constant(_streamId)))
                 .IfRefNullReturnNull("@event")
                 .DeclareVar<EventBean[]>(
                     "array",
                     Cast(typeof(EventBean[]), _getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope)))
-                .DeclareVar(
-                    typeof(int?),
+                .DeclareVar<int?>(
                     "index",
                     _indexExpr.Forge.EvaluateCodegen(typeof(int?), method, symbols, classScope))
                 .IfRefNullReturnNull("index")

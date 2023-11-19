@@ -53,6 +53,8 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 configuration.Common.AddEventType(clazz);
             }
 
+            configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
+
             ConfigureRenderTypes(configuration);
             ConfigureSenderTypes(configuration);
             ConfigureDynamicNonSimpleTypes(configuration);

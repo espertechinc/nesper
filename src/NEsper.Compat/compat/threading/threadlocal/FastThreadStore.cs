@@ -22,7 +22,6 @@ namespace com.espertech.esper.compat.threading.threadlocal
     /// </summary>
     /// <typeparam name="T"></typeparam>
 
-    [Serializable]
     public class FastThreadStore<T>
         where T : class
     {

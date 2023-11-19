@@ -193,7 +193,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
                 readMethod.Block.MethodReturn(DefaultValue());
             }
             else {
-                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow));
+                readMethod.Block.DeclareVar(classNameRow, "row", NewInstanceInner(classNameRow, Ref("statementFields")));
                 readConsumer.Invoke(readMethod, level);
 
                 var methodFactories = assignment.MethodFactories;

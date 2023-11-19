@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     env,
                     "BigInteger",
                     $"{bigInteger}.ValueOf(2)",
-                    bean => bean.BigInteger = new BigInteger(1),
+                    bean => bean.BigInteger = BigInteger.One,
                     bean => bean.BigInteger = new BigInteger(2),
                     bean => bean.BigInteger = new BigInteger(3));
                 RunAssertion(

@@ -15,8 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using NUnit.Framework; // assertTrue
-
+using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
     public class EPLSubselectFilteredPerformance

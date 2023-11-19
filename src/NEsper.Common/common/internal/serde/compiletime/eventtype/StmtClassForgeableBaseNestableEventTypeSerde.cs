@@ -126,7 +126,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
                     Cast(typeof(IDictionary<string, object>), Ref(OBJECT_NAME)));
             }
             else if (eventType is ObjectArrayEventType) {
-                writeMethod.Block.DeclareVar(typeof(object[]), "oa", Cast(typeof(object[]), Ref(OBJECT_NAME)));
+                writeMethod.Block.DeclareVar<object[]>("oa", Cast(typeof(object[]), Ref(OBJECT_NAME)));
             }
             else if (eventType is JsonEventType) {
                 var jsonEventType = (JsonEventType)eventType;
@@ -195,8 +195,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.eventtype
                 underlyingRef = Ref("map");
             }
             else if (eventType is ObjectArrayEventType) {
-                readMethod.Block.DeclareVar(
-                    typeof(object[]),
+                readMethod.Block.DeclareVar<object[]>(
                     "oa",
                     NewArrayByLength(typeof(object), Constant(forges.Length)));
                 underlyingRef = Ref("oa");

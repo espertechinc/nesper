@@ -13,7 +13,6 @@ namespace com.espertech.esper.common.client.soda
     /// <summary>
     /// Fire-and-forget (on-demand) delete DML.
     /// </summary>
-    [Serializable]
     public class FireAndForgetDelete : FireAndForgetClause
     {
     }

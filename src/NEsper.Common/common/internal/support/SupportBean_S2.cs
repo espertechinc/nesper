@@ -7,10 +7,10 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
+using System.Text.Json.Serialization;
 
 namespace com.espertech.esper.common.@internal.support
 {
-    [Serializable]
     public class SupportBean_S2
     {
         private int id;
@@ -44,6 +44,7 @@ namespace com.espertech.esper.common.@internal.support
             this.p20 = p20;
         }
 
+        [JsonConstructor]
         public SupportBean_S2(
             int id,
             string p20,

@@ -21,7 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
     /// <summary>
     ///     Represents a simple Math (+/-/divide/*) in a filter expression tree.
     /// </summary>
-    [Serializable]
     public class ExprMathNode : ExprNodeBase
     {
         private readonly bool _isDivisionByZeroReturnsNull;

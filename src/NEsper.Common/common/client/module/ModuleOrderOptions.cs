@@ -14,7 +14,6 @@ namespace com.espertech.esper.common.client.module
     ///     Options class passed to #GetModuleOrder(ICollection, ModuleOrderOptions)} for controlling the behavior of
     ///     ordering and dependency checking logic.
     /// </summary>
-    [Serializable]
     public class ModuleOrderOptions
     {
         private bool checkCircularDependency = true;

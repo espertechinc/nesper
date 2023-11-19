@@ -66,12 +66,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
                 builder.WithExpression(fields[0], "Contained.toMap(c => Id, d=> P00)");
-                builder.WithExpression(
-                    fields[1],
-                    "Contained.toMap((c, index) => Id || '_' || Integer.toString(index), (d, index) => P00 + 10*index)");
+				builder.WithExpression(fields[1], "Contained.toMap((c, index) => Id || '_' || Convert.ToString(index), (d, index) => P00 + 10*index)");
                 builder.WithExpression(
                     fields[2],
-                    "Contained.toMap((c, index, size) => Id || '_' || Integer.toString(index) || '_' || Integer.toString(size), (d, index, size) => P00 + 10*index + 100*size)");
+					"Contained.toMap((c, index, size) => Id || '_' || Convert.ToString(index) || '_' || Convert.ToString(size), (d, index, size) => P00 + 10*index + 100*size)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
@@ -110,10 +108,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Strvals.toMap(k => k, v => extractNum(v))");
                 builder.WithExpression(
                     fields[1],
-                    "Strvals.toMap((k, i) => k || '_' || Integer.toString(i), (v, idx) => extractNum(v) + 10*idx)");
+                    "Strvals.toMap((k, i) => k || '_' || Convert.ToString(i), (v, idx) => extractNum(v) + 10*idx)");
                 builder.WithExpression(
                     fields[2],
-                    "Strvals.toMap((k, i, s) => k || '_' || Integer.toString(i) || '_' || Integer.toString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
+					"Strvals.toMap((k, i, s) => k || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
@@ -159,7 +157,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             params object[] values)
         {
             var keys = string.IsNullOrEmpty(keyCSV) ? Array.Empty<string>() : keyCSV.SplitCsv();
-            EPAssertionUtil.AssertPropsMap((IDictionary<string, object>)received, keys, values);
+            EPAssertionUtil.AssertPropsMap(received.AsObjectDictionary(), keys, values);
         }
     };
 } // end of namespace

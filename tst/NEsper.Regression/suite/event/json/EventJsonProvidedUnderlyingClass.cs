@@ -11,7 +11,6 @@ using System.Collections.Generic;
 using System.Linq;
 
 using com.espertech.esper.common.client.json.util;
-using com.espertech.esper.common.client.render;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
@@ -660,7 +659,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             }
         }
 
-        [Serializable]
         public class MyLocalNoDefaultCtorInvalid
         {
             public MyLocalNoDefaultCtorInvalid(string id)
@@ -668,15 +666,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             }
         }
 
-        [Serializable]
-        private class MyLocalNonPublicInvalid
+        public class MyLocalNonPublicInvalid
         {
             public MyLocalNonPublicInvalid()
             {
             }
         }
 
-        [Serializable]
         public class MyLocalInstanceInvalid
         {
             public MyLocalInstanceInvalid()
@@ -684,32 +680,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             }
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedStringInt
         {
             public string c0;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedPrimitiveInt
         {
             public int primitiveInt = -1;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedEventOne
         {
             public string id;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedEventTwo
         {
             public string id;
             public int val;
         }
 
-        [Serializable]
         public class MyLocalJsonProvidedEventOut
         {
             public MyLocalJsonProvidedEventOne startEvent;

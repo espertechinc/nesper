@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             method.Block.ExprDotMethod(
                 state,
                 "ApplyEnter",
-                symbols.GetAddEPS(method),
+                symbols.GetAddEps(method),
                 symbols.GetAddExprEvalCtx(method));
         }
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
             method.Block.ExprDotMethod(
                 state,
                 "ApplyLeave",
-                symbols.GetAddEPS(method),
+                symbols.GetAddEps(method),
                 symbols.GetAddExprEvalCtx(method));
         }
 

@@ -11,7 +11,6 @@ using System;
 namespace com.espertech.esper.common.@internal.epl.streamtype
 {
     /// <summary> Exception to indicate that a stream name could not be resolved.</summary>
-    [Serializable]
     public class StreamNotFoundException : StreamTypesException
     {
         /// <summary>

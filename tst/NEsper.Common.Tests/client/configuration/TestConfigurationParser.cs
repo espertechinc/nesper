@@ -224,7 +224,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.AreEqual("/myevent/element2", schemaDesc.XPathProperties.Get("element2").XPath);
             Assert.AreEqual(XPathResultType.String, schemaDesc.XPathProperties.Get("element2").Type);
             Assert.AreEqual(typeof(long), schemaDesc.XPathProperties.Get("element2").OptionalCastToType);
-            Assert.AreEqual("/bookstore/Book", schemaDesc.XPathProperties.Get("element3").XPath);
+            Assert.AreEqual("/bookstore/book", schemaDesc.XPathProperties.Get("element3").XPath);
             Assert.AreEqual(XPathResultType.NodeSet, schemaDesc.XPathProperties.Get("element3").Type);
             Assert.IsNull(schemaDesc.XPathProperties.Get("element3").OptionalCastToType);
             Assert.AreEqual("MyOtherXMLNodeEvent", schemaDesc.XPathProperties.Get("element3").OptionalEventTypeName);
@@ -276,7 +276,7 @@ namespace com.espertech.esper.common.client.configuration
             Assert.IsTrue(avroOne.SuperTypes.IsEmpty());
             var avroTwo = common.EventTypesAvro.Get("MyAvroEventTwo");
             Assert.AreEqual(
-                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"CarId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
+                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                 avroTwo.AvroSchemaText);
             Assert.AreEqual("startts", avroTwo.StartTimestampPropertyName);
             Assert.AreEqual("endts", avroTwo.EndTimestampPropertyName);

@@ -36,16 +36,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
                 CodegenClassScope codegenClassScope)
             {
                 var methodNode = codegenMethodScope.MakeChild(typeof(EventBean), GetType(), codegenClassScope);
-                var refEPS = exprSymbol.GetAddEPS(methodNode);
-                var value = CodegenExpressionBuilder.ExprDotName(
-                    Cast(
-                        typeof(ObjectArrayEventBean),
-                        CodegenExpressionBuilder.ArrayAtIndex(
-                            refEPS,
-                            CodegenExpressionBuilder.Constant(underlyingStreamNumber))),
+                var refEPS = exprSymbol.GetAddEps(methodNode);
+                var value = ExprDotName(
+                    Cast(typeof(ObjectArrayEventBean), ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))),
                     "Properties");
                 methodNode.Block.MethodReturn(
-                    CodegenExpressionBuilder.ExprDotMethod(
+                    ExprDotMethod(
                         eventBeanFactory,
                         "AdapterForTypedObjectArray",
                         value,

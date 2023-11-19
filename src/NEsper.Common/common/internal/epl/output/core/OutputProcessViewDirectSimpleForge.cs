@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.output.core
                 EqualsNull(ExprDotName(Ref("newOldEvents"), "First")),
                 EqualsNull(ExprDotName(Ref("newOldEvents"), "Second")));
             method.Block
-                .DeclareVar(typeof(bool), "forceOutput", Constant(false))
+                .DeclareVar<bool>("forceOutput", Constant(false))
                 .IfCondition(And(EqualsNull(REF_NEWDATA), EqualsNull(REF_OLDDATA)))
                 .IfCondition(Or(EqualsNull(Ref("newOldEvents")), newOldIsNull))
                 .AssignRef("forceOutput", ConstantTrue());
@@ -120,12 +120,10 @@ namespace com.espertech.esper.common.@internal.epl.output.core
             CodegenClassScope classScope)
         {
             method.Block
-                .DeclareVar(
-                    typeof(bool),
+                .DeclareVar<bool>(
                     "isGenerateSynthetic",
                     ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeSynthetic"))
-                .DeclareVar(
-                    typeof(bool),
+                .DeclareVar<bool>(
                     "isGenerateNatural",
                     ExprDotName(Member("o." + NAME_STATEMENTRESULTSVC), "IsMakeNatural"))
                 .DeclareVar<UniformPair<EventBean[]>>(

@@ -12,7 +12,6 @@ using System.IO;
 namespace com.espertech.esper.common.client.soda
 {
     /// <summary>Filter for use in pattern expressions. </summary>
-    [Serializable]
     public class PatternFilterExpr : PatternExprBase
     {
         /// <summary>Ctor. </summary>

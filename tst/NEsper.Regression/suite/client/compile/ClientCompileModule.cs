@@ -10,9 +10,6 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading;
-
-using Avro.IO;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration.common;
@@ -128,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var epl =
                     "@public @buseventtype create map schema Fubar as (foo String, bar Double);" +
-                    NEWLINE +
+                    Environment.NewLine +
                     "/** comment after */";
                 env.CompileDeploy(epl).UndeployAll();
             }
@@ -144,9 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             public void Run(RegressionEnvironment env)
             {
                 var resource = "regression/test_module_12.epl";
-
-                var resourceManager = env.Container.ResourceManager();
-                var input = resourceManager.GetResourceAsStream(resource);
+                var input = env.Container.ResourceManager().GetResourceAsStream(resource);
                 Assert.IsNotNull(input);
 
                 Module module;
@@ -156,8 +151,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module.ArchiveName = "archive1";
                     module.UserObjectCompileTime = "obj1";
                 }
-                catch (Exception t) {
-                    throw new EPRuntimeException(t);
+                catch (Exception ex) {
+                    throw new EPRuntimeException(ex);
                 }
 
                 var compiled = env.Compile(module);
@@ -184,11 +179,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 moduleTwo.Uri = "uri2";
                 moduleTwo.ArchiveName = "archive2";
                 moduleTwo.UserObjectCompileTime = "obj2";
-                moduleTwo.Uses = new HashSet<string>(Arrays.AsList("a", "b"));
-                moduleTwo.Imports = new HashSet<Import>(
-                    Arrays.AsList(
-                        new ImportNamespace("c"),
-                        new ImportNamespace("d")));
+                moduleTwo.Uses = new HashSet<string>() {"a", "b"};
+                moduleTwo.Imports = new HashSet<Import> {
+                    new ImportNamespace("c"),
+                    new ImportNamespace("d")
+                };
                 var compiledTwo = env.Compile(moduleTwo);
                 env.Deploy(compiledTwo);
 
@@ -215,12 +210,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.AreEqual("obj2", infoTwo.ModuleProperties.Get(ModuleProperty.USEROBJECT));
                 Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
                 Assert.IsNotNull(infoTwo.LastUpdateDate);
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    "a,b".SplitCsv(),
+
+                CollectionAssert.AreEquivalent(
+                    new string[] {"a", "b"},
                     (string[])infoTwo.ModuleProperties.Get(ModuleProperty.USES));
-                EPAssertionUtil.AssertEqualsExactOrder(
-                    "c,d".SplitCsv(),
-                    (string[])infoTwo.ModuleProperties.Get(ModuleProperty.IMPORTS));
+
+                CollectionAssert.AreEquivalent(
+                    new Import[] {new ImportNamespace("c"), new ImportNamespace("d")},
+                    (Import[])infoTwo.ModuleProperties.Get(ModuleProperty.IMPORTS));
 
                 env.UndeployAll();
             }
@@ -325,7 +322,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module,
                     null,
                     "abd",
-                    null,
+                    Array.Empty<Import>(),
                     new string[] {
                         "select * from ABC",
                         "/* Final comment */"
@@ -340,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module,
                     "abc",
                     "def,jlk",
-                    null,
+                    Array.Empty<Import>(),
                     new string[] {
                         "select * from A",
                         "select * from B" + NEWLINE + "where C=d",
@@ -354,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module,
                     "abc.def.hij",
                     "def.hik,jlk.aja",
-                    null,
+                    Array.Empty<Import>(),
                     new string[] {
                         "// Note 4 white spaces after * and before from" + NEWLINE + "select * from A",
                         "select * from B",
@@ -367,7 +364,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     module,
                     null,
                     null,
-                    null,
+                    Array.Empty<Import>(),
                     new string[] {
                         "create window ABC",
                         "select * from ABC"
@@ -375,36 +372,44 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 );
 
                 module = env.ReadModule("regression/test_module_5.epl");
-                AssertModuleNoLines(module, "abd.def", null, null, Array.Empty<string>());
+                AssertModuleNoLines(module, "abd.def", null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_6.epl");
-                AssertModuleNoLines(module, null, null, null, Array.Empty<string>());
+                AssertModuleNoLines(module, null, null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_7.epl");
-                AssertModuleNoLines(module, null, null, null, Array.Empty<string>());
+                AssertModuleNoLines(module, null, null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_8.epl");
-                AssertModuleNoLines(module, "def.jfk", null, null, Array.Empty<string>());
+                AssertModuleNoLines(module, "def.jfk", null, Array.Empty<Import>(), Array.Empty<string>());
 
                 module = env.ParseModule("module mymodule; uses mymodule2; import abc; select * from MyEvent;");
                 AssertModuleNoLines(
                     module,
                     "mymodule",
                     "mymodule2",
-                    "abc",
+                    new Import[] {new ImportType("abc")},
                     new string[] {
                         "select * from MyEvent"
                     });
 
                 module = env.ReadModule("regression/test_module_11.epl");
-                AssertModuleNoLines(module, null, null, "com.mycompany.pck1", Array.Empty<string>());
+                AssertModuleNoLines(
+                    module,
+                    null,
+                    null,
+                    new Import[] {new ImportType("com.mycompany.pck1")},
+                    Array.Empty<string>());
 
                 module = env.ReadModule("regression/test_module_10.epl");
                 AssertModuleNoLines(
                     module,
                     "abd.def",
                     "one.use,two.use",
-                    "com.mycompany.pck1,com.mycompany.*",
+                    new Import[] {
+                        new ImportType("com.mycompany.pck1"),
+                        new ImportNamespace("com.mycompany")
+                    },
                     new string[] {
                         "select * from A",
                     }
@@ -420,7 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "seconds.until.every.where",
                     env.ParseModule("uses seconds.until.every.where; select * from System.Object;").Uses.ToArray()[0]);
                 Assert.AreEqual(
-                    "seconds.until.every.where",
+                    new ImportType("seconds.until.every.where"),
                     env.ParseModule("import seconds.until.every.where; select * from System.Object;")
                         .Imports.ToArray()[0]);
 
@@ -551,16 +556,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             Module module,
             string name,
             string usesCSV,
-            string importsCSV,
+            Import[] expectedImports,
             string[] statements)
         {
             Assert.AreEqual(name, module.Name);
 
             var expectedUses = usesCSV == null ? Array.Empty<string>() : usesCSV.SplitCsv();
-            EPAssertionUtil.AssertEqualsExactOrder(expectedUses, module.Uses.ToArray());
-
-            var expectedImports = importsCSV == null ? Array.Empty<string>() : importsCSV.SplitCsv();
-            EPAssertionUtil.AssertEqualsExactOrder(expectedImports, module.Imports.ToArray());
+            CollectionAssert.AreEqual(expectedUses, module.Uses);
+            CollectionAssert.AreEqual(expectedImports, module.Imports);
 
             var stmtsFound = new string[module.Items.Count];
             for (var i = 0; i < module.Items.Count; i++) {
@@ -608,7 +611,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 items[i] = new ModuleItem(statements[i], false, 0, 0, 0, 0, 0, 0);
             }
 
-            return new Module(name, null, new HashSet<string>(), new HashSet<Import>(), Arrays.AsList(items), null);
+            return new Module(
+                name,
+                null,
+                EmptySet<string>.Instance,
+                EmptySet<Import>.Instance,
+                items,
+                null);
         }
     }
 } // end of namespace

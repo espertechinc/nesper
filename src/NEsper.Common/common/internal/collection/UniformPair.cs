@@ -15,7 +15,6 @@ namespace com.espertech.esper.common.@internal.collection
     /// the objects that form the pair equal, ie. first pair first object equals (.equals) the second pair first object,
     /// and the first pair second object equals the second pair second object.
     /// </summary>
-    [Serializable]
     public sealed class UniformPair<T>
     {
         public static UniformPair<T> EMPTY_PAIR = new UniformPair<T>(default, default);

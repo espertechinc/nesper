@@ -17,7 +17,6 @@ namespace com.espertech.esper.common.client.configuration.common
     /// <summary>
     ///     Event representation metadata.
     /// </summary>
-    [Serializable]
     public class ConfigurationCommonEventTypeMeta
     {
         private AvroSettingsConfig _avroSettings;
@@ -85,7 +84,6 @@ namespace com.espertech.esper.common.client.configuration.common
         /// <summary>
         ///     Avro settings.
         /// </summary>
-        [Serializable]
         public class AvroSettingsConfig
         {
             private bool _enableAvro = false;

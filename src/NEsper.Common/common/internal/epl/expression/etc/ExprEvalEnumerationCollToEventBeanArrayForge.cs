@@ -46,8 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationCollToEventBeanArrayForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar(
-                    typeof(ICollection<EventBean>),
+                .DeclareVar<ICollection<EventBean>>(
                     "events",
                     enumerationForge.EvaluateGetROCollectionEventsCodegen(methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("events")
