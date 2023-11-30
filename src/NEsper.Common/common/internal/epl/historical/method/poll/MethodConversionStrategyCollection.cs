@@ -11,6 +11,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.historical.method.poll
@@ -26,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.poll
             MethodTargetStrategy origin,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var collection = (ICollection<EventBean>)invocationResult;
+            var collection = invocationResult.AsObjectCollection();
             var length = collection.Count;
             if (length == 0) {
                 return EmptyList<EventBean>.Instance;

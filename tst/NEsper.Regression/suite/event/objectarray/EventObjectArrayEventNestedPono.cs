@@ -14,8 +14,9 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
-using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore; // makeMap
-using static com.espertech.esper.regressionlib.suite.@event.objectarray.EventObjectArrayCore; // getNestedKeyOA
+using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore;
+using static com.espertech.esper.regressionlib.suite.@event.objectarray.EventObjectArrayCore;
+
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
@@ -25,13 +26,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         public void Run(RegressionEnvironment env)
         {
             var statementText = "@name('s0') select " +
-                                "simple, object, nodefmap, map, " +
-                                "object.Id as a1, nodefmap.key1? as a2, nodefmap.key2? as a3, nodefmap.key3?.key4 as a4, " +
-                                "map.objectOne as b1, map.simpleOne as b2, map.nodefmapOne.key2? as b3, map.mapOne.simpleTwo? as b4, " +
-                                "map.objectOne.indexed[1] as c1, map.objectOne.Nested.NestedValue as c2," +
-                                "map.mapOne.simpleTwo as d1, map.mapOne.objectTwo as d2, map.mapOne.nodefmapTwo as d3, " +
-                                "map.mapOne.mapTwo as e1, map.mapOne.mapTwo.simpleThree as e2, map.mapOne.mapTwo.objectThree as e3, " +
-                                "map.mapOne.objectTwo.array[1].mapped('1ma').Value as f1, map.mapOne.mapTwo.objectThree.Id as f2" +
+                                "Simple, Object, Nodefmap, Map, " +
+                                "Object.Id as a1, Nodefmap.key1? as a2, Nodefmap.key2? as a3, Nodefmap.key3?.key4 as a4, " +
+                                "Map.ObjectOne as b1, Map.SimpleOne as b2, Map.NodefmapOne.key2? as b3, Map.MapOne.SimpleTwo? as b4, " +
+                                "Map.ObjectOne.Indexed[1] as c1, Map.ObjectOne.Nested.NestedValue as c2," +
+                                "Map.MapOne.SimpleTwo as d1, Map.MapOne.ObjectTwo as d2, Map.MapOne.NodefmapTwo as d3, " +
+                                "Map.MapOne.MapTwo as e1, Map.MapOne.MapTwo.SimpleThree as e2, Map.MapOne.MapTwo.ObjectThree as e3, " +
+                                "Map.MapOne.ObjectTwo.array[1].mapped('1ma').Value as f1, Map.MapOne.MapTwo.ObjectThree.Id as f2" +
                                 " from NestedObjectArr";
             env.CompileDeploy(statementText).AddListener("s0");
 
@@ -44,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 received => {
                     EPAssertionUtil.AssertProps(
                         received,
-                        "simple,object,nodefmap,map".SplitCsv(),
+                        "Simple,Object,Nodefmap,Map".SplitCsv(),
                         new object[] { "abc", new SupportBean_A("A1"), testdata[2], testdata[3] });
                     EPAssertionUtil.AssertProps(
                         received,
@@ -53,20 +54,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     EPAssertionUtil.AssertProps(
                         received,
                         "b1,b2,b3,b4".SplitCsv(),
-                        new object[] { GetNestedKeyOA(testdata, 3, "objectOne"), 10, "val2", 300 });
+                        new object[] { GetNestedKeyOA(testdata, 3, "ObjectOne"), 10, "val2", 300 });
                     EPAssertionUtil.AssertProps(received, "c1,c2".SplitCsv(), new object[] { 2, "NestedValue" });
                     EPAssertionUtil.AssertProps(
                         received,
                         "d1,d2,d3".SplitCsv(),
                         new object[] {
-                            300, GetNestedKeyOA(testdata, 3, "mapOne", "objectTwo"),
-                            GetNestedKeyOA(testdata, 3, "mapOne", "nodefmapTwo")
+                            300, GetNestedKeyOA(testdata, 3, "MapOne", "ObjectTwo"),
+                            GetNestedKeyOA(testdata, 3, "MapOne", "NodefmapTwo")
                         });
                     EPAssertionUtil.AssertProps(
                         received,
                         "e1,e2,e3".SplitCsv(),
                         new object[]
-                            { GetNestedKeyOA(testdata, 3, "mapOne", "mapTwo"), 4000L, new SupportBean_B("B1") });
+                            { GetNestedKeyOA(testdata, 3, "MapOne", "MapTwo"), 4000L, new SupportBean_B("B1") });
                     EPAssertionUtil.AssertProps(
                         received,
                         "f1,f2".SplitCsv(),
@@ -82,14 +83,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     var eventType = statement.EventType;
 
                     var propertiesReceived = eventType.PropertyNames;
-                    var propertiesExpected = new string[] { "simple", "object", "nodefmap", "map" };
+                    var propertiesExpected = new string[] { "Simple", "Object", "Nodefmap", "Map" };
                     EPAssertionUtil.AssertEqualsAnyOrder(propertiesReceived, propertiesExpected);
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("simple"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("nodefmap"));
-                    Assert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("object"));
+                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("Simple"));
+                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Map"));
+                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Nodefmap"));
+                    Assert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("Object"));
 
-                    Assert.IsNull(eventType.GetPropertyType("map.mapOne.simpleOne"));
+                    Assert.IsNull(eventType.GetPropertyType("Map.MapOne.SimpleOne"));
                 });
 
             // nested PONO with generic return type
@@ -110,24 +111,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             var levelThree = MakeMap(
                 new object[][] {
-                    new object[] { "simpleThree", 4000L },
-                    new object[] { "objectThree", new SupportBean_B("B1") },
+                    new object[] { "SimpleThree", 4000L },
+                    new object[] { "ObjectThree", new SupportBean_B("B1") },
                 });
 
             var levelTwo = MakeMap(
                 new object[][] {
-                    new object[] { "simpleTwo", 300 },
-                    new object[] { "objectTwo", SupportBeanCombinedProps.MakeDefaultBean() },
-                    new object[] { "nodefmapTwo", MakeMap(new object[][] { new object[] { "key3", "val3" } }) },
-                    new object[] { "mapTwo", levelThree },
+                    new object[] { "SimpleTwo", 300 },
+                    new object[] { "ObjectTwo", SupportBeanCombinedProps.MakeDefaultBean() },
+                    new object[] { "NodefmapTwo", MakeMap(new object[][] { new object[] { "key3", "val3" } }) },
+                    new object[] { "MapTwo", levelThree },
                 });
 
             var levelOne = MakeMap(
                 new object[][] {
-                    new object[] { "simpleOne", 10 },
-                    new object[] { "objectOne", SupportBeanComplexProps.MakeDefaultBean() },
-                    new object[] { "nodefmapOne", MakeMap(new object[][] { new object[] { "key2", "val2" } }) },
-                    new object[] { "mapOne", levelTwo }
+                    new object[] { "SimpleOne", 10 },
+                    new object[] { "ObjectOne", SupportBeanComplexProps.MakeDefaultBean() },
+                    new object[] { "NodefmapOne", MakeMap(new object[][] { new object[] { "key2", "val2" } }) },
+                    new object[] { "MapOne", levelTwo }
                 });
 
             object[] levelZero = {

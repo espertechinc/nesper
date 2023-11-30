@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var theEvent = listener.LastNewData[0];
 
                     Assert.AreEqual(element1, theEvent.Get("element1"));
-                    Assert.AreEqual("VAL4-1", theEvent.Get("NestedElement"));
+                    Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
                     Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
                     Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 

@@ -31,14 +31,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             Consumer<string[]> map = values => {
-                env.SendEventMap(Collections.SingletonDataMap("indexed", values), "LocalEvent");
+                env.SendEventMap(Collections.SingletonDataMap("Indexed", values), "LocalEvent");
             };
-            var mapepl = "@public @buseventtype create schema LocalEvent(indexed string[]);\n";
+            var mapepl = "@public @buseventtype create schema LocalEvent(Indexed string[]);\n";
             RunAssertion(env, mapepl, map);
 
             // Object-array
             Consumer<string[]> oa = values => { env.SendEventObjectArray(new object[] { values }, "LocalEvent"); };
-            var oaepl = "@public @buseventtype create objectarray schema LocalEvent(indexed string[]);\n";
+            var oaepl = "@public @buseventtype create objectarray schema LocalEvent(Indexed string[]);\n";
             RunAssertion(env, oaepl, oa);
 
             // Json
@@ -48,10 +48,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     array.Add(values[i]);
                 }
 
-                var @event = new JObject(new JProperty("indexed", array));
+                var @event = new JObject(new JProperty("Indexed", array));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
             };
-            var jsonepl = "@public @buseventtype create json schema LocalEvent(indexed string[]);\n";
+            var jsonepl = "@public @buseventtype create json schema LocalEvent(Indexed string[]);\n";
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
@@ -64,10 +64,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> avro = values => {
                 var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent").AsRecordSchema();
                 var @event = new GenericRecord(schema);
-                @event.Put("indexed", Arrays.AsList(values));
+                @event.Put("Indexed", Arrays.AsList(values));
                 env.SendEventAvro(@event, "LocalEvent");
             };
-            var avroepl = "@name('schema') @public @buseventtype create avro schema LocalEvent(indexed string[]);\n";
+            var avroepl = "@name('schema') @public @buseventtype create avro schema LocalEvent(Indexed string[]);\n";
             RunAssertion(env, avroepl, avro);
         }
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.CompileDeploy(
                     createSchemaEPL +
                     "create constant variable int offsetNum = 0;" +
-                    "@name('s0') select indexed(offsetNum+0) as c0, indexed(offsetNum+1) as c1 from LocalEvent as e;\n"
+                    "@name('s0') select Indexed(offsetNum+0) as c0, Indexed(offsetNum+1) as c1 from LocalEvent as e;\n"
                 )
                 .AddListener("s0");
 
@@ -91,22 +91,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalEvent
         {
-            private string[] indexed;
-
             public LocalEvent(string[] indexed)
             {
-                this.indexed = indexed;
+                this.Indexed = indexed;
             }
 
-            public string[] GetIndexed()
-            {
-                return indexed;
-            }
+            public string[] Indexed { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public string[] indexed;
+            public string[] Indexed;
         }
     }
 } // end of namespace

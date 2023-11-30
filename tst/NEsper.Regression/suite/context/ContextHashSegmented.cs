@@ -727,7 +727,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var eplStmt =
                     "@name('s0') context HashSegmentedContext select context.id as c1, myHash(*) as c2, mySecond(*, TheString) as c3, " +
                     nameof(ContextHashSegmented) +
-                    ".NySecondFunc(*, TheString) as c4 from SupportBean";
+                    ".MySecondFunc(*, TheString) as c4 from SupportBean";
                 env.CompileDeploy(eplStmt, path);
                 env.AddListener("s0");
 

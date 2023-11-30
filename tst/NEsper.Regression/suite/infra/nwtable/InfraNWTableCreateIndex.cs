@@ -251,11 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -335,11 +331,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -401,11 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -485,11 +473,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -553,11 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -612,11 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -674,11 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -747,11 +719,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -824,11 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
         }
 
@@ -846,25 +810,30 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
                 var eplCreate = namedWindow
                     ? "@name('create') @public create window MyInfraMRAK#keepall as SupportBeanRange"
-                    : "@name('create') @public create table MyInfraMRAK(Id string primary key, key string, keyLong long, rangeStartLong long primary key, rangeEndLong long primary key)";
+                    : "@name('create') @public create table MyInfraMRAK(Id string primary key, Key string, KeyLong long, RangeStartLong long primary key, RangeEndLong long primary key)";
                 env.CompileDeploy(eplCreate, path);
 
                 var eplInsert = namedWindow
                     ? "insert into MyInfraMRAK select * from SupportBeanRange"
-                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.Id = t1.Id when not matched then insert select Id, key, keyLong, rangeStartLong, rangeEndLong";
+                    : "on SupportBeanRange t0 merge MyInfraMRAK t1 where t0.Id = t1.Id when not matched then insert select Id, Key, KeyLong, RangeStartLong, RangeEndLong";
                 env.CompileDeploy(eplInsert, path);
 
                 env.CompileDeploy(
-                    "create index idx1 on MyInfraMRAK(key hash, keyLong hash, rangeStartLong btree, rangeEndLong btree)",
+                    "create index idx1 on MyInfraMRAK(Key hash, KeyLong hash, RangeStartLong btree, RangeEndLong btree)",
                     path);
-                var fields = "Id".SplitCsv();
+                var fields = new [] { "Id" };
 
                 var query1 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 and key='K1' order by Id asc";
+                    "select * from MyInfraMRAK where RangeStartLong > 1 and RangeEndLong > 2 and KeyLong=1 and Key='K1' order by Id asc";
                 RunQueryAssertion(env, path, query1, fields, null);
 
                 env.SendEventBean(SupportBeanRange.MakeLong("E1", "K1", 1L, 2L, 3L));
-                RunQueryAssertion(env, path, query1, fields, new object[][] { new object[] { "E1" } });
+                RunQueryAssertion(
+                    env,
+                    path,
+                    query1,
+                    fields,
+                    new object[][] { new object[] { "E1" } });
 
                 env.SendEventBean(SupportBeanRange.MakeLong("E2", "K1", 1L, 2L, 4L));
                 RunQueryAssertion(
@@ -885,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
                 var query2 =
-                    "select * from MyInfraMRAK where rangeStartLong > 1 and rangeEndLong > 2 and keyLong=1 order by Id asc";
+                    "select * from MyInfraMRAK where RangeStartLong > 1 and RangeEndLong > 2 and KeyLong=1 order by Id asc";
                 RunQueryAssertion(
                     env,
                     path,
@@ -900,11 +869,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -933,7 +898,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "insert into MyInfra(f1, f2, f3, f4) select TheString, IntPrimitive, '>'||TheString||'<', '?'||TheString||'?' from SupportBean",
                     path);
                 env.CompileDeploy("create index MyInfraIndex on MyInfra(f2, f3, f1)", path);
-                var fields = "f1,f2,f3,f4".SplitCsv();
+                var fields = new [] { "f1","f2","f3","f4" };
 
                 env.SendEventBean(new SupportBean("E1", -2));
 
@@ -966,11 +931,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "isNamedWindow=" +
-                       isNamedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{isNamedWindow={isNamedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()

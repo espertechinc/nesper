@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             "        /// This handler handles the \"trieState\"-type table column\n" +
             "        /// <summary />\n" +
             "        public class TrieAggHandlerTrieState : AggregationMultiFunctionHandler {\n" +
-            "            public Type ReturnType => EPTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
+            "            public Type ReturnType => typeof(SupportTrie<string, object>);\n" +
             "\n" +
             "            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +
             "                get => new InertAggregationMultiFunctionStateKey();\n" +

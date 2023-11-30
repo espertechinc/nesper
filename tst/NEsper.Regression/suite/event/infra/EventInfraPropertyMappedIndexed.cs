@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env,
                 BEAN_TYPE.Name,
                 FBEAN,
-                new MyIMEvent(new string[] { "v1", "v2" }, Collections.SingletonDataMap("k1", "v1")),
+                new MyIMEvent(new[] { "v1", "v2" }, Collections.SingletonMap("k1", "v1")),
                 path);
 
             RunAssertion(
@@ -55,17 +55,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 MAP_TYPENAME,
                 FMAP,
                 TwoEntryMap<string, object>(
-                    "Indexed",
-                    new string[] { "v1", "v2" },
-                    "Mapped",
-                    Collections.SingletonDataMap("k1", "v1")),
+                    "Indexed", new[] { "v1", "v2" },
+                    "Mapped", Collections.SingletonMap("k1", "v1")),
                 path);
 
             RunAssertion(
                 env,
                 OA_TYPENAME,
                 FOA,
-                new object[] { new string[] { "v1", "v2" }, Collections.SingletonDataMap("k1", "v1") },
+                new object[] { new[] { "v1", "v2" }, Collections.SingletonMap("k1", "v1") },
                 path);
 
             // Avro
@@ -137,8 +135,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 () => {
                     var eventType = env.Runtime.EventTypeService.GetBusEventType(typeName);
                     var mapType = underlying is GenericRecord
-                        ? typeof(IDictionary<string, string>)
-                        : typeof(IDictionary<string, object>);
+                        ? typeof(IDictionary<string, object>)
+                        : typeof(IDictionary<string, string>);
                     var mapValueType = mapType.GetDictionaryValueType();
                     
                     var expectedType = new object[][] {
@@ -227,7 +225,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             public MyIMEvent(
                 string[] indexed,
-				IDictionary<string, object> mapped)
+				IDictionary<string, string> mapped)
             {
 				this.Indexed = indexed;
 				this.Mapped = mapped;
@@ -235,13 +233,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			public string[] Indexed { get; }
 
-			public IDictionary<string, object> Mapped { get; }
+			public IDictionary<string, string> Mapped { get; }
         }
 
         public class MyLocalJsonProvided
         {
 			public string[] Indexed;
-			public IDictionary<string, object> Mapped;
+			public IDictionary<string, string> Mapped;
         }
     }
 } // end of namespace

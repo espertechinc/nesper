@@ -53,15 +53,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventMap(Collections.EmptyDataMap, "LocalEvent");
                 }
                 else {
-                    env.SendEventMap(Collections.SingletonDataMap("array", nullable.Value), "LocalEvent");
+                    env.SendEventMap(Collections.SingletonDataMap("Array", nullable.Value), "LocalEvent");
                 }
             };
             var mapepl = "@public @buseventtype create schema LocalEvent();\n";
             RunAssertion(env, mapepl, map);
 
             // Object-array
-            var oaepl = "@public @buseventtype create objectarray schema LocalEvent();\n" +
-                        "@public @buseventtype create objectarray schema LocalEventSubA (array string[]) inherits LocalEvent;\n";
+            var oaepl =
+                "@public @buseventtype create objectarray schema LocalEvent();\n" +
+                "@public @buseventtype create objectarray schema LocalEventSubA (Array string[]) inherits LocalEvent;\n";
             RunAssertion(env, oaepl, null);
 
             // Json
@@ -70,12 +71,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventJson("{}", "LocalEvent");
                 }
                 else if (nullable.Value == null) {
-                    env.SendEventJson(new JObject(new JProperty("array")).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Array")).ToString(), "LocalEvent");
                 }
                 else {
                     var @event = new JObject();
                     var array = new JArray();
-                    @event.Add("array", array);
+                    @event.Add("Array", array);
                     foreach (var @string in nullable.Value) {
                         array.Add(@string);
                     }
@@ -85,33 +86,32 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
             RunAssertion(
                 env,
-                "@public @buseventtype @JsonSchema(dynamic=true) create json schema LocalEvent();\n",
+                "@public @buseventtype @JsonSchema(Dynamic=true) create json schema LocalEvent();\n",
                 json);
 
             // Json-Class-Provided
             RunAssertion(
                 env,
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJsonProvided).MaskTypeName() +
-                "') @public @buseventtype @JsonSchema() create json schema LocalEvent();\n",
+                "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') " +
+                "@public @buseventtype @JsonSchema() create json schema LocalEvent();\n",
                 json);
 
             // Avro
             Consumer<NullableObject<string[]>> avro = nullable => {
-                var schema = SchemaBuilder.Record("name", Field("array", SchemaBuilder.Array(StringType())));
+                var schema = SchemaBuilder.Record("name", Field("Array", SchemaBuilder.Array(StringType())));
                 GenericRecord @event;
                 if (nullable == null) {
                     // no action
                     @event = new GenericRecord(schema);
-                    @event.Put("array", EmptyList<GenericRecord>.Instance);
+                    @event.Put("Array", EmptyList<GenericRecord>.Instance);
                 }
                 else if (nullable.Value == null) {
                     @event = new GenericRecord(schema);
-                    @event.Put("array", EmptyList<GenericRecord>.Instance);
+                    @event.Put("Array", EmptyList<GenericRecord>.Instance);
                 }
                 else {
                     @event = new GenericRecord(schema);
-                    @event.Put("array", Arrays.AsList(nullable.Value));
+                    @event.Put("Array", Arrays.AsList(nullable.Value));
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -133,8 +133,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        var g0 = eventType.GetGetter("array[0]?");
-                        var g1 = eventType.GetGetter("array[1]?");
+                        var g0 = eventType.GetGetter("Array[0]?");
+                        var g1 = eventType.GetGetter("Array[1]?");
                         Assert.IsNull(g0);
                         Assert.IsNull(g1);
                     });
@@ -142,9 +142,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 return;
             }
 
-            var propepl = "@name('s1') select array[0]? as c0, array[1]? as c1," +
-                          "exists(array[0]?) as c2, exists(array[1]?) as c3, " +
-                          "typeof(array[0]?) as c4, typeof(array[1]?) as c5 from LocalEvent;\n";
+            var propepl = "@name('s1') select Array[0]? as c0, Array[1]? as c1," +
+                          "exists(Array[0]?) as c2, exists(Array[1]?) as c3, " +
+                          "typeof(Array[0]?) as c4, typeof(Array[1]?) as c5 from LocalEvent;\n";
             env.CompileDeploy(propepl, path).AddListener("s1");
 
             sender.Invoke(new NullableObject<string[]>(new string[] { "a", "b" }));
@@ -176,8 +176,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool existsOne,
             string valueOne)
         {
-            var g0 = @event.EventType.GetGetter("array[0]?");
-            var g1 = @event.EventType.GetGetter("array[1]?");
+            var g0 = @event.EventType.GetGetter("Array[0]?");
+            var g1 = @event.EventType.GetGetter("Array[1]?");
             AssertGetter(@event, g0, existsZero, valueZero);
             AssertGetter(@event, g1, existsOne, valueOne);
         }
@@ -216,22 +216,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalEventSubA : LocalEvent
         {
-            private string[] array;
-
             public LocalEventSubA(string[] array)
             {
-                this.array = array;
+                this.Array = array;
             }
 
-            public string[] GetArray()
-            {
-                return array;
-            }
+            public string[] Array { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public string[] array;
+            public string[] Array;
         }
     }
 } // end of namespace

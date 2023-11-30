@@ -311,7 +311,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // wrong 1st parameter - string
                 env.TryInvalidCompile(
                     "select a.before('x') from SupportTimeStartEndA as a",
-                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'String', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'System.String', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
 
                 // wrong 1st parameter - event not defined with timestamp expression
                 env.TryInvalidCompile(

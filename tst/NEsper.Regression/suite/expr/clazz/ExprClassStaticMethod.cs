@@ -334,7 +334,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 // invalid class
                 env.TryInvalidCompile(
                     "inlined_class \"\"\" x \"\"\" select * from SupportBean",
-                    "Failed to compile an inlined-class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,4): error CS1001:"); 
+                //"Failed to compile an inlined-class: Line 1, Column 2: One of 'class enum interface @' expected instead of 'x' for class [\"\"\" x \"\"\"]");
 
                 // invalid already deployed
                 var path = new RegressionPath();
@@ -350,14 +353,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "inlined_class \"\"\" class MyDuplicate{} \"\"\" inlined_class \"\"\" class MyDuplicate{} \"\"\" select * from SupportBean";
                 env.TryInvalidCompile(
                     eplDuplLocal,
-                    "Failed to compile an inlined-class: Duplicate class by name 'MyDuplicate'");
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
 
                 // duplicate local class and create-class class
                 var eplDuplLocalAndCreate =
                     "inlined_class \"\"\" class MyDuplicate{} \"\"\" create inlined_class \"\"\" class MyDuplicate{} \"\"\"";
                 env.TryInvalidCompile(
                     eplDuplLocalAndCreate,
-                    "Failed to compile an inlined-class: Duplicate class by name 'MyDuplicate'");
+                    "Exception processing statement: " +
+                    "Failure during module compilation: " +
+                    "[(1,8): error CS0101: The namespace '<global namespace>' already contains a definition for 'MyDuplicate']");
 
                 // duplicate create-class class
                 var eplDuplCreate = "create inlined_class \"\"\" public class MyDuplicate{} \"\"\";\n" +
@@ -395,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 path.Add(compiledReturnZero);
 
                 var compiledQuery = env.Compile(
-                    $"@nName('s0') select {ns2}.MyClass.DoIt(IntPrimitive) as c0 from SupportBean;\n",
+                    $"@Name('s0') select {ns2}.MyClass.DoIt(IntPrimitive) as c0 from SupportBean;\n",
                     path);
                 env.Deploy(compiledReturnPlusOne);
                 env.Deploy(compiledQuery).AddListener("s0");
@@ -431,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                                "        }\n" +
                                "    }\n" +
                                "}\n" +
-                               "\"\"\"\n";
+                               "\"\"\"";
                 env.CompileDeploy(_soda, eplClass, path);
                 env.CompileDeploy(
                     _soda,
@@ -450,11 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       _soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={_soda}}}";
             }
         }
 

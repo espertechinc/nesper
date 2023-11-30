@@ -43,6 +43,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
                 session.Configuration.Common.AddEventType(clazz);
             }
 
+            session.Configuration.Common.EventMeta.AvroSettings.IsEnableAvro = true;
             session.Configuration.Common.EventMeta.AvroSettings.TypeRepresentationMapperClass =
                 typeof(EventAvroHook.MyTypeRepresentationMapper).FullName;
             session.Configuration.Common.EventMeta.AvroSettings.ObjectValueTypeWidenerFactoryClass =

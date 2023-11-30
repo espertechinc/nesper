@@ -15,6 +15,9 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
     public class EventObjectArrayCore
@@ -115,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 var statementText = "@name('s0') select beanA.SimpleProperty as simple," +
                                     "beanA.Nested.NestedValue as nested," +
-                                    "beanA.indexed[1] as indexed," +
+                                    "beanA.Indexed[1] as indexed," +
                                     "beanA.Nested.NestedNested.NestedNestedValue as nestednested " +
                                     "from MyObjectArrayEvent#length(5)";
                 env.CompileDeploy(statementText).AddListener("s0");
@@ -126,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("NestedValue", @event.Get("Nested"));
+                        Assert.AreEqual("NestedValue", @event.Get("nested"));
                         Assert.AreEqual(2, @event.Get("indexed"));
                         Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });

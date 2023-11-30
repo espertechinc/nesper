@@ -68,10 +68,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapNestedOne = new Dictionary<string, object>();
-            mapNestedOne.Put("indexed", new int[] { 1, 2 });
+            mapNestedOne.Put("Indexed", new int[] { 1, 2 });
             mapNestedOne.Put("ArrayProperty", null);
-            mapNestedOne.Put("mapped", TwoEntryMap("keyOne", 100, "keyTwo", 200));
-            mapNestedOne.Put("mapProperty", null);
+            mapNestedOne.Put("Mapped", TwoEntryMap("keyOne", 100, "keyTwo", 200));
+            mapNestedOne.Put("MapProperty", null);
             var mapOne = Collections.SingletonDataMap("Item", mapNestedOne);
             var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(Collections.EmptyDataMap, notExists),
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>("", notExists),
                 new Pair<object, object>(
                     "<Item>" +
-                    "<indexed>1</indexed><indexed>2</indexed><mapped id=\"keyOne\">3</mapped><mapped Id=\"keyTwo\">4</mapped>" +
+                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>" +
                     "</Item>",
                     new ValueWithExistsFlag[] {
                         Exists("1"), Exists("2"), NotExists(), Exists("3"), Exists("4"), NotExists()
@@ -118,8 +118,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var datumOne = new GenericRecord(schema);
             datumOne.Put("Item", null);
             var datumItemTwo = new GenericRecord(itemSchema);
-            datumItemTwo.Put("indexed", Arrays.AsList(1, 2));
-            datumItemTwo.Put("mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
+            datumItemTwo.Put("Indexed", Arrays.AsList(1, 2));
+            datumItemTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
             var datumTwo = new GenericRecord(schema);
             datumTwo.Put("Item", datumItemTwo);
             var avroTests = new Pair<object, object>[] {
@@ -138,8 +138,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(
                     "{\n" +
                     "  \"Item\": {\n" +
-                    "    \"indexed\": [1,2],\n" +
-                    "    \"mapped\": {\n" +
+                    "    \"Indexed\": [1,2],\n" +
+                    "    \"Mapped\": {\n" +
                     "      \"keyOne\": 3,\n" +
                     "      \"keyTwo\": 4\n" +
                     "    }\n" +
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         Exists(1), Exists(2), NotExists(), Exists(3), Exists(4), NotExists()
                     }),
             };
-            var schemasJson = "@Public @buseventtype @name('schema') @JsonSchema(dynamic=true) create json schema " +
+            var schemasJson = "@Public @buseventtype @name('schema') @JsonSchema(Dynamic=true) create json schema " +
                               JSON_TYPENAME +
                               "()";
             env.CompileDeploy(schemasJson, path);
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(
                     "{\n" +
                     "  \"Item\": {\n" +
-                    "    \"indexed\": [1,2],\n" +
-                    "    \"mapped\": {\n" +
+                    "    \"Indexed\": [1,2],\n" +
+                    "    \"Mapped\": {\n" +
                     "      \"keyOne\": 3,\n" +
                     "      \"keyTwo\": 4\n" +
                     "    }\n" +
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
             var schemasJsonProvided = "@JsonSchema(ClassName='" +
                                       typeof(MyLocalJsonProvided).FullName +
-                                      "') @public @buseventtype @name('schema') @JsonSchema(dynamic=true) create json schema " +
+                                      "') @public @buseventtype @name('schema') @JsonSchema(Dynamic=true) create json schema " +
                                       JSONPROVIDED_TYPENAME +
                                       "()";
             env.CompileDeploy(schemasJsonProvided, path);
@@ -195,23 +195,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RegressionPath path)
         {
             var stmtText = "@name('s0') select " +
-                           "Item?.indexed[0] as indexed1, " +
-                           "exists(Item?.indexed[0]) as exists_indexed1, " +
-                           "Item?.indexed[1]? as indexed2, " +
-                           "exists(Item?.indexed[1]?) as exists_indexed2, " +
-                           "Item?.ArrayProperty[1]? as array, " +
-                           "exists(Item?.ArrayProperty[1]?) as exists_array, " +
-                           "Item?.mapped('keyOne') as mapped1, " +
-                           "exists(Item?.mapped('keyOne')) as exists_mapped1, " +
-                           "Item?.mapped('keyTwo')? as mapped2,  " +
-                           "exists(Item?.mapped('keyTwo')?) as exists_mapped2,  " +
-                           "Item?.mapProperty('xOne')? as map, " +
-                           "exists(Item?.mapProperty('xOne')?) as exists_map " +
+                           "Item?.Indexed[0] as Indexed1, " +
+                           "exists(Item?.Indexed[0]) as exists_Indexed1, " +
+                           "Item?.Indexed[1]? as Indexed2, " +
+                           "exists(Item?.Indexed[1]?) as exists_Indexed2, " +
+                           "Item?.ArrayProperty[1]? as Array, " +
+                           "exists(Item?.ArrayProperty[1]?) as exists_Array, " +
+                           "Item?.Mapped('keyOne') as Mapped1, " +
+                           "exists(Item?.Mapped('keyOne')) as exists_Mapped1, " +
+                           "Item?.Mapped('keyTwo')? as Mapped2,  " +
+                           "exists(Item?.Mapped('keyTwo')?) as exists_Mapped2,  " +
+                           "Item?.MapProperty('xOne')? as Map, " +
+                           "exists(Item?.MapProperty('xOne')?) as exists_Map " +
                            " from " +
                            typename;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
-            var propertyNames = "indexed1,indexed2,array,mapped1,mapped2,map".SplitCsv();
+            var propertyNames = "Indexed1,Indexed2,Array,Mapped1,Mapped2,Map".SplitCsv();
             env.AssertStatement(
                 "s0",
                 statement => {
@@ -238,13 +238,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedItem item;
+            public MyLocalJsonProvidedItem Item;
         }
 
         public class MyLocalJsonProvidedItem
         {
-            public object[] indexed;
-            public IDictionary<string, object> mapped;
+            public object[] Indexed;
+            public IDictionary<string, object> Mapped;
         }
     }
 } // end of namespace

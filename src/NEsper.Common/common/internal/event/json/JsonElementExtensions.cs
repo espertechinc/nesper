@@ -147,17 +147,17 @@ namespace com.espertech.esper.common.@internal.@event.json
 
         public static object ElementToNumeric(this JsonElement element)
         {
+            if (element.TryGetInt32(out var valueInt32)) {
+                return valueInt32;
+            }
+            if (element.TryGetInt64(out var valueInt64)) {
+                return valueInt64;
+            }
             if (element.TryGetDecimal(out var valueDecimal)) {
                 return valueDecimal;
             }
-            else if (element.TryGetDouble(out var valueDouble)) {
+            if (element.TryGetDouble(out var valueDouble)) {
                 return valueDouble;
-            }
-            else if (element.TryGetInt32(out var valueInt32)) {
-                return valueInt32;
-            }
-            else if (element.TryGetInt64(out var valueInt64)) {
-                return valueInt64;
             }
 
             throw new FormatException($"unable to parse the value \"{element}\" to a numeric");

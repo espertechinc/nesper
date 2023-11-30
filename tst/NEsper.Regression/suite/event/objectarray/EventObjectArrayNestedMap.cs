@@ -27,11 +27,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                         typeof(object[]),
                         env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMapNestedObjectArray")
                             .UnderlyingType));
-            env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMapNestedObjectArray")
+            env.CompileDeploy("@name('s0') select lev0name.lev1name.Sb.TheString as val from MyMapNestedObjectArray")
                 .AddListener("s0");
 
             IDictionary<string, object> lev2data = new Dictionary<string, object>();
-            lev2data.Put("sb", new SupportBean("E1", 0));
+            lev2data.Put("Sb", new SupportBean("E1", 0));
             IDictionary<string, object> lev1data = new Dictionary<string, object>();
             lev1data.Put("lev1name", lev2data);
 

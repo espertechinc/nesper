@@ -247,6 +247,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                         .DeclareVar(arraySet.ArrayType, array.Ref, forgeExpressions[i].OptionalArrayExpressions.ArrayGet)
                         .IfRefNotNull(array.Ref)
                         .IfCondition(Relational(index, CodegenExpressionRelational.CodegenRelational.LT, ArrayLength(array)))
+                        .CommentFullLine("MakeUpdateInternal//AssignArrayElement")
                         .AssignArrayElement(array, Unbox(index), assigned)
                         .IfElse()
                         .BlockThrow(
@@ -265,7 +266,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                 }
                 else {
                     // handle regular values
-                    if (!type.CanBeNull() && updateItem.IsNotNullableField) {
+                    if (type.CanBeNull() && updateItem.IsNotNullableField) {
                         method.Block.IfNull(@ref)
                             .StaticMethod(
                                 typeof(EventBeanUpdateHelperForge),

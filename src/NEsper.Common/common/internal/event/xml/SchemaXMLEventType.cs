@@ -102,13 +102,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
                     isFragment = CanFragment(complex);
                 }
 
+                var isIndexed = complex.IsArray || returnType == typeof(string);
+
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
                     false,
                     false,
-                    complex.IsArray,
+                    isIndexed,
                     false,
                     isFragment);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -119,13 +121,15 @@ namespace com.espertech.esper.common.@internal.@event.xml
             foreach (var simple in schemaModelRoot.SimpleElements) {
                 var propertyName = simple.Name;
                 var returnType = SchemaUtil.ToReturnType(simple, xmlxsdHandler);
+                var isIndexed = simple.IsArray || returnType == typeof(string);
                 var getter = DoResolvePropertyGetter(propertyName, true);
+                
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
                     false,
                     false,
-                    simple.IsArray,
+                    isIndexed,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -136,13 +140,14 @@ namespace com.espertech.esper.common.@internal.@event.xml
             foreach (var attribute in schemaModelRoot.Attributes) {
                 var propertyName = attribute.Name;
                 var returnType = SchemaUtil.ToReturnType(attribute, xmlxsdHandler);
+                var isIndexed = returnType == typeof(string);
                 var getter = DoResolvePropertyGetter(propertyName, true);
                 var desc = new EventPropertyDescriptor(
                     propertyName,
                     returnType,
                     false,
                     false,
-                    false,
+                    isIndexed,
                     false,
                     false);
                 var @explicit = new ExplicitPropertyDescriptor(desc, getter, false, null);
@@ -291,8 +296,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
                             return null;
                         }
 
-                        if (descriptor.PropertyType == typeof(XmlNodeList)) {
-                            FragmentFactorySPI fragmentFactory = new FragmentFactoryDOMGetter(
+                        if ((descriptor.PropertyType == typeof(XmlNodeList)) ||
+                             (descriptor.PropertyType == typeof(string))) {
+                            var fragmentFactory = new FragmentFactoryDOMGetter(
                                 EventBeanTypedEventFactory,
                                 this,
                                 indexedProp.PropertyNameAtomic);

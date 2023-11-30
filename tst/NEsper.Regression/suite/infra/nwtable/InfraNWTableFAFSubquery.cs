@@ -214,14 +214,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "@public create window WinSB#keepall as SupportBean;\n" +
                     "insert into WinSB select * from SupportBean;\n";
                 if (namedWindow) {
-                    epl += "@public create window Infra#unique(id) as (Id int, value string);\n";
+                    epl += "@public create window Infra#unique(Id) as (Id int, Value string);\n";
                 }
                 else {
-                    epl += "@public create table Infra(Id int primary key, value string);\n";
+                    epl += "@public create table Infra(Id int primary key, Value string);\n";
                 }
 
-                epl += "@public create index InfraIndex on Infra(value);\n" +
-                       "insert into Infra select Id, P00 as value from SupportBean_S0;\n";
+                epl += "@public create index InfraIndex on Infra(Value);\n" +
+                       "insert into Infra select Id, P00 as Value from SupportBean_S0;\n";
                 env.CompileDeploy(epl, path);
 
                 var numRows = 10000; // less than 1M
@@ -274,14 +274,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "@public create window WinSB#lastevent as SupportBean;\n" +
                     "insert into WinSB select * from SupportBean;\n";
                 if (namedWindow) {
-                    epl += "@public create window Infra#unique(id) as (Id int, value string);\n";
+                    epl += "@public create window Infra#unique(Id) as (Id int, Value string);\n";
                 }
                 else {
-                    epl += "@public create table Infra(Id int primary key, value string);\n";
+                    epl += "@public create table Infra(Id int primary key, Value string);\n";
                 }
 
-                epl += "@public create index InfraIndex on Infra(value);\n" +
-                       "insert into Infra select Id, P00 as value from SupportBean_S0;\n";
+                epl += "@public create index InfraIndex on Infra(Value);\n" +
+                       "insert into Infra select Id, P00 as Value from SupportBean_S0;\n";
                 env.CompileDeploy(epl, path);
 
                 SendSB(env, "E1", -1);
@@ -477,8 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 SendSB(env, "a", 0);
                 SendSB(env, "b", 2);
 
-                var update =
-                    "delete from WinS0 as wins0 where Id = (select IntPrimitive from WinSB winsb where winsb.TheString = wins0.P00)";
+                var update = "delete from WinS0 as wins0 where Id = (select IntPrimitive from WinSB winsb where winsb.TheString = wins0.P00)";
                 CompileExecute(env, path, update);
 
                 var query = "select * from WinS0";
@@ -633,22 +632,22 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create window Win#keepall as (key string, value int);\n" +
+                    "@public create window Win#keepall as (Key string, Value int);\n" +
                     "@public create window WinSB#lastevent as SupportBean;\n" +
                     "insert into WinSB select * from SupportBean;\n";
                 env.CompileDeploy(epl, path);
-                CompileExecute(env, path, "insert into Win select 'k1' as key, 1 as value");
-                CompileExecute(env, path, "insert into Win select 'k2' as key, 2 as value");
-                CompileExecute(env, path, "insert into Win select 'k3' as key, 3 as value");
+                CompileExecute(env, path, "insert into Win select 'k1' as Key, 1 as Value");
+                CompileExecute(env, path, "insert into Win select 'k2' as Key, 2 as Value");
+                CompileExecute(env, path, "insert into Win select 'k3' as Key, 3 as Value");
 
-                var delete = "delete from Win where value = (select IntPrimitive from WinSB)";
+                var delete = "delete from Win where Value = (select IntPrimitive from WinSB)";
                 var query = "select * from Win";
 
                 AssertQueryMultirowAnyOrder(
                     env,
                     path,
                     query,
-                    "key,value",
+                    "Key,Value",
                     new object[][] { new object[] { "k1", 1 }, new object[] { "k2", 2 }, new object[] { "k3", 3 } });
 
                 CompileExecute(env, path, delete);
@@ -656,7 +655,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     query,
-                    "key,value",
+                    "Key,Value",
                     new object[][] { new object[] { "k1", 1 }, new object[] { "k2", 2 }, new object[] { "k3", 3 } });
 
                 SendSB(env, "E1", 2);
@@ -665,12 +664,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     query,
-                    "key,value",
+                    "Key,Value",
                     new object[][] { new object[] { "k1", 1 }, new object[] { "k3", 3 } });
 
                 SendSB(env, "E1", 1);
                 CompileExecute(env, path, delete);
-                AssertQueryMultirowAnyOrder(env, path, query, "key,value", new object[][] { new object[] { "k3", 3 } });
+                AssertQueryMultirowAnyOrder(env, path, query, "Key,Value", new object[][] { new object[] { "k3", 3 } });
 
                 env.UndeployAll();
             }
@@ -687,14 +686,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create window Win#lastevent as (value int);\n" +
+                    "@public create window Win#lastevent as (Value int);\n" +
                     "@public create window WinSB#lastevent as SupportBean;\n" +
                     "insert into WinSB select * from SupportBean;\n";
                 env.CompileDeploy(epl, path);
-                CompileExecute(env, path, "insert into Win select 1 as value");
+                CompileExecute(env, path, "insert into Win select 1 as Value");
 
-                var update = "update Win set value = (select IntPrimitive from WinSB)";
-                var query = "select value as c0 from Win";
+                var update = "update Win set Value = (select IntPrimitive from WinSB)";
+                var query = "select Value as c0 from Win";
 
                 AssertQuerySingle(env, path, query, 1);
 
@@ -730,7 +729,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@public create window Win#keepall as (value string);\n";
+                var epl = "@public create window Win#keepall as (Value string);\n";
                 if (namedWindow) {
                     epl +=
                         "@public create window InfraSB#lastevent as SupportBean;\n" +
@@ -745,11 +744,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.CompileDeploy(epl, path);
 
-                var insert = "insert into Win(value) select (select TheString from InfraSB)";
+                var insert = "insert into Win(Value) select (select TheString from InfraSB)";
                 var query = "select * from Win";
 
                 CompileExecute(env, path, insert);
-                AssertQueryMultirowAnyOrder(env, path, query, "value", new object[][] { new object[] { null } });
+                AssertQueryMultirowAnyOrder(env, path, query, "Value", new object[][] { new object[] { null } });
 
                 SendSB(env, "E1", 0);
                 CompileExecute(env, path, insert);
@@ -757,7 +756,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     query,
-                    "value",
+                    "Value",
                     new object[][] { new object[] { null }, new object[] { "E1" } });
 
                 SendSB(env, "E2", 0);
@@ -766,7 +765,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env,
                     path,
                     query,
-                    "value",
+                    "Value",
                     new object[][] { new object[] { null }, new object[] { "E1" }, new object[] { "E2" } });
 
                 env.UndeployAll();
@@ -774,11 +773,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -817,8 +812,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     path,
                     query,
                     "c0,P00,P10",
-                    new object[][]
-                        { new object[] { "SB_0", "S0_0", "S1_0" }, new object[] { "SB_0", "S0_1", "S1_0" } });
+                    new object[][] {
+                        new object[] { "SB_0", "S0_0", "S1_0" },
+                        new object[] { "SB_0", "S0_1", "S1_0" }
+                    });
 
                 env.UndeployAll();
             }
@@ -875,11 +872,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -896,7 +889,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var compiled = env.CompileFAF(query, path);
             var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
-            Assert.AreEqual(0, result.Array == null ? 0 : result.Array.Length);
+            Assert.AreEqual(0, result.Array?.Length ?? 0);
             Assert.AreEqual(result.EventType.GetPropertyType("c0"), resultType);
         }
 

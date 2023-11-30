@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var epl = "create expression myExpr {x=> '|' || x.Name || '|'};\n" +
                           "@name('s0') select myfunc(" +
                           "  Name, Place, sum(Count), grouping(Name), grouping(Place), grouping_id(Name, Place)," +
-                          "  (select refId from SupportCarInfoEvent#lastevent), " +
+                          "  (select RefId from SupportCarInfoEvent#lastevent), " +
                           "  myExpr(ce)" +
                           "  )" +
                           "from SupportCarEvent ce group by grouping sets((Name, Place),Name, Place,())";

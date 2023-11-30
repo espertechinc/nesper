@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     .ResolveResourceURL("regression/simpleSchema.xsd")
                     .ToString();
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='simpleEvent', schemaResource='" +
+                          "@XMLSchema(RootElementName='simpleEvent', SchemaResource='" +
                           schemaUriSimpleSchema +
                           "')" +
                           "create xml schema MyEventCreateSchema()";
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             RegressionPath path)
         {
             // try array property insert
-            env.CompileDeploy("@name('s0') select nested3.Nested4 as narr from " + eventTypeName + "#lastevent", path);
+            env.CompileDeploy("@name('s0') select nested3.nested4 as narr from " + eventTypeName + "#lastevent", path);
             env.AssertStatement(
                 "s0",
                 statement => {
@@ -100,13 +100,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     Assert.AreEqual("SAMPLE_V11", fragments[2].Get("prop5[1]"));
 
                     var fragmentItem = (EventBean)result.GetFragment("narr[2]");
-                    Assert.AreEqual(eventTypeName + ".Nested3.Nested4", fragmentItem.EventType.Name);
+                    Assert.AreEqual(eventTypeName + ".nested3.nested4", fragmentItem.EventType.Name);
                     Assert.AreEqual("SAMPLE_V10", fragmentItem.Get("prop5[0]"));
                 });
 
             // try array index property insert
             env.CompileDeploy(
-                "@name('ii') select nested3.Nested4[1] as narr from " + eventTypeName + "#lastevent",
+                "@name('ii') select nested3.nested4[1] as narr from " + eventTypeName + "#lastevent",
                 path);
             env.AssertStatement(
                 "ii",
@@ -124,11 +124,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "ii",
                 iterator => {
                     var resultItem = iterator.Advance();
-                    Assert.AreEqual("b", resultItem.Get("narr.Id"));
+                    Assert.AreEqual("b", resultItem.Get("narr.id"));
                     SupportEventTypeAssertionUtil.AssertConsistency(resultItem);
                     var fragmentsInsertItem = (EventBean)resultItem.GetFragment("narr");
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentsInsertItem);
-                    Assert.AreEqual("b", fragmentsInsertItem.Get("Id"));
+                    Assert.AreEqual("b", fragmentsInsertItem.Get("id"));
                     Assert.AreEqual("SAMPLE_V9", fragmentsInsertItem.Get("prop5[0]"));
                 });
 

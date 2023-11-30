@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     env,
                     epl,
                     typeof(MyLocalJsonProvidedStringInt),
-                    "Public field 'c0' of class '%CLASS%' declared as type 'String' cannot receive a value of type 'Integer'");
+                    "Public field 'c0' of class '%CLASS%' declared as type 'System.String' cannot receive a value of type 'System.Int32'");
             }
         }
 

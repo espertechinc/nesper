@@ -743,7 +743,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             BeanEventPropertyGetter nestedGetter,
             int index)
         {
-            return codegenMethodScope.MakeChild(typeof(object), typeof(BaseNestableEventUtil), codegenClassScope)
+            var propertyType = nestedGetter.BeanPropType;
+            return codegenMethodScope.MakeChild(propertyType, typeof(BaseNestableEventUtil), codegenClassScope)
                 .AddParam<object>("value")
                 .Block
                 .IfRefNullReturnNull("value")

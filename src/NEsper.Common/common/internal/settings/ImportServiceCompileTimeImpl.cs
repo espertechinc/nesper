@@ -420,7 +420,7 @@ namespace com.espertech.esper.common.@internal.settings
                     " method named '" +
                     methodName +
                     "' in class '" +
-                    clazz.Name +
+                    clazz.CleanName() +
                     "'");
             }
 
@@ -435,7 +435,7 @@ namespace com.espertech.esper.common.@internal.settings
                         "Method by name '" +
                         methodName +
                         "' is overloaded in class '" +
-                        clazz.Name +
+                        clazz.CleanName() +
                         "' and overloaded methods do not return the same type");
                 }
             }

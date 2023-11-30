@@ -12,6 +12,7 @@ using System.Xml;
 
 using Avro.Generic;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -35,9 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         public const string OA_TYPENAME = nameof(EventInfraPropertyDynamicNestedRootedSimple) + "OA";
         public const string AVRO_TYPENAME = nameof(EventInfraPropertyDynamicNestedRootedSimple) + "Avro";
         public const string JSON_TYPENAME = nameof(EventInfraPropertyDynamicNestedRootedSimple) + "Json";
-
-        public const string JSONPROVIDED_TYPENAME =
-            nameof(EventInfraPropertyDynamicNestedRootedSimple) + "JsonProvided";
+        public const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyDynamicNestedRootedSimple) + "JsonProvided";
 
         private static readonly Type BEAN_TYPE = typeof(SupportMarkerInterface);
         private static readonly ValueWithExistsFlag[] NOT_EXISTS = MultipleNotExists(3);
@@ -55,18 +54,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var beanTests = new Pair<object, object>[] {
                 new Pair<object, object>(
                     SupportBeanComplexProps.MakeDefaultBean(),
-                    AllExist("simple", "NestedValue", "NestedNestedValue")),
+                    AllExist("Simple", "NestedValue", "NestedNestedValue")),
                 new Pair<object, object>(new SupportMarkerImplA("x"), NOT_EXISTS),
             };
             RunAssertion(env, BEAN_TYPE.Name, FBEAN, null, beanTests, typeof(object), path);
 
             // Map
             var mapNestedNestedOne = Collections.SingletonDataMap("NestedNestedValue", 101);
-            var mapNestedOne = TwoEntryMap<string, object>("NestedNested", mapNestedNestedOne, "NestedValue", "abc");
-            var mapOne = TwoEntryMap<string, object>("SimpleProperty", 5, "Nested", mapNestedOne);
+            var mapNestedOne = TwoEntryMap<string, object>(
+                "NestedNested", mapNestedNestedOne,
+                "NestedValue", "abc");
+            var mapOne = TwoEntryMap<string, object>(
+                "SimpleProperty", 5,
+                "Nested", mapNestedOne);
             var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(
-                    Collections.SingletonMap("SimpleProperty", "a"),
+                    Collections.SingletonDataMap("SimpleProperty", "a"),
                     new ValueWithExistsFlag[] { Exists("a"), NotExists(), NotExists() }),
                 new Pair<object, object>(mapOne, AllExist(5, "abc", 101)),
             };
@@ -77,10 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var oaNestedOne = new object[] { "abc", oaNestedNestedOne };
             var oaOne = new object[] { 5, oaNestedOne };
             var oaTests = new Pair<object, object>[] {
-                new Pair<object, object>(
-                    new object[] { "a", null },
-                    new ValueWithExistsFlag[] { Exists("a"), NotExists(), NotExists() }),
-                new Pair<object, object>(oaOne, AllExist(5, "abc", 101)),
+                new Pair<object, object>(new object[] { "a", null }, new[] { Exists("a"), NotExists(), NotExists() }),
+                new Pair<object, object>(oaOne, AllExist(5, "abc", 101))
             };
             RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object), path);
 
@@ -88,12 +89,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var xmlTests = new Pair<object, object>[] {
                 new Pair<object, object>(
                     "<SimpleProperty>abc</SimpleProperty>" +
-                    "<nested NestedValue=\"100\">\n" +
+                    "<Nested NestedValue=\"100\">\n" +
                     "\t<NestedNested NestedNestedValue=\"101\">\n" +
                     "\t</NestedNested>\n" +
-                    "</nested>\n",
+                    "</Nested>\n",
                     AllExist("abc", "100", "101")),
-                new Pair<object, object>("<nested/>", NOT_EXISTS),
+                new Pair<object, object>("<Nested/>", NOT_EXISTS)
             };
             RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
@@ -104,10 +105,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var datumNull = new GenericRecord(avroSchema);
             var schema = avroSchema;
             var nestedSchema = AvroSchemaUtil
-                .FindUnionRecordSchemaSingle(schema.GetField("Nested").Schema.AsRecordSchema())
+                .FindUnionRecordSchemaSingle(schema.GetField("Nested").Schema)
                 .AsRecordSchema();
             var nestedNestedSchema = AvroSchemaUtil
-                .FindUnionRecordSchemaSingle(nestedSchema.GetField("NestedNested").Schema.AsRecordSchema())
+                .FindUnionRecordSchemaSingle(nestedSchema.GetField("NestedNested").Schema)
                 .AsRecordSchema();
             var nestedNestedDatum = new GenericRecord(nestedNestedSchema);
             nestedNestedDatum.Put("NestedNestedValue", 101);
@@ -121,13 +122,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 new Pair<object, object>(
                     new GenericRecord(avroSchema),
                     new ValueWithExistsFlag[] { Exists(null), NotExists(), NotExists() }),
-                new Pair<object, object>(
-                    datumNull,
-                    new ValueWithExistsFlag[] { Exists(null), NotExists(), NotExists() }),
+                new Pair<object, object>(datumNull, new[] { Exists(null), NotExists(), NotExists() }),
                 new Pair<object, object>(datumOne, AllExist("abc", 100, 101)),
             };
             env.AssertThat(() => RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path));
-
+    
             // Json
             var jsonTests = new Pair<object, object>[] {
                 new Pair<object, object>("{}", NOT_EXISTS),
@@ -138,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "{\"SimpleProperty\": \"abc\", \"Nested\": { \"NestedValue\": 100, \"NestedNested\": { \"NestedNestedValue\": 101 } } }",
                     AllExist("abc", 100, 101)),
             };
-            var schemasJson = "@JsonSchema(dynamic=true) @public @buseventtype @name('schema') create json schema " +
+            var schemasJson = "@JsonSchema(Dynamic=true) @public @buseventtype @name('schema') create json schema " +
                               JSON_TYPENAME +
                               "()";
             env.CompileDeploy(schemasJson, path);
@@ -155,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     AllExist("abc", 100, 101)),
             };
             var schemasJsonProvided = "@JsonSchema(ClassName='" +
-                                      typeof(MyLocalJsonProvided).FullName +
+                                      typeof(MyLocalJsonProvided).MaskTypeName() +
                                       "') @public @buseventtype @name('schema') create json schema " +
                                       JSONPROVIDED_TYPENAME +
                                       "()";
@@ -166,24 +165,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private void RunAssertion(
             RegressionEnvironment env,
             string typename,
-            SupportEventInfra.FunctionSendEvent send,
+            FunctionSendEvent send,
             Func<object, object> optionalValueConversion,
             Pair<object, object>[] tests,
             Type expectedPropertyType,
             RegressionPath path)
         {
-            var stmtText = "@name('s0') select " +
-                           "SimpleProperty? as simple, " +
-                           "exists(SimpleProperty?) as exists_simple, " +
-                           "Nested?.NestedValue as nested, " +
-                           "exists(nested?.NestedValue) as exists_nested, " +
+            var stmtText = "@Name('s0') select " +
+                           "SimpleProperty? as Simple, " +
+                           "exists(SimpleProperty?) as exists_Simple, " +
+                           "Nested?.NestedValue as Nested, " +
+                           "exists(Nested?.NestedValue) as exists_Nested, " +
                            "Nested?.NestedNested.NestedNestedValue as NestedNested, " +
-                           "exists(nested?.NestedNested.NestedNestedValue) as exists_nestedNested " +
+                           "exists(Nested?.NestedNested.NestedNestedValue) as exists_NestedNested " +
                            "from " +
                            typename;
             env.CompileDeploy(stmtText, path).AddListener("s0");
 
-            var propertyNames = "simple,nested,NestedNested".SplitCsv();
+            var propertyNames = new [] { "Simple","Nested","NestedNested" };
             env.AssertStatement(
                 "s0",
                 statement => {
@@ -198,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 send.Invoke(env, pair.First, typename);
                 env.AssertEventNew(
                     "s0",
-                    @event => SupportEventInfra.AssertValuesMayConvert(
+                    @event => AssertValuesMayConvert(
                         @event,
                         propertyNames,
                         (ValueWithExistsFlag[])pair.Second,
@@ -210,13 +209,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public object simpleProperty;
-            public MyLocalJsonProvidedNested nested;
+            public object SimpleProperty;
+            public MyLocalJsonProvidedNested Nested;
         }
 
         public class MyLocalJsonProvidedNested
         {
-            public int nestedValue;
+            public int NestedValue;
             public MyLocalJsonProvidedNestedNested NestedNested;
         }
 

@@ -30,14 +30,14 @@ namespace com.espertech.esper.regressionlib.support.util
             "\t</nested1>\n" +
             "\t<prop4 ss:attr2=\"true\">SAMPLE_V6</prop4>\n" +
             "\t<nested3>\n" +
-            "\t\t<nested4 Id=\"a\">\n" +
+            "\t\t<nested4 id=\"a\">\n" +
             "\t\t\t<prop5>SAMPLE_V7</prop5>\n" +
             "\t\t\t<prop5>SAMPLE_V8</prop5>\n" +
             "\t\t</nested4>\n" +
-            "\t\t<nested4 Id=\"b\">\n" +
+            "\t\t<nested4 id=\"b\">\n" +
             "\t\t\t<prop5>SAMPLE_V9</prop5>\n" +
             "\t\t</nested4>\n" +
-            "\t\t<nested4 Id=\"c\">\n" +
+            "\t\t<nested4 id=\"c\">\n" +
             "\t\t\t<prop5>SAMPLE_V10</prop5>\n" +
             "\t\t\t<prop5>SAMPLE_V11</prop5>\n" +
             "\t\t</nested4>\n" +

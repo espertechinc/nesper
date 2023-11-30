@@ -333,10 +333,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                            "cast(anFloat, float) as floatVal, " +
                            "cast(anByte, byte) as byteVal, " +
                            "cast(anShort, short) as shortVal, " +
-                           "cast(intPrimitive, int) as intOne, " +
-                           "cast(intBoxed, int) as intTwo, " +
-                           "cast(intPrimitive, System.Int64) as longOne, " +
-                           "cast(intBoxed, long) as longTwo " +
+                           "cast(IntPrimitive, int) as intOne, " +
+                           "cast(IntBoxed, int) as intTwo, " +
+                           "cast(IntPrimitive, System.Int64) as longOne, " +
+                           "cast(IntBoxed, long) as longTwo " +
                            "from StaticTypeMapEvent";
 
                 env.CompileDeploy(stmt).AddListener("s0");
@@ -348,8 +348,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 map.Put("anFloat", "1.001");
                 map.Put("anByte", "0x0A");
                 map.Put("anShort", "223");
-                map.Put("intPrimitive", 10);
-                map.Put("intBoxed", 11);
+                map.Put("IntPrimitive", 10);
+                map.Put("IntBoxed", 11);
 
                 env.SendEventMap(map, "StaticTypeMapEvent");
                 env.AssertEventNew(
@@ -984,7 +984,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             // not a valid named parameter
             env.TryInvalidCompile(
                 "select cast(TheString, datetime, x:1) from SupportBean",
-                "Failed to validate select-clause expression 'cast(TheString,datetime,x:1)': Unexpected named parameter 'x', expecting any of the following: System.String[]");
+                "Failed to validate select-clause expression 'cast(TheString,datetime,x:1)': Unexpected named parameter 'x', expecting any of the following: [\"dateformat\"]");
 
 #if INVALID // we do not validate date format patterns
 	        // invalid date format

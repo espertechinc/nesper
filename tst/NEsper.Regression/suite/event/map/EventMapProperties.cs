@@ -139,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                    "@name('s0') select outerTwo.mapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
+                    "@name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo");
                 env.AddListener("s0");
 
                 var eventOuterTwo = EventMapCore.MakeMap(

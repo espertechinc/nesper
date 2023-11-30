@@ -62,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventMap(Collections.EmptyDataMap, "LocalEvent");
                 }
                 else if (nullable.Value == null) {
-                    env.SendEventMap(Collections.SingletonDataMap("array", null), "LocalEvent");
+                    env.SendEventMap(Collections.SingletonDataMap("Array", null), "LocalEvent");
                 }
                 else {
                     var array = new IDictionary<string, object>[nullable.Value.Value];
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         array[i] = new Dictionary<string, object>();
                     }
 
-                    env.SendEventMap(Collections.SingletonDataMap("array", array), "LocalEvent");
+                    env.SendEventMap(Collections.SingletonDataMap("Array", array), "LocalEvent");
                 }
             };
             var mapepl =
@@ -90,12 +90,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventJson("{}", "LocalEvent");
                 }
                 else if (nullable.Value == null) {
-                    env.SendEventJson(new JObject(new JProperty("array")).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Array")).ToString(), "LocalEvent");
                 }
                 else {
                     var @event = new JObject();
                     var array = new JArray();
-                    @event.Add("array", array);
+                    @event.Add("Array", array);
                     for (var i = 0; i < nullable.Value; i++) {
                         array.Add(new JObject());
                     }
@@ -122,11 +122,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 if (nullable == null) {
                     // no action
                     @event = new GenericRecord(schema);
-                    @event.Put("array", EmptyList<GenericRecord>.Instance);
+                    @event.Put("Array", EmptyList<GenericRecord>.Instance);
                 }
                 else if (nullable.Value == null) {
                     @event = new GenericRecord(schema);
-                    @event.Put("array", EmptyList<GenericRecord>.Instance);
+                    @event.Put("Array", EmptyList<GenericRecord>.Instance);
                 }
                 else {
                     @event = new GenericRecord(schema);
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         inners.Add(new GenericRecord(inner));
                     }
 
-                    @event.Put("array", inners);
+                    @event.Put("Array", inners);
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -161,8 +161,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        var g0 = eventType.GetGetter("array[0]?");
-                        var g1 = eventType.GetGetter("array[1]?");
+                        var g0 = eventType.GetGetter("Array[0]?");
+                        var g1 = eventType.GetGetter("Array[1]?");
                         Assert.IsNull(g0);
                         Assert.IsNull(g1);
                     });
@@ -170,9 +170,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 return;
             }
 
-            var propepl = "@name('s1') select array[0]? as c0, array[1]? as c1," +
-                          "exists(array[0]?) as c2, exists(array[1]?) as c3, " +
-                          "typeof(array[0]?) as c4, typeof(array[1]?) as c5 from LocalEvent;\n";
+            var propepl = "@name('s1') select Array[0]? as c0, Array[1]? as c1," +
+                          "exists(Array[0]?) as c2, exists(Array[1]?) as c3, " +
+                          "typeof(Array[0]?) as c4, typeof(Array[1]?) as c5 from LocalEvent;\n";
             env.CompileDeploy(propepl, path).AddListener("s1");
 
             sender.Invoke(new NullableObject<int?>(2));

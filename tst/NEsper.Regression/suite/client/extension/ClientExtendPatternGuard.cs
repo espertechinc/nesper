@@ -8,6 +8,7 @@
 
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
@@ -68,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.TryInvalidCompile(
                 "select * from pattern [every SupportBean where namespace:name(10)]",
                 "Failed to resolve pattern guard 'SupportBean where namespace:name(10)': Error casting guard forge instance to " +
-                typeof(GuardForge).FullName +
+                typeof(GuardForge).CleanName() +
                 " interface for guard 'name'");
         }
     }

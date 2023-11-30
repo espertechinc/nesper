@@ -97,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("MyDynoPropSchema").WithPath(path)
                     .WithExpressions(fields, "typeof(prop?)", "typeof(key)");
 
-                builder.WithAssertion(MakeSchemaEvent(1, "E1")).Expect(fields, "Integer", "String");
+                builder.WithAssertion(MakeSchemaEvent(1, "E1")).Expect(fields, "Int32", "String");
 
                 builder.WithAssertion(MakeSchemaEvent("test", "E2")).Expect(fields, "String", "String");
 

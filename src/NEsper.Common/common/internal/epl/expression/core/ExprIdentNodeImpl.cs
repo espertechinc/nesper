@@ -22,6 +22,7 @@ using com.espertech.esper.common.@internal.epl.expression.table;
 using com.espertech.esper.common.@internal.epl.streamtype;
 using com.espertech.esper.common.@internal.epl.table.compiletime;
 using com.espertech.esper.common.@internal.@event.core;
+using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
 using com.espertech.esper.common.@internal.serde.compiletime.resolve;
 using com.espertech.esper.common.@internal.util;
@@ -231,9 +232,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
             }
 
+            var unescapedPropertyName = PropertyParser.UnescapeBacktickForProperty(_unresolvedPropertyName);
             var propertyInfoPair = ExprIdentNodeUtil.GetTypeFromStream(
                 validationContext.StreamTypeService,
-                _unresolvedPropertyName,
+                unescapedPropertyName,
                 _streamOrPropertyName,
                 false,
                 validationContext.TableCompileTimeResolver);

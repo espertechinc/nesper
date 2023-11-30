@@ -155,7 +155,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         /// <param name="origin">validate origin</param>
         /// <param name="exprNode">node</param>
         /// <param name="validationContext">context</param>
-        /// <returns>the root node of the validated subtree, possiblydifferent than the root node of the unvalidated subtree
+        /// <returns>the root node of the validated subtree, possibly different than the root node of the unvalidated subtree
         /// </returns>
         /// <throws>ExprValidationException when the validation fails</throws>
         public static ExprNode GetValidatedSubtree(
@@ -196,8 +196,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (Exception rtex) {
                     Log.Debug("Failed to render nice validation message text: " + rtex.Message, rtex);
-                    throw;
+                    // fall through
                 }
+            
+                throw;
             }
         }
 
@@ -229,8 +231,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     break;
                 }
 
-                if (returnType == expectedType.GetBoxedType() ||
-                    expectedType.IsAssignableFrom(returnType)) {
+                if ((returnType == expectedType.GetBoxedType()) ||
+                    (expectedType.IsAssignableFrom(returnType))) {
                     found = true;
                     break;
                 }
@@ -316,7 +318,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         "Unexpected named parameter '" +
                         entry.Key +
                         "', expecting any of the following: " +
-                        namedParameters.ToArray());
+                        namedParameters.RenderAny());
                 }
             }
         }
@@ -352,7 +354,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             catch (ExprValidationException e) {
                 if (exprNode is ExprIdentNode identNode) {
                     try {
-                        result = ResolveStaticMethodOrField(identNode, e, validationContext);
+                        if (!ResolveStaticMethodOrField(identNode, e, validationContext, out result)) {
+                            throw;
+                        }
                     }
                     catch (ExprValidationException ex) {
                         e = ex;
@@ -373,7 +377,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             else {
                 if (validationContext.IsExpressionNestedAudit &&
                     !(result is ExprIdentNode) &&
-                    !ExprNodeUtilityQuery.IsConstant(result)) {
+                    !(ExprNodeUtilityQuery.IsConstant(result))) {
                     return (ExprNode)ExprNodeProxy.NewInstance(result);
                 }
             }
@@ -444,10 +448,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         // look the same, however as the validation could not resolve "Stream.property('key')" before calling this method,
         // this method tries to resolve the mapped property as a static method.
         // Assumes that this is an ExprIdentNode.
-        private static ExprNode ResolveStaticMethodOrField(
+        private static bool ResolveStaticMethodOrField(
             ExprIdentNode identNode,
             ExprValidationException propertyException,
-            ExprValidationContext validationContext)
+            ExprValidationContext validationContext,
+            out ExprNode exprNode)
         {
             // Reconstruct the original string
             var mappedProperty = new StringBuilder(identNode.UnresolvedPropertyName);
@@ -463,10 +468,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     validationContext.ImportService,
                     validationContext.ClassProvidedExtension);
                 if (constNode == null) {
-                    throw propertyException;
+                    exprNode = null;
+                    return false;
                 }
 
-                return constNode;
+                exprNode = constNode;
+                return true;
             }
 
             // If there is a class name, assume a static method is possible.
@@ -475,9 +482,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var chain = new List<Chainable>();
                 chain.Add(new ChainableName(parse.ClassName));
                 chain.Add(new ChainableCall(parse.MethodName, parameters));
-                var exprconfig =
+                
+                var exprConfig =
                     validationContext.StatementCompileTimeService.Configuration.Compiler.Expression;
-                ExprNode result = new ExprDotNodeImpl(chain, exprconfig.IsDuckTyping, exprconfig.IsUdfCache);
+                ExprNode result = new ExprDotNodeImpl(chain, exprConfig.IsDuckTyping, exprConfig.IsUdfCache);
 
                 // Validate
                 try {
@@ -485,13 +493,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (ExprValidationException e) {
                     throw new ExprValidationException(
-                        "Failed to resolve enumeration method, date-time method or mapped property '" +
-                        mappedProperty +
-                        "': " +
-                        e.Message);
+                        $"Failed to resolve enumeration method, date-time method or mapped property '{mappedProperty}': {e.Message}");
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
 
             // There is no class name, try a single-row function
@@ -503,6 +509,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 var parameters = Collections.SingletonList<ExprNode>(new ExprConstantNodeImpl(parse.ArgString));
                 var chain = Collections.SingletonList<Chainable>(
                     new ChainableCall(classMethodPair.Second.MethodName, parameters));
+                
                 ExprNode result = new ExprPlugInSingleRowNode(
                     functionName,
                     classMethodPair.First,
@@ -518,10 +525,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (Exception ex) {
                     throw new ExprValidationException(
-                        "Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + ex.Message);
+                        $"Plug-in aggregation function '{parse.MethodName}' failed validation: {ex.Message}");
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
             catch (ImportUndefinedException) {
                 // Not an single-row function
@@ -533,8 +541,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             // Try an aggregation function factory
             try {
                 var aggregationForge = validationContext.ImportService.ResolveAggregationFunction(
-                    parse.MethodName,
-                    validationContext.ClassProvidedExtension);
+                    parse.MethodName, validationContext.ClassProvidedExtension);
                 ExprNode result = new ExprPlugInAggNode(false, aggregationForge, parse.MethodName);
                 result.AddChildNode(new ExprConstantNodeImpl(parse.ArgString));
 
@@ -550,7 +557,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         "Plug-in aggregation function '" + parse.MethodName + "' failed validation: " + e.Message);
                 }
 
-                return result;
+                exprNode = result;
+                return true;
             }
             catch (ImportUndefinedException) {
                 // Not an aggregation function
@@ -677,29 +685,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             return null;
         }
 
-        private static Pair<string, ExprNode> CheckGetAssignmentToProp(ExprNode node)
+        private static Pair<String, ExprNode> CheckGetAssignmentToProp(ExprNode node)
         {
-            if (!(node is ExprEqualsNode equals)) {
-                return null;
+            if (node is ExprEqualsNode equals) {
+                if (equals.ChildNodes[0] is ExprIdentNode identNode) {
+                    return new Pair<string, ExprNode>(identNode.FullUnresolvedName, equals.ChildNodes[1]);
+                }
             }
 
-            if (!(equals.ChildNodes[0] is ExprIdentNode)) {
-                return null;
-            }
-
-            var identNode = (ExprIdentNode)equals.ChildNodes[0];
-            return new Pair<string, ExprNode>(identNode.FullUnresolvedName, equals.ChildNodes[1]);
+            return null;
         }
-
+        
         public static ExprEqualsNode GetEqualsNodeIfAssignment(ExprNode node)
         {
-            if (!(node is ExprEqualsNode equalsNode)) {
-                return null;
-            }
-
-            return equalsNode;
+            return node is ExprEqualsNode equalsNode ? equalsNode : null;
         }
-
+        
         public static void ValidateNoSpecialsGroupByExpressions(ExprNode[] groupByNodes)
         {
             var visitorSubselects = new ExprNodeSubselectDeclaredDotVisitor();

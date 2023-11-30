@@ -39,11 +39,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             Consumer<string> map = id => {
                 env.SendEventMap(
-                    Collections.SingletonDataMap("property", Collections.SingletonDataMap("Id", id)),
+                    Collections.SingletonDataMap("Property", Collections.SingletonDataMap("Id", id)),
                     "LocalEvent");
             };
             var mapepl = "@public @buseventtype create schema LocalInnerEvent(Id string);\n" +
-                         "@public @buseventtype create schema LocalEvent(property LocalInnerEvent);\n";
+                         "@public @buseventtype create schema LocalEvent(Property LocalInnerEvent);\n";
             RunAssertion(env, mapepl, map);
 
             // Object-array
@@ -51,16 +51,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 env.SendEventObjectArray(new object[] { new object[] { id } }, "LocalEvent");
             };
             var oaepl = "@public @buseventtype create objectarray schema LocalInnerEvent(Id string);\n" +
-                        "@public @buseventtype create objectarray schema LocalEvent(property LocalInnerEvent);\n";
+                        "@public @buseventtype create objectarray schema LocalEvent(Property LocalInnerEvent);\n";
             RunAssertion(env, oaepl, oa);
 
             // Json
             Consumer<string> json = id => {
-                var @event = new JObject(new JProperty("property", new JObject(new JProperty("Id", id))));
+                var @event = new JObject(new JProperty("Property", new JObject(new JProperty("Id", id))));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
             };
             var jsonepl = "@public @buseventtype create json schema LocalInnerEvent(Id string);\n" +
-                          "@public @buseventtype create json schema LocalEvent(property LocalInnerEvent);\n";
+                          "@public @buseventtype create json schema LocalEvent(Property LocalInnerEvent);\n";
             RunAssertion(env, jsonepl, json);
 
             // Json-Class-Provided
@@ -78,11 +78,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 inside.Put("Id", id);
                 var schemaEvent = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
                 var @event = new GenericRecord(schemaEvent.AsRecordSchema());
-                @event.Put("property", inside);
+                @event.Put("Property", inside);
                 env.SendEventAvro(@event, "LocalEvent");
             };
             var avroepl = "@name('schema') @public @buseventtype create avro schema LocalInnerEvent(Id string);\n" +
-                          "@public @buseventtype create avro schema LocalEvent(property LocalInnerEvent);\n";
+                          "@public @buseventtype create avro schema LocalEvent(Property LocalInnerEvent);\n";
             RunAssertion(env, avroepl, avro);
         }
 
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             string createSchemaEPL,
             Consumer<string> sender)
         {
-            env.CompileDeploy(createSchemaEPL + "@name('s0') select * from LocalEvent[property];\n").AddListener("s0");
+            env.CompileDeploy(createSchemaEPL + "@name('s0') select * from LocalEvent[Property];\n").AddListener("s0");
 
             sender.Invoke("a");
             env.AssertEqualsNew("s0", "Id", "a");
@@ -121,11 +121,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
+            // ReSharper disable once InconsistentNaming
+            // ReSharper disable once UnusedMember.Global
             public MyLocalJsonProvidedInnerEvent Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
+            // ReSharper disable once InconsistentNaming
+            // ReSharper disable once UnusedMember.Global
             public string Id;
         }
     }

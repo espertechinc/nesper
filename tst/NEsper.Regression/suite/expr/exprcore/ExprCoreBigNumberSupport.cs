@@ -112,9 +112,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var milestone = new AtomicLong();
 
-                // test equals decimal
-                var epl =
-                    "@name('s0') select * from SupportBeanNumeric where bigdec = 1 or bigdec = intOne or bigdec = doubleOne";
+				// test equals Decimal
+				var epl = "@Name('s0') select * from SupportBeanNumeric where DecimalOne = 1 or DecimalOne = IntOne or DecimalOne = DoubleOne";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 SendBigNumEvent(env, -1, 1);
@@ -291,11 +290,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("v1"));
-                        Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("v2"));
-                        Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("v3"));
-                        Assert.AreEqual(typeof(BigInteger), statement.EventType.GetPropertyType("v4"));
-                        Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("v5"));
+                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v1"));
+                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v2"));
+                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v3"));
+                        Assert.AreEqual(typeof(BigInteger?), statement.EventType.GetPropertyType("v4"));
+                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v5"));
                     });
 
                 SendBigNumEvent(env, 1, 2);

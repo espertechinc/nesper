@@ -255,11 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "representation=" +
-                       representation +
-                       '}';
+                return $"{this.GetType().Name}{{representation={representation}}}";
             }
         }
 
@@ -313,11 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -357,11 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -414,14 +402,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'IntPrimitive' of type 'String' to event property 'IntPrimitive' typed as 'int', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Int32', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
                 else {
                     TryInvalidFAFCompile(
                         env,
                         path,
                         epl,
-                        "Invalid assignment of column 'IntPrimitive' of type 'String' to event property 'IntPrimitive' typed as 'Integer', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
+                        "Invalid assignment of column 'IntPrimitive' of type 'System.String' to event property 'IntPrimitive' typed as 'System.Nullable<System.Int32>', column and parameter types mismatch [insert into MyInfra(IntPrimitive) select 'a']");
                 }
 
                 epl = "insert into MyInfra(IntPrimitive, TheString) select 1";
@@ -473,11 +461,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -612,13 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "eventRepresentationEnum=" +
-                       eventRepresentationEnum +
-                       ", namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{eventRepresentationEnum={eventRepresentationEnum}, namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -703,11 +681,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -756,11 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -829,13 +799,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "isFirstNW=" +
-                       isFirstNW +
-                       ", isSecondNW=" +
-                       isSecondNW +
-                       '}';
+                return $"{this.GetType().Name}{{isFirstNW={isFirstNW}, isSecondNW={isSecondNW}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -883,11 +847,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -937,11 +897,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1027,11 +983,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1122,11 +1074,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1184,11 +1132,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1263,11 +1207,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1395,11 +1335,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1537,11 +1473,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1724,11 +1656,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1876,11 +1804,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "namedWindow=" +
-                       namedWindow +
-                       '}';
+                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()
@@ -2107,7 +2031,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string keyJoin,
             double value)
         {
-            env.CompileExecuteFAF("insert into Infra2 values ('" + keyJoin + "', " + value + ")", path);
+            env.CompileExecuteFAF("insert into Infra2 values ('" + keyJoin + "', " + value.RenderAny() + ")", path);
         }
 
         private static long GetMyInfraCount(

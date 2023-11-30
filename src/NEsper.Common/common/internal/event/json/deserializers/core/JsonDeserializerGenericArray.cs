@@ -15,12 +15,6 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
 {
     public class JsonDeserializerGenericArray : JsonDeserializerGenericBase
     {
-        private IList<object> _result = null;
-
-        public JsonDeserializerGenericArray() : base()
-        {
-        }
-
         public override object Deserialize(JsonElement element)
         {
             if (element.ValueKind != JsonValueKind.Array) {
@@ -28,8 +22,7 @@ namespace com.espertech.esper.common.@internal.@event.json.deserializers.core
                     $"expected {nameof(JsonValueKind.Array)}, but received {element.ValueKind}");
             }
 
-            _result = element.ElementToArray();
-            return _result;
+            return element.ElementToArray();
         }
     }
 } // end of namespace

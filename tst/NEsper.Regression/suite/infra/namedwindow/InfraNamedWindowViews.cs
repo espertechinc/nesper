@@ -4356,7 +4356,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var fieldsPrior = new string[] { "priorKeyOne", "priorKeyTwo" };
-                var fieldsStat = new string[] { "Average" };
+                var fieldsStat = new string[] { "average" };
 
                 var epl = "@name('create') create window MyWindowPS#keepall as MySimpleKeyValueMap;\n" +
                           "insert into MyWindowPS select TheString as key, LongBoxed as value from SupportBean;\n" +
@@ -4401,7 +4401,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var fieldsWin = new string[] { "key", "value" };
-                var fieldsStat = new string[] { "Average" };
+                var fieldsStat = new string[] { "average" };
                 var fieldsCnt = new string[] { "cnt" };
                 var path = new RegressionPath();
 

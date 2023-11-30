@@ -146,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
 
             var innerCodegen = innerType == null
                 ? ConstantNull()
-                : InnerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
+                : _innerExpression.EvaluateCodegen(innerType, methodNode, scope, codegenClassScope);
 
             forEach
                 .AssignArrayElement(EnumForgeCodegenNames.REF_EPS, Constant(StreamNumLambda + 1), Ref("next"))

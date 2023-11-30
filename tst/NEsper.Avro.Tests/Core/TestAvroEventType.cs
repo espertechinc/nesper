@@ -196,7 +196,7 @@ namespace NEsper.Avro.Core
                              "      'name' : 'innerEventTypeName'," +
                              "      'fields' : [ {" +
                              "        'name' : 'innerValue'," +
-                             "        'type' : {'type':'string','avro.string':'String'}" +
+                             "        'type' : {'type':'string','avro.string':'System.String'}" +
                              "      } ]" +
                              "    }" +
                              "  }]" +

@@ -476,7 +476,7 @@ namespace com.espertech.esper.common.@internal.support
                     var assertion = assertions[i];
                     var expected = expectedArr[propNum][i];
                     var value = assertion.GetExtractor().Invoke(prop, eventType);
-                    if (expected == typeof(object[]) &&
+                    if (Equals(expected, typeof(object[])) &&
                         ((Type)value).IsArray &&
                         !((Type)value).GetElementType().IsPrimitive) {
                         continue;

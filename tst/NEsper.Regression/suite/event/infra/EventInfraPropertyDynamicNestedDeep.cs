@@ -309,12 +309,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonItem item;
+            public MyLocalJsonItem Item;
         }
 
         public class MyLocalJsonItem
         {
-            public MyLocalJsonProvidedNested nested;
+            public MyLocalJsonProvidedNested Nested;
         }
 
         public class MyLocalJsonProvidedNested
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvidedNestedNested
         {
-            public int? nestedNestedValue;
+            public int? NestedNestedValue;
         }
     }
 } // end of namespace

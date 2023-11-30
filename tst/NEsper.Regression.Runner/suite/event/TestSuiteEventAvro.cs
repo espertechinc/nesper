@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var schemaCarLocUpdateEvent = SchemaBuilder.Record(
                 "CarLocUpdateEvent",
                 TypeBuilder.Field(
-                    "CarId",
+                    "carId",
                     TypeBuilder.StringType(
                         TypeBuilder.Property(PROP_STRING_KEY, PROP_STRING_VALUE))),
                 TypeBuilder.RequiredInt("direction"));

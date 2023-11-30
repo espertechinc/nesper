@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                           EventRepresentationChoice.AVRO.GetAnnotationText() +
                           "insert into MyEventOut select " +
                           typeof(EventAvroHook).FullName +
-                          ".makeLocalDateTime() as isodate from SupportBean as e1";
+                          ".MakeDateTimeOffset() as isodate from SupportBean as e1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var schema = env.RuntimeAvroSchemaByDeployment("s0", "MyEventOut");
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                     "s0",
                     @event => {
                         SupportAvroUtil.AvroToJson(@event);
-                        Assert.That(@event.Get("isodate").ToString().Length, Is.LessThan(10));
+                        Assert.That(@event.Get("isodate").ToString().Length, Is.GreaterThan(10));
                     });
 
                 env.UndeployAll();
@@ -143,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             {
                 var epl = "@name('s0') insert into MyEventPopulate(sb) select " +
                           typeof(EventAvroHook).FullName +
-                          ".makeSupportBean() from SupportBean_S0 as e1";
+                          ".MakeSupportBean() from SupportBean_S0 as e1";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_S0(10));
@@ -194,6 +194,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             }
         }
 
+        public static DateTimeOffset MakeDateTimeOffset()
+        {
+            return DateTimeEx.NowUtc().DateTime;
+        }
+        
         public static SupportBean MakeSupportBean()
         {
             return new SupportBean("E1", 10);

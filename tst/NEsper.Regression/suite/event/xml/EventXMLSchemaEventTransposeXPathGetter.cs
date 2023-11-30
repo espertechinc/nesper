@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
                     SupportEventTypeAssertionUtil.AssertConsistency(type);
                     Assert.IsNull(type.GetFragmentType("nested1"));
-                    Assert.IsNull(type.GetFragmentType("nested1.Nested2"));
+                    Assert.IsNull(type.GetFragmentType("nested1.nested2"));
                 });
 
             var doc = SupportXML.MakeDefaultEvent("ABC");

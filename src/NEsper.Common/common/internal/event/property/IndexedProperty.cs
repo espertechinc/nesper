@@ -212,8 +212,10 @@ namespace com.espertech.esper.common.@internal.@event.property
             if (returnType.IsArray) {
                 return returnType.GetComponentType();
             }
-            
-            if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(System.Collections.IEnumerable))) {
+
+            if (returnType.IsGenericDictionary()) {
+                // no-op since we do not treat dictionaries as indexable...
+            } else if (returnType.IsGenericEnumerable() || returnType.IsImplementsInterface(typeof(System.Collections.IEnumerable))) {
                 if (descriptor.AccessorProp != null) {
                     return TypeHelper.GetGenericPropertyType(descriptor.AccessorProp, false);
                 }

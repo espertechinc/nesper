@@ -19,31 +19,16 @@ namespace com.espertech.esper.common.@internal.epl.util
 {
     public class EPTypeCollectionConst
     {
-        public static readonly Type EPTYPE_MAP_OBJECT_OBJECT = typeof(IDictionary<object, object>);
-        public static readonly Type EPTYPE_MAP_STRING_OBJECT = typeof(IDictionary<string, object>);
-        public static readonly Type EPTYPE_MAP_OBJECT_EVENTBEAN = typeof(IDictionary<object, EventBean>);
         public static readonly Type EPTYPE_MAP_OBJECT_EVENTBEANARRAY = typeof(IDictionary<object, EventBean[]>);
         public static readonly Type EPTYPE_MAP_OBJECT_AGGROW = typeof(IDictionary<object, AggregationRow>);
 
-        public static readonly Type EPTYPE_MAPARRAY_OBJECT_EVENTBEANARRAY = typeof(IDictionary<object, EventBean[]>[]);
-        public static readonly Type EPTYPE_MAPARRAY_OBJECT_EVENTBEAN = typeof(IDictionary<object, EventBean>[]);
         public static readonly Type EPTYPE_MAPARRAY_OBJECT_AGGROW = typeof(IDictionary<object, AggregationRow>[]);
-
-        public static readonly Type EPTYPE_MULTIKEYARRAYOFKEYS_EVENTBEAN = typeof(MultiKeyArrayOfKeys<EventBean>);
 
         public static readonly Type EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEAN =
             typeof(ISet<MultiKeyArrayOfKeys<EventBean>>);
 
-        public static readonly Type EPTYPE_MULTIKEYARRAYOFKEYS_EVENTBEANARRAY =
-            typeof(MultiKeyArrayOfKeys<EventBean[]>);
-
-        public static readonly Type EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEANARRAY =
-            typeof(ISet<MultiKeyArrayOfKeys<EventBean[]>>);
-
         public static readonly Type EPTYPE_COLLECTION_EVENTBEAN = typeof(ICollection<EventBean>);
-        public static readonly Type EPTYPE_COLLECTION_NUMBER = typeof(ICollection<object>);
 
-        public static readonly Type EPTYPE_LIST_OBJECT = typeof(IList<object>);
         public static readonly Type EPTYPE_LIST_UNIFORMPAIR_EVENTBEANARRAY = typeof(IList<UniformPair<EventBean[]>>);
 
         public static readonly Type EPTYPE_LIST_GROUPBYROLLUPKEY = typeof(IList<GroupByRollupKey>);

@@ -209,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 epl = "select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected String but receives Integer [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
+                    "Failed to validate select-clause expression 'case when true then new{col1=\"a\"} e...(54 chars)': Incompatible case-when return types by new-operator in case-when number 1: Type by name 'Case-when number 1' in property 'col1' expected System.String but receives System.Nullable<System.Int32> [select case when true then new { col1 = 'a' } else new { col1 = 1 } end from SupportBean]");
 
                 epl = "select case when true then new { col1 = 'a' } else new { col2 = 'a' } end from SupportBean";
                 env.TryInvalidCompile(

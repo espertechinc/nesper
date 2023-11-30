@@ -719,7 +719,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             var classIdent = ClassDescriptor.ParseTypeText(column.Type);
-            Type type = ImportTypeUtil.ResolveClassIdentifierToType(
+            var type = ImportTypeUtil.ResolveClassIdentifierToType(
                 classIdent,
                 false,
                 importService,
@@ -1550,12 +1550,12 @@ namespace com.espertech.esper.common.@internal.@event.core
                         propertyGetterCache.Put(propertyName, typeGetter);
                         return typeGetter;
                     }
-                    else if (type is Type eptype) {
-                        if (!eptype.IsArray) {
+                    else if (type is Type asType) {
+                        if (!asType.IsArray && asType != typeof(string)) {
                             return null;
                         }
 
-                        Type componentType = eptype.GetComponentType();
+                        var componentType = asType.GetComponentType();
                         var indexedGetter = factory.GetGetterIndexedClassArray(
                             indexedProp.PropertyNameAtomic,
                             indexedProp.Index,
@@ -1572,9 +1572,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 else if (prop is MappedProperty mappedProp) {
                     var typeX = nestableTypes.Get(mappedProp.PropertyNameAtomic);
                     if (typeX is Type asType) {
-                        return TypeHelper.IsImplementsInterface(asType, typeof(IDictionary<string, object>))
-                            ? factory.GetGetterMappedProperty(mappedProp.PropertyNameAtomic, mappedProp.Key)
-                            : null;
+                        if (asType.IsGenericStringDictionary()) {
+                            return factory.GetGetterMappedProperty(mappedProp.PropertyNameAtomic, mappedProp.Key);
+                        }
                     }
 
                     return null;
@@ -1626,7 +1626,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                         propertyGetterCache.Put(propertyName, typeGetter);
                         return typeGetter;
                     }
-                    else if (type is EventType[] types) {
+
+                    if (type is EventType[] types) {
                         var componentType = (EventTypeSPI)types[0];
                         var nestedGetter = componentType.GetGetterSPI(propertyNested);
                         if (nestedGetter == null) {
@@ -1640,65 +1641,65 @@ namespace com.espertech.esper.common.@internal.@event.core
                         propertyGetterCache.Put(propertyName, typeGetter);
                         return typeGetter;
                     }
-                    else if (type is Type type1) {
-                        if (!type1.IsArray) {
+
+                    if (type is Type asType) {
+                        if (!asType.IsArray) {
                             return null;
                         }
 
-                        Type componentType = type1.GetComponentType();
-                        var nestedEventType =
-                            beanEventTypeFactory.GetCreateBeanType(componentType, publicFields);
-                        var nestedGetter =
-                            (BeanEventPropertyGetter)nestedEventType.GetGetterSPI(propertyNested);
-                        if (nestedGetter == null) {
-                            return null;
-                        }
+                        var componentType = asType.GetComponentType();
+                        if (componentType != null) {
+                            var nestedEventType = beanEventTypeFactory.GetCreateBeanType(componentType, publicFields);
+                            var nestedGetter = (BeanEventPropertyGetter)nestedEventType.GetGetterSPI(propertyNested);
+                            if (nestedGetter == null) {
+                                return null;
+                            }
 
-                        var propertyTypeGetter = nestedEventType.GetPropertyType(propertyNested);
-                        // construct getter for nested property
-                        var indexGetter = factory.GetGetterIndexedEntryPONO(
-                            indexedProp.PropertyNameAtomic,
-                            indexedProp.Index,
-                            nestedGetter,
-                            eventBeanTypedEventFactory,
-                            beanEventTypeFactory,
-                            propertyTypeGetter);
-                        propertyGetterCache.Put(propertyName, indexGetter);
-                        return indexGetter;
-                    }
-                    else {
-                        return null;
-                    }
-                }
-                else if (property is MappedProperty) {
-                    return null; // Since no type information is available for the property
-                }
-                else {
-                    if (isRootedDynamic) {
-                        var prop = PropertyParser.ParseAndWalk(propertyNested, true);
-                        if (!isObjectArray) {
-                            var getterNested = factory.GetGetterRootedDynamicNested(
-                                prop,
+                            var propertyTypeGetter = nestedEventType.GetPropertyType(propertyNested);
+                            // construct getter for nested property
+                            var indexGetter = factory.GetGetterIndexedEntryPONO(
+                                indexedProp.PropertyNameAtomic,
+                                indexedProp.Index,
+                                nestedGetter,
                                 eventBeanTypedEventFactory,
-                                beanEventTypeFactory);
-                            var dynamicGetter = factory.GetGetterNestedPropertyProvidedGetterDynamic(
-                                nestableTypes,
-                                propertyMap,
-                                getterNested,
-                                eventBeanTypedEventFactory);
-                            propertyGetterCache.Put(propertyName, dynamicGetter);
-                            return dynamicGetter;
+                                beanEventTypeFactory,
+                                propertyTypeGetter);
+                            propertyGetterCache.Put(propertyName, indexGetter);
+                            return indexGetter;
                         }
-
-                        return null;
                     }
 
                     return null;
                 }
+
+                if (property is MappedProperty) {
+                    return null; // Since no type information is available for the property
+                }
+
+                if (isRootedDynamic) {
+                    var prop = PropertyParser.ParseAndWalk(propertyNested, true);
+                    if (!isObjectArray) {
+                        var getterNested = factory.GetGetterRootedDynamicNested(
+                            prop,
+                            eventBeanTypedEventFactory,
+                            beanEventTypeFactory);
+                        var dynamicGetter = factory.GetGetterNestedPropertyProvidedGetterDynamic(
+                            nestableTypes,
+                            propertyMap,
+                            getterNested,
+                            eventBeanTypedEventFactory);
+                        propertyGetterCache.Put(propertyName, dynamicGetter);
+                        return dynamicGetter;
+                    }
+
+                    return null;
+                }
+
+                return null;
             }
 
             // The map contains another map, we resolve the property dynamically
-            if (nestedType is Type nestedType1 && nestedType1 == typeof(IDictionary<string, object>)) {
+            if (ReferenceEquals(nestedType, typeof(IDictionary<string, object>))) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyNested);
                 var getterNestedMap = prop.GetGetterMap(
                     null,
@@ -1712,7 +1713,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, mapGetter);
                 return mapGetter;
             }
-            else if (nestedType is IDictionary<string, object> nestedTypes) {
+
+            if (nestedType is IDictionary<string, object> nestedTypes) {
                 var prop = PropertyParser.ParseAndWalkLaxToSimple(propertyNested);
                 var getterNestedMap = prop.GetGetterMap(
                     nestedTypes,
@@ -1726,7 +1728,8 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, mapGetter);
                 return mapGetter;
             }
-            else if (nestedType is Type simpleClass) {
+
+            if (nestedType is Type simpleClass) {
                 // ask the nested class to resolve the property
                 if (simpleClass.IsArray) {
                     return null;
@@ -1758,10 +1761,10 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, getter);
                 return getter;
             }
-            else if (nestedType is EventType) {
+
+            if (nestedType is EventTypeSPI eventTypeSpi) {
                 // ask the nested class to resolve the property
-                var innerType = (EventTypeSPI)nestedType;
-                var nestedGetter = innerType.GetGetterSPI(propertyNested);
+                var nestedGetter = eventTypeSpi.GetGetterSPI(propertyNested);
                 if (nestedGetter == null) {
                     return null;
                 }
@@ -1771,13 +1774,15 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, getter);
                 return getter;
             }
-            else if (nestedType is EventType[] typeArray) {
+
+            if (nestedType is EventType[] typeArray) {
                 var beanArrGetter = factory.GetGetterEventBeanArray(propertyMap, typeArray[0]);
                 propertyGetterCache.Put(propertyName, beanArrGetter);
                 return beanArrGetter;
             }
-            else if (nestedType is TypeBeanOrUnderlying underlying) {
-                var innerType = underlying.EventType;
+
+            if (nestedType is TypeBeanOrUnderlying typeOrBeanUnderlying) {
+                var innerType = typeOrBeanUnderlying.EventType;
                 if (!(innerType is BaseNestableEventType)) {
                     return null;
                 }
@@ -1795,8 +1800,9 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, outerGetter);
                 return outerGetter;
             }
-            else if (nestedType is TypeBeanOrUnderlying[] underlyings) {
-                var innerType = underlyings[0].EventType;
+
+            if (nestedType is TypeBeanOrUnderlying[] typeBeanOrUnderlyingArray) {
+                var innerType = typeBeanOrUnderlyingArray[0].EventType;
                 if (!(innerType is BaseNestableEventType)) {
                     return null;
                 }
@@ -1815,14 +1821,13 @@ namespace com.espertech.esper.common.@internal.@event.core
                 propertyGetterCache.Put(propertyName, outerGetter);
                 return outerGetter;
             }
-            else {
-                var message = "Nestable type configuration encountered an unexpected value type of '" +
-                              nestedType.GetType() +
-                              " for property '" +
-                              propertyName +
-                              "', expected Class, Map.class or Map<String, Object> as value type";
-                throw new PropertyAccessException(message);
-            }
+
+            var message = "Nestable type configuration encountered an unexpected value type of '" +
+                          nestedType.GetType() +
+                          " for property '" +
+                          propertyName +
+                          "', expected Class, Map.class or Map<String, Object> as value type";
+            throw new PropertyAccessException(message);
         }
 
         public static LinkedHashMap<string, object> ValidateObjectArrayDef(

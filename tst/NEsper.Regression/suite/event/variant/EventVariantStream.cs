@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy(
                     "insert into MainEventWindow select " +
                     nameof(EventVariantStream) +
-                    ".preProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
+                    ".PreProcessEvent(event) from MyVariantTwoTypedSBVariant as event",
                     path);
                 env.CompileDeploy("@name('s0') select * from MainEventWindow where TheString = 'E'", path);
                 env.AssertThat(() => env.Statement("s0").AddListenerWithReplay(env.ListenerNew()));
@@ -713,13 +713,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
         {
             var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".SplitCsv();
             var propertyNames = eventType.PropertyNames;
+            
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
+            
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
             Assert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
             Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
-            Assert.AreEqual(typeof(SupportEnum), eventType.GetPropertyType("EnumValue"));
+            Assert.AreEqual(typeof(SupportEnum?), eventType.GetPropertyType("EnumValue"));
+            
             foreach (var expectedProp in expected) {
                 Assert.IsNotNull(eventType.GetGetter(expectedProp));
                 Assert.IsTrue(eventType.IsProperty(expectedProp));
@@ -732,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 new SupportEventPropDesc("IntPrimitive", typeof(int?)),
                 new SupportEventPropDesc("LongPrimitive", typeof(long?)),
                 new SupportEventPropDesc("DoublePrimitive", typeof(double?)),
-                new SupportEventPropDesc("EnumValue", typeof(SupportEnum)));
+                new SupportEventPropDesc("EnumValue", typeof(SupportEnum?)));
         }
 
         public static object PreProcessEvent(object o)

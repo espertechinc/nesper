@@ -38,6 +38,13 @@ namespace com.espertech.esper.common.@internal.settings
                 throw new ExprValidationException("Type '" + typeName + "' is not a primitive type");
             }
 
+            // The true genericTypeName must include the name, followed by a backtick and the # of generic
+            // arguments we expect.  For example, IDictionary`2 or IList`1.
+            
+            if (classIdent.TypeParameters.Count != 0) {
+                typeName += $"`{classIdent.TypeParameters.Count}";
+            }
+            
             var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.TypeResolver);
             if (plain != null) {
                 return ParameterizeType(

@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 $"select 2 * 's' from {EVENT_ALLTYPES}#length(1) group by IntPrimitive having xxx > 5");
             SupportMessageAssertUtil.AssertMessage(
                 exception,
-                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'String' to numeric is not allowed");
+                "Failed to validate select-clause expression '2*\"s\"': Implicit conversion from datatype 'System.String' to numeric is not allowed");
 
             // invalid having clause - not a symbol in the group-by (non-aggregate)
             exception = GetStatementExceptionView(

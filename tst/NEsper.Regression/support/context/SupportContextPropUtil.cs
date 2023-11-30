@@ -45,7 +45,7 @@ namespace com.espertech.esper.regressionlib.support.context
                             stmt.DeploymentId,
                             contextName,
                             id);
-                        AssertProps(id, contextName, props, fieldsCSV, values == null ? null : values[num], true);
+                        AssertProps(id, contextName, props, fieldsCSV, values?[num], true);
                     }
                 });
         }
@@ -108,7 +108,7 @@ namespace com.espertech.esper.regressionlib.support.context
 
             Assert.AreEqual(contextName, props.Get("name"));
             if (assertId) {
-                Assert.AreEqual(id, props.Get("Id"));
+                Assert.AreEqual(id, props.Get("id"));
             }
 
             var col = -1;

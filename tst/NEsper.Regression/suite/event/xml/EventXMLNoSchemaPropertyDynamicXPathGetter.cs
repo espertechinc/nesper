@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         statement.EventType.PropertyDescriptors.ToArray(),
                         new SupportEventPropDesc("type?", typeof(XmlNode)),
                         new SupportEventPropDesc("dyn[1]?", typeof(XmlNode)),
-                        new SupportEventPropDesc("Nested.nes2?", typeof(XmlNode)),
+                        new SupportEventPropDesc("nested.nes2?", typeof(XmlNode)),
                         new SupportEventPropDesc("map('a')?", typeof(XmlNode)),
                         new SupportEventPropDesc("other?", typeof(XmlNode)));
                     SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     Assert.AreEqual(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
                     Assert.AreEqual(
                         root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0),
-                        theEvent.Get("Nested.nes2?"));
+                        theEvent.Get("nested.nes2?"));
                     Assert.AreEqual(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
                     Assert.IsNull(theEvent.Get("other?"));
                     SupportEventTypeAssertionUtil.AssertConsistency(theEvent);

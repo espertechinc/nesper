@@ -579,7 +579,7 @@ wideningConversions.AddAll (floatWrappers);
                         "Method '" +
                         methodName +
                         "' in class '" +
-                        declaringClass.Name +
+                        declaringClass.CleanName() +
                         "' expects primitive type '" +
                         parametersMethod[i] +
                         "' as parameter " +

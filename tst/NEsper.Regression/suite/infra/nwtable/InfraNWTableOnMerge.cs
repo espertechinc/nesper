@@ -349,13 +349,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean update MyInfra set doublearray[null]=1",
-                    "Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null' for expression 'doublearray'");
+                    "Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'null' returns 'null (any type)' for expression 'doublearray' [");
 
                 // type incompatible cannot assign
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean update MyInfra set intarray[IntPrimitive]='x'",
-                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'String'");
+                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'System.String'");
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean update MyInfra set intarray[IntPrimitive]=1L",
@@ -1200,7 +1200,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.TryInvalidCompile(
                     path,
                     epl,
-                    "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found end-of-input at line 1 column 66 [");
+                    "Incorrect syntax near end-of-input ('matched' is a reserved keyword) expecting 'then' but found EOF at line 1 column 66 [");
 
                 epl = "on SupportBean as up merge MergeInfra as mv where a=b when matched and then delete";
                 env.TryInvalidCompile(
@@ -1456,10 +1456,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 epl += "on SupportBean_ST0 as st0 merge WinOMIS as win where win.v1=st0.Key0 " +
                        "when not matched " +
                        "then insert into StreamOne select * " +
-                       "then insert into StreamTwo select st0.Id as Id, st0.Key0 as key0 " +
-                       "then insert into StreamThree(Id, key0) select st0.Id, st0.Key0 " +
-                       "then insert into StreamFour select Id, key0 where key0=\"K2\" " +
-                       "then insert into WinOMIS select key0 as v1, P00 as v2;\n";
+                       "then insert into StreamTwo select st0.Id as Id, st0.Key0 as Key0 " +
+                       "then insert into StreamThree(Id, Key0) select st0.Id, st0.Key0 " +
+                       "then insert into StreamFour select Id, Key0 where Key0=\"K2\" " +
+                       "then insert into WinOMIS select Key0 as v1, P00 as v2;\n";
                 epl += "@name('s1') select * from StreamOne;\n";
                 epl += "@name('s2') select * from StreamTwo;\n";
                 epl += "@name('s3') select * from StreamThree;\n";

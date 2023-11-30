@@ -122,13 +122,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 iterator => {
                     var stmtSelectResult = iterator.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(stmtSelectResult);
-                    Assert.AreEqual(typeof(string[]), stmtSelectResult.EventType.GetPropertyType("Nested4[2].prop5"));
-                    Assert.AreEqual("SAMPLE_V8", stmtSelectResult.Get("Nested4[0].prop5[1]"));
+                    Assert.AreEqual(typeof(string[]), stmtSelectResult.EventType.GetPropertyType("nested4[2].prop5"));
+                    Assert.AreEqual("SAMPLE_V8", stmtSelectResult.Get("nested4[0].prop5[1]"));
                     EPAssertionUtil.AssertEqualsExactOrder(
-                        (string[])stmtSelectResult.Get("Nested4[2].prop5"),
+                        (string[])stmtSelectResult.Get("nested4[2].prop5"),
                         new object[] { "SAMPLE_V10", "SAMPLE_V11" });
 
-                    var fragmentNested4 = (EventBean)stmtSelectResult.GetFragment("Nested4[2]");
+                    var fragmentNested4 = (EventBean)stmtSelectResult.GetFragment("nested4[2]");
                     EPAssertionUtil.AssertEqualsExactOrder(
                         (string[])fragmentNested4.Get("prop5"),
                         new object[] { "SAMPLE_V10", "SAMPLE_V11" });

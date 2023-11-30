@@ -20,6 +20,7 @@ using com.espertech.esper.common.@internal.epl.agg.core;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.common.@internal.fabric;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
@@ -167,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             explicitMembers.Add(new CodegenTypedParam(EPTYPE_MAP_OBJECT_AGGROW, MEMBER_AGGREGATORSPERGROUP.Ref));
             explicitMembers.Add(new CodegenTypedParam(typeof(object), MEMBER_CURRENTGROUPKEY.Ref).WithFinal(false));
             explicitMembers.Add(new CodegenTypedParam(classNames.RowTop, MEMBER_CURRENTROW.Ref).WithFinal(false));
-            ctor.Block.AssignRef(MEMBER_AGGREGATORSPERGROUP, NewInstance(typeof(Dictionary<object, AggregationRow>)));
+            ctor.Block.AssignRef(MEMBER_AGGREGATORSPERGROUP, NewInstance(typeof(HashMap<object, AggregationRow>)));
             if (aggGroupByDesc.IsReclaimAged) {
                 AggSvcGroupByReclaimAgedImpl.CtorCodegenReclaim(
                     ctor,

@@ -35,25 +35,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                 env.SendEventBean(new LocalEvent(property));
             };
-            var beanepl = "@public @buseventtype create schema LocalLeafEvent as " +
-                          typeof(LocalLeafEvent).MaskTypeName() +
-                          ";\n" +
-                          "@public @buseventtype create schema LocalInnerEvent as " +
-                          typeof(LocalInnerEvent).MaskTypeName() +
-                          ";\n" +
-                          "@public @buseventtype create schema LocalEvent as " +
-                          typeof(LocalEvent).MaskTypeName() +
-                          ";\n";
+            var beanepl =
+                "@public @buseventtype create schema LocalLeafEvent as " + typeof(LocalLeafEvent).MaskTypeName() + ";\n" +
+                "@public @buseventtype create schema LocalInnerEvent as " + typeof(LocalInnerEvent).MaskTypeName() + ";\n" +
+                "@public @buseventtype create schema LocalEvent as " + typeof(LocalEvent).MaskTypeName() + ";\n";
             RunAssertion(env, beanepl, bean);
 
             // Map
             Consumer<string[]> map = ids => {
                 var property = new IDictionary<string, object>[ids.Length];
                 for (var i = 0; i < ids.Length; i++) {
-                    property[i] = Collections.SingletonDataMap("leaf", Collections.SingletonDataMap("Id", ids[i]));
+                    property[i] = Collections.SingletonDataMap("Leaf", Collections.SingletonDataMap("Id", ids[i]));
                 }
 
-                env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
+                env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
             };
             RunAssertion(env, GetEpl("map"), map);
 
@@ -72,18 +67,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string[]> json = ids => {
                 var property = new JArray();
                 for (var i = 0; i < ids.Length; i++) {
-                    var inner = new JObject(new JProperty("leaf", new JObject(new JProperty("Id", ids[i]))));
+                    var inner = new JObject(new JProperty("Leaf", new JObject(new JProperty("Id", ids[i]))));
                     property.Add(inner);
                 }
 
-                env.SendEventJson(new JObject(new JProperty("property", property)).ToString(), "LocalEvent");
+                env.SendEventJson(new JObject(new JProperty("Property", property)).ToString(), "LocalEvent");
             };
             RunAssertion(env, GetEpl("json"), json);
 
             // Json-Class-Provided
-            var eplJsonProvided = "@JsonSchema(ClassName='" +
-                                  typeof(MyLocalJsonProvided).MaskTypeName() +
-                                  "') @public @buseventtype create json schema LocalEvent();\n";
+            var eplJsonProvided =
+                "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') " + 
+                "@public @buseventtype create json schema LocalEvent();\n";
             RunAssertion(env, eplJsonProvided, json);
 
             // Avro
@@ -92,21 +87,21 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 var property = new List<GenericRecord>();
                 for (var i = 0; i < ids.Length; i++) {
                     var leaf = new GenericRecord(
-                        schema.GetField("property")
+                        schema.GetField("Property")
                             .Schema.AsArraySchema()
-                            .ItemSchema.GetField("leaf")
+                            .ItemSchema.GetField("Leaf")
                             .Schema.AsRecordSchema());
                     leaf.Put("Id", ids[i]);
                     var inner = new GenericRecord(
-                        schema.GetField("property")
+                        schema.GetField("Property")
                             .Schema.AsArraySchema()
                             .ItemSchema.AsRecordSchema());
-                    inner.Put("leaf", leaf);
+                    inner.Put("Leaf", leaf);
                     property.Add(inner);
                 }
 
                 var @event = new GenericRecord(schema.AsRecordSchema());
-                @event.Put("property", property);
+                @event.Put("Property", property);
                 env.SendEventAvro(@event, "LocalEvent");
             };
             RunAssertion(env, GetEpl("avro"), avro);
@@ -114,15 +109,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private string GetEpl(string underlying)
         {
-            return "create " +
-                   underlying +
-                   " schema LocalLeafEvent(Id string);\n" +
-                   "create " +
-                   underlying +
-                   " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
-                   "@name('schema') @public @buseventtype create " +
-                   underlying +
-                   " schema LocalEvent(property LocalInnerEvent[]);\n";
+            return "create " + underlying + " schema LocalLeafEvent(Id string);\n" +
+                   "create " + underlying + " schema LocalInnerEvent(Leaf LocalLeafEvent);\n" +
+                   "@name('schema') @public @buseventtype create " + underlying + " schema LocalEvent(Property LocalInnerEvent[]);\n";
         }
 
         public void RunAssertion(
@@ -132,8 +121,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             env.CompileDeploy(
                     createSchemaEPL +
-                    "@name('s0') select * from LocalEvent[property[0].leaf];\n" +
-                    "@name('s1') select * from LocalEvent[property[1].leaf];\n")
+                    "@name('s0') select * from LocalEvent[Property[0].Leaf];\n" +
+                    "@name('s1') select * from LocalEvent[Property[1].Leaf];\n")
                 .AddListener("s0")
                 .AddListener("s1");
 
@@ -146,62 +135,47 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalLeafEvent
         {
-            private readonly string id;
-
             public LocalLeafEvent(string id)
             {
-                this.id = id;
+                this.Id = id;
             }
 
-            public string GetId()
-            {
-                return id;
-            }
+            public string Id { get; }
         }
 
         public class LocalInnerEvent
         {
-            private readonly LocalLeafEvent leaf;
-
             public LocalInnerEvent(LocalLeafEvent leaf)
             {
-                this.leaf = leaf;
+                this.Leaf = leaf;
             }
 
-            public LocalLeafEvent GetLeaf()
-            {
-                return leaf;
-            }
+            public LocalLeafEvent Leaf { get; }
         }
 
         public class LocalEvent
         {
-            private LocalInnerEvent[] property;
-
             public LocalEvent(LocalInnerEvent[] property)
             {
-                this.property = property;
+                this.Property = property;
             }
 
-            public LocalInnerEvent[] GetProperty()
-            {
-                return property;
-            }
+            public LocalInnerEvent[] Property { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedInnerEvent[] property;
+            public MyLocalJsonProvidedInnerEvent[] Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
-            public MyLocalJsonProvidedLeafEvent leaf;
+            public MyLocalJsonProvidedLeafEvent Leaf;
         }
 
         public class MyLocalJsonProvidedLeafEvent
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

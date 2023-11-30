@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@JsonSchema(dynamic=true) create json schema ParentEvent();\n" +
+                    "@JsonSchema(Dynamic=true) create json schema ParentEvent();\n" +
                     "@public @buseventtype create json schema ChildEvent() inherits ParentEvent;\n" +
                     "@name('s0') select value? as c0 from ChildEvent#keepall;\n" +
                     "@name('s1') select * from ChildEvent#keepall;\n";
@@ -132,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var epl =
                     "create json schema ParentEvent();\n" +
-                    "@JsonSchema(dynamic=true) @public @buseventtype create json schema ChildEvent() inherits ParentEvent;\n" +
+                    "@JsonSchema(Dynamic=true) @public @buseventtype create json schema ChildEvent() inherits ParentEvent;\n" +
                     "@name('s0') select value? as c0 from ChildEvent#keepall;\n" +
                     "@name('s1') select * from ChildEvent#keepall;\n";
                 env.CompileDeploy(epl).AddListener("s0").AddListener("s1");

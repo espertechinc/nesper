@@ -43,10 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             RunAssertion(env, EventRepresentationChoice.OBJECTARRAY, "");
             RunAssertion(env, EventRepresentationChoice.MAP, "");
-            RunAssertion(
-                env,
-                EventRepresentationChoice.AVRO,
-                "@AvroSchemaField(Name='myId',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
+            RunAssertion(env, EventRepresentationChoice.AVRO, "@AvroSchemaField(Name='myid',Schema='[\"int\",{\"type\":\"string\",\"avro.string\":\"String\"},\"null\"]')");
             RunAssertion(env, EventRepresentationChoice.DEFAULT, "");
             RunAssertion(env, EventRepresentationChoice.JSON, "");
         }
@@ -57,7 +54,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             string additionalAnnotations)
         {
             var path = new RegressionPath();
-
             // Bean
             var beanTests = new Pair<object, object>[] {
                 new Pair<object, object>(new SupportBeanDynRoot(new SupportBean_S0(101)), Exists(101)),
@@ -76,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 beanTests,
                 typeof(object),
                 path);
-
+    
             // Map
             var mapTests = new Pair<object, object>[] {
                 new Pair<object, object>(Collections.EmptyDataMap, NotExists()),
@@ -266,12 +262,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedItem item;
+            public MyLocalJsonProvidedItem Item;
         }
 
         public class MyLocalJsonProvidedItem
         {
-            public object id;
+            public object Id;
         }
     }
 } // end of namespace

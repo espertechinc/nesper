@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 }
                 else {
                     var inner = Collections.SingletonDataMap("Id", nullable.Value);
-                    env.SendEventMap(Collections.SingletonDataMap("property", inner), "LocalEvent");
+                    env.SendEventMap(Collections.SingletonDataMap("Property", inner), "LocalEvent");
                 }
             };
             RunAssertion(env, GetEPL("map"), map);
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 }
                 else {
                     var inner = new JObject(new JProperty("Id", nullable.Value));
-                    env.SendEventJson(new JObject(new JProperty("property", inner)).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Property", inner)).ToString(), "LocalEvent");
                 }
             };
             RunAssertion(env, GetEPL("json"), json);
@@ -94,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     var inner = new GenericRecord(innerSchema);
                     inner.Put("Id", nullable.Value);
                     @event = new GenericRecord(schema);
-                    @event.Put("property", inner);
+                    @event.Put("Property", inner);
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -105,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private string GetEPL(string underlying)
         {
-            return "@public @buseventtype @JsonSchema(dynamic=true) create " + underlying + " schema LocalEvent();\n";
+            return "@public @buseventtype @JsonSchema(Dynamic=true) create " + underlying + " schema LocalEvent();\n";
         }
 
         public void RunAssertion(
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        var g0 = eventType.GetGetter("property?.Id");
+                        var g0 = eventType.GetGetter("Property?.Id");
                         Assert.IsNull(g0);
                     });
                 env.UndeployAll();
@@ -131,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
 
             var propepl =
-                "@name('s1') select property?.Id as c0, exists(property?.Id) as c1, typeof(property?.Id) as c2 from LocalEvent;\n";
+                "@name('s1') select Property?.Id as c0, exists(Property?.Id) as c1, typeof(Property?.Id) as c2 from LocalEvent;\n";
             env.CompileDeploy(propepl, path).AddListener("s1");
 
             sender.Invoke(new NullableObject<string>("a"));
@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool exists,
             string value)
         {
-            var getter = @event.EventType.GetGetter("property?.Id");
+            var getter = @event.EventType.GetGetter("Property?.Id");
             Assert.AreEqual(exists, getter.IsExistsProperty(@event));
             Assert.AreEqual(value, getter.Get(@event));
             Assert.IsNull(getter.GetFragment(@event));
@@ -180,36 +180,32 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalInnerEvent
         {
-            private readonly string id;
-
             public LocalInnerEvent(string id)
             {
-                this.id = id;
+                this.Id = id;
             }
 
-            public string Id => id;
+            public string Id { get; }
         }
 
         public class LocalEventSubA : LocalEvent
         {
-            private LocalInnerEvent property;
-
             public LocalEventSubA(LocalInnerEvent property)
             {
-                this.property = property;
+                this.Property = property;
             }
 
-            public LocalInnerEvent Property => property;
+            public LocalInnerEvent Property { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedInnerEvent property;
+            public MyLocalJsonProvidedInnerEvent Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

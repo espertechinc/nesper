@@ -1404,12 +1404,6 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
             writer.WriteEndObject();
         }
 
-
-// Deprecating this behavior.  It assumes that every item should be encoded into an
-// array of objects.  It transfers the responsibility of figuring out the wrapping
-// from the serializer to this method.  Use WriteArray instead.
-
-#if false
 		/// <summary>
 		/// NOTE: Code-generation-invoked method, method name and parameter order matters
 		/// </summary>
@@ -1422,7 +1416,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 			string itemName,
 			object[] array)
 		{
-			var writer = context.JsonWriter;
+			var writer = context.Writer;
 			if (array == null) {
 				writer.WriteNullValue();
 				return;
@@ -1448,7 +1442,7 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 			string name,
 			IList<T>[] list)
 		{
-			var writer = context.JsonWriter;
+			var writer = context.Writer;
 			if (list == null) {
 				writer.WriteNullValue();
 				return;
@@ -1461,7 +1455,6 @@ namespace com.espertech.esper.common.@internal.@event.json.serializers
 
 			writer.WriteEndArray();
 		}
-#endif
 
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters

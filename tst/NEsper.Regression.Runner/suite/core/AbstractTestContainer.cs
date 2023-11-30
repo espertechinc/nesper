@@ -1,5 +1,6 @@
 ﻿using System;
 
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.support.util;
 
@@ -25,6 +26,7 @@ namespace com.espertech.esper.regressionrun.suite.core
         [SetUp]
         public virtual void SetUp()
         {
+            AssertProxy.AssertFail = Assert.Fail;
         }
 
         [TearDown]

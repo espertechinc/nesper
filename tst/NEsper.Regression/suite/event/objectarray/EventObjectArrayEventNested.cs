@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test map containing first-level property that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@name('s0') select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayOA");
+                    "@name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayOA");
                 env.AddListener("s0");
 
                 var p0 = new int[] { 1, 2, 3 };
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map at the second level of a nested map that is an array of primitive or Class
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayOAMapOuter");
+                    "@name('s0') select outer.P0[0] as a, outer.P0[1] as b, outer.P1[0].IntPrimitive as c, outer.P1[1] as d, outer.P0 as e from MyArrayOAMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { eventData }, "MyArrayOAMapOuter");
@@ -121,12 +121,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 // test map containing first-level property that is an array of primitive or Class
-                env.CompileDeploy("@name('s0') select p0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@name('s0') select P0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
                 eventVal.Put("k1", "v1");
-                var theEvent = MakeMap(new object[][] { new object[] { "p0", eventVal } });
+                var theEvent = MakeMap(new object[][] { new object[] { "P0", eventVal } });
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "v1" });
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.UndeployAll();
 
                 // test map at the second level of a nested map that is an array of primitive or Class
-                env.CompileDeploy("@name('s0') select outer.p0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = MakeMap(new object[][] { new object[] { "outer", theEvent } });
@@ -150,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 // test map that contains a bean which has a map property
                 env.CompileDeploy(
-                        "@name('s0') select outerTwo.mapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
+                        "@name('s0') select outerTwo.MapProperty('xOne') as a from MyMappedPropertyMapOuterTwo")
                     .AddListener("s0");
 
                 var eventOuterTwo = MakeMap(
@@ -172,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             {
                 // test named-map at the second level of a nested map
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyObjectArrayMapOuter");
+                    "@name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(new object[][] { new object[] { "n0", 1 } });
@@ -180,7 +180,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 var n0Bean22 = MakeMap(new object[][] { new object[] { "n0", 3 } });
                 var n0Bean2 = new IDictionary<string, object>[] { n0Bean21, n0Bean22 };
                 var theEvent = MakeMap(
-                    new object[][] { new object[] { "p0", n0Bean1 }, new object[] { "p1", n0Bean2 } });
+                    new object[][] { new object[] { "P0", n0Bean1 }, new object[] { "P1", n0Bean2 } });
                 env.SendEventObjectArray(new object[] { theEvent }, "MyObjectArrayMapOuter");
 
                 env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[] { 1, 2, 3, n0Bean1, n0Bean2 });
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyObjectArrayMapOuter");
+                    "@name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { theEvent }, "MyObjectArrayMapOuter");
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyOAWithAMap");
+                    "@name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyOAWithAMap");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(new object[][] { new object[] { "n0", 1 } });
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                         var theEvent = iterator.Advance();
                         EPAssertionUtil.AssertProps(
                             theEvent,
-                            "rootId,p0.p0id,p0.p1.p1id".SplitCsv(),
+                            "rootId,P0.p0id,P0.P1.p1id".SplitCsv(),
                             new object[] { 10, 100, 1000 });
                     });
 

@@ -21,19 +21,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLSchemaPropertyDynamicDOMGetter
     {
-        internal const string SCHEMA_XML = "<simpleEvent xmlns=\"samples:schemas:simpleSchema\" \n" +
-                                           "  xmlns:ss=\"samples:schemas:simpleSchema\" \n" +
-                                           "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
-                                           "  xsi:schemaLocation=\"samples:schemas:simpleSchema simpleSchema.xsd\">" +
-                                           "<type>abc</type>\n" +
-                                           "<dyn>1</dyn>\n" +
-                                           "<dyn>2</dyn>\n" +
-                                           "<nested>\n" +
-                                           "<nes2>3</nes2>\n" +
-                                           "</nested>\n" +
-                                           "<map Id='a'>4</map>\n" +
-                                           "</simpleEvent>";
-
+        public const string SCHEMA_XML =
+            "<simpleEvent xmlns=\"samples:schemas:simpleSchema\" \n" +
+            "  xmlns:ss=\"samples:schemas:simpleSchema\" \n" +
+            "  xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" \n" +
+            "  xsi:schemaLocation=\"samples:schemas:simpleSchema simpleSchema.xsd\">" +
+            "<type>abc</type>\n" +
+            "<dyn>1</dyn>\n" +
+            "<dyn>2</dyn>\n" +
+            "<nested>\n" +
+            "<nes2>3</nes2>\n" +
+            "</nested>\n" +
+            "<map id='a'>4</map>\n" +
+            "</simpleEvent>";
 
         public static List<RegressionExecution> Executions()
         {
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         statement.EventType.PropertyDescriptors.ToArray(),
                         new SupportEventPropDesc("type?", typeof(XmlNode)),
                         new SupportEventPropDesc("dyn[1]?", typeof(XmlNode)),
-                        new SupportEventPropDesc("Nested.nes2?", typeof(XmlNode)),
+                        new SupportEventPropDesc("nested.nes2?", typeof(XmlNode)),
                         new SupportEventPropDesc("map('a')?", typeof(XmlNode)));
                     SupportEventTypeAssertionUtil.AssertConsistency(statement.EventType);
                 });
@@ -113,9 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 theEvent => {
                     Assert.AreSame(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
                     Assert.AreSame(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
-                    Assert.AreSame(
-                        root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0),
-                        theEvent.Get("Nested.nes2?"));
+                    Assert.AreSame(root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0), theEvent.Get("nested.nes2?"));
                     Assert.AreSame(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
                     SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
                 });

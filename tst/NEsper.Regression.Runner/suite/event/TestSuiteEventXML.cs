@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             configuration.Common.AddEventType("PageVisitEvent", pageVisitEvent);
 
             var orderEvent = new ConfigurationCommonEventTypeXMLDOM();
-            orderEvent.RootElementName = "Order";
+            orderEvent.RootElementName = "order";
             orderEvent.SchemaText = schemaTextSimpleSchemaWithRestriction;
             configuration.Common.AddEventType("OrderEvent", orderEvent);
         }

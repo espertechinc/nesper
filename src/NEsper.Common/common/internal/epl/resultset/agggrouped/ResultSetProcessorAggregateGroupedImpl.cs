@@ -463,7 +463,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.agggrouped
                 typeof(EventBean[]),
                 "GenerateOutputEventsJoin",
                 CodegenNamedParam.From(
-                    typeof(ISet<MultiKeyArrayOfKeys<EventBean>>), // EPTYPE_SET_MULTIKEYARRAYOFKEYS_EVENTBEANARRAY
+                    typeof(ISet<MultiKeyArrayOfKeys<EventBean>>),
                     "resultSet",
                     typeof(object[]),
                     "groupByKeys",

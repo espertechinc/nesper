@@ -444,7 +444,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                        "insert into MyWindow select 1 as c0 from SupportBean;\n";
                 env.TryInvalidCompile(
                     text,
-                    "Event type named 'MyWindow' has already been declared with differing column name or type information: Type by name 'MyWindow' in property 'c0' expects a null-value but receives 'Integer'");
+                    "Event type named 'MyWindow' has already been declared with differing column name or type information: Type by name 'MyWindow' in property 'c0' expects a null-value but receives 'System.Int32'");
 
                 // setter throws exception
                 var stmtTextOne = "@name('s0') insert into SupportBeanErrorTestingTwo(Value) select 'E1' from MyMap";

@@ -124,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "') create json schema JsonEvent(mydate String)",
                     "Json schema field adapter class '" +
                     typeof(SupportJsonFieldAdapterStringDate).FullName +
-                    "' mismatches the return type of the parse method, expected 'String' but found 'Date'");
+                    "' mismatches the return type of the parse method, expected 'System.String' but found 'Date'");
             }
         }
 

@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 epl = "select Contained.aggregate(0, (result, Item) => result || ',') from SupportBean_ST0_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'Integer' to string is not allowed");
+                    "Failed to validate select-clause expression 'Contained.aggregate(0,)': Failed to validate enumeration method 'aggregate' parameter 1: Failed to validate declared expression body expression 'result||\",\"': Implicit conversion from datatype 'System.Int32' to string is not allowed");
 
                 // null-init-value for aggregate
                 epl = "select Contained.aggregate(null, (result, Item) => result) from SupportBean_ST0_Container";

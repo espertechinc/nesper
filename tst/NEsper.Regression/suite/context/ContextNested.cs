@@ -482,15 +482,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create context NestedContext " +
-                    "context ACtx initiated by SupportBean_S0 as s0 terminated after 24 hours, " +
-                    "context BCtx initiated by SupportBean_S1 as s1 terminated after 1 hour",
+                    "context ACtx initiated by SupportBean_S0 as S0 terminated after 24 hours, " +
+                    "context BCtx initiated by SupportBean_S1 as S1 terminated after 1 hour",
                     path);
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select * " +
                     "from SupportBean(" +
-                    "customEnabled(TheString, context.ACtx.s0.P00, IntPrimitive, context.BCtx.s1.Id)" +
+                    "customEnabled(TheString, context.ACtx.S0.P00, IntPrimitive, context.BCtx.S1.Id)" +
                     " and " +
-                    "customDisabled(TheString, context.ACtx.s0.P00, IntPrimitive, context.BCtx.s1.Id))",
+                    "customDisabled(TheString, context.ACtx.S0.P00, IntPrimitive, context.BCtx.S1.Id))",
                     path);
                 env.AddListener("s0");
 
@@ -519,14 +519,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var path = new RegressionPath();
                 env.CompileDeploy(
                     "@public create context NestedContext " +
-                    "context ACtx initiated by SupportBean_S0 as s0 terminated by SupportBean_S1(Id=s0.Id), " +
+                    "context ACtx initiated by SupportBean_S0 as S0 terminated by SupportBean_S1(Id=S0.Id), " +
                     "context BCtx group by IntPrimitive < 0 as grp1, group by IntPrimitive = 0 as grp2, group by IntPrimitive > 0 as grp3 from SupportBean",
                     path);
 
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext " +
-                    "select context.ACtx.s0.P00 as c0, context.BCtx.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#length(5) group by TheString",
+                    "select context.ACtx.S0.P00 as c0, context.BCtx.label as c1, TheString as c2, sum(IntPrimitive) as c3 from SupportBean#length(5) group by TheString",
                     path);
 
                 env.SendEventBean(new SupportBean_S0(1, "S0_1"));
@@ -768,12 +768,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 env.SendEventBean(new SupportBean("E1", -1));
 
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(IntPrimitive<0,theStringisE1)]", "s0");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0,TheStringisE1)\"]", "s0");
                 env.UndeployAll();
                 path.Clear();
                 env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
@@ -786,7 +786,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 bean = new SupportBean("E1", -1);
                 bean.LongPrimitive = 1;
                 env.SendEventBean(bean);
@@ -795,9 +795,9 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 AssertFilters(
                     env,
-                    "[SupportBean(IntPrimitive<0,theStringisE1,LongPrimitive<0), SupportBean(IntPrimitive<0,theStringisE1,LongPrimitive>0)]",
+                    "[\"SupportBean(IntPrimitive<0,TheStringisE1,LongPrimitive<0)\", \"SupportBean(IntPrimitive<0,TheStringisE1,LongPrimitive>0)\"]",
                     "s0");
-                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 env.UndeployAll();
                 path.Clear();
                 env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
@@ -810,17 +810,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean()]", "ctx");
+                AssertFilters(env, "[\"SupportBean()\"]", "ctx");
                 bean = new SupportBean("E1", 2);
                 bean.LongPrimitive = 3;
                 env.SendEventBean(bean);
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(theStringisE1,intPrimitiveis2,longPrimitiveis3)]", "s0");
-                AssertFilters(
-                    env,
-                    "[SupportBean(), SupportBean(theStringisE1), SupportBean(theStringisE1,intPrimitiveis2)]",
-                    "ctx");
+                AssertFilters(env, "[\"SupportBean(TheStringisE1,IntPrimitiveis2,LongPrimitiveis3)\"]", "s0");
+                AssertFilters(env, "[\"SupportBean()\", \"SupportBean(TheStringisE1,IntPrimitiveis2)\", \"SupportBean(TheStringisE1)\"]", "ctx");
 
                 env.UndeployAll();
                 path.Clear();
@@ -833,15 +830,15 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 bean = new SupportBean("E1", 2);
                 bean.LongPrimitive = 3;
                 env.SendEventBean(bean);
 
                 env.MilestoneInc(milestone);
 
-                AssertFilters(env, "[SupportBean(IntPrimitive>0,consistent_hash_crc32(TheString)=33)]", "s0");
-                AssertFilters(env, "[SupportBean(IntPrimitive<0), SupportBean(IntPrimitive>0)]", "ctx");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive>0,consistent_hash_crc32(TheString)=33)\"]", "s0");
+                AssertFilters(env, "[\"SupportBean(IntPrimitive<0)\", \"SupportBean(IntPrimitive>0)\"]", "ctx");
                 env.UndeployAll();
                 path.Clear();
                 env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
@@ -852,13 +849,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplContext, path);
                 env.CompileDeploy(eplSelect, path);
 
-                AssertFilters(env, "[SupportBean()]", "ctx");
+                AssertFilters(env, "[\"SupportBean()\"]", "ctx");
                 env.SendEventBean(new SupportBean("E1", 2));
 
                 env.MilestoneInc(milestone);
 
                 AssertFilters(env, "[]", "s0");
-                AssertFilters(env, "[SupportBean(), SupportBean_S0()]", "ctx");
+                AssertFilters(env, "[\"SupportBean_S0()\", \"SupportBean()\"]", "ctx");
                 env.UndeployAll();
                 env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
             }

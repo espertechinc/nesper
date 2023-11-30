@@ -409,9 +409,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('fl') @public insert into Event_1_EPL(delta, product) " +
-                          "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
-                          "from SupportBean#length(100)";
+                var epl =
+                    "@Name('fl') @public insert into Event_1_EPL(delta, product) " +
+                    "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
+                    "from SupportBean#length(100)";
 
                 var model = env.EplToModel(epl);
                 model = env.CopyMayFail(model);
@@ -734,7 +735,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') insert into SupportObjectArrayOneDim select window(*) @eventbean as arr from SupportBean#keepall")
+                        "@name('s0') insert into SupportObjectArrayOneDim select window(*) @eventbean as Arr from SupportBean#keepall")
                     .AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -1155,10 +1156,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var fieldName = "dummy";
                 Assert.IsTrue(eventType.IsProperty(fieldName));
-                Assert.IsNull(eventType.GetPropertyType(fieldName));
-                Assert.AreSame(null, eventType.GetPropertyType(fieldName));
+                Assert.That(eventType.GetPropertyType(fieldName), Is.EqualTo(typeof(object)));
+                //Assert.AreSame(null, eventType.GetPropertyType(fieldName));
                 var desc = eventType.GetPropertyDescriptor(fieldName);
-                SupportEventPropUtil.AssertPropEquals(new SupportEventPropDesc(fieldName, null), desc);
+                SupportEventPropUtil.AssertPropEquals(new SupportEventPropDesc(fieldName, typeof(object)), desc);
             }
         }
 

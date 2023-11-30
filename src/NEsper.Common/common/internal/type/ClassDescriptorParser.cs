@@ -80,21 +80,28 @@ namespace com.espertech.esper.common.@internal.type
                     elementDesc.IsArrayOfPrimitive);
             }
 
+            var typeName = type.Namespace + "." + type.Name;
+            var typeNameGraveIndex = typeName.IndexOf('`');
+            if (typeNameGraveIndex != -1) {
+                typeName = typeName.Substring(0, typeNameGraveIndex);
+            }
+            
             if (type.IsGenericType) {
                 var genericArguments = type.GetGenericArguments();
                 var genericDescriptors = genericArguments
                     .Select(Decompose)
                     .ToList();
+                
                 // get the basic generic type name
                 return new ClassDescriptor(
-                    type.Namespace + "." + type.Name,
+                    typeName,
                     genericDescriptors,
                     0,
                     false);
             }
             
             return new ClassDescriptor(
-                type.Namespace + "." + type.Name,
+                typeName,
                 EmptyList<ClassDescriptor>.Instance,
                 0,
                 type.IsPrimitive);

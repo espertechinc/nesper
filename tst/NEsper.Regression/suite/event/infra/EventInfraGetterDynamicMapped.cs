@@ -74,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     env.SendEventJson("{}", "LocalEvent");
                 }
                 else if (nullable.Value == null) {
-                    env.SendEventJson(new JObject(new JProperty("Mapped")).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Mapped", JValue.CreateNull())).ToString(), "LocalEvent");
                 }
                 else {
                     var @event = new JObject();
@@ -140,8 +140,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        var g0 = eventType.GetGetter("mapped('a')?");
-                        var g1 = eventType.GetGetter("mapped('b')?");
+                        var g0 = eventType.GetGetter("Mapped('a')?");
+                        var g1 = eventType.GetGetter("Mapped('b')?");
                         Assert.IsNull(g0);
                         Assert.IsNull(g1);
                     });
@@ -193,8 +193,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool existsOne,
             string valueOne)
         {
-            var g0 = @event.EventType.GetGetter("mapped('a')?");
-            var g1 = @event.EventType.GetGetter("mapped('b')?");
+            var g0 = @event.EventType.GetGetter("Mapped('a')?");
+            var g1 = @event.EventType.GetGetter("Mapped('b')?");
             AssertGetter(@event, g0, existsZero, valueZero);
             AssertGetter(@event, g1, existsOne, valueOne);
         }

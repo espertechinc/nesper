@@ -45,7 +45,11 @@ namespace com.espertech.esper.common.@internal.util
         /// </returns>
         public bool IsSupported(Type type)
         {
-            return type.IsSerializable || type.IsInterface;
+            // previously, we only allowed objects marked with the "Serializable" attribute to
+            // be serialized, but now we basically allow anything.
+            // return type.IsSerializable || type.IsInterface;
+            
+            return true;
         }
 
         /// <summary>

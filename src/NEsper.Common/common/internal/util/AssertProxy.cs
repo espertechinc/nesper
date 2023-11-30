@@ -31,13 +31,14 @@ namespace com.espertech.esper.common.@internal.util
         {
             AssertFail = message => System.Diagnostics.Debug.Assert(true, message);
 
+#if DEPRECATED
             // See if NUnit is loaded into the domain.  If it is, then by default, we will switch to using it.
             // Remember, you can change whatever you'd like about how the AssertProxy class works by simply
             // changing the AssertFail property.
 
-            var appDomain = AppDomain.CurrentDomain;
-            var assemblies = appDomain.GetAssemblies();
-            var appTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray();
+            //var appDomain = AppDomain.CurrentDomain;
+            //var assemblies = appDomain.GetAssemblies();
+            //var appTypes = assemblies.SelectMany(assembly => assembly.GetTypes()).ToArray();
 
             var nunitAssertionType = TypeHelper.ResolveType("NUnit.Framework.Assert", false);
             if (nunitAssertionType != null) {
@@ -47,6 +48,7 @@ namespace com.espertech.esper.common.@internal.util
                     AssertFail = message => asFastMethod.InvokeStatic(message);
                 }
             }
+#endif
         }
 
         private static string SanitizeMessage(

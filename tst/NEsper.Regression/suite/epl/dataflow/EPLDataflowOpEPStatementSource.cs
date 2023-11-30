@@ -22,13 +22,11 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.dataflow;
 using com.espertech.esper.runtime.client;
 
-// fail
-using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib; // sleep
 using NUnit.Framework;
 
-using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
-// assertNull
+using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {

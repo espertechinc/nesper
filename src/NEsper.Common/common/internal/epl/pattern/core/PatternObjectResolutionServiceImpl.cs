@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.epl.pattern.guard;
 using com.espertech.esper.common.@internal.epl.pattern.observer;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
             }
             catch (InvalidCastException e) {
                 var message = "Error casting guard forge instance to " +
-                              nameof(GuardForge) +
+                              typeof(GuardForge).CleanName() +
                               " interface for guard '" +
                               spec.ObjectName +
                               "'";

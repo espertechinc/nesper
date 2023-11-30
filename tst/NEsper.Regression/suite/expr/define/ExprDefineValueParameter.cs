@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 env.TryInvalidCompile(
                     "expression cc{(v1,v2) -> v1 || v2} select cc(1, 2) from SupportBean",
-                    "Failed to validate select-clause expression 'cc(1,2)': Failed to validate expression declaration 'cc': Failed to validate declared expression body expression 'v1||v2': Implicit conversion from datatype 'Integer' to string is not allowed");
+                    "Failed to validate select-clause expression 'cc(1,2)': Failed to validate expression declaration 'cc': Failed to validate declared expression body expression 'v1||v2': Implicit conversion from datatype 'System.Int32' to string is not allowed");
             }
         }
 

@@ -61,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
             {
                 var text = "public class MyResult {\n" +
                            "  private readonly string _id;\n" +
-                           "  public MyResult(string id) {this._id = Id;}\n" +
+                           "  public MyResult(string id) {this._id = id;}\n" +
                            "  public string Id => _id;\n" +
                            "}";
                 var epl = EscapeClass(text) +

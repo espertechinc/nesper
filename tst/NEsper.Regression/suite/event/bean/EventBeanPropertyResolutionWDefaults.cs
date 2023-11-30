@@ -54,14 +54,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select `seconds`, `Order` from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@name('s0') select `Seconds`, `Order` from SomeKeywords").AddListener("s0");
 
                 object theEvent = new SupportBeanReservedKeyword(1, 2);
                 env.SendEventBean(theEvent, "SomeKeywords");
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual(1, eventBean.Get("seconds"));
+                        Assert.AreEqual(1, eventBean.Get("Seconds"));
                         Assert.AreEqual(2, eventBean.Get("Order"));
                     });
 
@@ -72,12 +72,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual(1, eventBean.Get("seconds"));
+                        Assert.AreEqual(1, eventBean.Get("Seconds"));
                         Assert.AreEqual(2, eventBean.Get("Order"));
                     });
 
                 env.UndeployAll();
-                env.CompileDeploy("@name('s0') select timestamp.`hour` as val from SomeKeywords").AddListener("s0");
+                env.CompileDeploy("@name('s0') select Timestamp.`Hour` as val from SomeKeywords").AddListener("s0");
 
                 var bean = new SupportBeanReservedKeyword(1, 2);
                 bean.Timestamp = new SupportBeanReservedKeyword.Inner();
@@ -88,20 +88,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test back-tick with spaces etc
                 env.CompileDeploy(
-                        "@name('s0') select `candidate Book` as c0, `XML Message Type` as c1, `select` as c2, `children's Books`[0] as c3, `my <> map`('xx') as c4 from MyType")
+                        "@name('s0') select `candidate book` as c0, `XML Message Type` as c1, `select` as c2, `children's books`[0] as c3, `my <> map`('xx') as c4 from MyType")
                     .AddListener("s0");
 
                 IDictionary<string, object> defValues = new Dictionary<string, object>();
-                defValues.Put("candidate Book", "Enders Game");
-                defValues.Put("XML Message Type", "Book");
+                defValues.Put("candidate book", "Enders Game");
+                defValues.Put("XML Message Type", "book");
                 defValues.Put("select", 100);
-                defValues.Put("children's Books", new int[] { 50, 51 });
-                defValues.Put("my <> map", Collections.SingletonMap("xx", "abc"));
+                defValues.Put("children's books", new int[] { 50, 51 });
+                defValues.Put("my <> map", Collections.SingletonDataMap("xx", "abc"));
                 env.SendEventMap(defValues, "MyType");
                 env.AssertPropsNew(
                     "s0",
                     "c0,c1,c2,c3,c4".SplitCsv(),
-                    new object[] { "Enders Game", "Book", 100, 50, "abc" });
+                    new object[] { "Enders Game", "book", 100, 50, "abc" });
                 env.UndeployAll();
 
                 env.TryInvalidCompile(
@@ -124,13 +124,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 // test escape in column name
                 env.CompileDeploy(
-                        "@name('s0') select TheString as `Order`, TheString as `Price.for.goods` from SupportBean")
+                        "@name('s0') select TheString as `order`, TheString as `price.for.goods` from SupportBean")
                     .AddListener("s0");
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Order"));
-                        Assert.AreEqual("Price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
+                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("order"));
+                        Assert.AreEqual("price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
                     });
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -138,8 +138,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "s0",
                     eventBean => {
                         var @out = (IDictionary<string, object>)eventBean.Underlying;
-                        Assert.AreEqual("E1", @out.Get("Order"));
-                        Assert.AreEqual("E1", @out.Get("Price.for.goods"));
+                        Assert.AreEqual("E1", @out.Get("order"));
+                        Assert.AreEqual("E1", @out.Get("price.for.goods"));
 
                         // try control character
                         TryInvalidControlCharacter(eventBean);
@@ -188,15 +188,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     result => {
                         Assert.AreEqual("upper", result.Get("MYPROPERTY"));
                         Assert.AreEqual("lower", result.Get("myproperty"));
-                        Assert.IsTrue(
-                            result.Get("myProperty").Equals("lowercamel") ||
-                            result.Get("myProperty").Equals("uppercamel")); // JDK6 versus JDK7 JavaBean inspector
+                        Assert.AreEqual("lowercamel", result.Get("myProperty"));
                     });
 
                 env.UndeployAll();
                 env.TryInvalidCompile(
-                    "select MyProperty from SupportBeanDupProperty",
-                    "Failed to validate select-clause expression 'MyProperty': Property named 'MyProperty' is not valid in any stream (did you mean 'MYPROPERTY'?)");
+                    "select MYProperty from SupportBeanDupProperty",
+                    "Failed to validate select-clause expression 'MYProperty': Property named 'MYProperty' is not valid in any stream (did you mean 'myproperty'?)");
             }
         }
 
@@ -225,17 +223,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
         public class LocalEventWithEnum
         {
-            private LocalEventEnum localEventEnum;
-
             public LocalEventWithEnum(LocalEventEnum localEventEnum)
             {
-                this.localEventEnum = localEventEnum;
+                this.LocalEventEnum = localEventEnum;
             }
 
-            public LocalEventEnum GetLocalEventEnum()
-            {
-                return localEventEnum;
-            }
+            public LocalEventEnum LocalEventEnum { get; }
         }
 
         public enum LocalEventEnum
@@ -245,17 +238,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
         public class LocalEventWithGroup
         {
-            private GROUP group;
-
             public LocalEventWithGroup(GROUP group)
             {
-                this.group = group;
+                this.GROUP = group;
             }
 
-            public GROUP GetGROUP()
-            {
-                return group;
-            }
+            public GROUP GROUP { get; }
         }
 
         public enum GROUP

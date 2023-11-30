@@ -98,14 +98,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalEvent
         {
-            private IDictionary<string, string> mapped;
-
             public LocalEvent(IDictionary<string, string> mapped)
             {
-                this.mapped = mapped;
+                this.Mapped = mapped;
             }
 
-            public IDictionary<string, string> Mapped => mapped;
+            public IDictionary<string, string> Mapped { get; }
         }
 
         public class MyLocalJsonProvided

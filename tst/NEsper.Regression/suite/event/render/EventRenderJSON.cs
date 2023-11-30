@@ -20,6 +20,9 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+
+using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
+
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {
     public class EventRenderJSON
@@ -128,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
                         //Console.WriteLine(result);
                         var valuesOnly =
-                            "{ \"bigDecimal\": null, \"bigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" }";
+                            "{ \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\", \"This\": { \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" } }";
                         var expected = "{ \"supportBean\": " + valuesOnly + " }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
@@ -170,11 +173,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             env.GetEnumerator("s0").Advance());
                         var expected = "{\n" +
                                        "  \"outerMap\": {\n" +
-                                       "    \"intarr\": [1, 2],\n" +
-                                       "    \"innersimple\": {\n" +
-                                       "      \"prop1\": \"\",\n" +
-                                       "      \"stringarr\": [\"a\", \"b\"]\n" +
-                                       "    },\n" +
                                        "    \"innerarray\": [{\n" +
                                        "        \"prop1\": \"\",\n" +
                                        "        \"stringarr\": [\"a\", \"b\"]\n" +
@@ -183,6 +181,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "        \"prop1\": \"abcdef\",\n" +
                                        "        \"stringarr\": []\n" +
                                        "      }],\n" +
+                                       "    \"innersimple\": {\n" +
+                                       "      \"prop1\": \"\",\n" +
+                                       "      \"stringarr\": [\"a\", \"b\"]\n" +
+                                       "    },\n" +
+                                       "    \"intarr\": [1, 2],\n" +
                                        "    \"prop0\": {\n" +
                                        "      \"Id\": \"A1\"\n" +
                                        "    }\n" +
@@ -207,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var result = env.Runtime.RenderEventService.RenderJSON(
                             "outer",
                             env.GetEnumerator("s0").Advance());
-                        var expected = "{ \"outer\": { \"props\": null } }";
+                        var expected = "{ \"outer\": { \"Props\": null } }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
@@ -217,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var result = env.Runtime.RenderEventService.RenderJSON(
                             "outer",
                             env.GetEnumerator("s0").Advance());
-                        var expected = "{ \"outer\": { \"props\": {} } }";
+                        var expected = "{ \"outer\": { \"Props\": {} } }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
@@ -227,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var result = env.Runtime.RenderEventService.RenderJSON(
                             "outer",
                             env.GetEnumerator("s0").Advance());
-                        var expected = "{ \"outer\": { \"props\": { \"a\": \"b\" } } }";
+                        var expected = "{ \"outer\": { \"Props\": { \"a\": \"b\" } } }";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
@@ -261,14 +264,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
         public class EmptyMapEvent
         {
-            private IDictionary<string, string> props;
-
             public EmptyMapEvent(IDictionary<string, string> props)
             {
-                this.props = props;
+                this.Props = props;
             }
 
-            public IDictionary<string, string> Props => props;
+            public IDictionary<string, string> Props { get; }
         }
     }
 } // end of namespace

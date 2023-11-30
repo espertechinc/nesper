@@ -73,8 +73,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
                           "method:" +
-                          typeof(SupportJoinResultIsArray).FullName +
-                          ".getResultTwoField(e.Id, e.intOne) as s";
+				             typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetResultTwoField(e.Id, e.IntOne) as s";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var sb1 = SendManyArrayGetSB(env, "MA1", new int[] { 1, 2 });
@@ -112,8 +112,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
                           "method:" +
-                          typeof(SupportJoinResultIsArray).FullName +
-                          ".getResultIntArray(e.intOne) as s";
+                          typeof(SupportJoinResultIsArray).MaskTypeName() +
+				             ".GetResultIntArray(e.IntOne) as s";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendManyArray(env, "E1", new int[] { 1, 2 });
@@ -145,10 +145,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
-                          "method:" +
-                          typeof(SupportJoinResultIsArray).FullName +
-                          ".getArray() as s " +
-                          "where s.doubleArray = e.doubleOne and s.intArray = e.intOne and s.Value > e.Value";
+                               "method:" +
+				               typeof(SupportJoinResultIsArray).MaskTypeName() +
+				               ".GetArray() as s " +
+				               "where s.DoubleArray = e.DoubleOne and s.IntArray = e.IntOne and s.Value > e.Value";
 
                 RunAssertion(env, epl);
 
@@ -165,9 +165,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             {
                 var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
                           "method:" +
-                          typeof(SupportJoinResultIsArray).FullName +
-                          ".getArray() as s " +
-                          "where s.doubleArray = e.doubleOne and s.intArray = e.intOne";
+                          typeof(SupportJoinResultIsArray).MaskTypeName() +
+                          ".GetArray() as s " +
+                          "where s.DoubleArray = e.DoubleOne and s.IntArray = e.IntOne";
 
                 RunAssertion(env, epl);
 
@@ -182,11 +182,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select * from SupportEventWithManyArray as e,\n" +
-                          "method:" +
-                          typeof(SupportJoinResultIsArray).FullName +
-                          ".getArray() as s " +
-                          "where s.doubleArray = e.doubleOne";
+				string epl = "@Name('s0') select * from SupportEventWithManyArray as e,\n" +
+				             "method:" + typeof(SupportJoinResultIsArray).MaskTypeName() + ".GetArray() as s " +
+				             "where s.DoubleArray = e.DoubleOne";
 
                 RunAssertion(env, epl);
 
@@ -308,25 +306,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 this.value = value;
             }
 
-            public string GetId()
-            {
-                return id;
-            }
+			public string Id => id;
 
-            public double[] GetDoubleArray()
-            {
-                return doubleArray;
-            }
+			public double[] DoubleArray => doubleArray;
 
-            public int[] GetIntArray()
-            {
-                return intArray;
-            }
+			public int[] IntArray => intArray;
 
-            public int GetValue()
-            {
-                return value;
-            }
+			public int Value => value;
         }
     }
 } // end of namespace

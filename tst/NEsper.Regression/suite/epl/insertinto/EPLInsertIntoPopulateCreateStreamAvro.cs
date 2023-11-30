@@ -80,8 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     new[] { "MyLong", "MyLongArray", "MyByteArray", "MyMap" },
                     new[] {
                         typeof(long),
-                        typeof(ICollection<long>),
-                        typeof(ByteBuffer),
+                        typeof(long[]),
+                        typeof(byte[]),
                         typeof(IDictionary<string, string>)
                     });
 

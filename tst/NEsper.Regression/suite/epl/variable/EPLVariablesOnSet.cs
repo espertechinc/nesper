@@ -300,7 +300,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean set intarray[IntPrimitive]='x'",
-                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
+                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment of column '\"x\"' of type 'System.String' to event property 'intarray' typed as 'int', column and parameter types mismatch");
 
                 // not-an-array
                 env.TryInvalidCompile(

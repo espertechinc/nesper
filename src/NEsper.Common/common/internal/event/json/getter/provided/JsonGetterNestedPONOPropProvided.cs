@@ -127,7 +127,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            var propertyType = nestedGetter.BeanPropType;
+            return codegenMethodScope.MakeChild(propertyType, GetType(), codegenClassScope)
                 .AddParam(field.DeclaringType, "und")
                 .Block
                 .DeclareVar<object>("value", Ref("und." + field.Name))

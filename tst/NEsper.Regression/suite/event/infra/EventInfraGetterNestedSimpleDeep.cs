@@ -55,13 +55,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     // no change
                 }
                 else if (val.IsNullAtInner) {
-                    var inner = Collections.SingletonDataMap("leaf", null);
-                    @event.Put("property", inner);
+                    var inner = Collections.SingletonDataMap("Leaf", null);
+                    @event.Put("Property", inner);
                 }
                 else {
                     var leaf = Collections.SingletonDataMap("Id", val.Id);
-                    var inner = Collections.SingletonDataMap("leaf", leaf);
-                    @event.Put("property", inner);
+                    var inner = Collections.SingletonDataMap("Leaf", leaf);
+                    @event.Put("Property", inner);
                 }
 
                 env.SendEventMap(@event, "LocalEvent");
@@ -95,12 +95,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     // no change
                 }
                 else if (val.IsNullAtInner) {
-                    @event.Add("property", new JObject(new JProperty("leaf")));
+                    @event.Add("Property", new JObject(new JProperty("Leaf", JValue.CreateNull())));
                 }
                 else {
                     var leaf = new JObject(new JProperty("Id", val.Id));
-                    var inner = new JObject(new JProperty("leaf", leaf));
-                    @event.Add("property", inner);
+                    var inner = new JObject(new JProperty("Leaf", leaf));
+                    @event.Add("Property", inner);
                 }
 
                 env.SendEventJson(@event.ToString(), "LocalEvent");
@@ -121,20 +121,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     // no change
                 }
                 else if (val.IsNullAtInner) {
-                    var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-                    @event.Put("property", inner);
+                    var inner = new GenericRecord(schema.GetField("Property").Schema.AsRecordSchema());
+                    @event.Put("Property", inner);
                 }
                 else {
                     var leaf = new GenericRecord(
-                        schema.GetField("property")
+                        schema.GetField("Property")
                             .Schema
-                            .GetField("leaf")
+                            .GetField("Leaf")
                             .Schema.AsRecordSchema());
 
                     leaf.Put("Id", val.Id);
-                    var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-                    inner.Put("leaf", leaf);
-                    @event.Put("property", inner);
+                    var inner = new GenericRecord(schema.GetField("Property").Schema.AsRecordSchema());
+                    inner.Put("Leaf", leaf);
+                    @event.Put("Property", inner);
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -149,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = createSchemaEPL +
                       "@name('s0') select * from LocalEvent;\n" +
-                      "@name('s1') select property.leaf.Id as c0, exists(property.leaf.Id) as c1, typeof(property.leaf.Id) as c2 from LocalEvent;\n";
+                      "@name('s1') select Property.Leaf.Id as c0, exists(Property.Leaf.Id) as c1, typeof(Property.Leaf.Id) as c2 from LocalEvent;\n";
             env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
             sender.Invoke(new Nullable2Lvl(false, false, "a"));
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool exists,
             string value)
         {
-            var getter = @event.EventType.GetGetter("property.leaf.Id");
+            var getter = @event.EventType.GetGetter("Property.Leaf.Id");
             Assert.AreEqual(exists, getter.IsExistsProperty(@event));
             Assert.AreEqual(value, getter.Get(@event));
             Assert.IsNull(getter.GetFragment(@event));
@@ -200,49 +200,40 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                    " schema LocalLeafEvent(Id string);\n" +
                    "@public @buseventtype create " +
                    underlying +
-                   " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
+                   " schema LocalInnerEvent(Leaf LocalLeafEvent);\n" +
                    "@name('schema') @public @buseventtype create " +
                    underlying +
-                   " schema LocalEvent(property LocalInnerEvent);\n";
+                   " schema LocalEvent(Property LocalInnerEvent);\n";
         }
 
         public class LocalLeafEvent
         {
-            private readonly string id;
-
             public LocalLeafEvent(string id)
             {
-                this.id = id;
+                this.Id = id;
             }
 
-            public string Id => id;
+            public string Id { get; }
         }
 
         public class LocalInnerEvent
         {
-            private readonly LocalLeafEvent leaf;
-
             public LocalInnerEvent(LocalLeafEvent leaf)
             {
-                this.leaf = leaf;
+                this.Leaf = leaf;
             }
 
-            public LocalLeafEvent GetLeaf()
-            {
-                return leaf;
-            }
+            public LocalLeafEvent Leaf { get; }
         }
 
         public class LocalEvent
         {
-            private LocalInnerEvent property;
-
             public LocalEvent(LocalInnerEvent property)
             {
-                this.property = property;
+                this.Property = property;
             }
 
-            public LocalInnerEvent Property => property;
+            public LocalInnerEvent Property { get; }
         }
 
         public class Nullable2Lvl
@@ -270,17 +261,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedInnerEvent property;
+            public MyLocalJsonProvidedInnerEvent Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
-            public MyLocalJsonProvidedLeafEvent leaf;
+            public MyLocalJsonProvidedLeafEvent Leaf;
         }
 
         public class MyLocalJsonProvidedLeafEvent
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

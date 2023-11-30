@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Json
             env.CompileDeploy(
-                "@JsonSchema(dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()",
+                "@JsonSchema(Dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()",
                 path);
             var jsonTests = new Pair<object, object>[] {
                 new Pair<object, object>("{}", NotExists()),

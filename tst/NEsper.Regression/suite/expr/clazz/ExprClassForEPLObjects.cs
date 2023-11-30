@@ -121,8 +121,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "Nestable type configuration encountered an unexpected property type name");
 #endif
                 
-                var eplNamedWindow = EscapeClass("public class MyType {}") +
-                                     "create window MyWindow(myfield MyType)\n";
+                var eplNamedWindow = $"{EscapeClass("public class MyType {}")} create window MyWindow(myfield MyType)\n";
                 env.TryInvalidCompile(
                     eplNamedWindow,
                     "Nestable type configuration encountered an unexpected property type name");
@@ -137,17 +136,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplScript = EscapeClass(
-                                    "public class MyScriptResult {}") +
-                                "expression Object[] js:myItemProducerScript() [\n" +
-                                "function myItemProducerScript() {" +
-                                "  var arrayType = host.resolveType(\"MyScriptResult\");\n" +
-                                "  var rows = host.newArr(arrayType, 2);\n" +
-                                "  return rows;\n" +
-                                "};" +
-                                "return myItemProducerScript();" +
-                                "]" +
-                                "@name('s0') select myItemProducerScript() from SupportBean";
+                var eplScript =
+                    EscapeClass("public class MyScriptResult {}") +
+                    "expression Object[] js:myItemProducerScript() [\n" +
+                    "function myItemProducerScript() {" +
+                    "  var arrayType = host.resolveType(\"MyScriptResult\");\n" +
+                    "  var rows = host.newArr(arrayType, 2);\n" +
+                    "  return rows;\n" +
+                    "};" +
+                    "return myItemProducerScript();" +
+                    "]" +
+                    "@name('s0') select myItemProducerScript() from SupportBean";
                 env.CompileDeploy(eplScript).AddListener("s0");
 
                 env.AssertThat(
@@ -188,8 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "method:MyFromClauseMethod.GetBeans() as s";
 
                 var compiled = env.Compile(epl, path);
-                var assemblies = compiled.Assemblies;
-                var assemblyTypes = assemblies.SelectMany(_ => _.GetExportedTypes());
+                var assemblyTypes = compiled.Assemblies.SelectMany(_ => _.GetExportedTypes());
                 foreach (var assemblyType in assemblyTypes) {
                     if (assemblyType.Name.Contains("MyFromClauseMethod")) {
                         Assert.Fail("EPCompiled should not contain create-class class");

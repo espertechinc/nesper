@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -24,8 +25,8 @@ namespace com.espertech.esper.common.@internal.@event.map
     /// </summary>
     public class MapMapPropertyGetter : MapEventPropertyGetter
     {
-        private readonly MapEventPropertyGetter getter;
-        private readonly string propertyMap;
+        private readonly MapEventPropertyGetter _getter;
+        private readonly string _propertyMap;
 
         /// <summary>
         ///     Ctor.
@@ -40,28 +41,51 @@ namespace com.espertech.esper.common.@internal.@event.map
                 throw new ArgumentException("Getter is a required parameter");
             }
 
-            this.propertyMap = propertyMap;
-            this.getter = getter;
+            this._propertyMap = propertyMap;
+            this._getter = getter;
+        }
+
+        public static IDictionary<string, object> GetStringDictionary(object valueToObj, string propertyKey)
+        {
+            if (valueToObj == null) {
+                return null;
+            }
+            
+            if (valueToObj is IDictionary<string, object> valueToObjDictionary) {
+                return valueToObjDictionary;
+            }
+
+            var valueType = valueToObj.GetType();
+            if (valueType.IsGenericStringDictionary()) {
+                return MagicMarker.SingletonInstance
+                    .GetStringDictionaryFactory(valueType)
+                    .Invoke(valueToObj);
+            }
+
+            return null;
         }
 
         public object GetMap(IDictionary<string, object> map)
         {
-            var valueTopObj = map.Get(propertyMap);
-            if (!(valueTopObj is IDictionary<string, object> obj)) {
+            var valueToObj = map.Get(_propertyMap);
+            var valueDictionary = GetStringDictionary(valueToObj, _propertyMap);
+            if (valueDictionary == null) {
                 return null;
             }
 
-            return getter.GetMap(obj);
+            return _getter.GetMap(valueDictionary);
         }
 
-        public bool IsMapExistsProperty(IDictionary<string, object> map)
+        public bool IsMapExistsProperty(
+            IDictionary<string, object> map)
         {
-            var valueTopObj = map.Get(propertyMap);
-            if (!(valueTopObj is IDictionary<string, object> obj)) {
+            var valueToObj = map.Get(_propertyMap);
+            var valueDictionary = GetStringDictionary(valueToObj, _propertyMap);
+            if (valueDictionary == null) {
                 return false;
             }
 
-            return getter.IsMapExistsProperty(obj);
+            return _getter.IsMapExistsProperty(valueDictionary);
         }
 
         public object Get(EventBean eventBean)
@@ -141,13 +165,11 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>(
-                    "valueTopObj",
-                    ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
+                    "valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
                 .DeclareVar<IDictionary<string, object>>(
-                    "value",
-                    StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("valueTopObj")))
+                    "value", StaticMethod(typeof(MapMapPropertyGetter), "GetStringDictionary", Ref("valueTopObj"), Constant(_propertyMap)))
                 .IfRefNullReturnNull("value")
-                .MethodReturn(getter.UnderlyingGetCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(_getter.UnderlyingGetCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
 
         private CodegenMethod IsMapExistsPropertyCodegen(
@@ -158,13 +180,11 @@ namespace com.espertech.esper.common.@internal.@event.map
                 .AddParam(typeof(IDictionary<string, object>), "map")
                 .Block
                 .DeclareVar<object>(
-                    "valueTopObj",
-                    ExprDotMethod(Ref("map"), "Get", Constant(propertyMap)))
+                    "valueTopObj", ExprDotMethod(Ref("map"), "Get", Constant(_propertyMap)))
                 .DeclareVar<IDictionary<string, object>>(
-                    "value",
-                    StaticMethod(typeof(CompatExtensions), "AsStringDictionary", Ref("valueTopObj")))
+                    "value", StaticMethod(typeof(MapMapPropertyGetter), "GetStringDictionary", Ref("valueTopObj"), Constant(_propertyMap)))
                 .IfRefNullReturnFalse("value")
-                .MethodReturn(getter.UnderlyingExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
+                .MethodReturn(_getter.UnderlyingExistsCodegen(Ref("value"), codegenMethodScope, codegenClassScope));
         }
     }
 } // end of namespace

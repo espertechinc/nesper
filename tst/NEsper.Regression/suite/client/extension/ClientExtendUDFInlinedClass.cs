@@ -85,7 +85,6 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             return execs;
         }
 
-        // Note: Janino does not support @Repeatable and does not support @Annos({@Anno, @Anno})
         private class ClientExtendUDFOverloaded : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
@@ -123,34 +122,26 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             public void Run(RegressionEnvironment env)
             {
                 var @namespace = NamespaceGenerator.Create();
-                var epl = "@name('s0') inlined_class \"\"\"\n" +
-                          "@Name('s0') inlined_class \"\"\"\n" +
-                          " namespace " +
-                          @namespace +
-                          " {\n" +
-                          "  [" +
-                          typeof(ExtensionSingleRowFunctionAttribute).FullName +
-                          "(" +
-                          "      Name=\"multiply\", MethodName=\"MultiplyIfPositive\",\n" +
-                          "      ValueCache=" +
-                          typeof(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum).FullName
-                              .CodeInclusionTypeName() +
-                          ".DISABLED,\n" +
-                          "      FilterOptimizable=" +
-                          typeof(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum).FullName
-                              .CodeInclusionTypeName() +
-                          ".DISABLED,\n" +
-                          "      RethrowExceptions=false,\n" +
-                          "      EventTypeName=\"abc\"\n" +
-                          "      )]\n" +
-                          "    public class MultiplyHelper {\n" +
-                          "      public static int MultiplyIfPositive(int a, int b) {\n" +
-                          "        return a*b;\n" +
-                          "      }\n" +
-                          "    }\n" +
-                          "  }\n" +
-                          "\"\"\" " +
-                          "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
+                var epl = 
+                      "@Name('s0') inlined_class \"\"\"\n" +
+                      " namespace " +
+                      @namespace +
+                      " {\n" +
+                      "  [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(\n" +
+                      "      Name=\"multiply\", MethodName=\"MultiplyIfPositive\",\n" +
+                      "      ValueCache=" + typeof(ConfigurationCompilerPlugInSingleRowFunction.ValueCacheEnum).FullName.CodeInclusionTypeName() + ".DISABLED,\n" +
+                      "      FilterOptimizable=" + typeof(ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum).FullName.CodeInclusionTypeName() + ".DISABLED,\n" +
+                      "      RethrowExceptions=false,\n" +
+                      "      EventTypeName=\"abc\"\n" +
+                      "    )]\n" +
+                      "    public class MultiplyHelper {\n" +
+                      "      public static int MultiplyIfPositive(int a, int b) {\n" +
+                      "        return a*b;\n" +
+                      "      }\n" +
+                      "    }\n" +
+                      "  }\n" +
+                      "\"\"\" " +
+                      "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssertIntMultiply(env, 5, 25);
@@ -252,8 +243,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var eplWindow = "@public create window MyWindow#keepall as (TheString string);\n" +
-                                "on SupportBean merge MyWindow insert select TheString;\n";
+                var eplWindow = 
+                    "@public create window MyWindow#keepall as (TheString string);\n" +
+                    "on SupportBean merge MyWindow insert select TheString;\n";
                 env.CompileDeploy(eplWindow, path);
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -334,15 +326,20 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') inlined_class \"\"\"\n" +
-                          "  @" +
+                var @namespace = NamespaceGenerator.Create();
+                var epl = "@Name('s0') inlined_class \"\"\"\n" +
+                          " namespace " +
+                          @namespace +
+                          " {\n" +
+                          "   [" +
                           typeof(ExtensionSingleRowFunctionAttribute).FullName +
-                          "(name=\"multiply\", methodName=\"multiply\")\n" +
-                          "  public class MultiplyHelper {\n" +
-                          "    public static int multiply(int a, int b) {\n" +
-                          "      return a*b;\n" +
-                          "    }\n" +
-                          "  }\n" +
+                          "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+                          "   public class MultiplyHelper {\n" +
+                          "     public static int Multiply(int a, int b) {\n" +
+                          "       return a*b;\n" +
+                          "     }\n" +
+                          "   }\n" +
+					      " }\n" +
                           "\"\"\" " +
                           "select multiply(IntPrimitive,IntPrimitive) as c0 from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
@@ -358,11 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 

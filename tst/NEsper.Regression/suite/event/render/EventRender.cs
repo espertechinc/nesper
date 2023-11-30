@@ -73,10 +73,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 Assert.IsNotNull(context.DefaultRenderer);
                 Assert.AreEqual(1, (int)context.IndexedPropertyIndex);
                 Assert.AreEqual(nameof(MyRendererEvent), context.EventType.Name);
-                Assert.AreEqual("someProperties", context.PropertyName);
+                Assert.AreEqual("SomeProperties", context.PropertyName);
 
                 var expectedJson =
-                    "{ \"MyEvent\": { \"Id\": \"id1\", \"someProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"mappedProperty\": { \"key\": \"value\" } } }";
+                    "{ \"MyEvent\": { \"Id\": \"id1\", \"SomeProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"MappedProperty\": { \"key\": \"value\" } } }";
                 Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 MyRenderer.Contexts.Clear();
@@ -87,7 +87,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     env.GetEnumerator("s0").Advance(),
                     xmlOptions);
                 var expected =
-                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <id>id1</Id> <someProperties>index#0=1;index#1=x</someProperties> <someProperties>index#0=2;index#1=y</someProperties> <mappedProperty> <key>value</key> </mappedProperty> </MyEvent>";
+                    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" +
+                    " <MyEvent>" +
+                    " <Id>id1</Id>" +
+                    " <SomeProperties>index#0=1;index#1=x</SomeProperties>" +
+                    " <SomeProperties>index#0=2;index#1=y</SomeProperties>" +
+                    " <MappedProperty> <key>value</key> </MappedProperty>" +
+                    " </MyEvent>";
                 Assert.AreEqual(4, MyRenderer.Contexts.Count);
                 Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
@@ -114,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "MyEvent",
                             env.GetEnumerator("s0").Advance());
                         var expectedJson =
-                            "{ \"MyEvent\": { \"p0\": \"abc\", \"p1\": 1, \"p3\": 2, \"p4\": 3.0, \"p2\": { \"Id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null } } }";
+                            "{ \"MyEvent\": { \"P0\": \"abc\", \"P1\": 1, \"P2\": { \"Id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null }, \"P3\": 2, \"P4\": 3.0 } }";
                         Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
@@ -124,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "MyEvent",
                             env.GetEnumerator("s0").Advance());
                         var expected =
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <p0>abc</p0> <p1>1</p1> <p3>2</p3> <p4>3.0</p4> <p2> <id>1</Id> <P00>P00</P00> </p2> </MyEvent>";
+                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <P0>abc</P0> <P1>1</P1> <P3>2</P3> <P4>3.0</P4> <P2> <Id>1</Id> <P00>P00</P00> </P2> </MyEvent>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
                     });
 
@@ -153,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 env.SendEventBean(beanOne);
 
                 var expectedJson =
-                    "{ \"MyEvent\": { \"stringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
+                    "{ \"MyEvent\": { \"StringObjectMap\": { \"abc\": \"def\", \"def\": 123, \"efg\": null } } }";
                 env.AssertThat(
                     () => {
                         var json = env.Runtime.RenderEventService.RenderJSON(
@@ -169,11 +175,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             env.GetEnumerator("s0").Advance());
                         var expected = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                        "<MyEvent>\n" +
-                                       "  <stringObjectMap>\n" +
+                                       "  <StringObjectMap>\n" +
                                        "    <abc>def</abc>\n" +
                                        "    <def>123</def>\n" +
                                        "    <efg></efg>\n" +
-                                       "  </stringObjectMap>\n" +
+                                       "  </StringObjectMap>\n" +
                                        "</MyEvent>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
                     });
@@ -188,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             opt);
                         var expectedTwo = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n" +
                                           "<MyEvent>\n" +
-                                          "  <stringObjectMap abc=\"def\" def=\"123\"/>\n" +
+                                          "  <StringObjectMap abc=\"def\" def=\"123\"/>\n" +
                                           "</MyEvent>";
                         Assert.AreEqual(RemoveNewline(expectedTwo), RemoveNewline(xmlTwo));
                     });
@@ -201,8 +207,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 env.SendEventBean(beanThree);
                 env.AssertIterator(
                     "s0",
-                    iterator => {
-                        var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", iterator.Advance());
+                    en => {
+                        var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", en.Advance());
                         Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
@@ -217,31 +223,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
 
         public class MyRendererEvent
         {
-            private readonly string id;
-            private readonly object[][] someProperties;
-
             public MyRendererEvent(
                 string id,
                 object[][] someProperties)
             {
-                this.id = id;
-                this.someProperties = someProperties;
+                Id = id;
+                SomeProperties = someProperties;
             }
 
-            public string Id => id;
+            public string Id { get; }
 
-            public object[][] SomeProperties => someProperties;
+            public object[][] SomeProperties { get; }
 
             public IDictionary<string, object> MappedProperty => Collections.SingletonDataMap("key", "value");
         }
 
         public class MyRenderer : EventPropertyRenderer
         {
-            private static IList<EventPropertyRendererContext> contexts = new List<EventPropertyRendererContext>();
+            public static IList<EventPropertyRendererContext> Contexts { get; set; } =
+                new List<EventPropertyRendererContext>();
 
             public void Render(EventPropertyRendererContext context)
             {
-                if (context.PropertyName.Equals("someProperties")) {
+                if (context.PropertyName.Equals("SomeProperties")) {
                     var value = (object[])context.PropertyValue;
 
                     var builder = context.StringBuilder;
@@ -267,12 +271,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     context.DefaultRenderer.Render(context.PropertyValue, context.StringBuilder);
                 }
 
-                contexts.Add(context.Copy());
-            }
-
-            public static IList<EventPropertyRendererContext> Contexts {
-                get => MyRenderer.contexts;
-                set => MyRenderer.contexts = value;
+                Contexts.Add(context.Copy());
             }
         }
     }

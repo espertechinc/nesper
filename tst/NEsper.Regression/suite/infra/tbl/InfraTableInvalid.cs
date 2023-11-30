@@ -426,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.TryInvalidCompile(
                     path,
                     "into table aggvar_grouped_string select count(*) as Total from SupportBean group by IntPrimitive",
-                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'Integer' but the table expects 'String' [");
+                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'System.Int32' but the table expects 'System.String' [");
                 env.TryInvalidCompile(
                     path,
                     "into table aggvar_grouped_string select count(*) as Total from SupportBean group by TheString, IntPrimitive",
@@ -477,7 +477,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.TryInvalidCompile(
                     path,
                     "select aggvar_grouped_string[5].Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].Total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'Integer' but the table expects 'String' [select aggvar_grouped_string[5].Total from SupportBean]");
+                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].Total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'System.Int32' but the table expects 'System.String' [select aggvar_grouped_string[5].Total from SupportBean]");
 
                 // top-level variable use without "keys" function
                 env.TryInvalidCompile(
@@ -534,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.TryInvalidCompile(
                     path,
                     "select aggvar_grouped_int[1].Total.countMinSketchFrequency(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].Total.CountMi...(62 chars)': Failed to resolve method 'CountMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'Long' with matching parameter number and expected parameter type(s) 'String' ");
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].Total.CountMi...(62 chars)': Failed to resolve method 'CountMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'System.Int64' with matching parameter number and expected parameter type(s) 'System.String' ");
                 env.TryInvalidCompile(
                     path,
                     "select Total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",

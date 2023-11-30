@@ -717,8 +717,8 @@ namespace com.espertech.esper.compiler.@internal.parse
 			AssertIsValid(text);
 			text = "@EPL(Name=\"MyStmtName\"," +
 			       "  tags=@Tags(" +
-			       "    {@Tag(Name=\"vehicleId\", type='int', value=100), " +
-			       "     @Tag(Name=\"vehicleId\", type='int', value=100)" +
+			       "    {@Tag(Name=\"vehicleId\", Type='int', Value=100), " +
+			       "     @Tag(Name=\"vehicleId\", Type='int', Value=100)" +
 			       "    } " +
 			       "  )" +
 			       ")\n" +

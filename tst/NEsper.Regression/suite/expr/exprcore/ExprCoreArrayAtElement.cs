@@ -331,11 +331,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select lvl1.lvl2[lvl0id].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'String' for operation on type collection of events of type 'Lvl2'");
+                    "Failed to validate select-clause expression 'lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
                 env.TryInvalidCompile(
                     path,
                     "select me.lvl1.lvl2[lvl0id].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'String' for operation on type collection of events of type 'Lvl2'");
+                    "Failed to validate select-clause expression 'me.lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
 
                 env.UndeployAll();
             }
@@ -409,11 +409,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select lvl1.lvl2.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for operation on type Integer[]");
+                    "Failed to validate select-clause expression 'lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.lvl1.lvl2.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for operation on type Integer[]");
+                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
 
                 env.UndeployAll();
             }
@@ -496,11 +496,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select lvl1[lvl0id].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'String' for property 'lvl1'");
+                    "Failed to validate select-clause expression 'lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for property 'lvl1'");
                 env.TryInvalidCompile(
                     path,
                     "select me.lvl1[lvl0id].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'String' for property 'lvl1'");
+                    "Failed to validate select-clause expression 'me.lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for property 'lvl1'");
 
                 env.UndeployAll();
             }
@@ -573,11 +573,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select lvl1.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for operation on type Integer[]");
+                    "Failed to validate select-clause expression 'lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.lvl1.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for operation on type Integer[]");
+                    "Failed to validate select-clause expression 'me.lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
 
                 env.UndeployAll();
             }
@@ -636,10 +636,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // wrong index expression type
                 env.TryInvalidCompile(
                     "select Intarr[Id] from SupportBeanWithArray",
-                    "Failed to validate select-clause expression 'Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for property 'Intarr'");
+                    "Failed to validate select-clause expression 'Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for property 'Intarr'");
                 env.TryInvalidCompile(
                     "select me.Intarr[Id] from SupportBeanWithArray as me",
-                    "Failed to validate select-clause expression 'me.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'String' for property 'Intarr'");
+                    "Failed to validate select-clause expression 'me.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for property 'Intarr'");
 
                 // not an array
                 env.TryInvalidCompile(

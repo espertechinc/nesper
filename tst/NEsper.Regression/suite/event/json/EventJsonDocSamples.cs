@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@JsonSchema(dynamic=true) @public @buseventtype create json schema SensorEvent();\n" +
+                var epl = "@JsonSchema(Dynamic=true) @public @buseventtype create json schema SensorEvent();\n" +
                           "@name('s0') select entityID? as entityId, temperature? as temperature, status? as status, \n" +
                           "\tentityName? as entityName, vt? as vt, flags? as flags from SensorEvent;\n" +
                           "@name('s1') select entityName?.english as englishEntityName from SensorEvent";

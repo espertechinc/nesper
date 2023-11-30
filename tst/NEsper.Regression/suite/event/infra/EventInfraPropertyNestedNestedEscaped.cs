@@ -42,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "create objectarray schema OALvl1(lvl2 OALvl2);\n" +
                 "@public @buseventtype create objectarray schema OALvl0(lvl1 OALvl1);\n" +
                 "\n" +
-                "@JsonSchema(dynamic=true) create json schema JSONLvl3(vlvl3 string);\n" +
-                "@JsonSchema(dynamic=true) create json schema JSONLvl2(vlvl2 string, lvl3 JSONLvl3);\n" +
+                "@JsonSchema(Dynamic=true) create json schema JSONLvl3(vlvl3 string);\n" +
+                "@JsonSchema(Dynamic=true) create json schema JSONLvl2(vlvl2 string, lvl3 JSONLvl3);\n" +
                 "create json schema JSONLvl1(lvl2 JSONLvl2);\n" +
                 "@public @buseventtype create json schema JSONLvl0(lvl1 JSONLvl1);\n" +
                 "\n" +

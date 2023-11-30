@@ -730,5 +730,15 @@ namespace com.espertech.esper.regressionlib.suite.context
             bean.LongPrimitive = longPrimitive;
             return bean;
         }
+
+        public static object ToArray(ICollection<int?> input)
+        {
+            return input.ToArray();
+        }
+
+        public static object ToArray(ICollection<long?> input)
+        {
+            return input.ToArray();
+        }
     }
 } // end of namespace

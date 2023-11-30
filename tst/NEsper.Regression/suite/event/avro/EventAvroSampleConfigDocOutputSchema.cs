@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             // schema from statement
             var epl = "@name('s0') " +
                       EventRepresentationChoice.AVRO.GetAnnotationText() +
-                      "select 1 as CarId, 'abc' as carType from SupportBean";
+                      "select 1 as carId, 'abc' as carType from SupportBean";
             env.CompileDeploy(epl);
             env.AssertStatement(
                 "s0",
@@ -37,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                     var schema = (Schema)((AvroSchemaEventType)statement.EventType).Schema;
                     var schemaJson = schema.ToJsonObject();
                     Assert.AreEqual(
-                        "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"CarId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
+                        "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                         schemaJson.ToString(Newtonsoft.Json.Formatting.None));
                 });
 
@@ -46,24 +46,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
             // schema to-string Avro
             var schemaTwo = SchemaBuilder.Record(
                 "MyAvroEvent",
-                RequiredInt("CarId"),
+                RequiredInt("carId"),
                 Field(
                     "carType",
                     StringType(
                         Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
             Assert.AreEqual(
-                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"CarId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
+                "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                 schemaTwo.ToJsonObject().ToString(Newtonsoft.Json.Formatting.None));
             env.UndeployAll();
 
-            env.CompileDeploy("@name('s0') select count(*) from CarLocUpdateEvent(Direction = 1)#time(1 min)")
+            env.CompileDeploy("@name('s0') select count(*) from CarLocUpdateEvent(direction = 1)#time(1 min)")
                 .AddListener("s0");
 
             var schemaCarLocUpd = env.RuntimeAvroSchemaPreconfigured("CarLocUpdateEvent")
                 .AsRecordSchema();
             var @event = new GenericRecord(schemaCarLocUpd);
-            @event.Put("CarId", "A123456");
-            @event.Put("Direction", 1);
+            @event.Put("carId", "A123456");
+            @event.Put("direction", 1);
             env.SendEventAvro(@event, "CarLocUpdateEvent");
             env.AssertEqualsNew("s0", "count(*)", 1L);
 

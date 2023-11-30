@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual("Missing deployment-Id parameter", ex.Message);
+                    Assert.AreEqual("Missing deployment-id parameter", ex.Message);
                 }
 
                 try {

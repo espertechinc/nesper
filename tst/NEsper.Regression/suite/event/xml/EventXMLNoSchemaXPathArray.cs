@@ -84,7 +84,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
 
             SendXMLEvent(env, xml, eventTypeName);
 
-            var theEvent = env.Listener("s0").AssertOneGetNewAndReset();
             env.AssertPropsNew(
                 "s0",
                 new[] { "A" },

@@ -141,29 +141,29 @@ namespace com.espertech.esper.regressionrun.suite.@event
         private static Pair<string[], object[]> GetTestDef()
         {
             IDictionary<string, object> levelThree = MakeMap(new object[][]{
-                new object[]{"simpleThree", typeof(long?)},
-                new object[]{"objectThree", typeof(SupportBean_B)},
+                new object[]{"SimpleThree", typeof(long?)},
+                new object[]{"ObjectThree", typeof(SupportBean_B)},
             });
 
             IDictionary<string, object> levelTwo = MakeMap(new object[][]{
-                new object[]{"simpleTwo", typeof(int?)},
-                new object[]{"objectTwo", typeof(SupportBeanCombinedProps)},
-                new object[]{"nodefmapTwo", typeof(IDictionary<string, object>)},
-                new object[]{"mapTwo", levelThree},
+                new object[]{"SimpleTwo", typeof(int?)},
+                new object[]{"ObjectTwo", typeof(SupportBeanCombinedProps)},
+                new object[]{"NodefmapTwo", typeof(IDictionary<string, object>)},
+                new object[]{"MapTwo", levelThree},
             });
 
             IDictionary<string, object> levelOne = MakeMap(new object[][]{
-                new object[]{"simpleOne", typeof(int?)},
-                new object[]{"objectOne", typeof(SupportBeanComplexProps)},
-                new object[]{"nodefmapOne", typeof(IDictionary<string, object>)},
-                new object[]{"mapOne", levelTwo}
+                new object[]{"SimpleOne", typeof(int?)},
+                new object[]{"ObjectOne", typeof(SupportBeanComplexProps)},
+                new object[]{"NodefmapOne", typeof(IDictionary<string, object>)},
+                new object[]{"MapOne", levelTwo}
             });
 
             string[] levelZeroProps = {
-                "simple",
-                "object",
-                "nodefmap", 
-                "map"
+                "Simple",
+                "Object",
+                "Nodefmap", 
+                "Map"
             };
             object[] levelZeroTypes = {
                 typeof(string),

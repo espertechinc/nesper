@@ -16,119 +16,118 @@ namespace com.espertech.esper.common.@internal.support
 {
     public class SupportEventPropDesc
     {
-        private string propertyName;
-        private Type propertyType;
-        private bool isRequiresIndex;
-        private bool isRequiresMapkey;
-        private bool isIndexed;
-        private bool isMapped;
-        private bool isFragment;
-        private Type componentType;
+        private readonly string _propertyName;
+        private readonly Type _propertyType;
+        private bool _isRequiresIndex;
+        private bool _isRequiresMapkey;
+        private bool _isIndexed;
+        private bool _isMapped;
+        private bool _isFragment;
+        private Type _componentType;
 
         public SupportEventPropDesc(
             string name,
             Type type)
         {
-            propertyName = name;
-            propertyType = type;
+            _propertyName = name;
+            _propertyType = type;
             Presets();
         }
 
         private void Presets()
         {
-            if (propertyType == null) {
+            if (_propertyType == null) {
                 return;
             }
 
-            var propertyClass = propertyType;
+            var propertyClass = _propertyType;
             if (propertyClass.IsArray) {
                 WithIndexed().WithComponentType(propertyClass.GetComponentType());
             }
 
             if (propertyClass.IsGenericDictionary()) {
-                WithIndexed().WithComponentType(propertyType.GetDictionaryValueType());
+                WithMapped().WithComponentType(_propertyType.GetDictionaryValueType());
             }
-
-            if (propertyClass.IsGenericEnumerable()) {
-                WithIndexed().WithComponentType(propertyType.GetComponentType());
+            else if (propertyClass.IsGenericEnumerable()) {
+                WithIndexed().WithComponentType(_propertyType.GetComponentType());
             }
         }
 
-        public string PropertyName => propertyName;
+        public string PropertyName => _propertyName;
 
-        public Type PropertyType => propertyType;
+        public Type PropertyType => _propertyType;
 
-        public bool IsRequiresIndex => isRequiresIndex;
+        public bool IsRequiresIndex => _isRequiresIndex;
 
-        public bool IsRequiresMapkey => isRequiresMapkey;
+        public bool IsRequiresMapkey => _isRequiresMapkey;
 
-        public bool IsIndexed => isIndexed;
+        public bool IsIndexed => _isIndexed;
 
-        public bool IsMapped => isMapped;
+        public bool IsMapped => _isMapped;
 
-        public bool IsFragment => isFragment;
+        public bool IsFragment => _isFragment;
 
-        public Type ComponentType => componentType;
+        public Type ComponentType => _componentType;
 
         public SupportEventPropDesc WithMapped()
         {
-            isMapped = true;
+            _isMapped = true;
             return this;
         }
 
         public SupportEventPropDesc WithMapped(bool flag)
         {
-            isMapped = flag;
+            _isMapped = flag;
             return this;
         }
 
         public SupportEventPropDesc WithMappedRequiresKey()
         {
-            isMapped = true;
-            isRequiresMapkey = true;
+            _isMapped = true;
+            _isRequiresMapkey = true;
             return this;
         }
 
         public SupportEventPropDesc WithIndexed()
         {
-            isIndexed = true;
+            _isIndexed = true;
             return this;
         }
 
         public SupportEventPropDesc WithIndexed(bool flag)
         {
-            isIndexed = flag;
+            _isIndexed = flag;
             return this;
         }
 
         public SupportEventPropDesc WithIndexedRequiresIndex()
         {
-            isIndexed = true;
-            isRequiresIndex = true;
+            _isIndexed = true;
+            _isRequiresIndex = true;
             return this;
         }
 
         public SupportEventPropDesc WithComponentType(Type componentType)
         {
-            this.componentType = componentType;
+            this._componentType = componentType;
             return this;
         }
 
         public SupportEventPropDesc WithComponentType<T>()
         {
-            this.componentType = typeof(T);
+            this._componentType = typeof(T);
             return this;
         }
 
         public SupportEventPropDesc WithFragment()
         {
-            isFragment = true;
+            _isFragment = true;
             return this;
         }
 
         public SupportEventPropDesc WithFragment(bool flag)
         {
-            isFragment = flag;
+            _isFragment = flag;
             return this;
         }
     }

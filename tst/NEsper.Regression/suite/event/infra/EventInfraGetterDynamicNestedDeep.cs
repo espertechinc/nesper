@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     // no change
                 }
                 else if (val.IsNullAtInner) {
-                    @event.Add("Property", new JObject(new JProperty("Leaf")));
+                    @event.Add("Property", new JObject(new JProperty("Leaf", JValue.CreateNull())));
                 }
                 else {
                     var leaf = new JObject(new JProperty("Id", val.Id));
@@ -266,17 +266,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class MyLocalJsonProvided
         {
-            public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedInnerEvent property;
+            public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedInnerEvent Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
-            public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedLeafEvent leaf;
+            public EventInfraGetterNestedSimpleDeep.MyLocalJsonProvidedLeafEvent Leaf;
         }
 
         public class MyLocalJsonProvidedLeafEvent
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

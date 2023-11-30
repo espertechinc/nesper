@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.groupby
             method.Block.DeclareVar<ArrayDeque<object>>(
                     "removed",
                     NewInstance(typeof(ArrayDeque<object>)))
-                .ForEach(typeof(KeyValuePair<object, object>), "entry", MEMBER_AGGREGATORSPERGROUP)
+                .ForEachVar("entry", MEMBER_AGGREGATORSPERGROUP)
                 .DeclareVar<long>(
                     "age",
                     Op(

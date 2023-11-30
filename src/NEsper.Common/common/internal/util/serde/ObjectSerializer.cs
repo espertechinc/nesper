@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.util.serde
 
             var typeName = obj.GetType().AssemblyQualifiedName;
             
-            Console.WriteLine("ObjectDefaultConverter: " + typeName);
+            //Console.WriteLine("ObjectDefaultConverter: " + typeName);
             
             writer.WriteStartObject();
             writer.WriteString("__type", typeName);

@@ -115,9 +115,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         new SupportEventPropDesc("xpathAttrString", typeof(string)),
                         new SupportEventPropDesc("xpathAttrNum", typeof(double?)),
                         new SupportEventPropDesc("xpathAttrBool", typeof(bool?)),
-                        new SupportEventPropDesc("stringCastLong", typeof(long?)),
-                        new SupportEventPropDesc("stringCastDouble", typeof(double?)),
-                        new SupportEventPropDesc("numCastInt", typeof(int?)));
+                        new SupportEventPropDesc("stringCastLong", typeof(long)),
+                        new SupportEventPropDesc("stringCastDouble", typeof(double)),
+                        new SupportEventPropDesc("numCastInt", typeof(int)));
                 });
 
             var stmt =

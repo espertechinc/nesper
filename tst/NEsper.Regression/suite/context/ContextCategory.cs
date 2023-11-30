@@ -323,8 +323,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "s0",
                     fields,
                     new object[][] {
-                        new object[] { 0, "grp1", "E3", -108 }, new object[] { 1, "grp2", "E1", 3 },
-                        new object[] { 1, "grp2", "E2", -5 }, new object[] { 2, "grp3", "E1", 60 }
+                        new object[] { 0, "grp1", "E3", -108 },
+                        new object[] { 1, "grp2", "E1", 3 },
+                        new object[] { 1, "grp2", "E2", -5 },
+                        new object[] { 2, "grp3", "E1", 60 }
                     });
                 SupportContextPropUtil.AssertContextProps(
                     env,
@@ -332,7 +334,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "MyCtx",
                     new int[] { 0, 1, 2 },
                     "label",
-                    new object[][] { new object[] { "grp1" }, new object[] { "grp2" }, new object[] { "grp3" } });
+                    new object[][] {
+                        new object[] { "grp1" },
+                        new object[] { "grp2" },
+                        new object[] { "grp3" }
+                    });
 
                 env.MilestoneInc(milestone);
 

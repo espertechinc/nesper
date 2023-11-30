@@ -255,7 +255,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             EventTypeXMLXSDHandler xmlxsdHandler)
         {
             var prefix = ctx.LookupPrefix(attribute.Namespace);
-            if (prefix == null) {
+            if (string.IsNullOrWhiteSpace(prefix)) {
                 prefix = "";
             }
             else {

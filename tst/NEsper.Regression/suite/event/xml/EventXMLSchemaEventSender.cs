@@ -60,13 +60,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@Public @buseventtype " +
-                          "@XMLSchema(rootElementName='a')" +
-                          "@XMLSchemaField(name='element1', xpath='/a/b/c', type='string')" +
+                          "@XMLSchema(RootElementName='a')" +
+                          "@XMLSchemaField(Name='element1', XPath='/a/b/c', Type='string')" +
                           "create xml schema MyEventCreateSchemaABC();\n" +
                           "" +
                           "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='a', eventSenderValidatesRoot=false)" +
-                          "@XMLSchemaField(name='element2', xpath='//c', type='string')" +
+                          "@XMLSchema(RootElementName='a', EventSenderValidatesRoot=false)" +
+                          "@XMLSchemaField(Name='element2', XPath='//c', Type='string')" +
                           "create xml schema MyEventCreateSchemaB()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);
@@ -118,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.AreEqual(
                     "Unexpected event object type '" +
                     typeof(SupportBean).FullName +
-                    "' encountered, please supply a org.w3c.dom.Document or Element node",
+                    "' encountered, please supply a XmlDocument or XmlElement node",
                     ex.Message);
             }
 

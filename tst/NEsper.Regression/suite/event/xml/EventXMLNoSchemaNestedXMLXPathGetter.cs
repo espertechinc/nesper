@@ -51,8 +51,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype " +
-                          "@XMLSchema(rootElementName='a', xpathPropertyExpr=true)" +
-                          "@XMLSchemaField(name='element1', xpath='/a/b/c', type='string')" +
+                          "@XMLSchema(RootElementName='a', XPathPropertyExpr=true)" +
+                          "@XMLSchemaField(Name='element1', XPath='/a/b/c', Type='string')" +
                           "create xml schema MyEventCreateSchema()";
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);
@@ -80,8 +80,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("", theEvent.Get("type"));
-                    Assert.AreEqual("", theEvent.Get("element1"));
+                    Assert.IsNull(theEvent.Get("type"));
+                    Assert.IsNull(theEvent.Get("element1"));
                 });
 
             SendXMLEvent(env, "<a><b><c>text</c></b></a>", eventTypeName);

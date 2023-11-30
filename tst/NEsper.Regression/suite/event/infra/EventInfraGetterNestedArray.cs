@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     }
                 }
 
-                env.SendEventMap(Collections.SingletonDataMap("property", property), "LocalEvent");
+                env.SendEventMap(Collections.SingletonDataMap("Property", property), "LocalEvent");
             };
             RunAssertion(env, GetEpl("map"), map);
 
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     property = arr;
                 }
 
-                env.SendEventJson(new JObject(new JProperty("property", property)).ToString(), "LocalEvent");
+                env.SendEventJson(new JObject(new JProperty("Property", property)).ToString(), "LocalEvent");
             };
             RunAssertion(env, GetEpl("json"), json);
 
@@ -117,18 +117,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent").AsRecordSchema();
                 var @event = new GenericRecord(schema);
                 if (array == null) {
-                    @event.Put("property", EmptyList<GenericRecord>.Instance);
+                    @event.Put("Property", EmptyList<GenericRecord>.Instance);
                 }
                 else {
                     ICollection<GenericRecord> arr = new List<GenericRecord>();
                     for (var i = 0; i < array.Length; i++) {
                         var inner = new GenericRecord(
-                            schema.GetField("property").Schema.AsArraySchema().ItemSchema.AsRecordSchema());
+                            schema.GetField("Property").Schema.AsArraySchema().ItemSchema.AsRecordSchema());
                         inner.Put("Id", array[i]);
                         arr.Add(inner);
                     }
 
-                    @event.Put("property", arr);
+                    @event.Put("Property", arr);
                 }
 
                 env.SendEventAvro(@event, "LocalEvent");
@@ -143,9 +143,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             var epl = createSchemaEPL +
                       "@name('s0') select * from LocalEvent;\n" +
-                      "@name('s1') select property[0].Id as c0, property[1].Id as c1," +
-                      " exists(property[0].Id) as c2, exists(property[1].Id) as c3," +
-                      " typeof(property[0].Id) as c4, typeof(property[1].Id) as c5" +
+                      "@name('s1') select Property[0].Id as c0, Property[1].Id as c1," +
+                      " exists(Property[0].Id) as c2, exists(Property[1].Id) as c3," +
+                      " typeof(Property[0].Id) as c4, typeof(Property[1].Id) as c5" +
                       " from LocalEvent;\n";
             env.CompileDeploy(epl).AddListener("s0").AddListener("s1");
 
@@ -191,8 +191,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool existsOne,
             string valueOne)
         {
-            var g0 = @event.EventType.GetGetter("property[0].Id");
-            var g1 = @event.EventType.GetGetter("property[1].Id");
+            var g0 = @event.EventType.GetGetter("Property[0].Id");
+            var g1 = @event.EventType.GetGetter("Property[1].Id");
             AssertGetter(@event, g0, existsZero, valueZero);
             AssertGetter(@event, g1, existsOne, valueOne);
         }
@@ -215,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                    " schema LocalInnerEvent(Id string);\n" +
                    "@name('schema') @public @buseventtype create " +
                    underlying +
-                   " schema LocalEvent(property LocalInnerEvent[]);\n";
+                   " schema LocalEvent(Property LocalInnerEvent[]);\n";
         }
 
         public class LocalInnerEvent
@@ -235,27 +235,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalEvent
         {
-            private LocalInnerEvent[] property;
-
             public LocalEvent(LocalInnerEvent[] property)
             {
-                this.property = property;
+                this.Property = property;
             }
 
-            public LocalInnerEvent[] GetProperty()
-            {
-                return property;
-            }
+            public LocalInnerEvent[] Property { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedInner[] property;
+            public MyLocalJsonProvidedInner[] Property;
         }
 
         public class MyLocalJsonProvidedInner
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

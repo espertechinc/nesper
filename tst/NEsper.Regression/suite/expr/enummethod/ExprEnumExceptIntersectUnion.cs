@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 epl = "select Strvals.union((select * from SupportBean#keepall)) from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'Strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'String' as input parameter");
+                    "Failed to validate select-clause expression 'Strvals.union(subselect_1)': Enumeration method 'union' requires an expression yielding a collection of values of type 'System.String' as input parameter");
             }
         }
 

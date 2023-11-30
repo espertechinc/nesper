@@ -211,7 +211,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "select TheString regexp \"*any*\" from SupportBean",
                     "Failed to validate select-clause expression 'TheString regexp \"*any*\"': " +
                     "Failed to compile regex pattern '*any*': " +
-#if NETCOREAPP3_0_OR_GREATER
+#if NET7_0_OR_GREATER
+                    "Invalid pattern '*any*' at offset 1. Quantifier '*' following nothing."
+#elif NETCOREAPP3_0_OR_GREATER
                     "Invalid pattern '*any*' at offset 1. Quantifier {x,y} following nothing."
 #else
 					"parsing \"*any*\" - Quantifier {x,y} following nothing."

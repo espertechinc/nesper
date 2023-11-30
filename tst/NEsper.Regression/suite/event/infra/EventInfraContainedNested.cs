@@ -41,8 +41,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Map
             Consumer<string> map = id => {
                 var leaf = Collections.SingletonDataMap("Id", id);
-                var inner = Collections.SingletonDataMap("leaf", leaf);
-                env.SendEventMap(Collections.SingletonDataMap("property", inner), "LocalEvent");
+				var inner = Collections.SingletonDataMap("Leaf", leaf);
+                env.SendEventMap(Collections.SingletonDataMap("Property", inner), "LocalEvent");
             };
             RunAssertion(env, GetEpl("map"), map);
 
@@ -57,8 +57,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Json
             Consumer<string> json = id => {
                 var leaf = new JObject(new JProperty("Id", id));
-                var inner = new JObject(new JProperty("leaf", leaf));
-                var @event = new JObject(new JProperty("property", inner));
+                var inner = new JObject(new JProperty("Leaf", leaf));
+                var @event = new JObject(new JProperty("Property", inner));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
             };
             RunAssertion(env, GetEpl("json"), json);
@@ -73,12 +73,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Consumer<string> avro = id => {
                 var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
                 var leaf = new GenericRecord(
-                    schema.GetField("property").Schema.GetField("leaf").Schema.AsRecordSchema());
+                    schema.GetField("Property").Schema.GetField("Leaf").Schema.AsRecordSchema());
                 leaf.Put("Id", id);
-                var inner = new GenericRecord(schema.GetField("property").Schema.AsRecordSchema());
-                inner.Put("leaf", leaf);
+                var inner = new GenericRecord(schema.GetField("Property").Schema.AsRecordSchema());
+                inner.Put("Leaf", leaf);
                 var @event = new GenericRecord(schema.AsRecordSchema());
-                @event.Put("property", inner);
+                @event.Put("Property", inner);
                 env.SendEventAvro(@event, "LocalEvent");
             };
             RunAssertion(env, GetEpl("avro"), avro);
@@ -91,10 +91,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                    " schema LocalLeafEvent(Id string);\n" +
                    "create " +
                    underlying +
-                   " schema LocalInnerEvent(leaf LocalLeafEvent);\n" +
+                   " schema LocalInnerEvent(Leaf LocalLeafEvent);\n" +
                    "@name('schema') @public @buseventtype create " +
                    underlying +
-                   " schema LocalEvent(property LocalInnerEvent);\n";
+                   " schema LocalEvent(Property LocalInnerEvent);\n";
         }
 
         public void RunAssertion(
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             string createSchemaEPL,
             Consumer<string> sender)
         {
-            env.CompileDeploy(createSchemaEPL + "@name('s0') select * from LocalEvent[property.leaf];\n")
+            env.CompileDeploy(createSchemaEPL + "@name('s0') select * from LocalEvent[Property.Leaf];\n")
                 .AddListener("s0");
 
             sender.Invoke("a");
@@ -113,17 +113,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalLeafEvent
         {
-            private readonly string id;
-
             public LocalLeafEvent(string id)
             {
-                this.id = id;
+                this.Id = id;
             }
 
-            public string GetId()
-            {
-                return id;
-            }
+            public string Id { get; }
         }
 
         public class LocalInnerEvent
@@ -143,32 +138,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         public class LocalEvent
         {
-            private LocalInnerEvent property;
-
             public LocalEvent(LocalInnerEvent property)
             {
-                this.property = property;
+                this.Property = property;
             }
 
-            public LocalInnerEvent GetProperty()
-            {
-                return property;
-            }
+            public LocalInnerEvent Property { get; }
         }
 
         public class MyLocalJsonProvided
         {
-            public MyLocalJsonProvidedInnerEvent property;
+            public MyLocalJsonProvidedInnerEvent Property;
         }
 
         public class MyLocalJsonProvidedInnerEvent
         {
-            public MyLocalJsonProvidedLeafEvent leaf;
+            public MyLocalJsonProvidedLeafEvent Leaf;
         }
 
         public class MyLocalJsonProvidedLeafEvent
         {
-            public string id;
+            public string Id;
         }
     }
 } // end of namespace

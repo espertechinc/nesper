@@ -176,11 +176,6 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         isFragment = true;
                     }
 
-                    var isArray = false;
-                    if (property.Type == XPathResultType.NodeSet) {
-                        isArray = true;
-                    }
-
                     EventPropertyGetterSPI getter = new XPathPropertyGetter(
                         this,
                         property.Name,
@@ -189,19 +184,24 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         property.Type,
                         property.OptionalCastToType,
                         fragmentFactory);
+
                     var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
+                    var isIndexed =
+                        returnType.IsArray ||
+                        returnType.IsGenericEnumerable();
+                    
                     var desc = new EventPropertyDescriptor(
                         property.Name,
                         returnType,
                         false,
                         false,
-                        isArray,
+                        isIndexed,
                         false,
                         isFragment);
                     var @explicit = new ExplicitPropertyDescriptor(
                         desc,
                         getter,
-                        isArray,
+                        isIndexed,
                         property.OptionalEventTypeName);
                     namedProperties.Put(desc.PropertyName, @explicit);
                 }

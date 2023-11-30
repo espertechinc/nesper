@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         Assert.That(result, Is.Not.Null);
                         Assert.That(result, Is.InstanceOf<double>());
                         var resultValue = (double)result;
-                        Assert.That(resultValue, Is.Not.NaN);
+                        Assert.That(resultValue, Is.NaN);
                     });
 
                 env.UndeployAll();

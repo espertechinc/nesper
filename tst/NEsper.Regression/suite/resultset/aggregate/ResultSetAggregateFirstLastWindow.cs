@@ -334,7 +334,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select first().property as val0, first().myMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
+                    "@name('s0') select first().property as val0, first().MyMethod() as val1, window() as val2 from SupportEventPropertyWithMethod#lastevent";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportEventPropertyWithMethod("p1"));
@@ -518,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.TryInvalidCompile(
                     "select first(x.*, 10d) from SupportBean#lastevent as x",
-                    "Failed to validate select-clause expression 'first(x.*,10.0)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
+                    "Failed to validate select-clause expression 'first(x.*,10.0d)': The 'first' aggregation function requires an index expression that returns an integer value [select first(x.*, 10d) from SupportBean#lastevent as x]");
             }
         }
 

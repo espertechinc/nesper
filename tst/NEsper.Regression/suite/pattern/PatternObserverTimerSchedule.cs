@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 "Invalid parameter for pattern observer 'timer:schedule()': No parameters provided");
             env.TryInvalidCompile(
                 "select * from pattern[timer:schedule(x:1)]",
-                "Invalid parameter for pattern observer 'timer:schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [iso, repetitions, date, period]");
+                "Invalid parameter for pattern observer 'timer:schedule(x:1)': Unexpected named parameter 'x', expecting any of the following: [\"iso\", \"repetitions\", \"date\", \"period\"]");
             env.TryInvalidCompile(
                 "select * from pattern[timer:schedule(period:1)]",
                 "Invalid parameter for pattern observer 'timer:schedule(period:1)': Failed to validate named parameter 'period', expected a single expression returning a TimePeriod-typed value");
@@ -433,7 +433,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 "Invalid parameter for pattern observer 'timer:schedule(repetitions:\"a\",period:1 seconds)': Failed to validate named parameter 'repetitions', expected a single expression returning any of the following types: int,long");
             env.TryInvalidCompile(
                 "select * from pattern[timer:schedule(date:1 seconds)]",
-                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,Calendar,Date,long");
+                "Invalid parameter for pattern observer 'timer:schedule(date:1 seconds)': Failed to validate named parameter 'date', expected a single expression returning any of the following types: string,DateTimeEx,DateTimeOffset,DateTime,long");
             env.TryInvalidCompile(
                 "select * from pattern[timer:schedule(repetitions:1)]",
                 "Invalid parameter for pattern observer 'timer:schedule(repetitions:1)': Either the date or period parameter is required");
@@ -705,8 +705,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980Calendar(), period: 1 seconds");
             TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980Date(), period: getTheSeconds() seconds");
             TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980Long(), period: 1 seconds");
-            TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980LocalDateTime(), period: 1 seconds");
-            TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980ZonedDateTime(), period: 1 seconds");
+            TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980DateTimeOffset(), period: 1 seconds");
+            TryAssertionNameParameters(env, "repetitions:-1, date:getThe1980DateTime(), period: 1 seconds");
         }
 
         private static void TryAssertionNameParameters(

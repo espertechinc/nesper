@@ -358,24 +358,24 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('window') create window RecentWindow#time(30 seconds) (Id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
+                    "@name('window') create window RecentWindow#time(30 seconds) (id string, currentSewid SimpleEventWithId, prevSewid SimpleEventWithId);\n" +
                     "on SimpleEventWithId as sewid\n" +
-                    "  merge RecentWindow as recent where recent.Id = sewid.Id\n" +
-                    "  when not matched then insert select sewid.Id as Id, sewid as currentSewid, sewid as prevSewid\n" +
+                    "  merge RecentWindow as recent where recent.id = sewid.id\n" +
+                    "  when not matched then insert select sewid.id as id, sewid as currentSewid, sewid as prevSewid\n" +
                     "  when matched then update set prevSewid = currentSewid, currentSewid = sewid;\n";
                 env.CompileDeploy(epl);
 
-                var sewidOne = new object[] { "Id", "A" };
+                var sewidOne = new object[] { "id", "A" };
                 env.SendEventObjectArray(sewidOne, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidOne, sewidOne);
+                AssertWindow(env, "id", sewidOne, sewidOne);
 
-                var sewidTwo = new object[] { "Id", "B" };
+                var sewidTwo = new object[] { "id", "B" };
                 env.SendEventObjectArray(sewidTwo, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidTwo, sewidOne);
+                AssertWindow(env, "id", sewidTwo, sewidOne);
 
-                var sewidThree = new object[] { "Id", "B" };
+                var sewidThree = new object[] { "id", "B" };
                 env.SendEventObjectArray(sewidThree, "SimpleEventWithId");
-                AssertWindow(env, "Id", sewidThree, sewidTwo);
+                AssertWindow(env, "id", sewidThree, sewidTwo);
 
                 env.UndeployAll();
             }
@@ -390,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "window",
                     iterator => {
                         var @event = iterator.Advance();
-                        Assert.AreEqual(id, @event.Get("Id"));
+                        Assert.AreEqual(id, @event.Get("id"));
                         Assert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
                         Assert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
                     });

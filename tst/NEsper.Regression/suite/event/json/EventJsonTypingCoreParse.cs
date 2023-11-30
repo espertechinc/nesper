@@ -1052,7 +1052,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+                        "@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
                         "@name('s0') select num1? as c0, num2? as c1, num3? as c2 from JsonEvent#keepall")
                     .AddListener("s0");
 
@@ -1078,7 +1078,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+                        "@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
                         "@name('s0') select a_array? as c0 from JsonEvent#keepall")
                     .AddListener("s0");
                 string json;
@@ -1141,7 +1141,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+                        "@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
                         "@name('s0') select a_array? as c0 from JsonEvent#keepall")
                     .AddListener("s0");
 
@@ -1183,7 +1183,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@JsonSchema(dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
+                        "@JsonSchema(Dynamic=true) @public @buseventtype create json schema JsonEvent();\n" +
                         "@name('s0') select a_string? as c0, exists(a_string?) as c1," +
                         "a_number? as c2, exists(a_number?) as c3," +
                         "a_boolean? as c4, exists(a_boolean?) as c5," +

@@ -307,7 +307,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.TryInvalidCompile(
                     path,
                     "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Invalid assignment of column 'p0' of type 'String' to event property 'p0' typed as 'Integer', column and parameter types mismatch");
+                    "Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Int32', column and parameter types mismatch");
 
                 // typable - selected column type is not matching anything
                 env.TryInvalidCompile(

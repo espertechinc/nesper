@@ -16,29 +16,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
         {
             env.TryInvalidCompile(
                 "create xml schema ABC()",
-                "Required annotation @XMLSchema could not be found");
+                "Required annotation @XMLSchemaAttribute could not be found");
 
             env.TryInvalidCompile(
-                "@XMLSchema(rootElementName='a') create xml schema ABC(prop string)",
-                "Create-XML-Schema does not allow specifying columns, use @XMLSchemaField instead");
+                "@XMLSchema(RootElementName='a') create xml schema ABC(prop string)",
+                "Create-XML-Schema does not allow specifying columns, use @XMLSchemaFieldAttribute instead");
 
             env.TryInvalidCompile(
-                "@XMLSchema(rootElementName='') create xml schema ABC()",
-                "Required annotation field 'rootElementName' for annotation @XMLSchema could not be found");
+                "@XMLSchema(RootElementName='') create xml schema ABC()",
+                "Required annotation field 'RootElementName' for annotation @XMLSchemaAttribute could not be found");
 
             env.TryInvalidCompile(
-                "@XMLSchema(rootElementName='abc') create xml schema Base();\n" +
-                "@XMLSchema(rootElementName='abc') create xml schema ABC() copyfrom Base;\n",
+                "@XMLSchema(RootElementName='abc') create xml schema Base();\n" +
+                "@XMLSchema(RootElementName='abc') create xml schema ABC() copyfrom Base;\n",
                 "Create-XML-Schema does not allow copy-from");
 
             env.TryInvalidCompile(
-                "@XMLSchema(rootElementName='abc') create xml schema Base();\n" +
-                "@XMLSchema(rootElementName='abc') create xml schema ABC() inherits Base;\n",
+                "@XMLSchema(RootElementName='abc') create xml schema Base();\n" +
+                "@XMLSchema(RootElementName='abc') create xml schema ABC() inherits Base;\n",
                 "Create-XML-Schema does not allow inherits");
 
             env.TryInvalidCompile(
-                "@XMLSchema(rootElementName='abc') @XMLSchema(rootElementName='def') create xml schema Base()",
-                "Found multiple @XMLSchema annotations but expected a single annotation");
+                "@XMLSchema(RootElementName='abc') @XMLSchema(RootElementName='def') create xml schema Base()",
+                "Found multiple @XMLSchemaAttribute annotations but expected a single annotation");
         }
     }
 } // end of namespace

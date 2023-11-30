@@ -96,7 +96,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var und = eventBean.Underlying;
             if (und == null) {
                 throw new PropertyAccessException(
-                    "Unexpected null underlying event encountered, expecting org.w3c.dom.XmlNode instance as underlying");
+                    "Unexpected null underlying event encountered, expecting System.Xml.XmlNode instance as underlying");
             }
 
             var xnode = und as XElement;
@@ -137,7 +137,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             var und = eventBean.Underlying;
             if (und == null) {
                 throw new PropertyAccessException(
-                    "Unexpected null underlying event encountered, expecting org.w3c.dom.XmlNode instance as underlying");
+                    "Unexpected null underlying event encountered, expecting System.Xml.XmlNode instance as underlying");
             }
 
             if (und is XmlNode node) {
@@ -151,7 +151,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
             throw new PropertyAccessException(
                 "Unexpected underlying event of type '" +
                 und.GetType() +
-                "' encountered, expecting org.w3c.dom.Node as underlying");
+                "' encountered, expecting System.Xml.XmlNode as underlying");
         }
 
         public CodegenExpression EventBeanGetCodegen(
@@ -264,8 +264,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                 // if there is no parser, return xpath expression type
                 if (optionalCastToType == null) {
-                    var nodeIterator = result as XPathNodeIterator;
-                    if (nodeIterator != null) {
+                    if (result is XPathNodeIterator nodeIterator) {
                         if (nodeIterator.Count == 0) {
                             return null;
                         }
@@ -273,8 +272,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                         if (nodeIterator.Count == 1) {
                             nodeIterator.MoveNext();
                             switch (resultType) {
-                                case XPathResultType.Any:
-                                    return ((System.Xml.IHasXmlNode) nodeIterator.Current).GetNode();
+                                case XPathResultType.Any: {
+                                    var container = ((IHasXmlNode)nodeIterator.Current); 
+                                    return container?.GetNode();
+                                }
 
                                 case XPathResultType.String:
                                     return nodeIterator.Current.TypedValue;

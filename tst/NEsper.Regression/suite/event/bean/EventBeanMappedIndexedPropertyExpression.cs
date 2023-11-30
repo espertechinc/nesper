@@ -22,15 +22,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             // test bean-type
             var path = new RegressionPath();
             var eplBeans = "select " +
-                           "mapped(TheString) as val0, " +
-                           "indexed(IntPrimitive) as val1 " +
+                           "Mapped(TheString) as val0, " +
+                           "Indexed(IntPrimitive) as val1 " +
                            "from SupportBeanComplexProps#lastevent, SupportBean sb unidirectional";
             RunAssertionBean(env, path, eplBeans);
 
             // test bean-type prefixed
             var eplBeansPrefixed = "select " +
-                                   "sbcp.mapped(TheString) as val0, " +
-                                   "sbcp.indexed(IntPrimitive) as val1 " +
+                                   "sbcp.Mapped(TheString) as val0, " +
+                                   "sbcp.Indexed(IntPrimitive) as val1 " +
                                    "from SupportBeanComplexProps#lastevent sbcp, SupportBean sb unidirectional";
             RunAssertionBean(env, path, eplBeansPrefixed);
 
@@ -40,27 +40,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 path);
 
             var eplWrap = "select " +
-                          "mapped(TheString) as val0," +
-                          "indexed(IntPrimitive) as val1 " +
+                          "Mapped(TheString) as val0," +
+                          "Indexed(IntPrimitive) as val1 " +
                           "from SecondStream #lastevent, SupportBean unidirectional";
             RunAssertionBean(env, path, eplWrap);
 
             var eplWrapPrefixed = "select " +
-                                  "sbcp.mapped(TheString) as val0," +
-                                  "sbcp.indexed(IntPrimitive) as val1 " +
+                                  "sbcp.Mapped(TheString) as val0," +
+                                  "sbcp.Indexed(IntPrimitive) as val1 " +
                                   "from SecondStream #lastevent sbcp, SupportBean unidirectional";
             RunAssertionBean(env, path, eplWrapPrefixed);
 
             // test Map-type
             var eplMap = "select " +
-                         "mapped(TheString) as val0," +
-                         "indexed(IntPrimitive) as val1 " +
+                         "Mapped(TheString) as val0," +
+                         "Indexed(IntPrimitive) as val1 " +
                          "from MapEvent#lastevent, SupportBean unidirectional";
             RunAssertionMap(env, eplMap);
 
             var eplMapPrefixed = "select " +
-                                 "sbcp.mapped(TheString) as val0," +
-                                 "sbcp.indexed(IntPrimitive) as val1 " +
+                                 "sbcp.Mapped(TheString) as val0," +
+                                 "sbcp.Indexed(IntPrimitive) as val1 " +
                                  "from MapEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionMap(env, eplMapPrefixed);
 
@@ -82,14 +82,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
             // test Object-array-type
             var eplObjectArray = "select " +
-                                 "mapped(TheString) as val0," +
-                                 "indexed(IntPrimitive) as val1 " +
+                                 "Mapped(TheString) as val0," +
+                                 "Indexed(IntPrimitive) as val1 " +
                                  "from ObjectArrayEvent#lastevent, SupportBean unidirectional";
             RunAssertionObjectArray(env, eplObjectArray);
 
             var eplObjectArrayPrefixed = "select " +
-                                         "sbcp.mapped(TheString) as val0," +
-                                         "sbcp.indexed(IntPrimitive) as val1 " +
+                                         "sbcp.Mapped(TheString) as val0," +
+                                         "sbcp.Indexed(IntPrimitive) as val1 " +
                                          "from ObjectArrayEvent#lastevent sbcp, SupportBean unidirectional";
             RunAssertionObjectArray(env, eplObjectArrayPrefixed);
         }
@@ -136,8 +136,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
         private IDictionary<string, object> MakeMapEvent()
         {
             IDictionary<string, object> map = new Dictionary<string, object>();
-            map.Put("mapped", Collections.SingletonMap("keyOne", "valueOne"));
-            map.Put("indexed", new int[] { 1, 2 });
+            map.Put("Mapped", Collections.SingletonMap("keyOne", "valueOne"));
+            map.Put("Indexed", new int[] { 1, 2 });
             return map;
         }
 

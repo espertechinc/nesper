@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             };
             var beanepl = $"@public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
             RunAssertion(env, beanepl, bean);
-
+            
 			var properties = typeof(IDictionary<string, string>).CleanName();
 			
             // Map
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             // Json
             Consumer<IDictionary<string, string>> json = entries => {
                 if (entries == null) {
-                    env.SendEventJson(new JObject(new JProperty("Mapped")).ToString(), "LocalEvent");
+                    env.SendEventJson(new JObject(new JProperty("Mapped", JValue.CreateNull())).ToString(), "LocalEvent");
                 }
                 else {
                     var @event = new JObject();
@@ -104,9 +104,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             env.CompileDeploy("@name('s0') select * from LocalEvent", path).AddListener("s0");
 
-            var propepl = "@name('s1') select Mapped('a') as c0, Mapped('b') as c1," +
-                          "exists(Mapped('a')) as c2, exists(Mapped('b')) as c3, " +
-                          "typeof(Mapped('a')) as c4, typeof(Mapped('b')) as c5 from LocalEvent;\n";
+            var propepl =
+                "@name('s1') select " +
+                "Mapped('a') as c0, " +
+                "Mapped('b') as c1," +
+                "exists(Mapped('a')) as c2, " +
+                "exists(Mapped('b')) as c3, " +
+                "typeof(Mapped('a')) as c4, " +
+                "typeof(Mapped('b')) as c5 " +
+                "from LocalEvent;\n";
             env.CompileDeploy(propepl, path).AddListener("s1");
 
             IDictionary<string, string> values = new Dictionary<string, string>();
@@ -142,8 +148,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool existsOne,
             string valueOne)
         {
-            var g0 = @event.EventType.GetGetter("mapped('a')");
-            var g1 = @event.EventType.GetGetter("mapped('b')");
+            var g0 = @event.EventType.GetGetter("Mapped('a')");
+            var g1 = @event.EventType.GetGetter("Mapped('b')");
             AssertGetter(@event, g0, existsZero, valueZero);
             AssertGetter(@event, g1, existsOne, valueOne);
         }
