@@ -27,14 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
     {
         protected readonly ObjectArrayEventType fieldEventType;
         protected readonly int numParameters;
-        public abstract Type ReturnTypeOfMethod();
+        public abstract Type ReturnTypeOfMethod(Type inputCollectionType);
         public abstract CodegenExpression ReturnIfEmptyOptional();
 
         public abstract void InitBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope);
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType);
 
         public virtual bool HasForEachLoop()
         {
@@ -69,9 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
-                .MakeChildWithScope(ReturnTypeOfMethod(), GetType(), scope, codegenClassScope)
+                .MakeChildWithScope(ReturnTypeOfMethod(premade.EnumcollType), GetType(), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
-                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(premade.EnumcollType, REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
                 .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
             
@@ -102,9 +103,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 block.AssignArrayElement(Ref("props"), Constant(2), ExprDotName(REF_ENUMCOLL, "Count"));
             }
 
-            InitBlock(block, methodNode, scope, codegenClassScope);
+            InitBlock(block, methodNode, scope, codegenClassScope, premade.EnumcollType);
             if (HasForEachLoop()) {
-                var forEach = block.ForEach<object>("next", REF_ENUMCOLL)
+                var forEach = block
+                    .ForEachVar("next", REF_ENUMCOLL)
                     .AssignArrayElement("props", Constant(0), Ref("next"));
                 if (hasIndex) {
                     forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));

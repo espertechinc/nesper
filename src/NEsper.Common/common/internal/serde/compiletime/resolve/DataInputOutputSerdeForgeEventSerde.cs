@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
 
             return ExprDotMethodChain(optionalEventTypeResolver)
                 .Get(EventTypeResolverConstants.EVENTSERDEFACTORY)
-                .Add(this.method.GetName(), @params);
+                .Add(this.method.GetMethodName(), @params);
         }
     }
 } // end of namespace

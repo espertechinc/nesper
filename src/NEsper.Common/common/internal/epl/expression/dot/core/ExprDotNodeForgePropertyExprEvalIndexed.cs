@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly ExprDotNodeForgePropertyExpr forge;
-        private readonly ExprEvaluator exprEvaluator;
+        private readonly ExprDotNodeForgePropertyExpr _forge;
+        private readonly ExprEvaluator _exprEvaluator;
 
         public ExprDotNodeForgePropertyExprEvalIndexed(
             ExprDotNodeForgePropertyExpr forge,
             ExprEvaluator exprEvaluator)
         {
-            this.forge = forge;
-            this.exprEvaluator = exprEvaluator;
+            this._forge = forge;
+            this._exprEvaluator = exprEvaluator;
         }
 
         public object Evaluate(
@@ -40,18 +40,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[forge.StreamNum];
+            var @event = eventsPerStream[_forge.StreamNum];
             if (@event == null) {
                 return null;
             }
 
-            var index = exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
+            var index = _exprEvaluator.Evaluate(eventsPerStream, isNewData, context);
             if (index == null || !index.IsInt32()) {
-                Log.Warn(forge.GetWarningText("integer", index));
+                Log.Warn(_forge.GetWarningText("integer", index));
                 return null;
             }
 
-            return forge.IndexedGetter.Get(@event, index.AsInt32());
+            return _forge.IndexedGetter.Get(@event, index.AsInt32());
         }
 
         public static CodegenExpression Codegen(

@@ -56,8 +56,6 @@ namespace com.espertech.esper.common.@internal.util
         public static readonly object[] OBJECTARRAY_EMPTY = Array.Empty<object>();
         public static readonly object[][] OBJECTARRAYARRAY_EMPTY = Array.Empty<object[]>();
 
-        public static readonly CodegenExpression EMPTY_LIST_EXPRESSION = EnumValue(typeof(FlexCollection), "Empty");
-
         public static readonly StopCallback STOP_CALLBACK_NONE;
 
         static CollectionUtil()

@@ -88,7 +88,8 @@ namespace com.espertech.esper.compiler.@internal.util
 					moduleProperties,
 					compileTimeServices,
 					compilerOptions,
-					path);
+					path,
+					artifactRepository);
 			}
 			catch (EPCompileException) {
 				throw;
@@ -124,9 +125,10 @@ namespace com.espertech.esper.compiler.@internal.util
 			IDictionary<ModuleProperty, object> moduleProperties,
 			ModuleCompileTimeServices compileTimeServices,
 			CompilerOptions compilerOptions,
-			CompilerPath path)
+			CompilerPath path,
+			IArtifactRepository artifactRepository)
 		{
-			var moduleAssignedName = optionalModuleName == null ? Guid.NewGuid().ToString() : optionalModuleName;
+			var moduleAssignedName = optionalModuleName ?? Guid.NewGuid().ToString();
 			var moduleIdentPostfix = IdentifierUtil.GetIdentifierMayStartNumeric(moduleAssignedName);
 
 			// compile each statement
@@ -159,7 +161,8 @@ namespace com.espertech.esper.compiler.@internal.util
 							statementNumber,
 							statementNames,
 							compileTimeServices,
-							compilerOptions);
+							compilerOptions,
+							artifactRepository);
 						className = compilableItem.ProviderClassName;
 
 						if (targetHA) {
@@ -252,15 +255,16 @@ namespace com.espertech.esper.compiler.@internal.util
 				compilationState,
 				compileTimeServices,
 				path.Compileds,
+				artifactRepository,
 				out var moduleArtifact);
 
-#if TODO
-			// remove path create-class class-provided byte code
-			compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(_ => compilationState.Remove(_));
+			compilationState.Artifacts.Add(moduleArtifact);
 
-			// add class-provided create-class classes to module bytes
-			compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(_ => compilationState.Add(_));
-#endif
+			// remove path create-class class-provided artifacts
+			compileTimeServices.ClassProvidedCompileTimeResolver.RemoveFrom(compilationState.Remove);
+			
+			// add class-provided create-class classes to artifacts
+			compileTimeServices.ClassProvidedCompileTimeRegistry.AddTo(compilationState.Add);
 
 			// add HA-fabric to module bytes
 			if (compileTimeServices.SerdeEventTypeRegistry.IsTargetHA) {
@@ -287,6 +291,7 @@ namespace com.espertech.esper.compiler.@internal.util
 			CompilerAbstractionArtifactCollection compilationState,
 			ModuleCompileTimeServices compileTimeServices,
 			IList<EPCompiled> path,
+			IArtifactRepository artifactRepository,
 			out ICompileArtifact artifact)
 		{
 			var serializerFactory = compileTimeServices.Container.SerializerFactory();

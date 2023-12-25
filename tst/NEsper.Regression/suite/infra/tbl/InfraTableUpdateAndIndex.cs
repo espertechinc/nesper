@@ -87,62 +87,47 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 20));
 
                 // invalid index being created
-                try {
+                var ex1 = Assert.Throws<EPDeployException>(() => {
                     var compiled = env.Compile("create unique index SecIndex on MyTableEUIV(pkey0)", path);
                     env.Runtime.DeploymentService.Deploy(compiled);
-                    Assert.Fail();
-                }
-                catch (EPDeployException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex.Message,
-                        "Failed to deploy: Unique index violation, index 'SecIndex' is a unique index and key 'E1' already exists");
-                }
+                });
+                    
+                SupportMessageAssertUtil.AssertMessage(
+                    ex1!.Message,
+                    "Failed to deploy: Unique index violation, index 'SecIndex' is a unique index and key 'E1' already exists");
 
                 // try fire-and-forget update of primary key to non-unique value
-                try {
-                    env.CompileExecuteFAF("update MyTableEUIV set pkey1 = 0", path);
-                    Assert.Fail();
-                }
-                catch (EPException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex,
-                        "Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey[E1,0]' already exists");
-                    // assert events are unchanged - no update actually performed
-                    env.AssertPropsPerRowIteratorAnyOrder(
-                        "create",
-                        "pkey0,pkey1".SplitCsv(),
-                        new object[][] { new object[] { "E1", 10 }, new object[] { "E1", 20 } });
-                }
+                var ex2 = Assert.Throws<EPException>(() =>
+                    env.CompileExecuteFAF("update MyTableEUIV set pkey1 = 0", path));
+                SupportMessageAssertUtil.AssertMessage(
+                    ex2,
+                    "Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey<E1,0>' already exists");
+                // assert events are unchanged - no update actually performed
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "create",
+                    "pkey0,pkey1".SplitCsv(),
+                    new object[][] { new object[] { "E1", 10 }, new object[] { "E1", 20 } });
 
                 // try on-update unique index violation
                 env.CompileDeploy("@name('on-update') on SupportBean_S1 update MyTableEUIV set pkey1 = 0", path);
-                try {
-                    env.SendEventBean(new SupportBean_S1(0));
-                    Assert.Fail();
-                }
-                catch (EPException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex.InnerException,
-                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey[E1,0]' already exists");
-                    // assert events are unchanged - no update actually performed
-                    EPAssertionUtil.AssertPropsPerRowAnyOrder(
-                        env.Statement("create").GetEnumerator(),
-                        "pkey0,pkey1".SplitCsv(),
-                        new object[][] { new object[] { "E1", 10 }, new object[] { "E1", 20 } });
-                }
+                var ex3 = Assert.Throws<EPException>(() => env.SendEventBean(new SupportBean_S1(0)));
+                SupportMessageAssertUtil.AssertMessage(
+                    ex3,
+                    "Unexpected exception in statement 'on-update': Unique index violation, index 'MyTableEUIV' is a unique index and key 'MultiKey<E1,0>' already exists");
+                
+                // assert events are unchanged - no update actually performed
+                EPAssertionUtil.AssertPropsPerRowAnyOrder(
+                    env.Statement("create").GetEnumerator(),
+                    "pkey0,pkey1".SplitCsv(),
+                    new object[][] { new object[] { "E1", 10 }, new object[] { "E1", 20 } });
 
                 // disallow on-merge unique key updates
-                try {
-                    env.CompileWCheckedEx(
-                        "@name('on-merge') on SupportBean_S1 merge MyTableEUIV when matched then update set pkey1 = 0",
-                        path);
-                    Assert.Fail();
-                }
-                catch (EPCompileException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex.InnerException,
-                        "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
-                }
+                var ex4 = Assert.Throws<EPCompileException>(() => env.CompileWCheckedEx(
+                    "@name('on-merge') on SupportBean_S1 merge MyTableEUIV when matched then update set pkey1 = 0",
+                    path));
+                SupportMessageAssertUtil.AssertMessage(
+                    ex4!.InnerException,
+                    "Validation failed in when-matched (clause 1): On-merge statements may not update unique keys of tables");
 
                 env.UndeployAll();
             }
@@ -177,37 +162,34 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "@name('on-merge') on SupportBean_S1 merge MyTableLUIV " +
                     "when matched then update set col0 = 0",
                     path);
-                try {
+                
+                var ex1 = Assert.Throws<EPDeployException>(() => {
                     var compiled = env.Compile("create unique index MyUniqueSecondary on MyTableLUIV (col0)", path);
                     path.Compileds.Remove(compiled);
                     env.Runtime.DeploymentService.Deploy(compiled);
-                    Assert.Fail();
-                }
-                catch (EPDeployException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex,
-                        "Failed to deploy: Create-index adds a unique key on columns that are updated by one or more on-merge statements");
-                }
+                });
+                
+                SupportMessageAssertUtil.AssertMessage(
+                    ex1,
+                    "Failed to deploy: Create-index adds a unique key on columns that are updated by one or more on-merge statements");
 
                 env.UndeployModuleContaining("on-merge");
 
                 // on-update exists before creating a unique index
                 env.CompileDeploy("@name('on-update') on SupportBean_S1 update MyTableLUIV set pkey1 = 0", path);
                 env.CompileDeploy("create unique index MyUniqueSecondary on MyTableLUIV (pkey1)", path);
-                try {
-                    env.SendEventBean(new SupportBean_S1(0));
-                    Assert.Fail();
-                }
-                catch (EPException ex) {
-                    SupportMessageAssertUtil.AssertMessage(
-                        ex.InnerException,
-                        "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
-                    // assert events are unchanged - no update actually performed
-                    env.AssertPropsPerRowIteratorAnyOrder(
-                        "create",
-                        "pkey0,pkey1".SplitCsv(),
-                        new object[][] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
-                }
+
+                var ex2 = Assert.Throws<EPException>(() => env.SendEventBean(new SupportBean_S1(0)));
+                
+                SupportMessageAssertUtil.AssertMessage(
+                    ex2,
+                    "Unexpected exception in statement 'on-update': Unique index violation, index 'MyUniqueSecondary' is a unique index and key '0' already exists");
+                
+                // assert events are unchanged - no update actually performed
+                env.AssertPropsPerRowIteratorAnyOrder(
+                    "create",
+                    "pkey0,pkey1".SplitCsv(),
+                    new object[][] { new object[] { "E1", 10 }, new object[] { "E2", 20 } });
 
                 // unregister
                 env.UndeployModuleContaining("on-update");

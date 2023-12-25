@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             {
                 var epl = "create schema AValue(Value int);\n" +
                           "on SupportBean\n" +
-                          "  insert into AValue select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by array) as Value where IntPrimitive > 0\n" +
+                          "  insert into AValue select (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array) as Value where IntPrimitive > 0\n" +
                           "  insert into AValue select 0 as Value where IntPrimitive <= 0;\n" +
                           "@name('s0') select * from AValue;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -192,10 +192,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 int? expected)
             {
                 env.SendEventBean(new SupportBean("X", 0));
-                env.AssertEqualsNew("s0", "value", 0);
+                env.AssertEqualsNew("s0", "Value", 0);
 
                 env.SendEventBean(new SupportBean("Y", 1));
-                env.AssertEqualsNew("s0", "value", expected);
+                env.AssertEqualsNew("s0", "Value", expected);
             }
         }
 

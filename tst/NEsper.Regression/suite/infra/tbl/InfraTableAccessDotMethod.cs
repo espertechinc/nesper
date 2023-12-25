@@ -98,10 +98,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     $" mearr MyEvent[])";
                 env.CompileDeploy(eplType, path);
 
-                var primaryKey = (grouped ? "primary key" : "");
+                var primaryKey = (grouped ? " primary key" : "");
                 var eplDeclare = 
-                    "@public create table varaggPWD" +
-                    $"(key string {primaryKey}" +
+                    "@public create table varaggPWD " + 
+                    $"(key string{primaryKey}" +
                     $", ts long" +
                     $", mb {myBean}" +
                     $", mbarr {myBean}[]" +
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var eplSelect =
                     "@name('s0') select " +
                     $"varaggPWD{key}.ts.getMinuteOfHour() as c0, " +
-                    $"varaggPWD{key}.mb.getMyProperty() as c1, "  +
+                    $"varaggPWD{key}.mb.GetMyProperty() as c1, "  +
                     $"varaggPWD{key}.mbarr.takeLast(1) as c2, "  +
                     $"varaggPWD{key}.me.p0 as c3, " +
                     $"varaggPWD{key}.mearr.selectFrom(i => i.p0) as c4 " +
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             "c0,c1,c3".SplitCsv(),
                             new object[] { 55, "x", "p0value" });
                         Assert.AreEqual(1, output.Get("c2").Unwrap<object>().Count);
-                        Assert.AreEqual("[0_p0, 1_p0]", output.Get("c4").ToString());
+                        Assert.AreEqual("[\"0_p0\", \"1_p0\"]", output.Get("c4").RenderAny());
                     });
 
                 env.UndeployAll();

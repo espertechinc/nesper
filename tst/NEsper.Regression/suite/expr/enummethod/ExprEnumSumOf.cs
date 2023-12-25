@@ -17,9 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
-using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
-
-// assertTypesAllSame
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -103,11 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3,c4".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_Container");
-                builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
-                builder.WithExpression(fields[1], "beans.sumOf(x => DoubleBoxed)");
-                builder.WithExpression(fields[2], "beans.sumOf(x => LongBoxed)");
-                builder.WithExpression(fields[3], "beans.sumOf(x => bigDecimal)");
-                builder.WithExpression(fields[4], "beans.sumOf(x => bigInteger)");
+                builder.WithExpression(fields[0], "Beans.sumOf(x => IntBoxed)");
+                builder.WithExpression(fields[1], "Beans.sumOf(x => DoubleBoxed)");
+                builder.WithExpression(fields[2], "Beans.sumOf(x => LongBoxed)");
+				builder.WithExpression(fields[3], "Beans.sumOf(x => DecimalBoxed)");
+				builder.WithExpression(fields[4], "Beans.sumOf(x => BigInteger)");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(
@@ -124,12 +122,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 IList<SupportBean> listOne = new List<SupportBean>(Arrays.AsList(Make(2, 3d, 4L, 5, 6)));
                 builder.WithAssertion(new SupportBean_Container(listOne))
-                    .Expect(fields, 2, 3d, 4L, 5m, BigInteger.Parse("6"));
+                    .Expect(fields, 2, 3d, 4L, 5m, new BigInteger(6));
 
                 IList<SupportBean> listTwo =
                     new List<SupportBean>(Arrays.AsList(Make(2, 3d, 4L, 5, 6), Make(4, 6d, 8L, 10, 12)));
                 builder.WithAssertion(new SupportBean_Container(listTwo))
-                    .Expect(fields, 2 + 4, 3d + 6d, 4L + 8L, (decimal)(5 + 10), BigInteger.Parse("18"));
+                    .Expect(fields, 2 + 4, 3d + 6d, 4L + 8L, 5m + 10m, new BigInteger(18));
 
                 builder.Run(env);
             }
@@ -141,10 +139,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_Container");
-                builder.WithExpression(fields[0], "beans.sumOf(x => IntBoxed)");
-                builder.WithExpression(fields[1], "beans.sumOf( (x, i) => IntBoxed + i*10)");
-                builder.WithExpression(fields[2], "beans.sumOf( (x, i, s) => IntBoxed + i*10 + s*100)");
-                builder.WithExpression(fields[3], "beans.sumOf( (x, i) => case when i = 1 then null else 1 end)");
+                builder.WithExpression(fields[0], "Beans.sumOf(x => IntBoxed)");
+                builder.WithExpression(fields[1], "Beans.sumOf( (x, i) => IntBoxed + i*10)");
+                builder.WithExpression(fields[2], "Beans.sumOf( (x, i, s) => IntBoxed + i*10 + s*100)");
+                builder.WithExpression(fields[3], "Beans.sumOf( (x, i) => case when i = 1 then null else 1 end)");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?)));
 
@@ -178,18 +176,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "intvals.sumOf()");
-                builder.WithExpression(fields[1], "bdvals.sumOf()");
+                builder.WithExpression(fields[0], "Intvals.sumOf()");
+                builder.WithExpression(fields[1], "Bdvals.sumOf()");
 
                 builder.WithStatementConsumer(
-                    stmt => AssertTypes(stmt.EventType, fields, new Type[] { typeof(int?), typeof(decimal?) }));
+                    stmt => AssertTypes(stmt.EventType, fields, new [] { typeof(int?), typeof(decimal?) }));
 
                 builder.WithAssertion(SupportCollection.MakeNumeric("1,4,5"))
-                    .Expect(fields, 1 + 4 + 5, (decimal)(1 + 4 + 5));
+                    .Expect(fields, 1 + 4 + 5, 1m + 4m + 5m);
 
-                builder.WithAssertion(SupportCollection.MakeNumeric("3,4")).Expect(fields, 3 + 4, (decimal)(3 + 4));
+                builder.WithAssertion(SupportCollection.MakeNumeric("3,4")).Expect(fields, 3 + 4, 3m + 4m);
 
-                builder.WithAssertion(SupportCollection.MakeNumeric("3")).Expect(fields, 3, (decimal)(3));
+                builder.WithAssertion(SupportCollection.MakeNumeric("3")).Expect(fields, 3, 3m);
 
                 builder.WithAssertion(SupportCollection.MakeNumeric("")).Expect(fields, null, null);
 
@@ -214,10 +212,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     stmt => AssertTypes(
                         stmt.EventType,
                         fields,
-                        new Type[] { typeof(int?), typeof(decimal?), typeof(int?), typeof(int?) }));
+                        new[] { typeof(int?), typeof(decimal?), typeof(int?), typeof(int?) }));
 
                 builder.WithAssertion(SupportCollection.MakeString("E2,E1,E5,E4"))
-                    .Expect(fields, 2 + 1 + 5 + 4, (decimal)(2 + 1 + 5 + 4), 2 + 11 + 25 + 34, 402 + 411 + 425 + 434);
+                    .Expect(fields, 2 + 1 + 5 + 4, 2m + 1m + 5m + 4m, 2 + 11 + 25 + 34, 402 + 411 + 425 + 434);
 
                 builder.WithAssertion(SupportCollection.MakeString("E1")).Expect(fields, 1, 1m, 1, 101);
 
@@ -235,10 +233,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 string epl;
 
-                epl = "select beans.sumof() from SupportBean_Container";
+                epl = "select Beans.sumof() from SupportBean_Container";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
+                    "Failed to validate select-clause expression 'Beans.sumof()': Invalid input for built-in enumeration method 'sumof' and 0-parameter footprint, expecting collection of values (typically scalar values) as input, received collection of events of type '");
 
                 epl = "select Strvals.sumOf(v => null) from SupportCollection";
                 env.TryInvalidCompile(

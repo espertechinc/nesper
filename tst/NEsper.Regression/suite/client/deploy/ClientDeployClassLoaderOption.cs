@@ -24,30 +24,30 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withe(execs);
+            WithClassLoaderOptionSimple(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithClassLoaderOptionSimple(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new ClientDeployClassLoaderOptionSimple());
+            execs.Add(new ClientDeployTypeResolverOptionSimple());
             return execs;
         }
 
-        private class ClientDeployClassLoaderOptionSimple : RegressionExecution
+        private class ClientDeployTypeResolverOptionSimple : RegressionExecution
         {
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select * from SupportBean";
                 var compiled = env.Compile(epl);
                 var options = new DeploymentOptions();
-                var mySupportClassloader = new MySupportClassloader();
-                options.DeploymentClassLoaderOption = _ => mySupportClassloader;
+                var mySupportTypeResolver = new MySupportTypeResolver();
+                options.DeploymentTypeResolverOption = _ => mySupportTypeResolver;
 
                 env.Deployment.Deploy(compiled, options);
 
-                Assert.IsFalse(mySupportClassloader.Names.IsEmpty());
+                Assert.IsFalse(mySupportTypeResolver.Names.IsEmpty());
 
                 env.UndeployAll();
             }
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             }
         }
 
-        public class MySupportClassloader : TypeResolver
+        public class MySupportTypeResolver : TypeResolver
         {
             private readonly IList<string> names = new List<string>();
 

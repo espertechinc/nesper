@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
@@ -67,6 +68,12 @@ namespace com.espertech.esper.regressionlib.support.bean
 		{
 			return new Nested(GetAssociatedValue(enumValue), GetMystrings(enumValue));
 		}
+		
+		public static IList<string> GetMyStringsAsList(this SupportEnumTwo value)
+		{
+			return GetMystrings(value).ToList();
+		}
+
 
 		public class Nested
 		{

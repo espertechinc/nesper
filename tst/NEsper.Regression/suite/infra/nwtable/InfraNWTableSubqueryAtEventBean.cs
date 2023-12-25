@@ -23,11 +23,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            Withr(execs);
+            WithSubSelStar(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withr(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubSelStar(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraSubSelStar(true));

@@ -62,14 +62,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
+        public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
+        public Type ValType => typeof(ICollection<object>); 
+
         public override Type ReturnTypeOfMethod()
         {
-            return typeof(IDictionary<object, object>);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, ValType), "Instance");
         }
 
         public override void InitBlock(
@@ -78,9 +81,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<IDictionary<object, object>>(
-                "result",
-                NewInstance(typeof(NullableDictionary<object, object>)));
+            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
+            var nullType = typeof(NullableDictionary<,>).MakeGenericType(KeyType, ValType);
+            block.DeclareVar(dictType, "result", NewInstance(nullType));
         }
 
         public override void ForEachBlock(
@@ -89,10 +92,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<object>(
+            block.DeclareVar(
+                    KeyType,
                     "key",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<ICollection<object>>(
+                    InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(
+                    ValType,
                     "value",
                     Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
                 .IfRefNull("value")

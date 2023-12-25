@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.context.aifactory.core;
 using com.espertech.esper.common.@internal.epl.dataflow.interfaces;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -107,10 +108,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 // inject properties: property invalid type
                 env.TryInvalidCompile(
-                    "create dataflow MyGraph MyTestOp {TheString: 1}",
-                    "Property 'TheString' of class " +
-                    typeof(MyTestOp).FullName +
-                    " expects an String but receives a value of type Integer");
+                    "create dataflow MyGraph MyTestOp {theString: 1}",
+                    "Property 'theString' of class " +
+                    typeof(MyTestOp).CleanName() +
+                    " expects an System.String but receives a value of type System.Int32");
 
                 // two incompatible input streams: different types
                 epl = "create dataflow MyGraph " +
@@ -196,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "MyGraph",
                     epl,
                     "Failed to instantiate data flow 'MyGraph': Failed to find OnInput method on for operator 'MySBInputOp#1(out1)' class " +
-                    typeof(MySBInputOp).FullName +
+                    typeof(MySBInputOp).CleanName() +
                     ", expected an OnInput method that takes any of {Object, Object[");
             }
 

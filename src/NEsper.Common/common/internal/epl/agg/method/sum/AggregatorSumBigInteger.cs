@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                     typeof(BigInteger),
                     "Add",
                     sum,
-                    valueType == sumType ? value : FlexCast(sumType, value)));
+                    valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyAggLeaveSum(
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                     typeof(BigInteger),
                     "Subtract",
                     sum,
-                    valueType == sumType ? value : FlexCast(sumType, value)));
+                    valueType == sumType ? value : Cast(sumType, value)));
         }
 
         protected override void ApplyTableEnterSum(
@@ -94,8 +94,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                     typeof(BigInteger),
                     "Add",
                     sum,
-                    FlexCast(evaluationTypes[0], value)));
-            // ExprDotMethod(sum, "Add", FlexCast(evaluationTypes[0], value)));
+                    Cast(evaluationTypes[0], value)));
+            // ExprDotMethod(sum, "Add", Cast(evaluationTypes[0], value)));
         }
 
         protected override void ApplyTableLeaveSum(
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
                     typeof(BigInteger),
                     "Subtract",
                     sum,
-                    FlexCast(evaluationTypes[0], value)));
+                    Cast(evaluationTypes[0], value)));
         }
 
         protected override void WriteSum(

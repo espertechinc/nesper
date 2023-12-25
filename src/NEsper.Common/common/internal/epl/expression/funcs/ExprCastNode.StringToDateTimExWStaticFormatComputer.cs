@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public class StringToDateTimExWStaticFormatComputer : StringToDateLongWStaticFormat
         {
-            private readonly TimeZoneInfo timeZone;
+            private readonly TimeZoneInfo _timeZone;
 
             public StringToDateTimExWStaticFormatComputer(
                 string dateFormatString,
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 : base(
                     dateFormatString)
             {
-                this.timeZone = timeZone;
+                this._timeZone = timeZone;
             }
 
             public override object Compute(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 bool newData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                return StringToDtxWStaticFormatParse(new SimpleDateFormat(dateFormatString), input, timeZone);
+                return StringToDtxWStaticFormatParse(new SimpleDateFormat(dateFormatString), input, _timeZone);
             }
 
             /// <summary>

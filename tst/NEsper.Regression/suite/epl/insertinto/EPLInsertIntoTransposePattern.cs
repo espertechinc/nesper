@@ -21,27 +21,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithhisAsColumn(execs);
-            WithransposePONOEventPattern(execs);
-            WithransposeMapEventPattern(execs);
+            WithThisAsColumn(execs);
+            WithTransposePONOEventPattern(execs);
+            WithTransposeMapEventPattern(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithransposeMapEventPattern(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithTransposeMapEventPattern(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposeMapEventPattern());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithransposePONOEventPattern(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithTransposePONOEventPattern(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoTransposePONOEventPattern());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithhisAsColumn(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithThisAsColumn(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new EPLInsertIntoThisAsColumn());
@@ -54,28 +54,28 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "@name('window') @public create window OneWindow#time(1 day) as select TheString as alertId, this from SupportBeanWithThis",
+                    "@name('window') @public create window OneWindow#time(1 day) as select TheString as alertId, This from SupportBeanWithThis",
                     path);
                 env.CompileDeploy(
-                    "insert into OneWindow select '1' as alertId, stream0.quote.this as this " +
+                    "insert into OneWindow select '1' as alertId, stream0.quote.This as This " +
                     " from pattern [every quote=SupportBeanWithThis(TheString='A')] as stream0",
                     path);
                 env.CompileDeploy(
-                    "insert into OneWindow select '2' as alertId, stream0.quote as this " +
+                    "insert into OneWindow select '2' as alertId, stream0.quote as This " +
                     " from pattern [every quote=SupportBeanWithThis(TheString='B')] as stream0",
                     path);
 
                 env.SendEventBean(new SupportBeanWithThis("A", 10));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window",
-                    new string[] { "alertId", "this.IntPrimitive" },
-                    new object[][] { new object[] { "1", 10 } });
+                    new[] { "alertId", "This.IntPrimitive" },
+                    new[] { new object[] { "1", 10 } });
 
                 env.SendEventBean(new SupportBeanWithThis("B", 20));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window",
-                    new string[] { "alertId", "this.IntPrimitive" },
-                    new object[][] { new object[] { "1", 10 }, new object[] { "2", 20 } });
+                    new[] { "alertId", "This.IntPrimitive" },
+                    new[] { new object[] { "1", 10 }, new object[] { "2", 20 } });
 
                 env.CompileDeploy(
                     "@name('window-2') @public create window TwoWindow#time(1 day) as select TheString as alertId, * from SupportBeanWithThis",
@@ -88,8 +88,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBeanWithThis("C", 30));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "window-2",
-                    new string[] { "alertId", "IntPrimitive" },
-                    new object[][] { new object[] { "3", 30 } });
+                    new[] { "alertId", "IntPrimitive" },
+                    new[] { new object[] { "3", 30 } });
 
                 env.UndeployAll();
             }
@@ -139,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b.Id"));
                     });
 
-                var eventOne = MakeMap(new object[][] { new object[] { "Id", "A1" } });
-                var eventTwo = MakeMap(new object[][] { new object[] { "Id", "B1" } });
+                var eventOne = MakeMap(new[] { new object[] { "Id", "A1" } });
+                var eventTwo = MakeMap(new[] { new object[] { "Id", "B1" } });
 
                 env.SendEventMap(eventOne, "AEventMap");
                 env.SendEventMap(eventTwo, "BEventMap");

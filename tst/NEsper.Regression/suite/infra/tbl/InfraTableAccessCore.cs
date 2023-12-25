@@ -598,8 +598,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.UndeployModuleContaining("s0");
 
                 env.CompileDeploy(
-                        $"create schema AggBean as {typeof(AggBean).MaskTypeName()};\n" +
-                        "@name('s0') insert into AggBean select windowAndTotalTLRUG as Val0 from SupportBean_S0;\n",
+                        string.Format(
+                            "create schema AggBean as {0};\n" +
+                            "@Name('s0') insert into AggBean select windowAndTotalTLRUG as Val0 from SupportBean_S0;\n",
+                            TypeHelper.MaskTypeName<AggBean>()),
                         path)
                     .AddListener("s0");
 

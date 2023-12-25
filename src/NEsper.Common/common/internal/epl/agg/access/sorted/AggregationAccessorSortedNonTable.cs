@@ -50,7 +50,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 .DeclareVar<IEnumerator<EventBean>>("enumerator", enumerator)
                 .WhileLoop(ExprDotMethod(Ref("enumerator"), "MoveNext"))
                 .DeclareVar<EventBean>("bean", Cast(typeof(EventBean), ExprDotName(Ref("enumerator"), "Current")))
-                .AssignArrayElement(Ref("array"), Ref("count"), FlexCast(componentType, ExprDotUnderlying(Ref("bean"))))
+                .AssignArrayElement(Ref("array"), Ref("count"), Cast(componentType, ExprDotUnderlying(Ref("bean"))))
                 .IncrementRef("count")
                 .BlockEnd()
                 .MethodReturn(Ref("array"));

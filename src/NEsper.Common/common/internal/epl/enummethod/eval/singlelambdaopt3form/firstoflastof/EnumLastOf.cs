@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
@@ -61,13 +62,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 #else
             var type = _resultType.GetCodegenReturnType().GetBoxedType();
             var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
                 .DeclareVar<object>("result", ConstantNull())
                 .ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignRef("result", Ref("next"))
                 .BlockEnd()
-                .MethodReturn(FlexCast(type, Ref("result")));
+                .MethodReturn(Cast(type, Ref("result")));
             return LocalMethod(method, args.Expressions);
 #endif
         }

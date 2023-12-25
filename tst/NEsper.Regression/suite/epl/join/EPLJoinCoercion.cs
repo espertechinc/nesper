@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 epl =
                     "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where IntPrimitive between rangeStartLong and rangeEndLong";
+                    "where IntPrimitive between RangeStartLong and RangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R1", "G", 100L, 200L));
@@ -73,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 epl =
                     "@name('s0') select sb.TheString as sbs, sb.IntPrimitive as sbi, sbr.Id as sbri from SupportBean#length(10) sb, SupportBeanRange#length(10) sbr " +
-                    "where sbr.key = sb.TheString and IntPrimitive between rangeStartLong and rangeEndLong";
+                    "where sbr.Key = sb.TheString and IntPrimitive between RangeStartLong and RangeEndLong";
                 env.CompileDeployAddListenerMile(epl, "s0", milestone.GetAndIncrement());
 
                 env.SendEventBean(SupportBeanRange.MakeLong("R1", "G", 100L, 200L));

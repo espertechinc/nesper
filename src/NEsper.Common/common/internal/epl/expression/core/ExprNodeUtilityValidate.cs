@@ -353,6 +353,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
             catch (ExprValidationException e) {
                 if (exprNode is ExprIdentNode identNode) {
+                    // indicator for whether we should rethrow 'e'
+                    bool shouldRethrowE = false;
+                    
                     try {
                         if (!ResolveStaticMethodOrField(identNode, e, validationContext, out result)) {
                             throw;
@@ -360,7 +363,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     }
                     catch (ExprValidationException ex) {
                         e = ex;
-                        result = ResolveAsStreamName(identNode, e, validationContext);
+                        shouldRethrowE = !TryResolveAsStreamName(identNode, e, validationContext, out result);
+                    }
+
+                    if (shouldRethrowE) {
+                        throw;
                     }
                 }
                 else {
@@ -571,10 +578,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             throw propertyException;
         }
 
-        private static ExprNode ResolveAsStreamName(
+        private static bool TryResolveAsStreamName(
             ExprIdentNode identNode,
             ExprValidationException existingException,
-            ExprValidationContext validationContext)
+            ExprValidationContext validationContext, 
+            out ExprNode exprNode)
         {
             ExprStreamUnderlyingNode exprStream = new ExprStreamUnderlyingNodeImpl(
                 identNode.UnresolvedPropertyName,
@@ -583,11 +591,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             try {
                 exprStream.Validate(validationContext);
             }
-            catch (ExprValidationException) {
-                throw existingException;
+            catch (ExprValidationException)
+            {
+                exprNode = default;
+                return false;
             }
 
-            return exprStream;
+            exprNode = exprStream;
+            return true;
         }
 
         private static ExprConstantNode ResolveIdentAsEnumConst(

@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public partial class ExprCastNode : ExprNodeBase
     {
-        private ExprCastNodeForge forge; 
+        private ExprCastNodeForge _forge; 
 
         /// <summary>
         ///     Ctor.
@@ -46,15 +46,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -62,15 +62,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.IsConstant;
+                CheckValidated(_forge);
+                return _forge.IsConstant;
             }
         }
 
         public Type TargetType {
             get {
-                CheckValidated(forge);
-                return forge.EvaluationType;
+                CheckValidated(_forge);
+                return _forge.EvaluationType;
             }
         }
 
@@ -261,7 +261,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         "' cannot be found");
                 }
 
-                targetType = ApplyDimensions(targetType);
                 numeric = targetType.IsTypeNumeric();
                 if (numeric) {
                     caster = SimpleTypeCasterFactory.GetCaster(fromType, targetType);
@@ -305,7 +304,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
+            _forge = new ExprCastNodeForge(this, casterParserComputerForge, targetType, isConstant, theConstant);
             return null;
         }
 

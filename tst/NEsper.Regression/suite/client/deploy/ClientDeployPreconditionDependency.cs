@@ -129,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             {
                 var path = new RegressionPath();
                 env.Compile(
-                    "@name('infra') @public create inlined_class \"\"\" public class MyClass { public static stringDoIt() { return \"def\"; } }\"\"\";\n",
+                    "@name('infra') @public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\";\n",
                     path); // Note: not deploying, just adding to path
 
                 var text = "dependency application-inlined class 'MyClass'";

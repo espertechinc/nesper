@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
 
@@ -60,27 +61,35 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var componentType = args.EnumcollType.GetComponentType();
+            var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
+            
             var method = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(EnumDistinctOfScalarNoParams), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .MakeChild(collectionType, typeof(EnumDistinctOfScalarNoParams), codegenClassScope)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             method.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
 
-            if (_fieldType == null || !_fieldType.IsArray) {
+            if (!(_fieldType is { IsArray: true })) {
+                var setType = typeof(ISet<>).MakeGenericType(componentType);
+                var hashSetType = typeof(LinkedHashSet<>).MakeGenericType(componentType);
                 method.Block
-                    .IfCondition(InstanceOf(Ref("enumcoll"), typeof(ISet<object>)))
-                    .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                    .MethodReturn(NewInstance(typeof(LinkedHashSet<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+                    .IfCondition(InstanceOf(Ref("enumcoll"), setType))
+                    .BlockReturn(Cast(setType, EnumForgeCodegenNames.REF_ENUMCOLL))
+                    .MethodReturn(NewInstance(hashSetType, EnumForgeCodegenNames.REF_ENUMCOLL));
             }
             else {
+                var dictType = typeof(IDictionary<,>).MakeGenericType(typeof(object), componentType);
+                var hashDictType = typeof(LinkedHashMap<,>).MakeGenericType(typeof(object), componentType);
                 var arrayMK = MultiKeyPlanner.GetMKClassForComponentType(_fieldType.GetElementType());
-                method.Block.DeclareVar<IDictionary<object, object>>(
-                    "distinct",
-                    NewInstance(typeof(LinkedHashMap<object, object>)));
+                method.Block.DeclareVar(dictType, "distinct", NewInstance(hashDictType));
 
-                var loop = method.Block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL);
+                var loop = method.Block.ForEachVar("next", EnumForgeCodegenNames.REF_ENUMCOLL);
                 loop.DeclareVar(arrayMK, "comparable", NewInstance(arrayMK, Cast(_fieldType, Ref("next"))))
                     .Expression(ExprDotMethod(Ref("distinct"), "Put", Ref("comparable"), Ref("next")));
 

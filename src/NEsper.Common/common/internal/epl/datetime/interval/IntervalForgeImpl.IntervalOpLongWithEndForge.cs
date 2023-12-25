@@ -22,11 +22,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     forgeEndTimestamp.ExprEvaluator);
             }
 
-            protected override CodegenExpression CodegenEvaluate(
-                CodegenExpressionRef startTs,
+            protected override CodegenExpression CodegenEvaluate(CodegenExpressionRef startTs,
                 CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)

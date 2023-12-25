@@ -148,17 +148,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@public @buseventtype create schema Event(host string); " +
-                          "create window DnsTrafficProfile#time(5 minutes) (host string); " +
-                          "expression double js:doSomething(p) [ " +
-                          "doSomething(p); " +
-                          "function doSomething(p) { " +
-                          "  System.Console.WriteLine(p);" +
-                          "  System.Console.WriteLine(p.length);" +
-                          " } " +
-                          "] " +
-                          "@name('out') select doSomething((select window(z.*) from DnsTrafficProfile as z)) as score from DnsTrafficProfile;" +
-                          "insert into DnsTrafficProfile select * from Event; ";
+                var epl =
+                    "@public @buseventtype create schema Event(host string); " +
+                    "create window DnsTrafficProfile#time(5 minutes) (host string); " +
+                    "expression double js:doSomething(p) [ " +
+                    "function doSomething(p) { " +
+                    "  Console.WriteLine(p);" +
+                    "  Console.WriteLine(p.length);" +
+                    " };\n" +
+                    "return doSomething(p); " +
+                    "] " +
+                    "@name('out') select doSomething((select window(z.*) from DnsTrafficProfile as z)) as score from DnsTrafficProfile;" +
+                    "insert into DnsTrafficProfile select * from Event; ";
                 env.CompileDeploy(epl, new RegressionPath());
                 env.AddListener("out");
 
@@ -176,10 +177,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             {
                 var epl =
                     "@name('s0') expression System.Collections.Generic.IList<String> js:myJSFunc(stringvalue) [\n" +
-                    "  doSomething(stringvalue);\n" +
                     "  function doSomething(stringvalue) {\n" +
                     "    return null;\n" +
                     "  }\n" +
+                    "  return doSomething(stringvalue);\n" +
                     "]\n" +
                     "select myJSFunc('test') as c0 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -197,10 +198,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression double js:myJSFunc(stringvalue) [\n" +
-                          "  calcScore(stringvalue);\n" +
                           "  function calcScore(stringvalue) {\n" +
                           "    return parseFloat(stringvalue);\n" +
                           "  }\n" +
+                          "  return calcScore(stringvalue);\n" +
                           "]\n" +
                           "select myJSFunc((select TheString from SupportBean#lastevent)) as c0 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -260,12 +261,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 string epl;
 
                 epl = "@name('s0') expression double fib(num) [" +
-                      "fib(num); " +
                       "function fib(n) { " +
                       "  if(n <= 1) " +
                       "    return n; " +
                       "  return fib(n-1) + fib(n-2); " +
                       "};" +
+                      "return fib(num); " +
                       "]" +
                       "select fib(IntPrimitive) from SupportBean";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -283,13 +284,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
 
                 epl = "@name('s0') expression boolean js:setFlag(name, value, returnValue) [\n" +
                       "  if (returnValue) epl.setScriptAttribute(name, value);\n" +
-                      "  returnValue;\n" +
+                      "  return returnValue;\n" +
                       "]\n" +
                       "expression js:getFlag(name) [\n" +
-                      "  epl.getScriptAttribute(name);\n" +
+                      "  return epl.getScriptAttribute(name);\n" +
                       "]\n" +
-                      "select getFlag('loc') as flag from SupportRFIDSimpleEvent(zone = 'Z1' and \n" +
-                      "  (setFlag('loc', true, loc = 'A') or setFlag('loc', false, loc = 'B')) )";
+                      "select getFlag('loc') as flag from SupportRFIDSimpleEvent(Zone = 'Z1' and \n" +
+                      "  (setFlag('loc', true, Loc = 'A') or setFlag('loc', false, Loc = 'B')) )";
                 env.CompileDeploy(epl);
                 env.UndeployAll();
             }
@@ -597,11 +598,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 string expression;
                 var path = new RegressionPath();
 
-                expression = "fib(num);" +
-                             "function fib(n) {" +
-                             "  if(n <= 1) return n; " +
-                             "  return fib(n-1) + fib(n-2); " +
-                             "};";
+                expression =
+                    "function fib(n) {" +
+                    "  if(n <= 1) return n; " +
+                    "  return fib(n-1) + fib(n-2); " +
+                    "};" +
+                    "return fib(num);";
+                
                 testData = new object[][] {
                     new object[] { new SupportBean("E1", 20), 6765.0 },
                 };
@@ -621,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TrySelect(
                     env,
                     path,
-                    "expression js:abc(myint) [ myint * 10 ]",
+                    "expression js:abc(myint) [ return myint * 10; ]",
                     "abc(IntPrimitive)",
                     typeof(object),
                     testData);
@@ -755,7 +758,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             string expression;
             var path = new RegressionPath();
 
-            expression = "expression void " + dialect + ":mysetter() [ epl.setScriptAttribute('a', 1); ]";
+            expression = "expression void " + dialect + ":mysetter() [ epl.SetScriptAttribute('a', 1); ]";
             testData = new object[][] {
                 new object[] { new SupportBean("E1", 20), null },
                 new object[] { new SupportBean("E1", 10), null },
@@ -770,17 +773,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             string dialect)
         {
             env.CompileDeploy(
-                "@name('s0') expression " +
-                dialect +
-                ":getFlag() [" +
-                "  epl.getScriptAttribute('flag');" +
-                "]" +
-                "expression boolean " +
-                dialect +
-                ":setFlag(flagValue) [" +
-                "  epl.setScriptAttribute('flag', flagValue);" +
-                "  flagValue;" +
-                "]" +
+                $"@name('s0') " + 
+                $"expression {dialect}:getFlag() [ return epl.GetScriptAttribute('flag'); ] " +
+                $"expression boolean {dialect}:setFlag(flagValue) [ epl.SetScriptAttribute('flag', flagValue); return flagValue; ]" +
                 "select getFlag() as val from SupportBean(TheString = 'E1' or setFlag(IntPrimitive > 0))");
             env.AddListener("s0");
 
@@ -800,7 +795,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             var path = new RegressionPath();
             env.CompileDeploy("@name('var') @public create variable long THRESHOLD = 100", path);
 
-            expression = "expression long " + dialect + ":thresholdAdder(numToAdd, th) [ th + numToAdd; ]";
+            expression = "expression long " + dialect + ":thresholdAdder(numToAdd, th) [ return th + numToAdd; ]";
             testData = new object[][] {
                 new object[] { new SupportBean("E1", 20), 120L },
                 new object[] { new SupportBean("E1", 10), 110L },
@@ -825,7 +820,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             string expression;
             var path = new RegressionPath();
 
-            expression = "expression int " + dialect + ":callIt(bean) [ bean.getIntPrimitive() + 1; ]";
+            expression = "expression int " + dialect + ":callIt(bean) [ return bean.GetIntPrimitive() + 1; ]";
             testData = new object[][] {
                 new object[] { new SupportBean("E1", 20), 21 },
                 new object[] { new SupportBean("E1", 10), 11 },
@@ -839,15 +834,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
-            var expression = "@name('s0') expression " +
-                             typeof(SupportBean).FullName +
-                             " " +
-                             dialect +
-                             ":callIt() [ new " +
-                             typeof(SupportBean).FullName +
-                             "('E1', 10); ]";
+            var expression =
+                $"@Name('s0') expression {typeof(SupportBean).FullName} {dialect}" +
+                $":callIt() [ var beanType = host.resolveType('{typeof(SupportBean).FullName}'); return host.newObj(beanType, 'E1', 10); ]";
+
             env.CompileDeploy(
-                    expression + " select callIt() as val0, callIt().TheString as val1 from SupportBean as sb")
+                    expression + " select callIt() as val0, callIt().GetTheString() as val1 from SupportBean as sb")
                 .AddListener("s0");
             env.AssertStatement(
                 "s0",
@@ -866,11 +858,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
+            var dayOfWeek = (int) DayOfWeek.Thursday;
             var msecDate = DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:00:00.000");
-            var expression = "expression long " + dialect + ":callIt() [ " + msecDate + "]";
-            var epl = "@name('s0') " +
-                      expression +
-                      " select callIt().getHourOfDay() as val0, callIt().getDayOfWeek() as val1 from SupportBean";
+            var expression = $"expression long {dialect}:callIt() [return {msecDate}]";
+            var epl = $"@Name('s0') {expression} select callIt().getHourOfDay() as val0, callIt().getDayOfWeek() as val1 from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
             env.AssertStatement(
                 "s0",
@@ -892,12 +883,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
-            var epl = "@name('s0') expression int " +
-                      dialect +
-                      ":abc(p1, p2) [p1*p2*10]\n" +
-                      "expression int " +
-                      dialect +
-                      ":abc(p1) [p1*10]\n" +
+            var epl = "@Name('s0') " +
+                      $"expression int {dialect}:abc(p1, p2) [return p1*p2*10]\n" +
+                      $"expression int {dialect}:abc(p1) [return p1*10]\n" +
                       "select abc(abc(2), 5) as c0 from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -911,9 +899,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
-            var epl = "@name('s0') expression string " +
-                      dialect +
-                      ":one() ['x']\n" +
+            var expression = "return 'x'";
+            var epl = 
+                $"@Name('s0') expression string {dialect}:one() [{expression}]\n" +
                       "select one() as c0 from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
             env.AssertStatement(
@@ -930,15 +918,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
-            var epl = "@name('s0') expression int " +
-                      dialect +
-                      ":abc() [10]\n" +
-                      "expression int " +
-                      dialect +
-                      ":abc(p1) [p1*10]\n" +
-                      "expression int " +
-                      dialect +
-                      ":abc(p1, p2) [p1*p2*10]\n" +
+            var epl =
+                "@Name('s0') " +
+                $"expression int {dialect}:abc() [return 10;]\n" +
+                $"expression int {dialect}:abc(p1) [return p1*10;]\n" +
+                $"expression int {dialect}:abc(p1, p2) [return p1*p2*10]\n" +
                       "select abc() as c0, abc(2) as c1, abc(2,3) as c2 from SupportBean";
             env.CompileDeploy(epl).AddListener("s0");
 
@@ -952,10 +936,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             RegressionEnvironment env,
             string dialect)
         {
-            var expressionOne = "expression int " + dialect + ":callOne() [1] ";
-            var expressionTwo = "expression int " + dialect + ":callTwo(a) [1] ";
-            var expressionThree = "expression int " + dialect + ":callThree(a,b) [1] ";
-            var epl = "@name('s0') " +
+            var expressionOne = "expression int " + dialect + ":callOne() [return 1] ";
+            var expressionTwo = "expression int " + dialect + ":callTwo(a) [return 1] ";
+            var expressionThree = "expression int " + dialect + ":callThree(a,b) [return 1] ";
+            var epl = "@Name('s0') " +
                       expressionOne +
                       expressionTwo +
                       expressionThree +
@@ -1019,11 +1003,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             object[][] testdata)
         {
             env.CompileDeploy(
-                    "@name('s0') " +
-                    scriptPart +
-                    " select " +
-                    selectExpr +
-                    " as val from SupportBean as sb",
+                    $"@name('s0') {scriptPart} select {selectExpr} as val from SupportBean as sb",
                     path)
                 .AddListener("s0");
             env.AssertStatement(
@@ -1047,12 +1027,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             Type type,
             object value)
         {
-            env.CompileDeploy(
-                    "@name('s0') expression js:getResultOne [" +
-                    js +
-                    "] " +
-                    "select getResultOne() from SupportBean")
-                .AddListener("s0");
+            var epl = $"@Name('s0') expression js:getResultOne [return ({js})] select getResultOne() from SupportBean"; 
+            
+            env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
             env.AssertStatement(
@@ -1066,7 +1043,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
         private static void TryAggregation(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            env.CompileDeploy("@public create expression change(open, close) [ (open - close) / close ]", path);
+            env.CompileDeploy("@public create expression change(open, close) [ return (open - close) / close; ]", path);
             env.CompileDeploy(
                     "@name('s0') select change(first(IntPrimitive), last(IntPrimitive)) as ch from SupportBean#time(1 day)",
                     path)
@@ -1145,7 +1122,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                       "  function replace(text, values, replacement){\n" +
                       "    return text.replace(replacement, values[0]);\n" +
                       "  }\n" +
-                      "  replace(\"A B C\", [\"X\"], \"B\")\n" +
+                      "  return replace(\"A B C\", [\"X\"], \"B\");\n" +
                       "]\n" +
                       "select\n" +
                       "myFunc(*)\n" +
@@ -1162,8 +1139,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.CompileWCheckedEx(expression);
                 Assert.Fail();
             }
-            catch (EPCompileException ex) {
-                Assert.IsTrue(ex.Message.Contains(part), "Message not containing text '" + part + "' : " + ex.Message);
+            catch (EPCompileException ex)
+            {
+                StringAssert.Contains(part, ex.Message);
+                //Assert.IsTrue(ex.Message.Contains(part), "Message not containing text '" + part + "' : " + ex.Message);
             }
         }
     }

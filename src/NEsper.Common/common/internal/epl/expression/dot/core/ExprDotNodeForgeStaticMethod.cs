@@ -24,18 +24,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStaticMethod : ExprDotNodeForge
     {
-        private readonly ExprNode parent;
-        private readonly bool isReturnsConstantResult;
-        private readonly string classOrPropertyName;
-        private readonly MethodInfo staticMethod;
-        private readonly ExprForge[] childForges;
-        private readonly bool isConstantParameters;
-        private readonly ExprDotForge[] chainForges;
-        private readonly ExprDotStaticMethodWrap resultWrapLambda;
-        private readonly bool rethrowExceptions;
-        private readonly ValueAndFieldDesc targetObject;
-        private readonly string optionalStatementName;
-        private readonly bool localInlinedClass;
+        private readonly ExprNode _parent;
+        private readonly bool _isReturnsConstantResult;
+        private readonly string _classOrPropertyName;
+        private readonly MethodInfo _staticMethod;
+        private readonly ExprForge[] _childForges;
+        private readonly bool _isConstantParameters;
+        private readonly ExprDotForge[] _chainForges;
+        private readonly ExprDotStaticMethodWrap _resultWrapLambda;
+        private readonly bool _rethrowExceptions;
+        private readonly ValueAndFieldDesc _targetObject;
+        private readonly string _optionalStatementName;
+        private readonly bool _localInlinedClass;
 
         public ExprDotNodeForgeStaticMethod(
             ExprNode parent,
@@ -51,44 +51,44 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             string optionalStatementName,
             bool localInlinedClass)
         {
-            this.parent = parent;
-            this.isReturnsConstantResult = isReturnsConstantResult;
-            this.classOrPropertyName = classOrPropertyName;
-            this.staticMethod = staticMethod;
-            this.childForges = childForges;
+            this._parent = parent;
+            this._isReturnsConstantResult = isReturnsConstantResult;
+            this._classOrPropertyName = classOrPropertyName;
+            this._staticMethod = staticMethod;
+            this._childForges = childForges;
             if (chainForges.Length > 0) {
-                this.isConstantParameters = false;
+                this._isConstantParameters = false;
             }
             else {
-                this.isConstantParameters = isConstantParameters;
+                this._isConstantParameters = isConstantParameters;
             }
 
-            this.chainForges = chainForges;
-            this.resultWrapLambda = resultWrapLambda;
-            this.rethrowExceptions = rethrowExceptions;
-            this.targetObject = targetObject;
-            this.optionalStatementName = optionalStatementName;
-            this.localInlinedClass = localInlinedClass;
+            this._chainForges = chainForges;
+            this._resultWrapLambda = resultWrapLambda;
+            this._rethrowExceptions = rethrowExceptions;
+            this._targetObject = targetObject;
+            this._optionalStatementName = optionalStatementName;
+            this._localInlinedClass = localInlinedClass;
         }
 
         public override ExprEvaluator ExprEvaluator {
             get {
-                var childEvals = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(childForges);
+                var childEvals = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(_childForges);
                 return new ExprDotNodeForgeStaticMethodEval(
                     this,
                     childEvals,
-                    ExprDotNodeUtility.GetEvaluators(chainForges));
+                    ExprDotNodeUtility.GetEvaluators(_chainForges));
             }
         }
 
         public override Type EvaluationType {
             get {
                 Type type;
-                if (chainForges.Length == 0) {
-                    type = staticMethod.ReturnType;
+                if (_chainForges.Length == 0) {
+                    type = _staticMethod.ReturnType;
                 }
                 else {
-                    var lastInChain = chainForges[^1];
+                    var lastInChain = _chainForges[^1];
                     var chainableType = lastInChain.TypeInfo;
                     type = chainableType.GetNormalizedType();
                 }
@@ -138,25 +138,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 codegenClassScope);
         }
 
-        public string ClassOrPropertyName => classOrPropertyName;
+        public string ClassOrPropertyName => _classOrPropertyName;
 
-        public MethodInfo StaticMethod => staticMethod;
+        public MethodInfo StaticMethod => _staticMethod;
 
-        public ExprForge[] ChildForges => childForges;
+        public ExprForge[] ChildForges => _childForges;
 
-        public bool IsConstantParameters => isConstantParameters;
+        public bool IsConstantParameters => _isConstantParameters;
 
-        public ExprDotForge[] ChainForges => chainForges;
+        public ExprDotForge[] ChainForges => _chainForges;
 
-        public ExprDotStaticMethodWrap ResultWrapLambda => resultWrapLambda;
+        public ExprDotStaticMethodWrap ResultWrapLambda => _resultWrapLambda;
 
-        public bool IsRethrowExceptions => rethrowExceptions;
+        public bool IsRethrowExceptions => _rethrowExceptions;
 
-        public ValueAndFieldDesc TargetObject => targetObject;
+        public ValueAndFieldDesc TargetObject => _targetObject;
 
-        public override ExprNodeRenderable ExprForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => _parent;
 
-        public override bool IsReturnsConstantResult => isReturnsConstantResult;
+        public override bool IsReturnsConstantResult => _isReturnsConstantResult;
 
         public override FilterExprAnalyzerAffector FilterExprAnalyzerAffector => null;
 
@@ -164,8 +164,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override string RootPropertyName => null;
 
-        public string OptionalStatementName => optionalStatementName;
+        public string OptionalStatementName => _optionalStatementName;
 
-        public override bool IsLocalInlinedClass => localInlinedClass;
+        public override bool IsLocalInlinedClass => _localInlinedClass;
     }
 } // end of namespace

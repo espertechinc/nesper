@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "@name('s0') select " +
                           "current_evaluation_context() as c0, " +
                           "current_evaluation_context(), " +
-                          "current_evaluation_context().getRuntimeURI() as c2 from SupportBean";
+                          "current_evaluation_context().GetRuntimeURI() as c2 from SupportBean";
                 var arguments = new CompilerArguments(new Configuration());
                 arguments.Options.SetStatementUserObject(
                     new SupportPortableCompileOptionStmtUserObject("my_user_object").GetValue);
@@ -82,11 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "soda=" +
-                       soda +
-                       '}';
+                return $"{this.GetType().Name}{{soda={soda}}}";
             }
         }
 

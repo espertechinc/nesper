@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var text =
-                    "@name('s0') select *, Indexed[0].mapped('0ma').Value||Indexed[0].mapped('0mb').Value as concat from SupportBeanCombinedProps#length(5)";
+                    "@name('s0') select *, Indexed[0].Mapped('0ma').Value||Indexed[0].Mapped('0mb').Value as concat from SupportBeanCombinedProps#length(5)";
                 env.CompileDeploy(text).AddListener("s0");
                 AssertCombinedProps(env);
                 env.UndeployAll();

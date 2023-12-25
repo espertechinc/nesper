@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -49,15 +49,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 GetType(),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<FlexCollection>(
+                .DeclareVar<ICollection<EventBean>>(
                     "result",
-                    FlexWrap(
                         _enumerationForge.EvaluateGetROCollectionEventsCodegen(
                             methodNode,
                             exprSymbol,
-                            codegenClassScope)))
+                            codegenClassScope))
                 .IfNullReturnNull(Ref("result"))
-                .MethodReturn(ExprDotMethod(ExprDotName(Ref("result"), "EventBeanCollection"), "ToArray"));
+                .MethodReturn(UnwrapIntoArray<EventBean>(Ref("result")));
             return LocalMethod(methodNode);
         }
 

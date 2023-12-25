@@ -604,8 +604,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
-                          "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
+                var epl =
+                    "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
+                    "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
                 var select = "@name('s0') select " +

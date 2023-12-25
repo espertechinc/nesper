@@ -9,25 +9,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public class CaseAnalysis
         {
-            private IList<UniformPair<ExprNode>> whenThenNodeList;
-            private ExprNode optionalCompareExprNode;
-            private ExprNode optionalElseExprNode;
+            private IList<UniformPair<ExprNode>> _whenThenNodeList;
+            private ExprNode _optionalCompareExprNode;
+            private ExprNode _optionalElseExprNode;
 
             public CaseAnalysis(
                 IList<UniformPair<ExprNode>> whenThenNodeList,
                 ExprNode optionalCompareExprNode,
                 ExprNode optionalElseExprNode)
             {
-                this.whenThenNodeList = whenThenNodeList;
-                this.optionalCompareExprNode = optionalCompareExprNode;
-                this.optionalElseExprNode = optionalElseExprNode;
+                this._whenThenNodeList = whenThenNodeList;
+                this._optionalCompareExprNode = optionalCompareExprNode;
+                this._optionalElseExprNode = optionalElseExprNode;
             }
 
-            public IList<UniformPair<ExprNode>> WhenThenNodeList => whenThenNodeList;
+            public IList<UniformPair<ExprNode>> WhenThenNodeList => _whenThenNodeList;
 
-            public ExprNode OptionalCompareExprNode => optionalCompareExprNode;
+            public ExprNode OptionalCompareExprNode => _optionalCompareExprNode;
 
-            public ExprNode OptionalElseExprNode => optionalElseExprNode;
+            public ExprNode OptionalElseExprNode => _optionalElseExprNode;
         }
     }
 }

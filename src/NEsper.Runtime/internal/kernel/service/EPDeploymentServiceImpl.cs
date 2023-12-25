@@ -163,7 +163,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					options.StatementNameRuntime,
 					options.StatementUserObjectRuntime,
 					options.StatementSubstitutionParameter,
-					options.DeploymentClassLoaderOption,
+					options.DeploymentTypeResolverOption,
 					_runtime);
 				statementIdRecovery.CurrentStatementId = currentStatementId + deployerResult.Statements.Length;
 

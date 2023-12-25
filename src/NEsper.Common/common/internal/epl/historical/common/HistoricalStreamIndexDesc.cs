@@ -15,15 +15,13 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
 {
     /// <summary>
     /// Descriptor for an index requirement on a historical stream.
-    /// <para/>Saves and compares the properties indexed and their types, as well as the types of key properties to
-    /// account for coercion.
+    /// <para>
+    /// Saves and compares the properties indexed and their types, as well as the types
+    /// of key properties to account for coercion.
+    /// </para>
     /// </summary>
     public class HistoricalStreamIndexDesc
     {
-        private readonly string[] indexProperties;
-        private readonly Type[] indexPropTypes;
-        private readonly Type[] keyPropTypes;
-
         /// <summary>
         /// Ctor.
         /// </summary>
@@ -35,46 +33,34 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             Type[] indexPropTypes,
             Type[] keyPropTypes)
         {
-            this.indexProperties = indexProperties;
-            this.indexPropTypes = indexPropTypes;
-            this.keyPropTypes = keyPropTypes;
+            IndexProperties = indexProperties;
+            IndexPropTypes = indexPropTypes;
+            KeyPropTypes = keyPropTypes;
         }
+        
+        public string[] IndexProperties { get; }
 
-        public override bool Equals(object o)
+        public Type[] IndexPropTypes { get; }
+
+        public Type[] KeyPropTypes { get; }
+
+        public override bool Equals(object obj)
         {
-            if (this == o) {
-                return true;
-            }
+            if (this == obj) return true;
+            if (obj == null || GetType() != obj.GetType()) return false;
 
-            if (o == null || GetType() != o.GetType()) {
-                return false;
-            }
-
-            var that = (HistoricalStreamIndexDesc)o;
-            if (!Arrays.Equals(indexPropTypes, that.indexPropTypes)) {
-                return false;
-            }
-
-            if (!Arrays.Equals(indexProperties, that.indexProperties)) {
-                return false;
-            }
-
-            if (!Arrays.Equals(keyPropTypes, that.keyPropTypes)) {
-                return false;
-            }
+            var that = (HistoricalStreamIndexDesc) obj;
+            
+            if (!Arrays.AreEqual(IndexPropTypes, that.IndexPropTypes)) return false;
+            if (!Arrays.AreEqual(IndexProperties, that.IndexProperties)) return false;
+            if (!Arrays.AreEqual(KeyPropTypes, that.KeyPropTypes)) return false;
 
             return true;
         }
 
         public override int GetHashCode()
         {
-            return HashCode.Combine(indexProperties, indexPropTypes, keyPropTypes);
+            return HashCode.Combine(IndexProperties, IndexPropTypes, KeyPropTypes);
         }
-
-        public string[] IndexProperties => indexProperties;
-
-        public Type[] IndexPropTypes => indexPropTypes;
-
-        public Type[] KeyPropTypes => keyPropTypes;
     }
 } // end of namespace

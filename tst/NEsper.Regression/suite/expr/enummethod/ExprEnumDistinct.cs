@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "@name('s0') select intArrayCollection.distinctOf() as c0, intArrayCollection.distinctOf(v => v) as c1 from SupportEventWithManyArray";
+                    "@name('s0') select IntArrayCollection.distinctOf() as c0, IntArrayCollection.distinctOf(v => v) as c1 from SupportEventWithManyArray";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 ICollection<int[]> coll = new List<int[]>();
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@name('s0') select (select * from SupportEventWithManyArray#keepall).distinctOf(r => r.intOne) as c0 " +
+                    "@name('s0') select (select * from SupportEventWithManyArray#keepall).distinctOf(r => r.IntOne) as c0 " +
                     " from SupportBean";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 

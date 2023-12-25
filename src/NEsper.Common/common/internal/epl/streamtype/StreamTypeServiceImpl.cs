@@ -572,50 +572,50 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 
         internal class PropertyNotFoundExceptionSuggestionGenMultiTyped : StreamTypesExceptionSuggestionGen
         {
-            private readonly EventType[] eventTypes;
-            private readonly string propertyName;
+            private readonly EventType[] _eventTypes;
+            private readonly string _propertyName;
 
             internal PropertyNotFoundExceptionSuggestionGenMultiTyped(
                 EventType[] eventTypes,
                 string propertyName)
             {
-                this.eventTypes = eventTypes;
-                this.propertyName = propertyName;
+                this._eventTypes = eventTypes;
+                this._propertyName = propertyName;
             }
 
-            public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(eventTypes, propertyName);
+            public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(_eventTypes, _propertyName);
         }
 
         internal class PropertyNotFoundExceptionSuggestionGenSingleTyped : StreamTypesExceptionSuggestionGen
         {
-            private readonly EventType eventType;
-            private readonly string propertyName;
+            private readonly EventType _eventType;
+            private readonly string _propertyName;
 
             internal PropertyNotFoundExceptionSuggestionGenSingleTyped(
                 EventType eventType,
                 string propertyName)
             {
-                this.eventType = eventType;
-                this.propertyName = propertyName;
+                this._eventType = eventType;
+                this._propertyName = propertyName;
             }
 
-            public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(propertyName, eventType);
+            public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(_propertyName, _eventType);
         }
 
         internal class StreamNotFoundExceptionSuggestionGen : StreamTypesExceptionSuggestionGen
         {
-            private readonly EventType[] eventTypes;
-            private readonly string streamName;
-            private readonly string[] streamNames;
+            private readonly EventType[] _eventTypes;
+            private readonly string _streamName;
+            private readonly string[] _streamNames;
 
             internal StreamNotFoundExceptionSuggestionGen(
                 EventType[] eventTypes,
                 string[] streamNames,
                 string streamName)
             {
-                this.eventTypes = eventTypes;
-                this.streamNames = streamNames;
-                this.streamName = streamName;
+                this._eventTypes = eventTypes;
+                this._streamNames = streamNames;
+                this._streamName = streamName;
             }
 
             public Pair<int, string> Suggestion {
@@ -624,25 +624,25 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                     string bestMatch = null;
                     var bestMatchDiff = int.MaxValue;
 
-                    for (var i = 0; i < eventTypes.Length; i++) {
-                        if (streamNames[i] != null) {
-                            var diff = LevenshteinDistance.ComputeLevenshteinDistance(streamNames[i], streamName);
+                    for (var i = 0; i < _eventTypes.Length; i++) {
+                        if (_streamNames[i] != null) {
+                            var diff = LevenshteinDistance.ComputeLevenshteinDistance(_streamNames[i], _streamName);
                             if (diff < bestMatchDiff) {
                                 bestMatchDiff = diff;
-                                bestMatch = streamNames[i];
+                                bestMatch = _streamNames[i];
                             }
                         }
 
-                        if (eventTypes[i] == null) {
+                        if (_eventTypes[i] == null) {
                             continue;
                         }
 
                         // If the stream name is the event type name, that is also acceptable
-                        if (eventTypes[i].Name != null) {
-                            var diff = LevenshteinDistance.ComputeLevenshteinDistance(eventTypes[i].Name, streamName);
+                        if (_eventTypes[i].Name != null) {
+                            var diff = LevenshteinDistance.ComputeLevenshteinDistance(_eventTypes[i].Name, _streamName);
                             if (diff < bestMatchDiff) {
                                 bestMatchDiff = diff;
-                                bestMatch = eventTypes[i].Name;
+                                bestMatch = _eventTypes[i].Name;
                             }
                         }
                     }

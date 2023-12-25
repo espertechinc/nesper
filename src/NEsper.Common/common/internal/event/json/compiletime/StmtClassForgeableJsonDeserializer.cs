@@ -192,7 +192,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
                 caseExprBlock
                     .AssignMember(
                         "value." + fieldName.CodeInclusionName(),
-                        FlexCast(
+                        Cast(
                             fieldType,
                             forge.DeserializerForge.CodegenDeserialize(
                                 deserializeMethod,

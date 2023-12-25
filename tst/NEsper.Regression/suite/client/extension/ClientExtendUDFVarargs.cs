@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-
+using System.Numerics;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.collection;
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             {
                 var epl = "@name('s0') select " +
                           typeof(ClientExtendUDFVarargs).FullName +
-                          ".mySupportVarArgsMethod(1, " +
+                          ".MySupportVarArgsMethod(1, " +
                           "(select * from SupportBean#keepall), (select * from SupportBean#keepall).selectFrom(v => v)) as c0 from SupportBean_S0;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -101,13 +101,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0d,3"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3L,4L"),
+                    MakePair("varargsW2Param(1, 2.0, 3L)", "1,2.0d,3L"),
                     MakePair("varargsW2Param(1, 2.0)", "1,2.0d"),
-                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0d,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0d,3,4"),
-                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0d,3,4"));
+                    MakePair("varargsW2Param(1, 2.0, 3, 4L)", "1,2.0d,3L,4L"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4L)", "1,2.0d,3L,4L"),
+                    MakePair("varargsW2Param(1, 2.0, 3, 4)", "1,2.0d,3L,4L"),
+                    MakePair("varargsW2Param(1, 2.0, 3L, 4)", "1,2.0d,3L,4L"));
 
                 RunVarargAssertion(
                     env,
@@ -132,33 +132,35 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     MakePair("varargsW2ParamWCtx('a', 'b', 1, 2)", "CTX+a,b,1,2"),
                     MakePair("varargsW2ParamWCtx('a', 'b', 1)", "CTX+a,b,1"),
                     MakePair("varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"),
-                    MakePair(typeof(SupportSingleRowFunction).FullName + ".varargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
+                    MakePair(typeof(SupportSingleRowFunction).FullName + ".VarargsW2ParamWCtx('a', 'b')", "CTX+a,b,"));
+
+                var bigInteger = typeof(BigInteger).FullName;
+                
+                RunVarargAssertion(
+                    env,
+                    milestone,
+                    MakePair($"varargsOnlyObject('a', 1, {bigInteger}.Parse('2'))", "\"a\",1,2"),
+                    MakePair($"varargsOnlyNumber(1f, 2L, 3, {bigInteger}.Parse('4'))", "1.0f,2L,3,4"));
 
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsOnlyObject('a', 1, new BigInteger('2'))", "a,1,2"),
-                    MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
-
-                RunVarargAssertion(
-                    env,
-                    milestone,
-                    MakePair("varargsOnlyNumber(1f, 2L, 3, new BigInteger('4'))", "1.0,2,3,4"));
+                    MakePair($"varargsOnlyNumber(1f, 2L, 3, {bigInteger}.Parse('4'))", "1.0f,2L,3,4"));
 
                 RunVarargAssertion(
                     env,
                     milestone,
                     MakePair(
                         "varargsOnlyISupportBaseAB(new " + typeof(ISupportBImpl).FullName + "('a', 'b'))",
-                        "ISupportBImpl{valueB='a', valueBaseAB='b'}"));
+                        "ISupportBImpl{ValueB='a', ValueBaseAB='b'}"));
 
                 // tests for array-passthru
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsOnlyString({'a'})", "a"),
-                    MakePair("varargsOnlyString({'a', 'b'})", "a,b"),
-                    MakePair("varargsOnlyObject({'a', 'b'})", "a,b"),
+                    MakePair("varargsOnlyString({'a'})", "\"a\""),
+                    MakePair("varargsOnlyString({'a', 'b'})", "\"a\",\"b\""),
+                    MakePair("varargsOnlyObject({'a', 'b'})", "\"a\",\"b\""),
                     MakePair("varargsOnlyObject({})", ""),
                     MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
                     MakePair("varargsW1ParamObjectsWCtx(1, new object[] {'a', 1})", "CTX+,1,a,1")

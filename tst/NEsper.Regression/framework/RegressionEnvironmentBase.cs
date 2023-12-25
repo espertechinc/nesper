@@ -936,13 +936,8 @@ namespace com.espertech.esper.regressionlib.framework
 			string epl,
 			string message)
 		{
-			try {
-				CompileWCheckedEx(epl);
-				Assert.Fail();
-			}
-			catch (EPCompileException ex) {
-				AssertMessage(ex, message);
-			}
+			var ex = Assert.Throws<EPCompileException>(() => CompileWCheckedEx(epl));
+			AssertMessage(ex, message);
 		}
 
 		public void TryInvalidCompile(
@@ -950,13 +945,8 @@ namespace com.espertech.esper.regressionlib.framework
 			string epl,
 			string message)
 		{
-			try {
-				CompileWCheckedEx(epl, path);
-				Assert.Fail();
-			}
-			catch (EPCompileException ex) {
-				AssertMessage(ex, message);
-			}
+			var ex = Assert.Throws<EPCompileException>(() => CompileWCheckedEx(epl, path));
+			AssertMessage(ex, message);
 		}
 
 		public void TryInvalidCompileFAF(
@@ -964,15 +954,14 @@ namespace com.espertech.esper.regressionlib.framework
 			string faf,
 			string expected)
 		{
-			try {
+			var ex = Assert.Throws<EPCompileException>(() =>
+			{
 				var args = new CompilerArguments(Configuration);
 				args.Path.AddAll(path.Compileds);
 				Compiler.CompileQuery(faf, args);
-				Assert.Fail();
-			}
-			catch (EPCompileException ex) {
-				AssertMessage(ex, expected);
-			}
+			});
+
+			AssertMessage(ex, expected);
 		}
 
 		public void RuntimeSetVariable(

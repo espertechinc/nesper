@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var epl =
                     "create table MyTable(dbls double[]);\n" +
-                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new System.Double[3] as dbls;\n" +
+                    "@priority(2) on SupportBean merge MyTable when not matched then insert select new `System.Nullable<System.Double>`[3] as dbls;\n" +
                     "@priority(1) on SupportBean merge MyTable when matched then update set dbls[IntPrimitive] = 1;\n" +
                     "@name('s0') select MyTable.dbls as c0 from SupportBean;\n";
                 env.CompileDeploy(epl).AddListener("s0");
@@ -101,7 +101,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertEventNew(
                     "s0",
-                    @event => CollectionAssert.AreEqual(new double?[] { null, 1d, null }, @event.Get("c0").UnwrapIntoArray<double?>()));
+                    @event => CollectionAssert.AreEqual(
+                        new double?[] { null, 1d, null },
+                        @event.Get("c0").UnwrapIntoArray<double?>()));
 
                 env.UndeployAll();
             }
@@ -132,12 +134,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "" +
                     "inlined_class \"\"\"\n" +
                     "  public class Helper {\n" +
-                    "    public static double computeInitialValue(double alpha, double[] burnValues) {\n" +
-                    "      double Total = 0;\n" +
+                    "    public static double ComputeInitialValue(double alpha, double[] burnValues) {\n" +
+                    "      double total = 0;\n" +
                     "      for (int i = 0; i < burnValues.Length; i++) {\n" +
-                    "        Total = Total + burnValues[i];\n" +
+                    "        total = total + burnValues[i];\n" +
                     "      }\n" +
-                    "      double value = Total / burnValues.Length;\n" +
+                    "      double value = total / burnValues.Length;\n" +
                     "      for (int i = 0; i < burnValues.Length; i++) {\n" +
                     "        value = alpha * burnValues[i] + (1 - alpha) * value;\n" +
                     "      }\n" +
@@ -148,11 +150,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "// Update the 'value' field with the current value\n" +
                     "@priority(1) on MyEvent merge EMA as ema\n" +
                     "  when matched and cnt < BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1\n" +
-                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.computeInitialValue(ALPHA, burnValues), burnValues = null\n" +
+                    "  when matched and cnt = BURN_LENGTH - 1 then update set burnValues[cnt] = x, cnt = cnt + 1, value = Helper.ComputeInitialValue(ALPHA, burnValues), burnValues = null\n" +
                     "  when matched then update set value = ALPHA * x + (1 - ALPHA) * value;\n" +
                     "" +
                     "// Output value\n" +
-                    "@name('output') select EMA.Value as burn from MyEvent;\n";
+                    "@name('output') select EMA.value as burn from MyEvent;\n";
                 env.CompileDeploy(epl).AddListener("output");
 
                 SendAssertEMA(env, "E1", 1, null);

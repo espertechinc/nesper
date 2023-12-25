@@ -8,11 +8,13 @@
 
 using System;
 using System.Collections.Generic;
+using System.Reflection;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
@@ -81,15 +83,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var innerTypeBoxed = _resultType.GetCodegenReturnType().GetBoxedType();
-            var innerTypeCollection = typeof(ICollection<>).MakeGenericType(innerTypeBoxed);
+            var innerType = _resultType.GetCodegenReturnType();
+            var innerTypeBoxed = innerType.GetBoxedType();
+            //var innerTypeCollection = typeof(ICollection<>).MakeGenericType(innerTypeBoxed);
 
             var block = codegenMethodScope
                 .MakeChild(innerTypeBoxed, typeof(EnumMinMaxScalarNoParam), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
-                .DeclareVar(innerTypeCollection, "coll", EnumForgeCodegenNames.REF_ENUMCOLL);
+                .DeclareVar(args.EnumcollType, "coll", EnumForgeCodegenNames.REF_ENUMCOLL);
 
             var forEach = block
                 .ForEach(innerTypeBoxed, "value", Ref("coll"))

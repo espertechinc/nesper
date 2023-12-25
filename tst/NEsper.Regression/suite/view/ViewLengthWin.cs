@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBeanComplexProps = com.espertech.esper.common.@internal.support.SupportBeanComplexProps; // assertEquals
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -176,13 +176,16 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select mapped('keyOne') as a," +
-                          "indexed[1] as b, nested.NestedNested.NestedNestedValue as c, mapProperty, " +
+                var epl = "@name('s0') select " +
+                          "Mapped('keyOne') as a," +
+                          "Indexed[1] as b, " +
+                          "Nested.NestedNested.NestedNestedValue as c, " +
+                          "MapProperty, " +
                           "ArrayProperty[0] " +
                           "  from SupportBeanComplexProps#length(3) " +
-                          " where mapped('keyOne') = 'valueOne' and " +
-                          " indexed[1] = 2 and " +
-                          " nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
+                          " where Mapped('keyOne') = 'valueOne' and " +
+                          " Indexed[1] = 2 and " +
+                          " Nested.NestedNested.NestedNestedValue = 'NestedNestedValue'";
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 var eventObject = SupportBeanComplexProps.MakeDefaultBean();
@@ -193,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
                         Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
                         Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
-                        Assert.AreEqual(eventObject.MapProperty, theEvent.Get("mapProperty"));
+                        Assert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
                         Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
                     });
 
@@ -228,7 +231,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "ABC", 20d }, new object[] { "DEF", 100d } });
+                    new object[][] {
+                        new object[] { "ABC", 20d },
+                        new object[] { "DEF", 100d }
+                    });
 
                 SendEvent(env, "EFG", 50);
 
@@ -237,7 +243,10 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "DEF", 100d }, new object[] { "EFG", 50d }, });
+                    new object[][] {
+                        new object[] { "DEF", 100d },
+                        new object[] { "EFG", 50d },
+                    });
 
                 env.UndeployAll();
             }

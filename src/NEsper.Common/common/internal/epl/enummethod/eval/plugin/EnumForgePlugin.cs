@@ -228,7 +228,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
             }
 
             methodNode.Block.MethodReturn(
-                FlexCast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
+                Cast(_expectedStateReturnType, ExprDotName(Ref("state"), "State")));
 
             return LocalMethod(methodNode, args.Eps, args.Enumcoll, args.IsNewData, args.ExprCtx);
         }

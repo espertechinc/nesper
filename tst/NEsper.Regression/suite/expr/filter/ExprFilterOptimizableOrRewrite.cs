@@ -334,12 +334,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_StringAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.EQUAL), new FilterItem("b", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.EQUAL), new FilterItem("B", FilterOperator.EQUAL)
                                 },
                                 new FilterItem[]
-                                    { new FilterItem("a", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
+                                    { new FilterItem("A", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
                                 new FilterItem[]
-                                    { new FilterItem("b", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
+                                    { new FilterItem("B", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
                                 new FilterItem[] { FilterItem.BoolExprFilterItem },
                             });
                     }
@@ -347,11 +347,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     SendAssertEvents(
                         env,
                         new object[] {
-                            StringEvent("a", "b"), StringEvent("A1", "b"), StringEvent("a", "B1"),
+                            StringEvent("A", "B"), StringEvent("A1", "B"), StringEvent("A", "B1"),
                             StringEvent("A1", "B1")
                         },
                         new object[] {
-                            StringEvent("x", "b"), StringEvent("a", "x"), StringEvent("A1", "C"), StringEvent("C", "B1")
+                            StringEvent("x", "B"), StringEvent("A", "x"), StringEvent("A1", "C"), StringEvent("C", "B1")
                         }
                     );
                     env.UndeployAll();
@@ -377,17 +377,25 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_StringAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[]
-                                    { new FilterItem("b", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
+                                    { new FilterItem("B", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
                                 new FilterItem[]
-                                    { new FilterItem("c", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
+                                    { new FilterItem("C", FilterOperator.EQUAL), FilterItem.BoolExprFilterItem },
                             });
                     }
 
                     SendAssertEvents(
                         env,
-                        new object[] { StringEvent("a1", "b", null), StringEvent("a1", null, "c") },
                         new object[]
-                            { StringEvent("x", "b", null), StringEvent("a1", null, null), StringEvent("a1", null, "x") }
+                        {
+                            StringEvent("a1", "b", null),
+                            StringEvent("a1", null, "c")
+                        },
+                        new object[]
+                        {
+                            StringEvent("x", "b", null),
+                            StringEvent("a1", null, null),
+                            StringEvent("a1", null, "x")
+                        }
                     );
                     env.UndeployAll();
                 }
@@ -412,11 +420,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_IntAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
                                     FilterItem.BoolExprFilterItem
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
                                     FilterItem.BoolExprFilterItem
                                 },
                             });
@@ -450,12 +458,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_IntAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
-                                    new FilterItem("a", FilterOperator.NOT_EQUAL)
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("A", FilterOperator.NOT_EQUAL)
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
-                                    new FilterItem("a", FilterOperator.NOT_EQUAL)
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("A", FilterOperator.NOT_EQUAL)
                                 },
                             });
                     }
@@ -488,12 +496,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_IntAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
-                                    new FilterItem("b", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("B", FilterOperator.EQUAL)
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.NOT_IN_LIST_OF_VALUES),
-                                    new FilterItem("c", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.NOT_IN_LIST_OF_VALUES),
+                                    new FilterItem("C", FilterOperator.EQUAL)
                                 },
                             });
                     }
@@ -538,8 +546,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                     SendAssertEvents(
                         env,
-                        new SupportBean[] { MakeEvent("a", 1, 0), MakeEvent("a", 0, 10), MakeEvent("a", 1, 10) },
-                        new SupportBean[] { MakeEvent("x", 0, 0), MakeEvent("a", 2, 20), MakeEvent("x", 1, 10) }
+                        new SupportBean[] { MakeEvent("A", 1, 0), MakeEvent("A", 0, 10), MakeEvent("A", 1, 10) },
+                        new SupportBean[] { MakeEvent("x", 0, 0), MakeEvent("A", 2, 20), MakeEvent("x", 1, 10) }
                     );
                     env.UndeployAll();
                 }
@@ -564,20 +572,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             "SupportBean_IntAlphabetic",
                             new FilterItem[][] {
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.EQUAL),
-                                    new FilterItem("b", FilterOperator.EQUAL), new FilterItem("d", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.EQUAL),
+                                    new FilterItem("B", FilterOperator.EQUAL), new FilterItem("D", FilterOperator.EQUAL)
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.EQUAL),
-                                    new FilterItem("c", FilterOperator.EQUAL), new FilterItem("d", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.EQUAL),
+                                    new FilterItem("C", FilterOperator.EQUAL), new FilterItem("D", FilterOperator.EQUAL)
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.EQUAL),
-                                    new FilterItem("c", FilterOperator.EQUAL), new FilterItem("e", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.EQUAL),
+                                    new FilterItem("C", FilterOperator.EQUAL), new FilterItem("E", FilterOperator.EQUAL)
                                 },
                                 new FilterItem[] {
-                                    new FilterItem("a", FilterOperator.EQUAL),
-                                    new FilterItem("b", FilterOperator.EQUAL), new FilterItem("e", FilterOperator.EQUAL)
+                                    new FilterItem("A", FilterOperator.EQUAL),
+                                    new FilterItem("B", FilterOperator.EQUAL), new FilterItem("E", FilterOperator.EQUAL)
                                 },
                             });
                     }

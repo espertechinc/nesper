@@ -1759,7 +1759,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "EventBusSource -> ReceivedStream<SupportBean> { filter : 1 = 2 } " +
                     "DefaultSupportCaptureOp(ReceivedStream) {}");
 
-                var future = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var future = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(future));
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);

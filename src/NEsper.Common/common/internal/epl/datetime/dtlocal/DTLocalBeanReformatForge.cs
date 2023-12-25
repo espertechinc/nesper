@@ -20,10 +20,10 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
 {
     public class DTLocalBeanReformatForge : DTLocalForge
     {
-        private readonly EventPropertyGetterSPI getter;
-        private readonly Type getterResultType;
-        private readonly DTLocalForge inner;
-        private readonly Type returnType;
+        private readonly EventPropertyGetterSPI _getter;
+        private readonly Type _getterResultType;
+        private readonly DTLocalForge _inner;
+        private readonly Type _returnType;
 
         public DTLocalBeanReformatForge(
             EventPropertyGetterSPI getter,
@@ -31,13 +31,13 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             DTLocalForge inner,
             Type returnType)
         {
-            this.getter = getter;
-            this.getterResultType = getterResultType;
-            this.inner = inner;
-            this.returnType = returnType;
+            _getter = getter;
+            _getterResultType = getterResultType;
+            _inner = inner;
+            _returnType = returnType;
         }
 
-        public DTLocalEvaluator DTEvaluator => new DTLocalBeanReformatEval(getter, inner.DTEvaluator);
+        public DTLocalEvaluator DTEvaluator => new DTLocalBeanReformatEval(_getter, _inner.DTEvaluator);
 
         public CodegenExpression Codegen(
             CodegenExpression target,
@@ -47,20 +47,23 @@ namespace com.espertech.esper.common.@internal.epl.datetime.dtlocal
             CodegenClassScope codegenClassScope)
         {
             var methodNode = codegenMethodScope
-                .MakeChild(returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
+                .MakeChild(_returnType, typeof(DTLocalBeanReformatForge), codegenClassScope)
                 .AddParam<EventBean>("target");
 
             var block = methodNode.Block
                 .DeclareVar(
-                    getterResultType,
+                    _getterResultType,
                     "timestamp",
-                    getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope));
-            if (!getterResultType.IsPrimitive) {
+                    _getter.EventBeanGetCodegen(Ref("target"), methodNode, codegenClassScope));
+            if (!_getterResultType.IsPrimitive) {
                 block.IfRefNullReturnNull("timestamp");
             }
 
+            var derefTimestamp = Unbox(Ref("timestamp"), _getterResultType);
+
             block.MethodReturn(
-                inner.Codegen(Ref("timestamp"), getterResultType, methodNode, exprSymbol, codegenClassScope));
+                _inner.Codegen(
+                    derefTimestamp, _getterResultType, methodNode, exprSymbol, codegenClassScope));
             return LocalMethod(methodNode, target);
         }
     }

@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
@@ -261,17 +262,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.TryInvalidCompile(
                     path,
                     "insert into TypeOne select (select * from SupportBean_S0#keepall) as sbs from SupportBean_S1",
-                    "Incompatible type detected attempting to insert into column 'sbs' type '" +
-                    typeof(SupportBean).Name +
-                    "' compared to selected type 'SupportBean_S0'");
+                    $"Incompatible type detected attempting to insert into column 'sbs' type '{typeof(SupportBean).CleanName()}' compared to selected type 'SupportBean_S0' [insert into TypeOne select (select * from SupportBean_S0#keepall) as sbs from SupportBean_S1]");
 
                 env.CompileDeploy("@public create schema TypeTwo(sbs SupportBean)", path);
                 env.TryInvalidCompile(
                     path,
                     "insert into TypeTwo select (select * from SupportBean_S0#keepall) as sbs from SupportBean_S1",
-                    "Incompatible type detected attempting to insert into column 'sbs' type '" +
-                    typeof(SupportBean).Name +
-                    "' compared to selected type 'SupportBean_S0'");
+                    $"Incompatible type detected attempting to insert into column 'sbs' type '{typeof(SupportBean).CleanName()}' compared to selected type 'SupportBean_S0'");
 
                 env.UndeployAll();
             }

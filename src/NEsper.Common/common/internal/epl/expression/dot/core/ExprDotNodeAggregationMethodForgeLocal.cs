@@ -22,7 +22,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeAggregationMethodForgeLocal : ExprDotNodeAggregationMethodForge
     {
-        private readonly ExprAggMultiFunctionNode agg;
+        private readonly ExprAggMultiFunctionNode _agg;
 
         public ExprDotNodeAggregationMethodForgeLocal(
             ExprDotNodeImpl parent,
@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprAggMultiFunctionNode agg)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this.agg = agg;
+            this._agg = agg;
         }
 
         protected override string TableName => null;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            var future = agg.GetAggFuture(classScope);
+            var future = _agg.GetAggFuture(classScope);
             var method = parent.MakeChild(requiredType, GetType(), classScope);
             method.Block
                 .DeclareVar<AggregationRow>("row",
@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         ExprDotMethod(
                             GetReader(classScope),
                             readerMethodName,
-                            Constant(agg.Column),
+                            Constant(_agg.Column),
                             Ref("row"),
                             symbols.GetAddEps(method),
                             symbols.GetAddIsNewData(method),
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            agg.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
+            _agg.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
         }
     }
 } // end of namespace

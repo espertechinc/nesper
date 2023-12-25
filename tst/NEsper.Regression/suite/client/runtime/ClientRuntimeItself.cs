@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
                     .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
-                Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("prop"));
+                Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
             }
         }
 
@@ -98,10 +98,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 spi.TraverseStatements(myTraverse.Accept);
                 myTraverse.AssertAndReset(env.Statement("a"), env.Statement("b"));
 
-                var filter = spi.StatementSelectionSvc.CompileFilterExpression("name='b'");
+                var filter = spi.StatementSelectionSvc.CompileFilterExpression("Name='b'");
                 spi.StatementSelectionSvc.TraverseStatementsFilterExpr(myTraverse.Accept, filter);
                 myTraverse.AssertAndReset(env.Statement("b"));
-                spi.StatementSelectionSvc.CompileFilterExpression("deploymentId like 'x'");
+                spi.StatementSelectionSvc.CompileFilterExpression("DeploymentId like 'x'");
 
                 spi.StatementSelectionSvc.TraverseStatementsContains(myTraverse.Accept, "xxx");
                 myTraverse.AssertAndReset(env.Statement("b"));

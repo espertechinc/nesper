@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
     {
         EPChainableType TypeInfo { get; }
 
-        ICollection<EventBean> ConvertNonNull(object result);
+        object ConvertNonNull(object result);
 
         CodegenExpression CodegenConvertNonNull(
             CodegenExpression result,

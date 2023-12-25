@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.context.util;
 namespace com.espertech.esper.runtime.client.option
 {
 	/// <summary>
-	///     Provides the environment to <seealso cref="DeploymentClassLoaderOption" />.
+	///     Provides the environment to <seealso cref="DeploymentTypeResolverOption" />.
 	/// </summary>
 	public class DeploymentClassLoaderContext
     {

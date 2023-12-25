@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c5"));
                         Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c6"));
                         Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c7"));
-                        Assert.AreEqual(typeof(int?[][]), @out.GetPropertyType("c8"));
+                        Assert.AreEqual(typeof(int[][]), @out.GetPropertyType("c8"));
                         Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c9"));
                         Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c10"));
                         Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c11"));
@@ -154,18 +154,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             "c0,c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12".SplitCsv(),
                             new object[] {
                                 new char[][] { },
-                                new double[][] { new double[] { 1 } },
-                                new int[][] { new int[] { 1 }, new int[] { 2, 10 } },
-                                new float[][] { new float[] { }, new float[] { 1 }, new float[] { 2.0f } },
-                                new long[][] { new long[] { 1L, long.MaxValue, -1L } },
+                                new[] { new double[] { 1 } },
+                                new[] { new[] { 1 }, new[] { 2, 10 } },
+                                new[] { new float[] { }, new float[] { 1 }, new[] { 2.0f } },
+                                new[] { new[] { 1L, long.MaxValue, -1L } },
                                 new string[][] { },
-                                new string[][]
-                                    { new string[] { }, new string[] { }, new string[] { "x" }, new string[] { } },
-                                new string[][] { new string[] { "x", "y" }, new string[] { "z" } },
-                                new int?[][] { new int?[] { 2, 2 + 1 }, new int?[] { 2 + 2, 2 + 3 } },
+                                new[] { new string[] { }, new string[] { }, new[] { "x" }, new string[] { } },
+                                new[] { new[] { "x", "y" }, new[] { "z" } },
+                                new[] { new[] { 2, 2 + 1 }, new[] { 2 + 2, 2 + 3 } },
                                 new DateTimeEx[][] { },
-                                new object[][] { new object[] { } }, new object[][] { new object[] { 1 } },
-                                new object[][] { new object[] { "x" }, new object[] { 1 }, new object[] { 10L } }
+                                new[] { new object[] { } }, new[] { new object[] { 1 } },
+                                new[] { new object[] { "x" }, new object[] { 1 }, new object[] { 10L } }
                             });
                     });
 
@@ -216,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c5"));
                         Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c6"));
                         Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c7"));
-                        Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c8"));
+                        Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c8"));
                         Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c9"));
                         Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c10"));
                         Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c11"));
@@ -229,13 +228,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         fields,
                         Array.Empty<char>(),
                         new double[] { 1 },
-                        new int[] { 1, 2, 10 },
+                        new[] { 1, 2, 10 },
                         new float[] { 1, 2 },
-                        new long[] { 1, long.MaxValue, -1 },
+                        new[] { 1, long.MaxValue, -1 },
                         Array.Empty<string>(),
-                        new string[] { "x" },
-                        new string[] { "x", "y" },
-                        new int?[] { 2, 3, 4, 5 },
+                        new[] { "x" },
+                        new[] { "x", "y" },
+                        new[] { 2, 3, 4, 5 },
                         Array.Empty<DateTimeEx>(),
                         Array.Empty<object>(),
                         new object[] { 1 },
@@ -454,7 +453,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // try shallow invalid cases
                 env.TryInvalidCompile(
                     "select new Dummy() from SupportBean",
-					"Failed to validate select-clause expression 'new Dummy()': Failed to resolve new-operator class name 'Dummy'");
+					"Failed to validate select-clause expression 'new Dummy()': Failed to resolve type parameter 'Dummy'");
 
                 env.TryInvalidCompile(
                     "select new SupportPrivateCtor() from SupportBean",
@@ -499,7 +498,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 				          "new SupportBean(\"ABC\",0).GetTheString() as c3 " +
                           "from SupportBean";
                 env.CompileDeploy(soda, epl).AddListener("s0");
-                var expectedAggType = new object[][] {
+                var expectedAggType = new[]
+                {
                     new object[] { "c0", typeof(SupportBean) },
                     new object[] { "new SupportBean(\"B\",IntPrimitive+10)", typeof(SupportBean) }
                 };

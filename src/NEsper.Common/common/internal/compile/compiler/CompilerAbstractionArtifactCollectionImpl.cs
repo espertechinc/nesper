@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.@internal.compile.compiler
 {
     public class CompilerAbstractionArtifactCollectionImpl : CompilerAbstractionArtifactCollection
     {
-        private readonly IList<IArtifact> _artifacts = new List<IArtifact>();
+        private readonly ISet<IArtifact> _artifacts = new HashSet<IArtifact>();
 
         public ICollection<IArtifact> Artifacts => _artifacts;
 
@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.compile.compiler
             _artifacts.Add(artifact);
         }
 
-        public void Remove(string name)
+        public void Remove(IArtifact artifact)
         {
-            throw new NotSupportedException();
+            _artifacts.Remove(artifact);
         }
     }
 } // end of namespace

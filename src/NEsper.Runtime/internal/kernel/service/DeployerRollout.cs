@@ -45,7 +45,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			// per-deployment: obtain module providers
 			var moduleProviders = new ModuleProviderCLPair[items.Length];
 			for (var i = 0; i < items.Length; i++) {
-				var classLoader = DeployerHelperResolver.GetClassLoader(i, items[i].Options.DeploymentClassLoaderOption, runtime.ServicesContext);
+				var classLoader = DeployerHelperResolver.GetTypeResolver(i, items[i].Options.DeploymentTypeResolverOption, runtime.ServicesContext);
 				try {
 					moduleProviders[i] = ModuleProviderUtil.Analyze(
 						items[i].Compiled,

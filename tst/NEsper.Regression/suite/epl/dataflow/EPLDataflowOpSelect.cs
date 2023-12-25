@@ -240,7 +240,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.AdvanceTime(0);
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -417,7 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -478,7 +478,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                             "DefaultSupportCaptureOp(outstream) {}\n";
                 env.CompileDeploy(graph);
 
-                var capture = new DefaultSupportCaptureOp<object>(env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(env.Container.LockManager());
                 var operators = CollectionUtil.PopulateNameValueMap("DefaultSupportCaptureOp", capture);
 
                 var options =
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                           "  DefaultSupportCaptureOp(outstream) {}\n";
 
                 env.CompileDeploy(epl);
-                var capture = new DefaultSupportCaptureOp<object>(1, env.Container.LockManager());
+                var capture = new DefaultSupportCaptureOp(1, env.Container.LockManager());
                 var options = new EPDataFlowInstantiationOptions();
                 options.WithOperatorProvider(new DefaultSupportGraphOpProvider(capture));
                 var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "OutputFlow", options);
@@ -620,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(graph);
 
             var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
+            var capture = new DefaultSupportCaptureOp(2, env.Container.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
             var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);

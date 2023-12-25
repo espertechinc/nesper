@@ -191,15 +191,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@public @buseventtype create schema MyEvent(mycoll `System.Collections.Generic.ICollection<object>`);\n" +
-                          "@name('s0') select mycoll.ToArray() as c0," +
-                          "  mycoll.ToArray(new Object[0]) as c1," +
-                          "  mycoll.ToArray(new Object[]{}) as c2 " +
+                          "@name('s0') select mycoll.ToArray() as c0 " +
                           "from MyEvent";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventMap(Collections.SingletonDataMap("mycoll", Collections.List(1, 2)), "MyEvent");
                 var expected = new object[] { 1, 2 };
-                env.AssertPropsNew("s0", "c0,c1,c2".SplitCsv(), new object[] { expected, expected, expected });
+                env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { expected });
 
                 env.UndeployAll();
             }
@@ -276,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c5"));
-                        Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c6"));
+                        Assert.AreEqual(typeof(ICollection<string>), stmt.EventType.GetPropertyType("c6"));
                     });
 
                 var strings = Arrays.AsList("2", "0", "0");

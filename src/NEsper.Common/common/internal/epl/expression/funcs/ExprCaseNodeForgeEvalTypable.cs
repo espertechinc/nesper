@@ -21,13 +21,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCaseNodeForgeEvalTypable : ExprTypableReturnEval
     {
-        private readonly ExprCaseNodeForge forge;
-        private readonly ExprEvaluator evaluator;
+        private readonly ExprCaseNodeForge _forge;
+        private readonly ExprEvaluator _evaluator;
 
         public ExprCaseNodeForgeEvalTypable(ExprCaseNodeForge forge)
         {
-            this.forge = forge;
-            evaluator = forge.ExprEvaluator;
+            this._forge = forge;
+            _evaluator = forge.ExprEvaluator;
         }
 
         public object Evaluate(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return evaluator.Evaluate(eventsPerStream, isNewData, context);
+            return _evaluator.Evaluate(eventsPerStream, isNewData, context);
         }
 
         public object[] EvaluateTypableSingle(
@@ -44,10 +44,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprEvaluatorContext context)
         {
             var map =
-                (IDictionary<string, object>)evaluator.Evaluate(eventsPerStream, isNewData, context);
+                (IDictionary<string, object>)_evaluator.Evaluate(eventsPerStream, isNewData, context);
             var row = new object[map.Count];
             var index = -1;
-            foreach (var entry in forge.mapResultType) {
+            foreach (var entry in _forge.mapResultType) {
                 index++;
                 row[index] = map.Get(entry.Key);
             }

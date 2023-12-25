@@ -24,11 +24,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withn(execs); // testNoShare
+            WithSubqUncorrelAssertion(execs); // testNoShare
             return execs;
         }
 
-        public static IList<RegressionExecution> Withn(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithSubqUncorrelAssertion(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             // named window tests

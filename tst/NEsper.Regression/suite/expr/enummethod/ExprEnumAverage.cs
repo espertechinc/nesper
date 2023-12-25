@@ -192,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 epl = "select Strvals.average() from SupportCollection";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'Strvals.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received collection of System.String [select Strvals.average() from SupportCollection]");
+                    "Failed to validate select-clause expression 'Strvals.average()': Invalid input for built-in enumeration method 'average' and 0-parameter footprint, expecting collection of numeric values as input, received System.Collections.Generic.ICollection<System.String> [select Strvals.average() from SupportCollection]");
 
                 epl = "select Beans.average() from SupportBean_Container";
                 env.TryInvalidCompile(

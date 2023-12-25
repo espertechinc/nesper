@@ -26,29 +26,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     public class ExprTypeofNodeForgeStreamEvent : ExprTypeofNodeForge,
         ExprEvaluator
     {
-        private readonly ExprTypeofNode parent;
-        private readonly int streamNum;
+        private readonly ExprTypeofNode _parent;
+        private readonly int _streamNum;
 
         public ExprTypeofNodeForgeStreamEvent(
             ExprTypeofNode parent,
             int streamNum)
         {
-            this.parent = parent;
-            this.streamNum = streamNum;
+            this._parent = parent;
+            this._streamNum = streamNum;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
         public override ExprEvaluator ExprEvaluator => this;
 
-        public override ExprNodeRenderable ExprForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public object Evaluate(
             EventBean[] eventsPerStream,
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var @event = eventsPerStream[streamNum];
+            var @event = eventsPerStream[_streamNum];
             if (@event == null) {
                 return null;
             }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(streamNum)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_streamNum)))
                 .IfRefNullReturnNull("@event")
                 .IfCondition(InstanceOf(Ref("@event"), typeof(VariantEvent)))
                 .BlockReturn(

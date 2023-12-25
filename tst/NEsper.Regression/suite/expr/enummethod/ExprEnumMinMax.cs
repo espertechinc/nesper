@@ -14,11 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
-// INTEGERBOXED
-// STRING
-using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
-
-// assertTypesAllSame
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -76,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportEventWithLongArray");
-                builder.WithExpression(fields[0], "coll.max().minus(1 minute) >= coll.min()");
+                builder.WithExpression(fields[0], "Coll.max().minus(1 minute) >= Coll.min()");
 
                 builder.WithAssertion(
                         new SupportEventWithLongArray("E1", new long[] { 150000, 140000, 200000, 190000 }))
@@ -219,12 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
         public class MyEvent
         {
-            private MyEvent myevent;
-
-            public MyEvent GetMyevent()
-            {
-                return myevent;
-            }
+            public MyEvent Myevent { get; }
         }
     }
 } // end of namespace

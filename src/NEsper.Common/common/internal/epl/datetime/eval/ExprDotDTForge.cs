@@ -70,14 +70,15 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
+            var methodReturnType = _returnType.Clazz.GetBoxedType();
             var methodNode = parent
-                .MakeChild(_returnType.Clazz, typeof(ExprDotDTForge), classScope)
+                .MakeChild(methodReturnType, typeof(ExprDotDTForge), classScope)
                 .AddParam(innerType, "target");
 
             var targetValue = Unbox(Ref("target"), innerType);
             var block = methodNode.Block;
 
-            if (!innerType.CanBeNull()) {
+            if (innerType.CanBeNull()) {
                 block.IfRefNullReturnNull("target");
             }
 
@@ -221,7 +222,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.eval
 
             // interval op and have end timestamp
             var propertyNameEnd = inputEventType.EndTimestampPropertyName;
-            var getterEndTimestamp = ((EventTypeSPI)inputEventType).GetGetterSPI(propertyNameEnd);
+            var getterEndTimestamp = ((EventTypeSPI) inputEventType).GetGetterSPI(propertyNameEnd);
             var getterEndType = inputEventType.GetPropertyType(propertyNameEnd);
             CheckNotNull(getterEndType, propertyNameEnd);
             var innerX = (DTLocalForgeIntervalComp)GetForge(

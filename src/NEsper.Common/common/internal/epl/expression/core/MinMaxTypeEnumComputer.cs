@@ -6,6 +6,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
@@ -48,22 +49,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 codegenClassScope);
             var block = methodNode.Block;
 
-            var r0TypeClass = r0Type;
-            var r1TypeClass = r1Type;
-
             block.DeclareVar(
-                r0TypeClass,
+                r0Type,
                 "r0",
-                nodes[0].Forge.EvaluateCodegen(r0TypeClass, methodNode, exprSymbol, codegenClassScope));
-            if (!r0TypeClass.IsPrimitive) {
+                nodes[0].Forge.EvaluateCodegen(r0Type, methodNode, exprSymbol, codegenClassScope));
+            if (r0Type.CanBeNull()) {
                 block.IfRefNullReturnNull("r0");
             }
 
             block.DeclareVar(
-                r1TypeClass,
+                r1Type,
                 "r1",
-                nodes[1].Forge.EvaluateCodegen(r1TypeClass, methodNode, exprSymbol, codegenClassScope));
-            if (!r1TypeClass.IsPrimitive) {
+                nodes[1].Forge.EvaluateCodegen(r1Type, methodNode, exprSymbol, codegenClassScope));
+            if (r1Type.CanBeNull()) {
                 block.IfRefNullReturnNull("r1");
             }
 
@@ -74,13 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     CodegenCompareRelop(
                         returnType,
                         codegenRelational,
-                        Ref("r0"),
-                        r0TypeClass,
-                        Ref("r1"),
-                        r1TypeClass))
-                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r0"), r0TypeClass, returnType))
+                        Ref("r0"), r0Type,
+                        Ref("r1"), r1Type))
+                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r0"), r0Type, returnType))
                 .IfElse()
-                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r1"), r1TypeClass, returnType))
+                .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref("r1"), r1Type, returnType))
                 .BlockEnd();
 
             for (var i = 2; i < nodes.Length; i++) {
@@ -90,7 +86,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     nodeType,
                     refname,
                     nodes[i].Forge.EvaluateCodegen(nodeType, methodNode, exprSymbol, codegenClassScope));
-                if (!nodeType.IsPrimitive) {
+                if (nodeType.CanBeNull()) {
                     block.IfRefNullReturnNull(refname);
                 }
                 
@@ -99,10 +95,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                             CodegenCompareRelop(
                                 returnType,
                                 codegenRelational,
-                                Ref("result"),
-                                returnType,
-                                Ref(refname),
-                                r1TypeClass)))
+                                Ref("result"), returnType,
+                                Ref(refname), r1Type)))
                     .AssignRef("result", TypeHelper.CoerceNumberToBoxedCodegen(Ref(refname), nodeType, returnType))
                     .BlockEnd();
             }
@@ -114,11 +108,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         private static CodegenExpression CodegenCompareRelop(
             Type resultType,
             RelationalOpEnum op,
-            CodegenExpressionRef lhs,
+            CodegenExpression lhs,
             Type lhsType,
             CodegenExpression rhs,
             Type rhsType)
         {
+            if (lhsType != resultType) {
+                lhs = CodegenLegoCast.CastSafeFromObjectType(resultType, lhs);
+            }
+
+            if (rhsType != resultType) {
+                rhs = CodegenLegoCast.CastSafeFromObjectType(resultType, rhs);
+            }
+
             return CodegenExpressionBuilder.Op(lhs, op.GetExpressionText(), rhs);
         }
 

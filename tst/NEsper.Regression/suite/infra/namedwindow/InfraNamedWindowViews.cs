@@ -4148,7 +4148,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 // create variable
                 env.CompileDeploy("@public create variable string var_1_1_1", path);
-                env.CompileDeploy("on SupportVariableSetEvent(VariableName='var_1_1_1') set var_1_1_1 = value", path);
+                env.CompileDeploy("on SupportVariableSetEvent(VariableName='var_1_1_1') set var_1_1_1 = Value", path);
 
                 // fill window
                 var stringValues = new string[] { "c0", "c1", "c2" };

@@ -81,15 +81,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a " +
-                               "inner join ST0 st0 on st0.key0 = a.key " +
-                               "inner join ST1 st1 on st1.key1 = a.key " +
+                               "inner join ST0 st0 on st0.Key0 = a.Key " +
+                               "inner join ST1 st1 on st1.Key1 = a.Key " +
                                "where " +
                                "st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 TryAssertion(env, path, eplQuery);
 
                 eplQuery =
                     "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
-                    "where st0.key0 = a.key and st1.key1 = a.key and " +
+                    "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
                     "st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 TryAssertion(env, path, eplQuery);
 
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
-                               "where st0.key0 = a.key and st1.key1 = a.key and " +
+                               "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
                                "st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 

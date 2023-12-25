@@ -19,15 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCastNodeForgeConstEval : ExprEvaluator
     {
-        private readonly ExprCastNodeForge forge;
-        private readonly object theConstant;
+        private readonly ExprCastNodeForge _forge;
+        private readonly object _theConstant;
 
         public ExprCastNodeForgeConstEval(
             ExprCastNodeForge forge,
             object theConstant)
         {
-            this.forge = forge;
-            this.theConstant = theConstant;
+            this._forge = forge;
+            this._theConstant = theConstant;
         }
 
         public object Evaluate(
@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return theConstant;
+            return _theConstant;
         }
 
         public static CodegenExpression Codegen(

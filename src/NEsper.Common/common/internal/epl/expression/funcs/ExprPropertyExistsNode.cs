@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         ExprEvaluator,
         ExprForgeInstrumentable
     {
-        private ExprIdentNode identNode;
+        private ExprIdentNode _identNode;
 
         public override ExprForge Forge => this;
 
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            return identNode.ExprEvaluatorIdent.EvaluatePropertyExists(eventsPerStream, isNewData);
+            return _identNode.ExprEvaluatorIdent.EvaluatePropertyExists(eventsPerStream, isNewData);
         }
 
         public ExprEvaluator ExprEvaluator => this;
@@ -63,10 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var refEPS = exprSymbol.GetAddEps(methodNode);
             methodNode.Block
-                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(identNode.StreamId)))
+                .DeclareVar<EventBean>("@event", ArrayAtIndex(refEPS, Constant(_identNode.StreamId)))
                 .IfRefNullReturnNull("@event")
                 .MethodReturn(
-                    identNode.ExprEvaluatorIdent.Getter.EventBeanExistsCodegen(
+                    _identNode.ExprEvaluatorIdent.Getter.EventBeanExistsCodegen(
                         Ref("@event"),
                         methodNode,
                         codegenClassScope));
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     "Exists function expects an property value expression as the child node");
             }
 
-            identNode = (ExprIdentNode)ChildNodes[0];
+            _identNode = (ExprIdentNode)ChildNodes[0];
             return null;
         }
 

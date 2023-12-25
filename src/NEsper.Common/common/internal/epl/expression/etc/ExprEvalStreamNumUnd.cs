@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             CodegenClassScope codegenClassScope)
         {
             var refEPS = exprSymbol.GetAddEps(codegenMethodScope);
-            return FlexCast(_returnType, ExprDotUnderlying(ArrayAtIndex(refEPS, Constant(_streamNum))));
+            return Cast(_returnType, ExprDotUnderlying(ArrayAtIndex(refEPS, Constant(_streamNum))));
         }
 
         public ExprEvaluator ExprEvaluator => this;

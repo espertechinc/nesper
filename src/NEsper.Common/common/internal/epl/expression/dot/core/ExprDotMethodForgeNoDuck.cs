@@ -28,10 +28,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             PLAIN
         }
 
-        private readonly MethodInfo method;
-        private readonly Type methodTargetType;
+        private readonly MethodInfo _method;
+        private readonly Type _methodTargetType;
 
-        private readonly WrapType wrapType;
+        private readonly WrapType _wrapType;
 
         public ExprDotMethodForgeNoDuck(
             string optionalStatementName,
@@ -41,21 +41,21 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             WrapType wrapType)
         {
             OptionalStatementName = optionalStatementName;
-            this.method = method;
-            this.methodTargetType = methodTargetType;
+            this._method = method;
+            this._methodTargetType = methodTargetType;
             Parameters = parameters;
-            this.wrapType = wrapType;
+            this._wrapType = wrapType;
         }
 
         public string OptionalStatementName { get; }
 
-        public MethodInfo Method => method;
+        public MethodInfo Method => _method;
 
         public ExprForge[] Parameters { get; }
 
         public void Visit(ExprDotEvalVisitor visitor)
         {
-            visitor.VisitMethod(method.Name);
+            visitor.VisitMethod(_method.Name);
         }
 
         public CodegenExpression Codegen(
@@ -65,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprForgeCodegenSymbol symbols,
             CodegenClassScope classScope)
         {
-            if (wrapType == WrapType.WRAPARRAY) {
+            if (_wrapType == WrapType.WRAPARRAY) {
                 return ExprDotMethodForgeNoDuckEvalWrapArray.CodegenWrapArray(
                     this,
                     inner,
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     classScope);
             }
 
-            if (wrapType == WrapType.PLAIN) {
+            if (_wrapType == WrapType.PLAIN) {
                 return ExprDotMethodForgeNoDuckEvalPlain.CodegenPlain(
                     this,
                     inner,
@@ -96,24 +96,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public EPChainableType TypeInfo {
             get {
-                if (wrapType == WrapType.WRAPARRAY) {
-                    var returnType = method.ReturnType;
+                if (_wrapType == WrapType.WRAPARRAY) {
+                    var returnType = _method.ReturnType;
                     var componentType = returnType.GetComponentType();
                     return EPChainableTypeHelper.CollectionOfSingleValue(componentType);
                 }
 
-                return EPChainableTypeHelper.FromMethod(method);
+                return EPChainableTypeHelper.FromMethod(_method);
             }
         }
 
         public ExprDotEval DotEvaluator {
             get {
                 var evaluators = ExprNodeUtilityQuery.GetEvaluatorsNoCompile(Parameters);
-                if (wrapType == WrapType.WRAPARRAY) {
+                if (_wrapType == WrapType.WRAPARRAY) {
                     return new ExprDotMethodForgeNoDuckEvalWrapArray(this, evaluators);
                 }
 
-                if (wrapType == WrapType.PLAIN) {
+                if (_wrapType == WrapType.PLAIN) {
                     return new ExprDotMethodForgeNoDuckEvalPlain(this, evaluators);
                 }
 
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public WrapType GetWrapType()
         {
-            return wrapType;
+            return _wrapType;
         }
     }
 } // end of namespace

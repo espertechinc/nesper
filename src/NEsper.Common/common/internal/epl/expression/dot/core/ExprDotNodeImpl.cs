@@ -48,11 +48,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
     {
         private IList<Chainable> _chainSpec;
         private readonly bool _isDuckTyping;
-        private readonly bool _isUDFCache;
+        private readonly bool _isUdfCache;
 
         [JsonIgnore]
         [NonSerialized]
-        private ExprDotNodeForge forge;
+        private ExprDotNodeForge _forge;
 
         public ExprDotNodeImpl(
             IList<Chainable> chainSpec,
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
 			_chainSpec = chainSpec.AsReadOnlyList(); // for safety, make it unmodifiable the list
 			_isDuckTyping = isDuckTyping;
-			_isUDFCache = isUDFCache;
+			_isUdfCache = isUDFCache;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)
@@ -183,7 +183,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     }
                 }
 
-                forge = new ExprDotNodeForgeRootChild(
+                _forge = new ExprDotNodeForgeRootChild(
                     this,
                     null,
                     null,
@@ -235,7 +235,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             " function requires a single parameter expression");
                     }
 
-                    forge = new ExprDotNodeForgeTransposeAsStream(this, call.Parameters[0].Forge);
+                    _forge = new ExprDotNodeForgeTransposeAsStream(this, call.Parameters[0].Forge);
                 }
                 else if (call.Parameters.Count != 1) {
                     throw HandleNotFound(call.Name);
@@ -248,7 +248,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                             "' could not be resolved");
                     }
 
-                    forge = GetPropertyPairEvaluator(call.Parameters[0].Forge, propertyInfoPairX, validationContext);
+                    _forge = GetPropertyPairEvaluator(call.Parameters[0].Forge, propertyInfoPairX, validationContext);
                 }
 
                 return null;
@@ -280,7 +280,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     IList<Chainable> chain = new List<Chainable>(_chainSpec);
                     // handle "property[x]" and "property(x)"
                     if (chain.Count == 2 && specAfterStreamName.ParametersOrEmpty.Count == 1) {
-                        forge = GetPropertyPairEvaluator(
+                        _forge = GetPropertyPairEvaluator(
                             specAfterStreamName.ParametersOrEmpty[0].Forge,
                             propertyInfoPairX,
                             validationContext);
@@ -354,7 +354,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
 
                 if (underlyingMethodChain != null) {
-                    forge = new ExprDotNodeForgeStream(
+                    _forge = new ExprDotNodeForgeStream(
                         this,
                         filterExprAnalyzerAffector,
                         prefixedStreamNumber,
@@ -363,7 +363,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         true);
                 }
                 else if (eventTypeMethodChain != null) {
-                    forge = new ExprDotNodeForgeStream(
+                    _forge = new ExprDotNodeForgeStream(
                         this,
                         filterExprAnalyzerAffector,
                         prefixedStreamNumber,
@@ -372,7 +372,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         false);
                 }
 
-                if (forge != null) {
+                if (_forge != null) {
                     return null;
                 }
                 else {
@@ -459,7 +459,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     validationContext,
                     false,
                     new ExprDotNodeFilterAnalyzerInputStatic());
-                forge = new ExprDotNodeForgeVariable(this, variable, wrap, evalsX.ChainWithUnpack);
+                _forge = new ExprDotNodeForgeVariable(this, variable, wrap, evalsX.ChainWithUnpack);
                 return null;
             }
 
@@ -519,7 +519,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     validationContext,
                     false,
                     new ExprDotNodeFilterAnalyzerInputStatic());
-                forge = new ExprDotNodeForgeStaticMethod(
+                _forge = new ExprDotNodeForgeStaticMethod(
                     this,
                     false,
                     firstItemName,
@@ -566,7 +566,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 validationContext.StatementRawInfo,
                 validationContext.StatementCompileTimeService);
 
-            var isConstantParameters = method.IsAllConstants && _isUDFCache;
+            var isConstantParameters = method.IsAllConstants && _isUdfCache;
             var isReturnsConstantResult = isConstantParameters && modifiedChain.IsEmpty();
 
             // this may return a pair of null if there is no lambda or the result cannot be wrapped for lambda-function use
@@ -587,7 +587,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 validationContext,
                 false,
                 new ExprDotNodeFilterAnalyzerInputStatic());
-            forge = new ExprDotNodeForgeStaticMethod(
+            _forge = new ExprDotNodeForgeStaticMethod(
                 this,
                 isReturnsConstantResult,
                 firstItemName,
@@ -944,8 +944,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public FilterExprAnalyzerAffector GetAffector(bool isOuterJoin)
         {
-            CheckValidated(forge);
-            return isOuterJoin ? null : forge.FilterExprAnalyzerAffector;
+            CheckValidated(_forge);
+            return isOuterJoin ? null : _forge.FilterExprAnalyzerAffector;
         }
 
         private ExprDotNodeForge GetPropertyPairEvaluator(
@@ -998,12 +998,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 indexedGetter =
                     ((EventTypeSPI)propertyInfoPair.First.StreamEventType).GetGetterIndexedSPI(
                         propertyInfoPair.First.PropertyName);
-                if (indexedGetter == null) {
+                if (indexedGetter == null)
+                {
                     throw new ExprValidationException(
                         "Indexed property named '" + propertyName + "' failed to obtain getter-object");
                 }
             }
-
+            
             if (propertyDesc.PropertyComponentType != null) {
                 propertyType = propertyDesc.PropertyComponentType.GetBoxedType();
             }
@@ -1075,36 +1076,36 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public bool IsConstantResult {
             get {
-                CheckValidated(forge);
-                return forge.IsReturnsConstantResult;
+                CheckValidated(_forge);
+                return _forge.IsReturnsConstantResult;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
         public int? StreamReferencedIfAny {
             get {
-                CheckValidated(forge);
-                return forge.StreamNumReferenced;
+                CheckValidated(_forge);
+                return _forge.StreamNumReferenced;
             }
         }
 
         public string RootPropertyNameIfAny {
             get {
-                CheckValidated(forge);
-                return forge.RootPropertyName;
+                CheckValidated(_forge);
+                return _forge.RootPropertyName;
             }
         }
 
@@ -1277,7 +1278,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return new ExprAppDotMethodImpl(predefined);
         }
 
-        public bool IsLocalInlinedClass => forge.IsLocalInlinedClass;
+        public bool IsLocalInlinedClass => _forge.IsLocalInlinedClass;
 
         private ExprValidationException GetAppDocMethodException(
             string lhsName,
@@ -1309,7 +1310,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             public void Apply(ExprDotNodeImpl node)
             {
-                node.forge = Forge;
+                node._forge = Forge;
             }
         }
 

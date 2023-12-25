@@ -23,6 +23,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.function;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -246,6 +247,125 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return execs;
         }
 
+        
+        private static void TryAssertsVariant(
+            RegressionEnvironment env,
+            string stmtText,
+            EPStatementObjectModel model,
+            string typeName)
+        {
+            typeName = TypeHelper.MaskTypeName(typeName);
+            
+            var path = new RegressionPath();
+            // Attach listener to feed
+            if (model != null) {
+                model.Annotations = Arrays.AsList(AnnotationPart.NameAnnotation("fl"), new AnnotationPart("public"));
+                env.CompileDeploy(model, path);
+            }
+            else {
+                env.CompileDeploy("@name('fl') @public " + stmtText, path);
+            }
+
+            env.AddListener("fl");
+
+            // send event for joins to match on
+            env.SendEventBean(new SupportBean_A("myId"));
+
+            // Attach delta statement to statement and add listener
+            stmtText = "@name('rld') select MIN(delta) as minD, max(delta) as maxD " +
+                       "from " +
+                       typeName +
+                       "#time(60)";
+            env.CompileDeploy(stmtText, path).AddListener("rld");
+
+            // Attach prodict statement to statement and add listener
+            stmtText = "@name('rlp') select min(product) as minP, max(product) as maxP " +
+                       "from " +
+                       typeName +
+                       "#time(60)";
+            env.CompileDeploy(stmtText, path).AddListener("rlp");
+
+            env.AdvanceTime(0); // Set the time to 0 seconds
+
+            // send events
+            SendEvent(env, 20, 10);
+            AssertReceivedFeed(env, 10, 200);
+            AssertReceivedMinMax(env, 10, 10, 200, 200);
+
+            SendEvent(env, 50, 25);
+            AssertReceivedFeed(env, 25, 25 * 50);
+            AssertReceivedMinMax(env, 10, 25, 200, 1250);
+
+            SendEvent(env, 5, 2);
+            AssertReceivedFeed(env, 3, 2 * 5);
+            AssertReceivedMinMax(env, 3, 25, 10, 1250);
+
+            env.AdvanceTime(10 * 1000); // Set the time to 10 seconds
+
+            SendEvent(env, 13, 1);
+            AssertReceivedFeed(env, 12, 13);
+            AssertReceivedMinMax(env, 3, 25, 10, 1250);
+
+            env.AdvanceTime(61 * 1000); // Set the time to 61 seconds
+            AssertReceivedMinMax(env, 12, 12, 13, 13);
+        }
+        
+        private static void AssertReceivedMinMax(
+            RegressionEnvironment env,
+            int minDelta,
+            int maxDelta,
+            int minProduct,
+            int maxProduct)
+        {
+            env.AssertListener(
+                "rld",
+                listener => {
+                    Assert.AreEqual(1, listener.NewDataList.Count);
+                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    Assert.AreEqual(minDelta, listener.LastNewData[0].Get("minD"));
+                    Assert.AreEqual(maxDelta, listener.LastNewData[0].Get("maxD"));
+                    listener.Reset();
+                });
+            env.AssertListener(
+                "rlp",
+                listener => {
+                    Assert.AreEqual(1, listener.NewDataList.Count);
+                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    Assert.AreEqual(minProduct, listener.LastNewData[0].Get("minP"));
+                    Assert.AreEqual(maxProduct, listener.LastNewData[0].Get("maxP"));
+                    listener.Reset();
+                });
+        }
+
+        private static void AssertReceivedFeed(
+            RegressionEnvironment env,
+            int delta,
+            int product)
+        {
+            env.AssertListener(
+                "fl",
+                listener => {
+                    Assert.AreEqual(1, listener.NewDataList.Count);
+                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    Assert.AreEqual(delta, listener.LastNewData[0].Get("delta"));
+                    Assert.AreEqual(product, listener.LastNewData[0].Get("product"));
+                    listener.Reset();
+                });
+        }
+
+        private static SupportBean SendEvent(
+            RegressionEnvironment env,
+            int intPrimitive,
+            int intBoxed)
+        {
+            var bean = new SupportBean();
+            bean.TheString = "myId";
+            bean.IntPrimitive = intPrimitive;
+            bean.IntBoxed = intBoxed;
+            env.SendEventBean(bean);
+            return bean;
+        }
+
         private class EPLInsertIntoLenientPropCount : RegressionExecution
         {
             private readonly EventRepresentationChoice rep;
@@ -260,13 +380,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var path = new RegressionPath();
                 var epl =
                     "@public create " +
-                    rep.GetName() +
-                    " schema MyTwoColEvent(c0 string, c1 int);\n" +
-                    "insert into MyTwoColEvent select TheString as c0 from SupportBean;\n" +
-                    "insert into MyTwoColEvent select Id as c1 from SupportBean_S0;\n" +
+                    rep.GetPublicName() +
+                    " schema MyTwoColEvent(C0 string, C1 int);\n" +
+                    "insert into MyTwoColEvent select TheString as C0 from SupportBean;\n" +
+                    "insert into MyTwoColEvent select Id as C1 from SupportBean_S0;\n" +
                     "@name('s0') select * from MyTwoColEvent";
                 env.CompileDeploy(epl, path).AddListener("s0");
-                var fields = "c0,c1".Split(",");
+                var fields = "C0,C1".Split(",");
 
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.AssertPropsNew("s0", fields, new object[] { "E1", null });
@@ -279,11 +399,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             public string Name()
             {
-                return this.GetType().Name +
-                       "{" +
-                       "rep=" +
-                       rep +
-                       '}';
+                return $"{this.GetType().Name}{{rep={rep}}}";
             }
         }
 
@@ -295,7 +411,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     new Dictionary<EventRepresentationChoice, Consumer<object>>();
                 assertions.Put(
                     EventRepresentationChoice.OBJECTARRAY,
-                    und => { EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", 10 }, (object[])und); });
+                    und => {
+                        EPAssertionUtil.AssertEqualsExactOrder(
+                            new object[] { "E1", 10 },
+                            und.UnwrapIntoArray<object>());
+                    });
+                
                 Consumer<object> mapAssertion = und => EPAssertionUtil.AssertPropsMap(
                     (IDictionary<string, object>)und,
                     "TheString,IntPrimitive".Split(","),
@@ -321,8 +442,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     EventRepresentationChoice.JSONCLASSPROVIDED,
                     und => {
                         var rec = (MyLocalJsonProvided)und;
-                        Assert.AreEqual("E1", rec.theString);
-                        Assert.AreEqual(10, rec.intPrimitive);
+                        Assert.AreEqual("E1", rec.TheString);
+                        Assert.AreEqual(10, rec.IntPrimitive);
                     });
 
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
@@ -347,7 +468,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 Assert.Fail("No assertion provided for type " + rep);
             }
 
-            env.AssertEventNew("s0", @event => assertion.Invoke(@event.Underlying));
+            env.AssertEventNew(
+                "s0",
+                @event =>
+                    assertion.Invoke(@event.Underlying));
 
             env.UndeployAll();
         }
@@ -549,7 +673,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual(1, listener.LastNewData.Length);
                         Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
                         Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
-                        Assert.AreEqual(20, listener.LastNewData[0].EventType.PropertyNames.Length);
+                        Assert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
                         Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
 
@@ -560,7 +684,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         Assert.AreEqual(1, listener.LastNewData.Length);
                         Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
                         Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
-                        Assert.AreEqual(20, listener.LastNewData[0].EventType.PropertyNames.Length);
+                        Assert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
                         Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
 
@@ -594,122 +718,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.UndeployAll();
             }
-        }
-
-        private static void TryAssertsVariant(
-            RegressionEnvironment env,
-            string stmtText,
-            EPStatementObjectModel model,
-            string typeName)
-        {
-            var path = new RegressionPath();
-            // Attach listener to feed
-            if (model != null) {
-                model.Annotations = Arrays.AsList(AnnotationPart.NameAnnotation("fl"), new AnnotationPart("public"));
-                env.CompileDeploy(model, path);
-            }
-            else {
-                env.CompileDeploy("@name('fl') @public " + stmtText, path);
-            }
-
-            env.AddListener("fl");
-
-            // send event for joins to match on
-            env.SendEventBean(new SupportBean_A("myId"));
-
-            // Attach delta statement to statement and add listener
-            stmtText = "@name('rld') select MIN(delta) as minD, max(delta) as maxD " +
-                       "from " +
-                       typeName +
-                       "#time(60)";
-            env.CompileDeploy(stmtText, path).AddListener("rld");
-
-            // Attach prodict statement to statement and add listener
-            stmtText = "@name('rlp') select min(product) as minP, max(product) as maxP " +
-                       "from " +
-                       typeName +
-                       "#time(60)";
-            env.CompileDeploy(stmtText, path).AddListener("rlp");
-
-            env.AdvanceTime(0); // Set the time to 0 seconds
-
-            // send events
-            SendEvent(env, 20, 10);
-            AssertReceivedFeed(env, 10, 200);
-            AssertReceivedMinMax(env, 10, 10, 200, 200);
-
-            SendEvent(env, 50, 25);
-            AssertReceivedFeed(env, 25, 25 * 50);
-            AssertReceivedMinMax(env, 10, 25, 200, 1250);
-
-            SendEvent(env, 5, 2);
-            AssertReceivedFeed(env, 3, 2 * 5);
-            AssertReceivedMinMax(env, 3, 25, 10, 1250);
-
-            env.AdvanceTime(10 * 1000); // Set the time to 10 seconds
-
-            SendEvent(env, 13, 1);
-            AssertReceivedFeed(env, 12, 13);
-            AssertReceivedMinMax(env, 3, 25, 10, 1250);
-
-            env.AdvanceTime(61 * 1000); // Set the time to 61 seconds
-            AssertReceivedMinMax(env, 12, 12, 13, 13);
-        }
-
-        private static void AssertReceivedMinMax(
-            RegressionEnvironment env,
-            int minDelta,
-            int maxDelta,
-            int minProduct,
-            int maxProduct)
-        {
-            env.AssertListener(
-                "rld",
-                listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(minDelta, listener.LastNewData[0].Get("minD"));
-                    Assert.AreEqual(maxDelta, listener.LastNewData[0].Get("maxD"));
-                    listener.Reset();
-                });
-            env.AssertListener(
-                "rlp",
-                listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(minProduct, listener.LastNewData[0].Get("minP"));
-                    Assert.AreEqual(maxProduct, listener.LastNewData[0].Get("maxP"));
-                    listener.Reset();
-                });
-        }
-
-        private static void AssertReceivedFeed(
-            RegressionEnvironment env,
-            int delta,
-            int product)
-        {
-            env.AssertListener(
-                "fl",
-                listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(delta, listener.LastNewData[0].Get("delta"));
-                    Assert.AreEqual(product, listener.LastNewData[0].Get("product"));
-                    listener.Reset();
-                });
-        }
-
-        private static SupportBean SendEvent(
-            RegressionEnvironment env,
-            int intPrimitive,
-            int intBoxed)
-        {
-            var bean = new SupportBean();
-            bean.TheString = "myId";
-            bean.IntPrimitive = intPrimitive;
-            bean.IntBoxed = intBoxed;
-            env.SendEventBean(bean);
-            return bean;
         }
 
         private class EPLInsertIntoTypeMismatchInvalid : RegressionExecution
@@ -779,7 +787,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         catch (Exception ex) {
                             SupportMessageAssertUtil.AssertMessage(
                                 "Expression-returned event type 'SourceSchema' with underlying type '" +
-                                typeof(EPLInsertInto.MyP0P1EventSource).FullName +
+                                typeof(EPLInsertInto.MyP0P1EventSource).CleanName() +
                                 "' cannot be converted to target event type 'TargetSchema' with underlying type ",
                                 ex.InnerException.Message);
                         }
@@ -943,10 +951,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
 
-                var fields = "p0,p1".Split(",");
+                var fields = new[] {"P0", "P1"};
                 var epl =
-                    "insert into AStream (p0, p1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
-                    "insert into AStream (p0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
+                    "insert into AStream (P0, P1) select IntPrimitive as somename, TheString from SupportBean(IntPrimitive between 0 and 10);\n" +
+                    "insert into AStream (P0) select IntPrimitive as somename from SupportBean(IntPrimitive > 10);\n" +
                     "@name('s0') select * from AStream;\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -1090,20 +1098,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             {
                 var path = new RegressionPath();
                 var stmtOneTxt = "@name('s1') @public insert into InZone " +
-                                 "select 111 as statementId, Mac, LocationReportId " +
+                                 "select 111 as StatementId, Mac, LocationReportId " +
                                  "from SupportRFIDEvent " +
                                  "where Mac in ('1','2','3') " +
                                  "and ZoneID = '10'";
                 env.CompileDeploy(stmtOneTxt, path).AddListener("s1");
 
                 var stmtTwoTxt = "@name('s2') @public insert into OutOfZone " +
-                                 "select 111 as statementId, Mac, LocationReportId " +
+                                 "select 111 as StatementId, Mac, LocationReportId " +
                                  "from SupportRFIDEvent " +
                                  "where Mac in ('1','2','3') " +
                                  "and ZoneID != '10'";
                 env.CompileDeploy(stmtTwoTxt, path).AddListener("s2");
 
-                var stmtThreeTxt = "@name('s3') select 111 as eventSpecId, A.LocationReportId as LocationReportId " +
+                var stmtThreeTxt = "@name('s3') select 111 as EventSpecId, A.LocationReportId as LocationReportId " +
                                    " from pattern [every A=InZone -> (timer:interval(1 sec) and not OutOfZone(Mac=A.Mac))]";
                 env.CompileDeploy(stmtThreeTxt, path).AddListener("s3");
 
@@ -1250,15 +1258,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     Assert.IsTrue(listener.GetAndClearIsInvoked());
                     Assert.AreEqual(1, listener.LastNewData.Length);
                     Assert.AreEqual(2, listener.LastNewData[0].EventType.PropertyNames.Length);
-                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("s0"));
-                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("s1"));
+                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S0"));
+                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S1"));
                     if (rep != null && (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent())) {
-                        Assert.AreEqual(eventS0, listener.LastNewData[0].Get("s0").ToString());
-                        Assert.AreEqual(eventS1, listener.LastNewData[0].Get("s1").ToString());
+                        Assert.AreEqual(((string) eventS0).RemoveWhitespace(), listener.LastNewData[0].Get("S0").ToString().RemoveWhitespace());
+                        Assert.AreEqual(((string) eventS1).RemoveWhitespace(), listener.LastNewData[0].Get("S1").ToString().RemoveWhitespace());
                     }
                     else {
-                        Assert.AreSame(eventS0, listener.LastNewData[0].Get("s0"));
-                        Assert.AreSame(eventS1, listener.LastNewData[0].Get("s1"));
+                        Assert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
+                        Assert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
                     }
 
                     Assert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
@@ -1315,8 +1323,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var textOne = "@name('s1') @public " +
                           (bean ? "" : rep.Value.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedJoin))) +
                           "insert into event2 select * " +
-                          "from S0#length(100) as s0, S1#length(5) as s1 " +
-                          "where s0.TheString = s1.Id";
+                          "from S0#length(100) as S0, S1#length(5) as S1 " +
+                          "where S0.TheString = S1.Id";
             env.CompileDeploy(textOne, path).AddListener("s1");
 
             var textTwo = "@name('s2') " +
@@ -1422,7 +1430,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else {
                 schemaEPL = sourceType.Value.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedSourceSchema)) +
-                            "@buseventtype @public create schema SourceSchema as (p0 string, p1 int)";
+                            "@buseventtype @public create schema SourceSchema as (P0 string, P1 int)";
             }
 
             var path = new RegressionPath();
@@ -1437,11 +1445,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else {
                 env.CompileDeploy(
                     targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetContainedSchema>() +
-                    "@public create schema TargetContainedSchema as (c0 int)",
+                    "@public create schema TargetContainedSchema as (C0 int)",
                     path);
                 env.CompileDeploy(
                     targetType.Value.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedTargetSchema>() +
-                    "@public create schema TargetSchema (p0 string, p1 int, c0 TargetContainedSchema)",
+                    "@public create schema TargetSchema (P0 string, P1 int, C0 TargetContainedSchema)",
                     path);
             }
 
@@ -1455,8 +1463,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
             else if (sourceType.Value.IsMapEvent()) {
                 IDictionary<string, object> map = new Dictionary<string, object>();
-                map.Put("p0", "a");
-                map.Put("p1", 10);
+                map.Put("P0", "a");
+                map.Put("P1", 10);
                 env.SendEventMap(map, "SourceSchema");
             }
             else if (sourceType.Value.IsObjectArrayEvent()) {
@@ -1465,16 +1473,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             else if (sourceType.Value.IsAvroEvent()) {
                 var schema = SchemaBuilder.Record(
                     "schema",
-                    RequiredString("p0"),
-                    RequiredInt("p1"),
-                    OptionalString("c0"));
+                    RequiredString("P0"),
+                    RequiredInt("P1"),
+                    OptionalString("C0"));
                 var record = new GenericRecord(schema);
-                record.Put("p0", "a");
-                record.Put("p1", 10);
+                record.Put("P0", "a");
+                record.Put("P1", 10);
                 env.SendEventAvro(record, "SourceSchema");
             }
             else if (sourceType.Value.IsJsonEvent() || sourceType.Value.IsJsonProvidedClassEvent()) {
-                env.SendEventJson("{\"p0\": \"a\", \"p1\": 10}", "SourceSchema");
+                env.SendEventJson("{\"P0\": \"a\", \"P1\": 10}", "SourceSchema");
             }
             else {
                 Assert.Fail();
@@ -1483,7 +1491,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             // assert
             env.AssertEventNew(
                 "s0",
-                @event => EPAssertionUtil.AssertProps(@event, "p0,p1,c0".SplitCsv(), new object[] { "a", 10, null }));
+                @event => EPAssertionUtil.AssertProps(@event, "P0,P1,C0".SplitCsv(), new object[] { "a", 10, null }));
 
             env.UndeployAll();
         }
@@ -1498,26 +1506,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// </summary>
         public class MyP0P1EventSource
         {
-            private readonly string p0;
-            private readonly int p1;
-
-            internal MyP0P1EventSource(
+            public MyP0P1EventSource(
                 string p0,
                 int p1)
             {
-                this.p0 = p0;
-                this.p1 = p1;
+                P0 = p0;
+                P1 = p1;
             }
 
-            public string GetP0()
-            {
-                return p0;
-            }
+            [PropertyName("P0")]
+            public string P0 { get; }
 
-            public int GetP1()
-            {
-                return p1;
-            }
+            [PropertyName("P1")]
+            public int P1 { get; }
         }
 
         /// <summary>
@@ -1525,39 +1526,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// </summary>
         public class MyP0P1EventTarget
         {
-            private string p0;
-            private int p1;
-            private object c0;
-
-            private MyP0P1EventTarget()
+            public MyP0P1EventTarget()
             {
             }
 
-            private MyP0P1EventTarget(
+            public MyP0P1EventTarget(
                 string p0,
                 int p1,
                 object c0)
             {
-                this.p0 = p0;
-                this.p1 = p1;
-                this.c0 = c0;
+                P0 = p0;
+                P1 = p1;
+                C0 = c0;
             }
 
+            public string P0 { get; set; }
 
-            public string P0 {
-                get => p0;
-                set => p0 = value;
-            }
+            public int P1 { get; set; }
 
-            public int P1 {
-                get => p1;
-                set => p1 = value;
-            }
-
-            public object C0 {
-                get => c0;
-                set => c0 = value;
-            }
+            public object C0 { get; set; }
         }
 
         /// <summary>
@@ -1565,8 +1552,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// </summary>
         public class MyLocalJsonProvided
         {
-            public string theString;
-            public int? intPrimitive;
+            public string TheString;
+            public int? IntPrimitive;
         }
 
         /// <summary>
@@ -1574,11 +1561,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// </summary>
         public class MyLocalJsonProvidedS0
         {
-            public string theString;
+            public string TheString;
 
             public override string ToString()
             {
-                return "{\"TheString\":\"" + theString + "\"}";
+                return "{\"TheString\":\"" + TheString + "\"}";
             }
         }
 
@@ -1587,36 +1574,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         /// </summary>
         public class MyLocalJsonProvidedS1
         {
-            public string id;
+            public string Id;
 
             public override string ToString()
             {
-                return "{\"id\":\"" + id + "\"}";
+                return "{\"Id\":\"" + Id + "\"}";
             }
         }
 
         public class MyLocalJsonProvidedJoin
         {
-            public MyLocalJsonProvidedS0 s0;
-            public MyLocalJsonProvidedS1 s1;
+            public MyLocalJsonProvidedS0 S0;
+            public MyLocalJsonProvidedS1 S1;
         }
 
         public class MyLocalJsonProvidedSourceSchema
         {
-            public string p0;
-            public int p1;
+            public string P0;
+            public int P1;
         }
 
         public class MyLocalJsonProvidedTargetContainedSchema
         {
-            public int c0;
+            public int C0;
         }
 
         public class MyLocalJsonProvidedTargetSchema
         {
-            public string p0;
-            public int p1;
-            public MyLocalJsonProvidedTargetContainedSchema c0;
+            public string P0;
+            public int P1;
+            public MyLocalJsonProvidedTargetContainedSchema C0;
         }
     }
 } // end of namespace

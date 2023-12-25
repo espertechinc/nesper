@@ -154,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                        "@name('s0') insert into SupportBeanArrayEvent select window(*) @eventbean from SupportBean#keepall")
+                        $"@name('s0') insert into SupportBeanArrayEvent select window(*) @eventbean from SupportBean#keepall")
                     .AddListener("s0");
 
                 var e1 = new SupportBean("E1", 1);
@@ -352,7 +352,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.TryInvalidCompile(
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    nameof(SupportBeanCtorOne) +
+                    typeof(SupportBeanCtorOne).CleanName() +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanCtorOne).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.Int32'");
@@ -371,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.TryInvalidCompile(
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    nameof(SupportBeanReadOnly) +
+                    typeof(SupportBeanReadOnly).CleanName() +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly select 'a' as geom from SupportBean]");
@@ -413,7 +413,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.TryInvalidCompile(
                     text,
                     "Failed to find a suitable constructor for class '" +
-                    nameof(SupportBeanReadOnly) +
+                    typeof(SupportBeanReadOnly).CleanName() +
                     "': Could not find constructor in class '" +
                     typeof(SupportBeanReadOnly).CleanName() +
                     "' with matching parameter number and expected parameter type(s) 'System.String' (nearest matching constructor taking no parameters) [insert into SupportBeanReadOnly(side) select 'E1' from MyMap]");
@@ -444,7 +444,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                        "insert into MyWindow select 1 as c0 from SupportBean;\n";
                 env.TryInvalidCompile(
                     text,
-                    "Event type named 'MyWindow' has already been declared with differing column name or type information: Type by name 'MyWindow' in property 'c0' expects a null-value but receives 'System.Int32'");
+                    "Event type named 'MyWindow' has already been declared with differing column name or type information: Type by name 'MyWindow' in property 'c0' expects a null-value but receives 'System.Nullable<System.Int32>'");
 
                 // setter throws exception
                 var stmtTextOne = "@name('s0') insert into SupportBeanErrorTestingTwo(Value) select 'E1' from MyMap";

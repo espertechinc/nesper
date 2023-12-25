@@ -69,7 +69,7 @@ namespace com.espertech.esper.compat
                 pattern,
                 match => replacement);
         }
-
+        
         public static long GetCrc32(this string input, Encoding encoding = null)
         {
             if (encoding == null)

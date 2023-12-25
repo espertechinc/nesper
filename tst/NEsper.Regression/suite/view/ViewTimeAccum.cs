@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
@@ -765,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             Assert.AreEqual(priorPrice, @event.Get("priorPrice"));
             Assert.AreEqual(prevtailPrice, @event.Get("prevtailPrice"));
             Assert.AreEqual(prevCountPrice, @event.Get("prevCountPrice"));
-            EPAssertionUtil.AssertEqualsExactOrder(prevWindowPrice, (object[])@event.Get("prevWindowPrice"));
+            EPAssertionUtil.AssertEqualsExactOrder(prevWindowPrice, @event.Get("prevWindowPrice").Unwrap<object>());
         }
 
         private static void AssertUnderlying(

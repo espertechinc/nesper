@@ -738,7 +738,7 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                     }
                     else
                     {
-                        valueExpression = FlexCast(
+                        valueExpression = Cast(
                             property.PropertyType, 
                             MakeAnnotation((Attribute) value, methodNode, codegenClassScope));
                     }

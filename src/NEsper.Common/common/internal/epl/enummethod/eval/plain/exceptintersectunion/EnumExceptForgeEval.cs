@@ -61,30 +61,27 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            var namedParams = EnumForgeCodegenNames.PARAMS;
-            // PREVIOUSLY: FlexCollection
-            var returnType = forge.scalar
-                ? typeof(ICollection<object>)
-                : typeof(ICollection<EventBean>);
-
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope.MakeChildWithScope(
-                    returnType,
+                    args.EnumcollType,
                     typeof(EnumIntersectForgeEval),
                     scope,
                     codegenClassScope)
-                .AddParam(namedParams);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block;
             if (forge.scalar) {
-                // PREVIOUS: FlexCollection
-                block.DeclareVar<ICollection<object>>(
+                block.DeclareVar(
+                    args.EnumcollType,
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionScalarCodegen(methodNode, scope, codegenClassScope));
             }
             else {
-                // PREVIOUS: FlexCollection
-                block.DeclareVar<ICollection<EventBean>>(
+                block.DeclareVar(
+                    args.EnumcollType,
                     "other",
                     forge.evaluatorForge.EvaluateGetROCollectionEventsCodegen(methodNode, scope, codegenClassScope));
             }
@@ -104,17 +101,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
         /// <param name="other">other</param>
         /// <param name="enumcoll">coll</param>
         /// <returns>intersection</returns>
-        public static ICollection<object> EnumExceptForgeEvalSet(
-            ICollection<object> other,
-            ICollection<object> enumcoll)
+        public static ICollection<T> EnumExceptForgeEvalSet<T>(
+            ICollection<T> other,
+            ICollection<T> enumcoll)
         {
             if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {
                 return enumcoll;
             }
 
-            var resultX = new List<object>(enumcoll);
+            var resultX = new List<T>(enumcoll);
             resultX.RemoveAll(other);
-            return resultX.Unwrap<object>();
+            return resultX;
         }
 
         /// <summary>
@@ -128,11 +125,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             ICollection<EventBean> enumcoll)
         {
             if (other == null || other.IsEmpty() || enumcoll.IsEmpty()) {
-                return enumcoll.Unwrap<EventBean>();
+                return enumcoll;
             }
 
-            var targetEvents = enumcoll.Unwrap<EventBean>();
-            var sourceEvents = other.Unwrap<EventBean>();
+            var targetEvents = enumcoll;
+            var sourceEvents = other;
             var result = new List<EventBean>();
 
             // we compare event underlying
@@ -165,28 +162,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
             }
 
             return result;
-        }
-
-        public static FlexCollection EnumExceptForgeEvalSet(
-            FlexCollection other,
-            FlexCollection enumcoll)
-        {
-            if (other.IsEventBeanCollection) {
-                if (enumcoll.IsEventBeanCollection) {
-                    return FlexCollection.Of(
-                        EnumExceptForgeEvalSet(
-                            other.EventBeanCollection,
-                            enumcoll.EventBeanCollection));
-                }
-            }
-            else if (enumcoll.IsObjectCollection) {
-                return FlexCollection.Of(
-                    EnumExceptForgeEvalSet(
-                        other.ObjectCollection,
-                        enumcoll.ObjectCollection));
-            }
-
-            throw new ArgumentException("mismatch in FlexCollection types");
         }
     }
 } // end of namespace

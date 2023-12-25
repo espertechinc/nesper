@@ -29,27 +29,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withx(execs);
-            WithxOM(execs);
-            WithxCompile(execs);
+            WithMinMax(execs);
+            WithMinMaxOM(execs);
+            WithMinMaxCompile(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithxCompile(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithMinMaxCompile(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExecCoreMinMaxCompile());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithxOM(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithMinMaxOM(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExecCoreMinMaxOM());
             return execs;
         }
 
-        public static IList<RegressionExecution> Withx(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithMinMax(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ExecCoreMinMax());

@@ -66,7 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     typeof(EnumArrayOfScalarNoParams),
                     scope,
                     codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                    .AddParam(ExprForgeCodegenNames.FP_EPS)
+                    .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                    .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                    .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))

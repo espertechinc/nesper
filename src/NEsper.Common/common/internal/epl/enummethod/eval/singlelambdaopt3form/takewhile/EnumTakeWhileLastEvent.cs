@@ -118,7 +118,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 _innerValue,
                 EnumValue(typeof(EmptyList<EventBean>), "Instance"));
             blockSingle.BlockReturn(
-                FlexWrap(StaticMethod(typeof(Collections), "SingletonList", Ref("item"))));
+                StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
 
             block
                 .DeclareVar<ArrayDeque<EventBean>>("result", NewInstance<ArrayDeque<EventBean>>())

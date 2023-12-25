@@ -122,14 +122,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public override void Run(RegressionEnvironment env)
             {
-                var queryColummTypeConversion = "@name('s0') @Hook(HookType=HookType.SQLCOL, hook='" +
+                var queryColummTypeConversion = "@name('s0') @Hook(HookType=HookType.SQLCOL, Hook='" +
                                                 typeof(SupportSQLColumnTypeConversion).Name +
                                                 "')" +
                                                 "select * from sql:MyDBPooled ['select myint as myintTurnedBoolean from mytesttable where myint = 50']";
                 var resultColType = env.CompileExecuteFAF(queryColummTypeConversion);
                 AssertSingleRowResult(resultColType, "myintTurnedBoolean", true);
 
-                var queryRowConversion = "@name('s0') @Hook(HookType=HookType.SQLROW, hook='" +
+                var queryRowConversion = "@name('s0') @Hook(HookType=HookType.SQLROW, Hook='" +
                                          typeof(SupportSQLOutputRowConversion).Name +
                                          "')" +
                                          "select * from sql:MyDBPooled ['select * from mytesttable where myint = 10']";

@@ -238,14 +238,14 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="fragmentEventType">fragment type</param>
         /// <param name="eventBeanTypedEventFactory">event adapter service</param>
         /// <returns>fragment</returns>
-        public static object HandleBNCreateFragmentMap(
+        public static EventBean HandleBNCreateFragmentMap(
             object value,
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             if (!(value is IDictionary<string, object> subEvent)) {
-                if (value is EventBean) {
-                    return value;
+                if (value is EventBean eventBean) {
+                    return eventBean;
                 }
 
                 return null;
@@ -306,14 +306,14 @@ namespace com.espertech.esper.common.@internal.@event.core
         /// <param name="fragmentEventType">fragment type</param>
         /// <param name="eventBeanTypedEventFactory">service</param>
         /// <returns>fragment</returns>
-        public static object HandleBNCreateFragmentObjectArray(
+        public static EventBean HandleBNCreateFragmentObjectArray(
             object value,
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
             if (!(value is object[] subEvent)) {
-                if (value is EventBean) {
-                    return value;
+                if (value is EventBean eventBean) {
+                    return eventBean;
                 }
 
                 return null;
@@ -977,14 +977,19 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return null;
             }
 
-            if (setOneType == null) {
+            if (setOneType == null)
+            {
+                string setTwoTypeString = setTwoType is Type setTwoTypeType
+                    ? setTwoTypeType.CleanName()
+                    : Convert.ToString(setTwoType);
+
                 return new ExprValidationException(
                     "Type by name '" +
                     otherName +
                     "' in property '" +
                     propName +
                     "' expects a null-value but receives '" +
-                    setTwoType +
+                    setTwoTypeString +
                     "'");
             }
 

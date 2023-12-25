@@ -848,7 +848,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = "select IntArr in (1, 2, 3) as r1 from SupportBeanArrayCollMap";
                 env.TryInvalidCompile(
                     epl,
-                    "Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison and null-type values are not allowed for the IN, ANY, SOME or ALL keywords");
+                    "Failed to validate select-clause expression 'IntArr in (1,2,3)': Collection or array comparison is not allowed for the IN, ANY, SOME or ALL keywords");
             }
         }
 

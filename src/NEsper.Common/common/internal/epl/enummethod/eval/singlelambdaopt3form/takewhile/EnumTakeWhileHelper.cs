@@ -29,32 +29,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         /// </summary>
         /// <param name="enumcoll">events</param>
         /// <returns>array</returns>
-        public static EventBean[] TakeWhileLastEventBeanToArray(FlexCollection enumcoll)
-        {
-            return enumcoll.IsEventBeanCollection
-                ? enumcoll.EventBeanCollection.ToArray()
-                : enumcoll.ObjectCollection.UnwrapIntoArray<EventBean>();
-        }
-
-        /// <summary>
-        /// NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="enumcoll">events</param>
-        /// <returns>array</returns>
         public static EventBean[] TakeWhileLastEventBeanToArray(ICollection<EventBean> enumcoll)
         {
             return enumcoll.ToArray();
-
-#if DEPRECATED
-			int size = enumcoll.Count;
-			EventBean[] all = new EventBean[size];
-			int count = 0;
-			foreach (EventBean item in enumcoll) {
-				all[count++] = item;
-			}
-
-			return all;
-#endif
         }
 
         /// <summary>
@@ -65,17 +42,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public static object[] TakeWhileLastScalarToArray<T>(ICollection<T> enumcoll)
         {
             return enumcoll.Cast<object>().ToArray();
-
-#if DEPRECATED
-			int size = enumcoll.Count;
-			object[] all = new object[size];
-			int count = 0;
-			foreach (object item in enumcoll) {
-				all[count++] = item;
-			}
-
-			return all;
-#endif
         }
 
         public static void InitBlockSizeOneScalar(
@@ -96,8 +62,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 blockSingle,
                 evaluationType,
                 innerValue,
-                FlexEmpty());
-            blockSingle.BlockReturn(FlexValue(Ref("item")));
+                EnumValue(typeof(EmptyList<object>), "Instance"));
+            
+            blockSingle.BlockReturn(Ref("item"));
 
             block.DeclareVar<ArrayDeque<object>>("result", NewInstance<ArrayDeque<object>>());
         }

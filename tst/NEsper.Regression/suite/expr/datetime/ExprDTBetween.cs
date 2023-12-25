@@ -226,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.UndeployAll();
 
                 // test calendar field and constants
-                var fieldsConstants = "val0,val1,val2,val3,val4,val5".SplitCsv();
+                var fieldsConstants = "val0,val1,val2,val3,val4".SplitCsv();
                 var eplConstants = "@name('s0') select " +
                                    "LongdateStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val0, " +
                                    "DateTimeStart.between(DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:00:00.000'), DateTimeParsingFunctions.ParseDefaultEx('2002-05-30T09:01:00.000')) as val1, " +

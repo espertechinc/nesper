@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -27,15 +27,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         private const string PRIMITIVE_ARRAY_NULL_MSG =
             "new-array received a null value as an array element of an array of primitives";
 
-        private readonly ExprArrayNodeForge forge;
-        private readonly ExprEvaluator[] evaluators;
+        private readonly ExprArrayNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         public ExprArrayNodeForgeEval(
             ExprArrayNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;
@@ -45,16 +45,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var array = Arrays.CreateInstanceChecked(forge.ArrayReturnType, evaluators.Length);
+            var array = Arrays.CreateInstanceChecked(_forge.ArrayReturnType, _evaluators.Length);
             var index = 0;
-            var requiresPrimitive = forge.Parent.OptionalRequiredType != null &&
-                                    forge.Parent.OptionalRequiredType.IsPrimitive;
-            foreach (var child in evaluators) {
+            var requiresPrimitive = _forge.Parent.OptionalRequiredType != null &&
+                                    _forge.Parent.OptionalRequiredType.IsPrimitive;
+            foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
                 if (result != null) {
-                    if (forge.IsMustCoerce) {
+                    if (_forge.IsMustCoerce) {
                         var boxed = result;
-                        var coercedResult = forge.Coercer.CoerceBoxed(boxed);
+                        var coercedResult = _forge.Coercer.CoerceBoxed(boxed);
                         array.SetValue(coercedResult, index);
                     }
                     else {
@@ -83,15 +83,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 forge.EvaluationType,
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
+            
             var block = methodNode.Block
                 .DeclareVar(
                     forge.EvaluationType,
                     "array",
                     NewArrayByLength(forge.ArrayReturnType, Constant(forge.ForgeRenderableArray.ChildNodes.Length)));
-            var requiresPrimitive = forge.Parent.OptionalRequiredType != null &&
-                                    forge.Parent.OptionalRequiredType.IsPrimitive;
+            
+            var requiresPrimitive = forge.Parent.OptionalRequiredType is { IsPrimitive: true };
+            
             for (var i = 0; i < forge.ForgeRenderableArray.ChildNodes.Length; i++) {
-                ExprForge child = forge.ForgeRenderableArray.ChildNodes[i].Forge;
+                var child = forge.ForgeRenderableArray.ChildNodes[i].Forge;
                 var childType = child.EvaluationType;
 
                 if (childType == null) {
@@ -105,12 +107,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         refname,
                         child.EvaluateCodegen(childTypeClass, methodNode, exprSymbol, codegenClassScope));
 
-                    if (childTypeClass.IsPrimitive) {
+                    if (childTypeClass.CanNotBeNull()) {
                         if (!forge.IsMustCoerce) {
-                            block.AssignArrayElement("array", Constant(i), Ref(refname));
+                            block
+                                .AssignArrayElement("array", Constant(i), Ref(refname));
                         }
                         else {
-                            block.AssignArrayElement(
+                            block
+                                .AssignArrayElement(
                                 "array",
                                 Constant(i),
                                 forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass));
@@ -119,13 +123,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     else {
                         var ifNotNull = block.IfCondition(NotEqualsNull(Ref(refname)));
                         if (!forge.IsMustCoerce) {
-                            ifNotNull.AssignArrayElement("array", Constant(i), Ref(refname));
+                            ifNotNull
+                                .AssignArrayElement("array", Constant(i), Unbox(Ref(refname), childTypeClass));
                         }
-                        else {
-                            ifNotNull.AssignArrayElement(
-                                "array",
-                                Constant(i),
-                                forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass));
+                        else
+                        {
+                            ifNotNull
+                                .AssignArrayElement(
+                                    "array",
+                                    Constant(i),
+                                    Unbox(
+                                        forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass),
+                                        childTypeClass));
                         }
 
                         if (requiresPrimitive) {
@@ -153,17 +162,17 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            if (forge.ForgeRenderableArray.ChildNodes.Length == 0) {
+            if (_forge.ForgeRenderableArray.ChildNodes.Length == 0) {
                 return EmptyList<object>.Instance;
             }
 
-            var resultList = new ArrayDeque<object>(evaluators.Length);
-            foreach (var child in evaluators) {
+            var resultList = new ArrayDeque<object>(_evaluators.Length);
+            foreach (var child in _evaluators) {
                 var result = child.Evaluate(eventsPerStream, isNewData, context);
                 if (result != null) {
-                    if (forge.IsMustCoerce) {
+                    if (_forge.IsMustCoerce) {
                         var boxed = result;
-                        var coercedResult = forge.Coercer.CoerceBoxed(boxed);
+                        var coercedResult = _forge.Coercer.CoerceBoxed(boxed);
                         resultList.Add(coercedResult);
                     }
                     else {
@@ -186,14 +195,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 return StaticMethod(typeof(Collections), "GetEmptyList");
             }
 
+            var dequeType = typeof(ArrayDeque<>).MakeGenericType(typeof(object));
             var methodNode = codegenMethodScope.MakeChild(
                 typeof(ICollection<object>),
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block
-                .DeclareVar<ArrayDeque<object>>(
+                .DeclareVar(
+                    dequeType,
                     "resultList",
-                    NewInstance(typeof(ArrayDeque<object>), Constant(children.Length)));
+                    NewInstance(dequeType, Constant(children.Length)));
             var count = -1;
             foreach (var child in children) {
                 count++;

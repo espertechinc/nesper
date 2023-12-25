@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Contained.toMap((c, index, size) => Id || '_' || Convert.ToString(index) || '_' || Convert.ToString(size), (d, index, size) => P00 + 10*index + 100*size)");
 
                 builder.WithStatementConsumer(
-                    stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
+                    stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int?>)));
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2Value("E1,1", "E3,12", "E2,5"))
                     .Verify("c0", val => CompareMap(val, "E1,E3,E2", 1, 12, 5))
@@ -114,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 					"Strvals.toMap((k, i, s) => k || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, idx, sz) => extractNum(v) + 10*idx + 100*sz)");
 
                 builder.WithStatementConsumer(
-                    stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int>)));
+                    stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(IDictionary<string, int?>)));
 
                 builder.WithAssertion(SupportCollection.MakeString("E2,E1,E3"))
                     .Verify("c0", val => CompareMap(val, "E1,E2,E3", 1, 2, 3))

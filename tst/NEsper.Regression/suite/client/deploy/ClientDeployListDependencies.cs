@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     "@public create expression double MyScript(stringvalue) [0];\n" +
                     "@public create index MyIndexA on MyWindow(IntPrimitive);\n" +
                     "@public create index MyIndexB on MyTable(value);\n" +
-                    "@public create inlined_class \"\"\" public class MyClass { public static stringDoIt() { return \"abc\"; } }\"\"\";\n";
+                    "@public create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"abc\"; } }\"\"\";\n";
                 env.CompileDeploy(eplProvide, path);
 
                 var eplConsume =

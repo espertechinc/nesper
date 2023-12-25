@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                     var type = optionalMultiKeyClasses.MKTypes[i];
                     expressions[i] = type == null
                         ? ConstantNull()
-                        : FlexCast(type, ArrayAtIndex(Ref("keys"), Constant(i)));
+                        : Cast(type, ArrayAtIndex(Ref("keys"), Constant(i)));
                 }
 
                 var instance = optionalMultiKeyClasses.ClassNameMK.Type != null
@@ -306,7 +306,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                     var type = optionalMultiKeyClasses.MKTypes[i];
                     expressions[i] = type == null
                         ? ConstantNull()
-                        : FlexCast(type, ExprDotMethod(Ref("mk"), "GetKey", Constant(i)));
+                        : Cast(type, ExprDotMethod(Ref("mk"), "GetKey", Constant(i)));
                 }
 
                 var instance = optionalMultiKeyClasses.ClassNameMK.Type != null
@@ -450,7 +450,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 .DeclareVar(
                     eventType.UnderlyingType,
                     "und",
-                    FlexCast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
+                    Cast(eventType.UnderlyingType, ExprDotUnderlying(Ref("bean"))))
                 .BlockReturn(instance);
 
             return anonymous;

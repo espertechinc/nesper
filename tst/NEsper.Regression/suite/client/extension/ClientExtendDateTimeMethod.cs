@@ -130,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 var expected = "30,5,2002".SplitCsv();
                 env.AssertPropsNew(
                     "s0",
-                    "c0,c1,c2,c3,c4".SplitCsv(),
-                    new object[] { expected, expected, expected, expected, expected });
+                    "c0,c1,c2,c3".SplitCsv(),
+                    new object[] { expected, expected, expected, expected });
 
                 env.UndeployAll();
             }

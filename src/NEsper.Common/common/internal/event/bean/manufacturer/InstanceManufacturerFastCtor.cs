@@ -14,22 +14,22 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
+using com.espertech.esper.compat;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
 {
     public class InstanceManufacturerFastCtor : InstanceManufacturer
     {
-        private readonly InstanceManufacturerFactoryFastCtor factory;
-        private readonly ExprEvaluator[] evaluators;
+        private readonly ExprEvaluator[] _evaluators;
+        private readonly InstanceManufacturerFactoryFastCtor _factory;
 
         public InstanceManufacturerFastCtor(
             InstanceManufacturerFactoryFastCtor factory,
             ExprEvaluator[] evaluators)
         {
-            this.factory = factory;
-            this.evaluators = evaluators;
+            _factory = factory;
+            _evaluators = evaluators;
         }
 
         public object Make(
@@ -37,12 +37,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var row = new object[evaluators.Length];
+            var row = new object[_evaluators.Length];
             for (var i = 0; i < row.Length; i++) {
-                row[i] = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+                row[i] = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
-            return MakeUnderlyingFromFastCtor(row, factory.Ctor, factory.TargetClass);
+            return MakeUnderlyingFromFastCtor(row, _factory.Ctor, _factory.TargetClass);
         }
 
         public static object MakeUnderlyingFromFastCtor(
@@ -74,11 +74,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             string targetClassName,
             Exception thrown)
         {
-            var targetException = thrown is TargetInvocationException targetInvocationException
-                ? targetInvocationException.InnerException
-                : thrown;
+            var targetException = thrown is TargetException ? ((TargetException) thrown).InnerException : thrown;
             return new EPException(
-                "InvocationTargetException received invoking constructor for type '" +
+                "TargetException received invoking constructor for type '" +
                 targetClassName +
                 "': " +
                 targetException.Message,
@@ -89,28 +87,62 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             CodegenMethodScope codegenMethodScope,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope,
-            Type targetClass,
+            ConstructorInfo targetCtor,
             ExprForge[] forges)
         {
+            var targetClass = targetCtor.DeclaringType;
             var methodNode = codegenMethodScope.MakeChild(
                 targetClass,
                 typeof(InstanceManufacturerFastCtor),
                 codegenClassScope);
 
-            var @params = new CodegenExpression[forges.Length];
+            var targetCtorParams = targetCtor.GetParameters();
+            var paramList = new CodegenExpression[forges.Length];
             for (var i = 0; i < forges.Length; i++) {
-                var type = forges[i].EvaluationType;
-                if (type == null) {
-                    @params[i] = ConstantNull();
+                var targetCtorParam = targetCtorParams[i];
+                var targetCtorParamType = targetCtorParam.ParameterType;
+                var currentForge = forges[i];
+                var currentForgeEvaluationType = currentForge.EvaluationType;
+                
+                if (targetCtorParamType.IsAssignableFrom(currentForgeEvaluationType)) {
+                    paramList[i] = currentForge
+                        .EvaluateCodegen(
+                            currentForgeEvaluationType,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope);
+                }
+                else if (targetCtorParamType.IsUnboxedType() && currentForgeEvaluationType.IsUnboxedType()) {
+                    // Not directly assignable, but looks like we're relying on IL type conversion.
+                    
+                    paramList[i] = currentForge
+                        .EvaluateCodegen(
+                            currentForgeEvaluationType,
+                            methodNode,
+                            exprSymbol,
+                            codegenClassScope);
+                }
+                else if (targetCtorParamType.IsUnboxedType() && currentForgeEvaluationType.IsBoxedType()) {
+                    // Widening and narrowing tests should have occurred by this point.  Normally what we find is that the
+                    // currentForgeEvaluationType is boxed and the targetCtorParamType is unboxed.  If this is the case,
+                    // we can solve this by unboxing the currentForgeEvaluationType.
+
+                    paramList[i] = Unbox(
+                        currentForge
+                            .EvaluateCodegen(
+                                currentForgeEvaluationType,
+                                methodNode,
+                                exprSymbol,
+                                codegenClassScope));
                 }
                 else {
-                    @params[i] = forges[i].EvaluateCodegen(type, methodNode, exprSymbol, codegenClassScope);
+                    throw new IllegalStateException("mismatch between constructor and forge");
                 }
             }
-
+            
             methodNode.Block
                 .TryCatch()
-                .TryReturn(NewInstance(targetClass, @params))
+                .TryReturn(NewInstance(targetClass, paramList))
                 .AddCatch(typeof(Exception), "ex")
                 .BlockThrow(
                     StaticMethod(

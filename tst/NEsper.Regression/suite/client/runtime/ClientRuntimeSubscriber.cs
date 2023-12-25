@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 // nested
                 var stmtNested =
-                    env.CompileDeploy("@name('s0') select nested, nested.NestedNested from SupportBeanComplexProps")
+                    env.CompileDeploy("@name('s0') select Nested, Nested.NestedNested from SupportBeanComplexProps")
                         .Statement("s0");
                 TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificNStmt());
                 TryAssertionNested(env, stmtNested, new SupportSubscriberRowByRowSpecificWStmt());
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var theEvent = listener.AssertOneGetNewAndReset();
                 Assert.AreEqual("E1", theEvent.Get("TheString"));
                 Assert.AreEqual(1, theEvent.Get("IntPrimitive"));
-                Assert.That(theEvent.Underlying, Is.InstanceOf<Pair<string, object>>());
+                Assert.That(theEvent.Underlying, Is.InstanceOf<Pair<object, IDictionary<string, object>>>());
 
                 foreach (var property in stmt.EventType.PropertyNames) {
                     var getter = stmt.EventType.GetGetter(property);
@@ -755,7 +755,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             EPStatement stmt,
             SupportSubscriberMultirowUnderlyingBase subscriber)
         {
-            stmt.SetSubscriber(subscriber, "someNewDataMayHaveArrived");
+            stmt.SetSubscriber(subscriber, "SomeNewDataMayHaveArrived");
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertOneReceivedAndReset(stmt, new object[] { "E1" }, null);
@@ -782,15 +782,15 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 TryInvalid(
                     new DummySubscriberEmptyUpd(),
                     stmtOne,
-                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
+                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.common.internal.support.SupportBean");
                 TryInvalid(
                     new DummySubscriberMultipleUpdate(),
                     stmtOne,
-                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type SupportBean");
+                    "No suitable subscriber method named 'Update' found, expecting a method that takes 1 parameter of type com.espertech.esper.common.internal.support.SupportBean");
                 TryInvalid(
                     new DummySubscriberUpdate(),
                     stmtOne,
-                    "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'SupportBean' but found type 'SupportMarketDataBean'");
+                    "Subscriber method named 'Update' for parameter number 1 is not assignable, expecting type 'com.espertech.esper.common.internal.support.SupportBean' but found type 'com.espertech.esper.regressionlib.support.bean.SupportMarketDataBean'");
                 TryInvalid(
                     new DummySubscriberPrivateUpd(),
                     stmtOne,
@@ -1249,16 +1249,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public class MyLocalJsonProvidedWidenedEvent
         {
-            public byte bytePrimitive;
-            public int intPrimitive;
-            public long longPrimitive;
-            public float floatPrimitive;
+            public byte BytePrimitive;
+            public int IntPrimitive;
+            public long LongPrimitive;
+            public float FloatPrimitive;
         }
 
         public class MyLocalJsonProvidedStringInt
         {
-            public string theString;
-            public int? intPrimitive;
+            public string TheString;
+            public int? IntPrimitive;
         }
     }
 } // end of namespace

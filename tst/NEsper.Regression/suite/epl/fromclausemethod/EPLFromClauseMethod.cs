@@ -289,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     "}]";
                 env.CompileDeploy(script, path);
 
-                TryAssertionUDFAndScriptReturningEvents(env, path, "myItemProducerUDF");
+                TryAssertionUDFAndScriptReturningEvents(env, path, "MyItemProducerUDF");
                 TryAssertionUDFAndScriptReturningEvents(env, path, "myItemProducerScript");
 
                 env.UndeployAll();

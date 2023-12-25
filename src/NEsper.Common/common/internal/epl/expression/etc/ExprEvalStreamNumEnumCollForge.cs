@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             //   they are using.  In C# we have strong type checking which means we need to know.
             //   Unfortunately, this data is only known in the ExprForge.  Revisit this.
 
-            _evaluationType = typeof(FlexCollection);
+            _evaluationType = typeof(ICollection<object>);
         }
 
         public ExprEvaluator ExprEvaluator => throw new UnsupportedOperationException("Not available at compile time");

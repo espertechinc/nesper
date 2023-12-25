@@ -109,9 +109,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(fields[0], "Contained.except(containedTwo)");
-                builder.WithExpression(fields[1], "Contained.intersect(containedTwo)");
-                builder.WithExpression(fields[2], "Contained.union(containedTwo)");
+                builder.WithExpression(fields[0], "Contained.except(ContainedTwo)");
+                builder.WithExpression(fields[1], "Contained.intersect(ContainedTwo)");
+                builder.WithExpression(fields[2], "Contained.union(ContainedTwo)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var epl =
                     "@name('s0') expression last10A {" +
-                    " (select * from SupportBean_ST0(key0 like 'A%')#length(2)) " +
+                    " (select * from SupportBean_ST0(Key0 like 'A%')#length(2)) " +
                     "}" +
                     "expression last10NonZero {" +
                     " (select * from SupportBean_ST0(P00 > 0)#length(2)) " +
@@ -202,9 +202,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0,c1,c2".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "Strvals.except(strvalstwo)");
-                builder.WithExpression(fields[1], "Strvals.intersect(strvalstwo)");
-                builder.WithExpression(fields[2], "Strvals.union(strvalstwo)");
+                builder.WithExpression(fields[0], "Strvals.except(Strvalstwo)");
+                builder.WithExpression(fields[1], "Strvals.intersect(Strvalstwo)");
+                builder.WithExpression(fields[2], "Strvals.union(Strvalstwo)");
 
                 builder.WithStatementConsumer(
                     stmt => SupportEventPropUtil.AssertTypesAllSame(
@@ -349,7 +349,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    var result = (ICollection<object>)@event.Get("val");
+                    var result = @event.Get("val").Unwrap<object>();
                     Assert.AreEqual(2, result.Count);
                 });
 

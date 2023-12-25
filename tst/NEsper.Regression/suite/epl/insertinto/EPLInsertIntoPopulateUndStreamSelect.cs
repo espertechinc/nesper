@@ -261,8 +261,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "@public create schema E1 as (myint long)",
                 path);
             var message = !rep.IsAvroEvent()
-                ? "Type by name 'E1' in property 'myint' expected Long but receives Integer"
-                : "Type by name 'E1' in property 'myint' expected schema '\"long\"' but received schema '\"int\"'";
+                ? "Type by name 'E1' in property 'myint' expected System.Nullable<System.Int64> but receives System.Nullable<System.Int32>"
+                : "Type by name 'E1' in property 'myint' expected schema '{\"type\":\"long\"}' but received schema '{\"type\":\"int\"}'";
             env.TryInvalidCompile(path, "insert into E1 select mysrc.* from Src as mysrc", message);
 
             // mismatch in column name

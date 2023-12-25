@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 using System.Linq;
 
@@ -62,18 +63,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             WithExecuteFilter(execs);
             WithInvalid(execs);
             WithSelectDistinct(execs);
-            WithInvalidInsert(execs);
+
+            WithInvalidInsert(EventRepresentationChoice.MAP, execs);
+            WithInvalidInsert(EventRepresentationChoice.OBJECTARRAY, execs);
+            WithInvalidInsert(EventRepresentationChoice.JSON, execs);
+            WithInvalidInsert(EventRepresentationChoice.AVRO, execs);
 
             return execs;
         }
 
-        public static IList<RegressionExecution> WithInvalidInsert(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithInvalidInsert(EventRepresentationChoice rep, IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraInvalidInsert(EventRepresentationChoice.MAP));
-            execs.Add(new InfraInvalidInsert(EventRepresentationChoice.OBJECTARRAY));
-            execs.Add(new InfraInvalidInsert(EventRepresentationChoice.JSON));
-            execs.Add(new InfraInvalidInsert(EventRepresentationChoice.AVRO));
+            execs.Add(new InfraInvalidInsert(rep));
             return execs;
         }
 
@@ -219,27 +221,43 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         private class InfraInvalidInsert : RegressionExecution
         {
-            private readonly EventRepresentationChoice representation;
+            private readonly EventRepresentationChoice _representation;
 
             public InfraInvalidInsert(EventRepresentationChoice representation)
             {
-                this.representation = representation;
+                _representation = representation;
             }
 
             public void Run(RegressionEnvironment env)
             {
+                // EventRepresentationChoice.MAP
+                // EventRepresentationChoice.OBJECTARRAY
+                // EventRepresentationChoice.JSON
+                // EventRepresentationChoice.AVRO
+
+                switch (_representation)
+                {
+                    case EventRepresentationChoice.MAP:
+                    case EventRepresentationChoice.OBJECTARRAY:
+                    case EventRepresentationChoice.AVRO:
+                    case EventRepresentationChoice.JSON:
+                        break;
+                    default:
+                        return;
+                }
+                
                 var path = new RegressionPath();
                 var eplNamedWindow =
                     "create " +
-                    representation.GetName() +
+                    _representation.GetPublicName() +
                     " schema MySchema(Id string);\n" +
                     "@public create window MyWindow#keepall as MySchema;\n";
                 env.Compile(eplNamedWindow, path);
 
                 var expected =
                     "Event type named 'MyWindow' has already been declared with differing column name or type information: ";
-                if (representation != EventRepresentationChoice.AVRO) {
-                    expected += "Type by name 'MyWindow' in property 'Id' expected String but receives Integer";
+                if (_representation != EventRepresentationChoice.AVRO) {
+                    expected += "Type by name 'MyWindow' in property 'Id' expected System.String but receives System.Nullable<System.Int32>";
                 }
                 else {
                     expected += "Avro schema does not match for type";
@@ -255,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return $"{this.GetType().Name}{{representation={representation}}}";
+                return $"{this.GetType().Name}{{representation={_representation}}}";
             }
         }
 

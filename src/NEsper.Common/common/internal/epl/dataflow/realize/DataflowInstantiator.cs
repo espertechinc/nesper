@@ -305,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.dataflow.realize
             }
 
             throw new ExprValidationException(
-                $"Failed to find OnInput method on for operator '{operatorName}' class {target.Name}, expected an OnInput method that takes any of {{{CollectionUtil.ToString(choices)}}}");
+                $"Failed to find OnInput method on for operator '{operatorName}' class {target.CleanName()}, expected an OnInput method that takes any of {{{CollectionUtil.ToString(choices)}}}");
         }
     }
 } // end of namespace

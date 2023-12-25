@@ -355,11 +355,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean update MyInfra set intarray[IntPrimitive]='x'",
-                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'int' from expression returning 'System.String'");
+                    "Failed to validate assignment expression 'intarray[IntPrimitive]=\"x\"': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.String'");
                 env.TryInvalidCompile(
                     path,
                     "on SupportBean update MyInfra set intarray[IntPrimitive]=1L",
-                    "Failed to validate assignment expression 'intarray[IntPrimitive]=1': Invalid assignment to property 'intarray' component type 'int' from expression returning 'long'");
+                    "Failed to validate assignment expression 'intarray[IntPrimitive]=1L': Invalid assignment to property 'intarray' component type 'System.Int32' from expression returning 'System.Int64'");
 
                 // not-an-array
                 env.TryInvalidCompile(
@@ -1467,15 +1467,15 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(epl).AddListener("s1").AddListener("s2").AddListener("s3").AddListener("s4");
 
                 env.SendEventBean(new SupportBean_ST0("ID1", "K1", 1));
-                env.AssertPropsNew("s1", "Id,key0".SplitCsv(), new object[] { "ID1", "K1" });
-                env.AssertPropsNew("s2", "Id,key0".SplitCsv(), new object[] { "ID1", "K1" });
-                env.AssertPropsNew("s3", "Id,key0".SplitCsv(), new object[] { "ID1", "K1" });
+                env.AssertPropsNew("s1", "Id,Key0".SplitCsv(), new object[] { "ID1", "K1" });
+                env.AssertPropsNew("s2", "Id,Key0".SplitCsv(), new object[] { "ID1", "K1" });
+                env.AssertPropsNew("s3", "Id,Key0".SplitCsv(), new object[] { "ID1", "K1" });
                 env.AssertListenerNotInvoked("s4");
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean_ST0("ID1", "K2", 2));
-                env.AssertPropsNew("s4", "Id,key0".SplitCsv(), new object[] { "ID1", "K2" });
+                env.AssertPropsNew("s4", "Id,Key0".SplitCsv(), new object[] { "ID1", "K2" });
                 env.AssertPropsPerRowIterator(
                     "Create",
                     "v1,v2".SplitCsv(),

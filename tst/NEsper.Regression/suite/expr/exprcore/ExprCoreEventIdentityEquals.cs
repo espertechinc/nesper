@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.TryInvalidCompile(
                     "select event_identity_equals(e, s0) from SupportBean#lastevent as e, SupportBean_S0#lastevent as s0",
-                    "Failed to validate select-clause expression 'event_identity_equals(e,s0)': event_identity_equals received two different event types as parameter, type 'SupportBean' is not the same as type 'SupportBean_S0'");
+                    "Failed to validate select-clause expression 'event_identity_equals(e,s0)': event_identity_equals received two different event types as parameter, Type 'SupportBean' is not the same as type 'SupportBean_S0'");
             }
         }
 

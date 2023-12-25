@@ -219,7 +219,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             CodegenClassScope codegenClassScope)
         {
             var block = codegenMethodScope
-                .MakeChild(typeof(FlexCollection), typeof(PropertyDotScalarArrayForge), codegenClassScope)
+                .MakeChild(typeof(ICollection<object>), typeof(PropertyDotScalarStringForge), codegenClassScope)
                 .AddParam<EventBean>("@event")
                 .Block
                 .DeclareVar(

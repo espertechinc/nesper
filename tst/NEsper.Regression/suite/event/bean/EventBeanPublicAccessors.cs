@@ -44,14 +44,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                                 "fieldStringArray[1] as fieldArrIndexed," +
                                 "fieldMapped as fieldMap," +
                                 "fieldNested as fieldNested," +
-                                "fieldNested.readNestedValue as fieldNestedVal," +
-                                "readLegacyBeanVal as simple," +
-                                "readLegacyNested as nestedObject," +
-                                "readLegacyNested.readNestedValue as nested," +
-                                "readStringArray[0] as array," +
-                                "readStringIndexed[1] as indexed," +
-                                "readMapByKey('key1') as mapped," +
-                                "readMap as mapItself," +
+                                "fieldNested.ReadNestedValue as fieldNestedVal," +
+                                "ReadLegacyBeanVal as simple," +
+                                "ReadLegacyNested as nestedObject," +
+                                "ReadLegacyNested.ReadNestedValue as nested," +
+                                "ReadStringArray[0] as array," +
+                                "ReadStringIndexed[1] as indexed," +
+                                "ReadMapByKey('key1') as mapped," +
+                                "ReadMap as mapItself," +
                                 "explicitFSimple, " +
                                 "explicitFIndexed[0], " +
                                 "explicitFNested, " +
@@ -69,20 +69,18 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldSimple"));
                     Assert.AreEqual(typeof(string[]), eventType.GetPropertyType("fieldArr"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldArrIndexed"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("fieldMap"));
+                    Assert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("fieldMap"));
                     Assert.AreEqual(typeof(SupportLegacyBean.LegacyNested), eventType.GetPropertyType("fieldNested"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("fieldNestedVal"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("simple"));
                     Assert.AreEqual(typeof(SupportLegacyBean.LegacyNested), eventType.GetPropertyType("nestedObject"));
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("Nested"));
+                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("nested"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("array"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("indexed"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("mapped"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitFSimple"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitFIndexed[0]"));
-                    Assert.AreEqual(
-                        typeof(SupportLegacyBean.LegacyNested),
-                        eventType.GetPropertyType("explicitFNested"));
+                    Assert.AreEqual(typeof(SupportLegacyBean.LegacyNested), eventType.GetPropertyType("explicitFNested"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMSimple"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMArray[0]"));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("explicitMIndexed[1]"));
@@ -104,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                     Assert.AreEqual(legacyBean.ReadLegacyBeanVal(), eventBean.Get("simple"));
                     Assert.AreEqual(legacyBean.ReadLegacyNested(), eventBean.Get("nestedObject"));
-                    Assert.AreEqual(legacyBean.ReadLegacyNested().ReadNestedValue(), eventBean.Get("Nested"));
+                    Assert.AreEqual(legacyBean.ReadLegacyNested().ReadNestedValue(), eventBean.Get("nested"));
                     Assert.AreEqual(legacyBean.ReadStringIndexed(0), eventBean.Get("array"));
                     Assert.AreEqual(legacyBean.ReadStringIndexed(1), eventBean.Get("indexed"));
                     Assert.AreEqual(legacyBean.ReadMapByKey("key1"), eventBean.Get("mapped"));

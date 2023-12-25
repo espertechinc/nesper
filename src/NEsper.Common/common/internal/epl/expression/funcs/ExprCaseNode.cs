@@ -18,6 +18,7 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.map;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
@@ -27,10 +28,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public partial class ExprCaseNode : ExprNodeBase
     {
-        private readonly bool isCase2;
+        private readonly bool _isCase2;
         [JsonIgnore]
-        [NonSerialized]
-        private ExprCaseNodeForge forge;
+        private ExprCaseNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -40,20 +40,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// </param>
         public ExprCaseNode(bool isCase2)
         {
-            this.isCase2 = isCase2;
+            this._isCase2 = isCase2;
         }
 
         /// <summary>
         /// Returns true if this is a switch-type case.
         /// </summary>
         /// <returns>true for switch-type case, or false for when-then type</returns>
-        public bool IsCase2 => isCase2;
+        public bool IsCase2 => _isCase2;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
             var analysis = AnalyzeCase();
             foreach (var pair in analysis.WhenThenNodeList) {
-                if (!isCase2) {
+                if (!_isCase2) {
                     if (!pair.First.Forge.EvaluationType.IsTypeBoolean()) {
                         throw new ExprValidationException("Case node 'when' expressions must return a boolean value");
                     }
@@ -62,14 +62,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             var mustCoerce = false;
             Coercer coercer = null;
-            if (isCase2) {
+            if (_isCase2) {
                 // validate we can compare result types
-                IList<Type> comparedTypes = new List<Type>();
-                var epType = analysis.OptionalCompareExprNode.Forge.EvaluationType;
-                comparedTypes.Add(epType);
+                var comparedTypes = new List<Type>();
+                comparedTypes.Add(analysis.OptionalCompareExprNode.Forge.EvaluationType);
                 foreach (var pair in analysis.WhenThenNodeList) {
-                    var pairType = pair.First.Forge.EvaluationType;
-                    comparedTypes.Add(pairType);
+                    comparedTypes.Add(pair.First.Forge.EvaluationType);
                 }
 
                 // Determine common denominator type
@@ -77,17 +75,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     var coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
                     // Determine if we need to coerce numbers when one type doesn't match any other type
                     if (coercionType != null) {
-                        var coercionClass = coercionType;
-                        if (coercionClass.IsTypeNumeric()) {
+                        if (coercionType.IsTypeNumeric()) {
                             foreach (var comparedType in comparedTypes) {
-                                if (!comparedType.Equals(coercionType)) {
+                                if (comparedType != coercionType) {
                                     mustCoerce = true;
                                     break;
                                 }
                             }
 
                             if (mustCoerce) {
-                                coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionClass);
+                                coercer = SimpleNumberCoercerFactory.GetCoercer(null, coercionType);
                             }
                         }
                     }
@@ -109,8 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     }
                 }
 
-                var type = pair.Second.Forge.EvaluationType;
-                childTypes.Add(type);
+                childTypes.Add(pair.Second.Forge.EvaluationType);
             }
 
             if (analysis.OptionalElseExprNode != null) {
@@ -121,13 +117,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         childMapTypes.Add(rowProps);
                     }
                     else {
-                        var type = analysis.OptionalElseExprNode.Forge.EvaluationType;
-                        childTypes.Add(type);
+                        childTypes.Add(analysis.OptionalElseExprNode.Forge.EvaluationType);
                     }
                 }
                 else {
-                    var type = analysis.OptionalElseExprNode.Forge.EvaluationType;
-                    childTypes.Add(type);
+                    childTypes.Add(analysis.OptionalElseExprNode.Forge.EvaluationType);
                 }
             }
 
@@ -138,16 +132,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 var count = -1;
                 foreach (var pair in analysis.WhenThenNodeList) {
                     count++;
-                    var type = pair.Second.Forge.EvaluationType;
-                    if (!TypeHelper.IsTypeOrNull(type, typeof(IDictionary<string, object>))) {
+                    if (pair.Second.Forge.EvaluationType != null &&
+                        pair.Second.Forge.EvaluationType.IsNotGenericDictionary()) {
                         check = ", check when-condition number " + count;
                         throw new ExprValidationException(message + check);
                     }
                 }
 
                 if (analysis.OptionalElseExprNode != null) {
-                    var type = analysis.OptionalElseExprNode.Forge.EvaluationType;
-                    if (!TypeHelper.IsTypeOrNull(type, typeof(IDictionary<string, object>))) {
+                    if (analysis.OptionalElseExprNode.Forge.EvaluationType != null &&
+                        analysis.OptionalElseExprNode.Forge.EvaluationType.IsNotGenericDictionary()) {
                         check = ", check the else-condition";
                         throw new ExprValidationException(message + check);
                     }
@@ -162,12 +156,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             if (childMapTypes.IsEmpty()) {
                 // Determine common denominator type
                 try {
-                    var coercionType = TypeHelper.GetCommonCoercionType(childTypes.ToArray());
-                    if (coercionType == null) {
+                    resultType = TypeHelper
+                        .GetCommonCoercionType(childTypes.ToArray())
+                        .GetBoxedType();
+                    if (resultType == null) {
                         throw new ExprValidationException("Null-type return value is not allowed");
                     }
-
-                    resultType = coercionType;
                     if (resultType.IsTypeNumeric()) {
                         isNumericResult = true;
                     }
@@ -180,7 +174,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 resultType = typeof(IDictionary<string, object>);
                 mapResultType = childMapTypes[0];
                 for (var i = 1; i < childMapTypes.Count; i++) {
-                    IDictionary<string, object> other = childMapTypes[i];
+                    var other = childMapTypes[i];
                     var messageEquals = BaseNestableEventType.IsDeepEqualsProperties(
                         "Case-when number " + i,
                         mapResultType,
@@ -197,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCaseNodeForge(
+            _forge = new ExprCaseNodeForge(
                 this,
                 resultType,
                 mapResultType,
@@ -220,7 +214,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return false;
             }
 
-            return isCase2 == otherExprCaseNode.isCase2;
+            return _isCase2 == otherExprCaseNode._isCase2;
         }
 
         public override void ToPrecedenceFreeEPL(
@@ -236,7 +230,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             }
 
             writer.Write("case");
-            if (isCase2) {
+            if (_isCase2) {
                 writer.Write(' ');
                 analysis.OptionalCompareExprNode.ToEPL(writer, Precedence, flags);
             }
@@ -311,7 +305,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private CaseAnalysis AnalyzeCase()
         {
-            if (isCase2) {
+            if (_isCase2) {
                 return AnalyzeCaseTwo();
             }
             else {
@@ -321,15 +315,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
     }

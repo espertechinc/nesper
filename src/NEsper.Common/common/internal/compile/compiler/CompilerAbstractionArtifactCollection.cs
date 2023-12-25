@@ -34,6 +34,6 @@ namespace com.espertech.esper.common.@internal.compile.compiler
         // IDictionary<string, byte[]> Classes { get; }
         // void Add(IDictionary<string, byte[]> bytes);
 
-        void Remove(string name);
+        void Remove(IArtifact artifact);
     }
 } // end of namespace

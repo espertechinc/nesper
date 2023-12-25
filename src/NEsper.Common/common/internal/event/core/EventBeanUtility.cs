@@ -55,11 +55,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             return @event.Underlying;
         }
 
-        public static object GetNonemptyFirstEventUnderlying(FlexCollection matchingEvents)
-        {
-            return GetNonemptyFirstEventUnderlying(matchingEvents.EventBeanCollection);
-        }
-
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -76,16 +71,6 @@ namespace com.espertech.esper.common.@internal.@event.core
             }
 
             return matchingEvents.First();
-        }
-
-        /// <summary>
-        ///     NOTE: Code-generation-invoked method, method name and parameter order matters
-        /// </summary>
-        /// <param name="matchingEvents">events</param>
-        /// <returns>event</returns>
-        public static EventBean GetNonemptyFirstEvent(FlexCollection matchingEvents)
-        {
-            return GetNonemptyFirstEvent(matchingEvents.EventBeanCollection);
         }
 
         public static EventPropertyGetter GetAssertPropertyGetter(

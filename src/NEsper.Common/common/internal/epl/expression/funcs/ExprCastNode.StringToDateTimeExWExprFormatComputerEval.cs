@@ -22,14 +22,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public class StringToDateTimeExWExprFormatComputerEval : StringToDateLongWExprFormatEval
         {
-            private readonly TimeZoneInfo timeZone;
+            private readonly TimeZoneInfo _timeZone;
 
             public StringToDateTimeExWExprFormatComputerEval(
                 ExprEvaluator dateFormatEval,
                 TimeZoneInfo timeZone)
                 : base(dateFormatEval)
             {
-                this.timeZone = timeZone;
+                this._timeZone = timeZone;
             }
 
             public override object Compute(
@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return StringToDateTimExWStaticFormatComputer.StringToDtxWStaticFormatParse(
                     dateFormat,
                     input,
-                    timeZone);
+                    _timeZone);
             }
 
             public static CodegenExpression Codegen(

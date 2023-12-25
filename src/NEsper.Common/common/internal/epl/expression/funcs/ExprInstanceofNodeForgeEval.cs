@@ -23,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprInstanceofNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprEvaluator evaluator;
-        private readonly ExprInstanceofNodeForge forge;
+        private readonly ExprEvaluator _evaluator;
+        private readonly ExprInstanceofNodeForge _forge;
 
-        private readonly CopyOnWriteList<Pair<Type, bool>> resultCache =
+        private readonly CopyOnWriteList<Pair<Type, bool>> _resultCache =
             new CopyOnWriteList<Pair<Type, bool>>();
 
         public ExprInstanceofNodeForgeEval(
             ExprInstanceofNodeForge forge,
             ExprEvaluator evaluator)
         {
-            this.forge = forge;
-            this.evaluator = evaluator;
+            this._forge = forge;
+            this._evaluator = evaluator;
         }
 
         public object Evaluate(
@@ -42,12 +42,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var result = _evaluator.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null) {
                 return false;
             }
 
-            return InstanceofCacheCheckOrAdd(forge.Classes, resultCache, result);
+            return InstanceofCacheCheckOrAdd(_forge.Classes, _resultCache, result);
         }
 
         /// <summary>

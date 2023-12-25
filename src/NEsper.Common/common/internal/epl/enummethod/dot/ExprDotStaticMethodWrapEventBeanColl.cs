@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.rettype;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
@@ -26,9 +27,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
-            return (ICollection<EventBean>)result;
+            return result.Unwrap<EventBean>();
         }
 
         public CodegenExpression CodegenConvertNonNull(

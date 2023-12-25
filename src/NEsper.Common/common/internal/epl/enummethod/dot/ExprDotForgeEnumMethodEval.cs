@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -85,13 +85,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(object),
                 NewInstance(typeof(object)));
             var block = methodNode.Block;
+            var collectionType = innerType;
             if (innerType == typeof(EventBean)) {
                 block.DeclareVar<ICollection<EventBean>>(
                     "coll",
                     StaticMethod(typeof(Collections), "SingletonList", new[] { typeof(EventBean) }, Ref("param")));
+                collectionType = typeof(ICollection<EventBean>);
             }
             else if (innerType == typeof(object[])) {
                 block.DeclareVar<ICollection<object>>("coll", Unwrap<object>(Ref("param")));
+                collectionType = typeof(ICollection<object>);
             }
             else if (innerType.IsGenericCollection()) {
                 block.DeclareVar(innerType, "coll", Ref("param"));
@@ -109,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var premade = new EnumForgeCodegenParams(
                 Ref("eventsLambda"),
                 Ref("coll"),
-                innerType,
+                collectionType,
                 refIsNewData,
                 refExprEvalCtx);
             
@@ -145,6 +148,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 var returnInvocation = forge.EnumForge.Codegen(premade, methodNode, codegenClassScope);
                 
                 block
+                    .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                     .DeclareVar<long>("contextNumber", ExprDotMethod(contextNumberMember, "GetAndIncrement"))
                     .TryCatch()
                     .Expression(ExprDotMethod(Ref("cache"), "PushContext", Ref("contextNumber")))

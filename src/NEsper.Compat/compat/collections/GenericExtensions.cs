@@ -304,6 +304,8 @@ namespace com.espertech.esper.compat.collections
                 return null;
             if (t.IsGenericCollection())
                 return FindGenericCollectionInterface(t).GetGenericArguments()[0];
+            if (t.IsGenericEnumerable())
+                return FindGenericEnumerationInterface(t).GetGenericArguments()[0];
             return null;
         }
         

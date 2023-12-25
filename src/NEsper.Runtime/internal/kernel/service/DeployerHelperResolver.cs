@@ -26,14 +26,14 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperResolver
 	{
-		public static TypeResolver GetClassLoader(
+		public static TypeResolver GetTypeResolver(
 			int rolloutItemNumber,
-			DeploymentClassLoaderOption deploymentClassLoaderOption,
+			DeploymentTypeResolverOption deploymentTypeResolverOption,
 			EPServicesContext servicesContext)
 		{
 			TypeResolver deploymentTypeResolver = servicesContext.TypeResolverParent;
-			if (deploymentClassLoaderOption != null) {
-				deploymentTypeResolver = deploymentClassLoaderOption(
+			if (deploymentTypeResolverOption != null) {
+				deploymentTypeResolver = deploymentTypeResolverOption(
 					new DeploymentClassLoaderContext(
 						servicesContext.TypeResolverParent,
 						servicesContext.ConfigSnapshot));

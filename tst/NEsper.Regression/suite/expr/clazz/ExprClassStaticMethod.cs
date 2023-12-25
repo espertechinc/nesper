@@ -124,16 +124,17 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "inlined_class \"\"\"\n" +
-                          "  import java.io.File;" +
-                          "  import java.util.Arrays;" +
-                          "  public class MyUtility {\n" +
-                          "    public static void Fib(int n) {\n" +
-                          "      Console.WriteLine(Arrays.AsList(new File(\".\").list()));\n" +
-                          "    }\n" +
-                          "  }\n" +
-                          "\"\"\"\n" +
-                          "@name('s0') select MyUtility.Fib(IntPrimitive) from SupportBean";
+                var epl =
+                    "inlined_class \"\"\"\n" +
+                    "  using System;\n" +
+                    "  using System.IO;\n" +
+                    "  public class MyUtility {\n" +
+                    "    public static void Fib(int n) {\n" +
+                    "      Console.WriteLine(Directory.GetFiles(\".\", \"*.*\", SearchOption.TopDirectoryOnly));\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "\"\"\"\n" +
+                    "@name('s0') select MyUtility.Fib(IntPrimitive) from SupportBean";
 
                 var support = new MySupportInlinedClassInspection();
                 env.Compile(epl, compilerOptions => compilerOptions.InlinedClassInspection = support);

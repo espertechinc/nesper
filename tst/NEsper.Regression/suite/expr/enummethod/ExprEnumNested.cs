@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             public void Run(RegressionEnvironment env)
             {
                 var eplFragment =
-                    "@name('s0') select sales.where(x => x.buyer = persons.minBy(y => age)) as val from PersonSales";
+                    "@name('s0') select Sales.where(x => x.Buyer = Persons.minBy(y => Age)) as val from PersonSales";
                 env.CompileDeploy(eplFragment).AddListener("s0");
 
                 var bean = PersonSales.Make();
@@ -129,14 +129,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 // try "in" with "Set<String> multivalues"
                 env.CompileDeploy(
-                        "@name('s0') select * from SupportContainerLevelEvent(level1s.anyOf(x=>x.level2s.anyOf(y => 'A' in (y.multivalues))))")
+                        "@name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x => x.Level2s.anyOf(y => 'A' in (y.Multivalues))))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();
 
                 // try "in" with "String singlevalue"
                 env.CompileDeploy(
-                        "@name('s0') select * from SupportContainerLevelEvent(level1s.anyOf(x=>x.level2s.anyOf(y => y.singlevalue = 'A')))")
+                        "@name('s0') select * from SupportContainerLevelEvent(Level1s.anyOf(x => x.Level2s.anyOf(y => y.Singlevalue = 'A')))")
                     .AddListener("s0");
                 TryAssertionAnyOf(env);
                 env.UndeployAll();

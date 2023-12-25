@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Boolvals.where(x => x)");
 
                 builder.WithStatementConsumer(
-                    stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<bool>)));
+                    stmt => SupportEventPropUtil.AssertTypesAllSame(stmt.EventType, fields, typeof(ICollection<bool?>)));
 
                 builder.WithAssertion(SupportCollection.MakeBoolean("true,true,false"))
                     .Verify("c0", val => AssertValuesArrayScalar(val, true, true));

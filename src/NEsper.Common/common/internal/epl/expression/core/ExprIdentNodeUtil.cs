@@ -235,10 +235,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         {
             var suggestion = GetSuggestion(ex);
             if (suggestion != null) {
-                return new ExprValidationPropertyException(ex.Message + suggestion);
+                return new ExprValidationPropertyException(ex.Message + suggestion, ex);
             }
 
-            return new ExprValidationPropertyException(ex.Message);
+            return new ExprValidationPropertyException(ex.Message, ex);
         }
 
         private static string GetSuggestion(StreamTypesException ex)

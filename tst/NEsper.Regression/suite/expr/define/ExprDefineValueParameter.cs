@@ -293,11 +293,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 var epl =
                     "@name('s0') select cc(e2, 'x', e3, 'y', e1) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e1, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e3;\n" +
+                    "SupportBean_S0(Id=1)#lastevent as e1, SupportBean_S0(Id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e3;\n" +
                     "@name('s1') select cc(e2, 'x', e3, 'y', e1) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n" +
+                    "SupportBean_S0(Id=1)#lastevent as e3, SupportBean_S0(Id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n" +
                     "@name('s2') select cc(e1, 'x', e2, 'y', e3) as c0 from \n" +
-                    "SupportBean_S0(id=1)#lastevent as e3, SupportBean_S0(id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n";
+                    "SupportBean_S0(Id=1)#lastevent as e3, SupportBean_S0(Id=2)#lastevent as e2, SupportBean_S0(Id=3)#lastevent as e1;\n";
                 env.CompileDeploy(epl, path).AddListener("s0").AddListener("s1").AddListener("s2");
                 AssertTypeExpected(env, typeof(string));
 
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 env.TryInvalidCompile(
                     "expression cc{(v1,v2) -> v1 || v2} select cc(1, 2) from SupportBean",
-                    "Failed to validate select-clause expression 'cc(1,2)': Failed to validate expression declaration 'cc': Failed to validate declared expression body expression 'v1||v2': Implicit conversion from datatype 'System.Int32' to string is not allowed");
+                    "Failed to validate select-clause expression 'cc(1,2)': Failed to validate expression declaration 'cc': Failed to validate declared expression body expression 'v1||v2': Implicit conversion from datatype 'System.Nullable<System.Int32>' to System.String is not allowed");
             }
         }
 
@@ -327,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variable ExprDefineLocalService myService = new ExprDefineLocalService();\n" +
-                          "create expression doit {v -> myService.calc(v)};\n" +
+                          "create expression doit {v -> myService.Calc(v)};\n" +
                           "@name('s0') select doit(TheString) as c0 from SupportBean;\n";
                 ExprDefineLocalService.services.Clear();
                 env.CompileDeploy(epl).AddListener("s0");

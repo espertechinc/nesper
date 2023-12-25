@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.time.node
         public bool HasVariable {
             get {
                 CheckValidated(forge);
-                return forge.IsHasVariable;
+                return forge.HasVariable;
             }
         }
 

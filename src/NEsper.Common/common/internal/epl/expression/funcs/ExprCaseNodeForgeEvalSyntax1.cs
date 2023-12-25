@@ -6,7 +6,6 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
@@ -23,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCaseNodeForgeEvalSyntax1 : ExprEvaluator
     {
-        private readonly ExprCaseNodeForge forge;
-        private readonly IList<UniformPair<ExprEvaluator>> whenThenNodeList;
-        private readonly ExprEvaluator optionalElseExprNode;
+        private readonly ExprCaseNodeForge _forge;
+        private readonly IList<UniformPair<ExprEvaluator>> _whenThenNodeList;
+        private readonly ExprEvaluator _optionalElseExprNode;
 
         public ExprCaseNodeForgeEvalSyntax1(
             ExprCaseNodeForge forge,
             IList<UniformPair<ExprEvaluator>> whenThenNodeList,
             ExprEvaluator optionalElseExprNode)
         {
-            this.forge = forge;
-            this.whenThenNodeList = whenThenNodeList;
-            this.optionalElseExprNode = optionalElseExprNode;
+            this._forge = forge;
+            this._whenThenNodeList = whenThenNodeList;
+            this._optionalElseExprNode = optionalElseExprNode;
         }
 
         public object Evaluate(
@@ -46,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             //      case when a=b then x [when c=d then y...] [else y]
             object caseResult = null;
             var matched = false;
-            foreach (var p in whenThenNodeList) {
+            foreach (var p in _whenThenNodeList) {
                 var whenResult = p.First.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 // If the 'when'-expression returns true
@@ -57,16 +56,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            if (!matched && optionalElseExprNode != null) {
-                caseResult = optionalElseExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (!matched && _optionalElseExprNode != null) {
+                caseResult = _optionalElseExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
             if (caseResult == null) {
                 return null;
             }
 
-            if (caseResult.GetType() != forge.EvaluationType && forge.IsNumericResult) {
-                caseResult = TypeHelper.CoerceBoxed(caseResult, forge.EvaluationType);
+            if (caseResult.GetType() != _forge.EvaluationType && _forge.IsNumericResult) {
+                caseResult = TypeHelper.CoerceBoxed(caseResult, _forge.EvaluationType);
             }
 
             return caseResult;

@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.sharable
                 return false;
             }
 
-            // Probably incorrect - comparing Object[] arrays with Arrays.equals
+            // Probably incorrect - comparing Object[] arrays with Arrays.AreEqual
             return Arrays.AreEqual(_valueTypes, that._valueTypes);
         }
 

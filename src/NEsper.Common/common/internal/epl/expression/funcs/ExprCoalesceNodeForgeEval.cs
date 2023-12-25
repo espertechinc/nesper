@@ -21,15 +21,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCoalesceNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprCoalesceNodeForge forge;
-        private readonly ExprEvaluator[] evaluators;
+        private readonly ExprCoalesceNodeForge _forge;
+        private readonly ExprEvaluator[] _evaluators;
 
         internal ExprCoalesceNodeForgeEval(
             ExprCoalesceNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -40,13 +40,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             object value;
 
             // Look for the first non-null return value
-            for (var i = 0; i < evaluators.Length; i++) {
-                value = evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            for (var i = 0; i < _evaluators.Length; i++) {
+                value = _evaluators[i].Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (value != null) {
                     // Check if we need to coerce
-                    if (forge.IsNumericCoercion[i]) {
-                        value = TypeHelper.CoerceBoxed(value, forge.EvaluationType);
+                    if (_forge.IsNumericCoercion[i]) {
+                        value = TypeHelper.CoerceBoxed(value, _forge.EvaluationType);
                     }
 
                     return value;

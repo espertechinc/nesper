@@ -16,8 +16,6 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 
-using Microsoft.CodeAnalysis;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.support.events
@@ -25,26 +23,38 @@ namespace com.espertech.esper.regressionlib.support.events
 	public class SupportGenericColUtil
 	{
 		public static readonly PairOfNameAndType[] NAMESANDTYPES = new PairOfNameAndType[] {
-			FromPair("listOfString", "System.Collections.Generic.IList<String>", typeof(IList<string>)),
+			FromPair(
+				"listOfString",
+				"System.Collections.Generic.IList<System.String>",
+				typeof(IList<string>)),
 			FromPair(
 				"listOfOptionalInteger",
-				"System.Collections.Generic.IList<Optional<Integer>>",
-				typeof(IList<Optional<int?>>)),
+				"System.Collections.Generic.IList<Nullable<System.Int32>>",
+				typeof(IList<Nullable<int>>)),
 			FromPair(
 				"mapOfStringAndInteger",
-				"System.Collections.Generic.IDictionary<String, Integer>",
+				"System.Collections.Generic.IDictionary<System.String, System.Int32>",
 				typeof(IDictionary<string, int?>)),
-			FromPair("listArrayOfString", "System.Collections.Generic.IList<String>[]", typeof(IList<string>[])),
-			FromPair("listOfStringArray", "System.Collections.Generic.IList<String[]>", typeof(IList<string[]>)),
+			FromPair(
+				"listArrayOfString", 
+				"System.Collections.Generic.IList<System.String>[]",
+				typeof(IList<string>[])),
+			FromPair(
+				"listOfStringArray",
+				"System.Collections.Generic.IList<System.String[]>",
+				typeof(IList<string[]>)),
 			FromPair(
 				"listArray2DimOfString",
-				"System.Collections.Generic.IList<String>[][]",
+				"System.Collections.Generic.IList<System.String>[][]",
 				typeof(IList<string>[][])),
 			FromPair(
 				"listOfStringArray2Dim",
-				"System.Collections.Generic.IList<String[][]>",
+				"System.Collections.Generic.IList<System.String[][]>",
 				typeof(IList<string[][]>)),
-			FromPair("listOfT", "System.Collections.Generic.IList<Object>", typeof(IList<object>))
+			FromPair(
+				"listOfT",
+				"System.Collections.Generic.IList<System.Object>",
+				typeof(IList<object>))
 		};
 
 		public static string AllNames()
@@ -78,9 +88,9 @@ namespace com.espertech.esper.regressionlib.support.events
 				new SupportEventPropDesc("listOfString", typeof(IList<string>)),
 				new SupportEventPropDesc("listOfOptionalInteger", typeof(IList<int?>)),
 				new SupportEventPropDesc("mapOfStringAndInteger", typeof(IDictionary<string, int>)),
-				new SupportEventPropDesc("listArrayOfString", typeof(IList<string>[])),
+				new SupportEventPropDesc("listArrayOfString", typeof(IList<string>[])).WithFragment(),
 				new SupportEventPropDesc("listOfStringArray", typeof(IList<string[]>)),
-				new SupportEventPropDesc("listArray2DimOfString", typeof(IList<string>[][])),
+				new SupportEventPropDesc("listArray2DimOfString", typeof(IList<string>[][])).WithFragment(),
 				new SupportEventPropDesc("listOfStringArray2Dim", typeof(IList<string[][]>)),
 				new SupportEventPropDesc("listOfT", typeof(IList<object>))
 			);

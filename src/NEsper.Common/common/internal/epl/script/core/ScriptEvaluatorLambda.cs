@@ -60,7 +60,10 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 bindings.Put(parameterName, parameterValue);
             }
 
-            return EvaluateInternal(new ScriptArgs { Bindings = bindings });
+            return EvaluateInternal(new ScriptArgs {
+                Bindings = bindings,
+                Context = exprEvaluatorContext
+            });
         }
 
         public object EvaluateInternal(ScriptArgs scriptArgs)

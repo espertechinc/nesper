@@ -20,11 +20,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprMinMaxRowNode : ExprNodeBase
     {
-        private readonly MinMaxTypeEnum minMaxTypeEnum;
+        private readonly MinMaxTypeEnum _minMaxTypeEnum;
 
         [JsonIgnore]
         [NonSerialized]
-        private ExprMinMaxRowNodeForge forge;
+        private ExprMinMaxRowNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -32,20 +32,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="minMaxTypeEnum">type of compare</param>
         public ExprMinMaxRowNode(MinMaxTypeEnum minMaxTypeEnum)
         {
-            this.minMaxTypeEnum = minMaxTypeEnum;
+            this._minMaxTypeEnum = minMaxTypeEnum;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -53,7 +53,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// Returns the indicator for minimum or maximum.
         /// </summary>
         /// <returns>min/max indicator</returns>
-        public MinMaxTypeEnum MinMaxTypeEnum => minMaxTypeEnum;
+        public MinMaxTypeEnum MinMaxTypeEnum => _minMaxTypeEnum;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 resultType = resultType.GetArithmaticCoercionType(ChildNodes[i].Forge.EvaluationType);
             }
 
-            forge = new ExprMinMaxRowNodeForge(this, resultType);
+            _forge = new ExprMinMaxRowNodeForge(this, resultType);
 
             return null;
         }
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             TextWriter writer,
             ExprNodeRenderableFlags flags)
         {
-            writer.Write(minMaxTypeEnum.GetExpressionText());
+            writer.Write(_minMaxTypeEnum.GetExpressionText());
             writer.Write('(');
 
             ChildNodes[0].ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
@@ -110,7 +110,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return false;
             }
 
-            if (other.minMaxTypeEnum != minMaxTypeEnum) {
+            if (other._minMaxTypeEnum != _minMaxTypeEnum) {
                 return false;
             }
 

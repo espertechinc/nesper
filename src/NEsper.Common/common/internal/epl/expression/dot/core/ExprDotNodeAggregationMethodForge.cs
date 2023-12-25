@@ -28,11 +28,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public abstract class ExprDotNodeAggregationMethodForge : ExprDotNodeForge
     {
-        private readonly ExprDotNodeImpl parent;
-        private readonly string aggregationMethodName;
-        private readonly ExprNode[] parameters;
-        private readonly AggregationPortableValidation validation;
-        private AggregationMultiFunctionMethodDesc methodDesc;
+        private readonly ExprDotNodeImpl _parent;
+        private readonly string _aggregationMethodName;
+        private readonly ExprNode[] _parameters;
+        private readonly AggregationPortableValidation _validation;
+        private AggregationMultiFunctionMethodDesc _methodDesc;
 
         protected abstract CodegenExpression EvaluateCodegen(
             string readerMethodName,
@@ -54,18 +54,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprNode[] parameters,
             AggregationPortableValidation validation)
         {
-            this.parent = parent;
-            this.aggregationMethodName = aggregationMethodName;
-            this.parameters = parameters;
-            this.validation = validation;
+            this._parent = parent;
+            this._aggregationMethodName = aggregationMethodName;
+            this._parameters = parameters;
+            this._validation = validation;
         }
 
         public void Validate(ExprValidationContext validationContext)
         {
-            methodDesc = validation.ValidateAggregationMethod(validationContext, aggregationMethodName, parameters);
+            _methodDesc = _validation.ValidateAggregationMethod(validationContext, _aggregationMethodName, _parameters);
         }
 
-        public override Type EvaluationType => methodDesc.Reader.ResultType;
+        public override Type EvaluationType => _methodDesc.Reader.ResultType;
 
         public override bool IsReturnsConstantResult => false;
 
@@ -100,14 +100,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         protected CodegenExpressionInstanceField GetReader(CodegenClassScope classScope)
         {
             return classScope.AddOrGetDefaultFieldSharable(
-                new AggregationMethodCodegenField(methodDesc.Reader, classScope, GetType()));
+                new AggregationMethodCodegenField(_methodDesc.Reader, classScope, GetType()));
         }
 
-        public EventType EventTypeCollection => methodDesc.EventTypeCollection;
+        public EventType EventTypeCollection => _methodDesc.EventTypeCollection;
 
-        public EventType EventTypeSingle => methodDesc.EventTypeSingle;
+        public EventType EventTypeSingle => _methodDesc.EventTypeSingle;
 
-        public Type ComponentTypeCollection => methodDesc.ComponentTypeCollection;
+        public Type ComponentTypeCollection => _methodDesc.ComponentTypeCollection;
 
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     classScope)
                 .Qparam(Constant(TableName)) // table name
                 .Qparam(Constant(TableColumnName)) // subprop name
-                .Qparam(Constant(aggregationMethodName)) // agg expression
+                .Qparam(Constant(_aggregationMethodName)) // agg expression
                 .Build();
         }
 
@@ -169,30 +169,30 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             ToEPL(writer, flags);
             writer.Write(".");
-            writer.Write(aggregationMethodName);
+            writer.Write(_aggregationMethodName);
             writer.Write("(");
-            ExprNodeUtilityPrint.ToExpressionStringParameterList(parameters, writer);
+            ExprNodeUtilityPrint.ToExpressionStringParameterList(_parameters, writer);
             writer.Write(")");
         }
 
         public void Accept(ExprNodeVisitor visitor)
         {
-            foreach (var parameter in parameters) {
+            foreach (var parameter in _parameters) {
                 parameter.Accept(visitor);
             }
         }
 
         public void Accept(ExprNodeVisitorWithParent visitor)
         {
-            foreach (var parameter in parameters) {
+            foreach (var parameter in _parameters) {
                 parameter.Accept(visitor);
             }
         }
 
         public void AcceptChildnodes(ExprNodeVisitorWithParent visitor)
         {
-            foreach (var parameter in parameters) {
-                parameter.AcceptChildnodes(visitor, parent);
+            foreach (var parameter in _parameters) {
+                parameter.AcceptChildnodes(visitor, _parent);
             }
         }
     }

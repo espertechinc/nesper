@@ -1243,6 +1243,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test UDF returning scalar values collection
+                fields = new[] {"val0", "val1", "val2", "val3"};
                 var eplScalar = "@name('s0') select " +
                                 "SupportCollection.MakeSampleListString().where(x => x != 'E1') as val0, " +
                                 "SupportCollection.MakeSampleArrayString().where(x => x != 'E1') as val1, " +
@@ -1334,7 +1335,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             string[] fields,
             object[][] objects)
         {
-            var mapsColl = (ICollection<IDictionary<string, object>>)rows;
+            var mapsColl = rows.Unwrap<IDictionary<string, object>>();
             var maps = mapsColl.ToArray();
             EPAssertionUtil.AssertPropsPerRow(maps, fields, objects);
         }

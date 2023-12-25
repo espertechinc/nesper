@@ -16,11 +16,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeTransposeAsStreamEval : ExprEvaluator
     {
-        private readonly ExprEvaluator inner;
+        private readonly ExprEvaluator _inner;
 
         public ExprDotNodeForgeTransposeAsStreamEval(ExprEvaluator inner)
         {
-            this.inner = inner;
+            this._inner = inner;
         }
 
         public object Evaluate(
@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            return inner.Evaluate(eventsPerStream, isNewData, context);
+            return _inner.Evaluate(eventsPerStream, isNewData, context);
         }
 
         public static CodegenExpression Codegen(

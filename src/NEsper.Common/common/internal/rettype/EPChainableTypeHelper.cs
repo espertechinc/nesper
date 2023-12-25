@@ -145,8 +145,6 @@ namespace com.espertech.esper.common.@internal.rettype
                 throw new ArgumentException("Invalid null collection component type");
             }
 
-            // var containerType = typeof(FlexCollection);
-
             var containerType = typeof(ICollection<>).MakeGenericType(collectionComponentType);
 
 #if false

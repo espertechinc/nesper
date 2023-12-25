@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -47,11 +47,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            if (_firstRowOnly) {
+            if (_firstRowOnly)
+            {
                 var firstMethodNode = codegenMethodScope
                     .MakeChild(typeof(EventBean), typeof(ExprEvalEnumerationCollForge), codegenClassScope);
                 firstMethodNode.Block
-                    .DeclareVar<FlexCollection>(
+                    .DeclareVar<ICollection<EventBean>>(
                         "events",
                         _enumerationForge.EvaluateGetROCollectionEventsCodegen(
                             firstMethodNode,
@@ -69,15 +70,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.etc
                 typeof(ExprEvalEnumerationCollForge),
                 codegenClassScope);
             methodNode.Block
-                .DeclareVar<FlexCollection>(
+                .DeclareVar<ICollection<EventBean>>(
                     "events",
-                    FlexWrap(
-                        _enumerationForge.EvaluateGetROCollectionEventsCodegen(
-                            methodNode,
-                            exprSymbol,
-                            codegenClassScope)))
+                    _enumerationForge.EvaluateGetROCollectionEventsCodegen(
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope))
                 .IfRefNullReturnNull("events")
-                .MethodReturn(ExprDotMethod(ExprDotName(Ref("events"), "EventBeanCollection"), "ToArray"));
+                .MethodReturn(UnwrapIntoArray<EventBean>(Ref("events")));
             return LocalMethod(methodNode);
         }
 

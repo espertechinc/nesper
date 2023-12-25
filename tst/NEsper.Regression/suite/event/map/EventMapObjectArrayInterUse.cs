@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             var path = new RegressionPath();
             var schema =
-                "@buseventtype create objectarray schema OATypeInMap(p0 string, p1 int);\n" +
+                "@buseventtype @public create objectarray schema OATypeInMap(p0 string, p1 int);\n" +
                 "@buseventtype @public create map schema MapTypeWOA(oa1 OATypeInMap, oa2 OATypeInMap[]);\n";
             env.CompileDeploy(schema, path);
 

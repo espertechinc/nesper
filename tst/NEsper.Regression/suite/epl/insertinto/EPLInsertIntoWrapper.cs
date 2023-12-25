@@ -9,13 +9,14 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
 
-using SupportBeanSimple = com.espertech.esper.common.@internal.support.SupportBeanSimple; // assertEquals
+using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -56,25 +57,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('A') \n" +
-                          "on SupportBean_S0 event insert into AStream select transpose(" +
-                          typeof(EPLInsertIntoWrapper).FullName +
-                          ".transpose(event));\n" +
+                          "on SupportBean_S0 event insert into AStream select transpose(" + typeof(EPLInsertIntoWrapper).MaskTypeName() + ".Transpose(event));\n" +
                           "\n" +
-                          "@name('B') on AStream insert into BStream select * where propOne;\n" +
+                          "@name('B') on AStream insert into BStream select * where PropOne;\n" +
                           "\n" +
                           "@name('C') select * from AStream;\n" +
                           "\n" +
                           "@name('D') \n" +
                           "on BStream insert into DStreamOne \n" +
-                          "select * where propTwo\n" +
-                          "insert into DStreamTwo select * where not propTwo;\n" +
+                          "select * where PropTwo\n" +
+                          "insert into DStreamTwo select * where not PropTwo;\n" +
                           "\n" +
                           "@name('E') on DStreamTwo\n" +
                           "insert into FinalStream select * insert into otherstream select * output all;\n" +
                           "\n" +
                           "@name('F') on DStreamOne\n" +
-                          "insert into FStreamOne select * where propThree\n" +
-                          "insert into FStreamTwo select * where not propThree;\n" +
+                          "insert into FStreamOne select * where PropThree\n" +
+                          "insert into FStreamTwo select * where not PropThree;\n" +
                           "\n" +
                           "@name('G') on FStreamTwo\n" +
                           "insert into FinalStream select * insert into otherstream select * output all;\n" +
@@ -175,47 +174,34 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public static MyEvent Transpose(SupportBean_S0 bean)
         {
-            return new MyEvent(bean.Id, bean.P00.Equals("true"), bean.P01.Equals("true"), bean.P02.Equals("true"));
+            return new MyEvent(
+                bean.Id,
+                bean.P00.Equals("true"),
+                bean.P01.Equals("true"),
+                bean.P02.Equals("true"));
         }
 
         public class MyEvent
         {
-            private readonly int id;
-            private readonly bool propOne;
-            private readonly bool propTwo;
-            private readonly bool propThree;
-
             public MyEvent(
                 int id,
                 bool propOne,
                 bool propTwo,
                 bool propThree)
             {
-                this.id = id;
-                this.propOne = propOne;
-                this.propTwo = propTwo;
-                this.propThree = propThree;
+                Id = id;
+                PropOne = propOne;
+                PropTwo = propTwo;
+                PropThree = propThree;
             }
 
-            public int GetId()
-            {
-                return id;
-            }
+            public int Id { get; }
 
-            public bool IsPropOne()
-            {
-                return propOne;
-            }
+            public bool PropOne { get; }
 
-            public bool IsPropTwo()
-            {
-                return propTwo;
-            }
+            public bool PropTwo { get; }
 
-            public bool IsPropThree()
-            {
-                return propThree;
-            }
+            public bool PropThree { get; }
         }
     }
 } // end of namespace

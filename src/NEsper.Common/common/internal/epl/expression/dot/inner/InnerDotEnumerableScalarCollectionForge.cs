@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
                 codegenClassScope);
             
             //var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
-            //return FlexCast(collectionType, collectionScalarCodegen);
+            //return Cast(collectionType, collectionScalarCodegen);
             return Unwrap(componentType, collectionScalarCodegen);
         }
 

@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprInstanceofNode : ExprNodeBase
     {
-        private readonly string[] classIdentifiers;
+        private readonly string[] _classIdentifiers;
 
         [JsonIgnore]
         [NonSerialized]
-        private ExprInstanceofNodeForge forge;
+        private ExprInstanceofNodeForge _forge;
 
         /// <summary>
         /// Ctor.
@@ -37,20 +37,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="classIdentifiers">is a list of type names to check type for</param>
         public ExprInstanceofNode(string[] classIdentifiers)
         {
-            this.classIdentifiers = classIdentifiers;
+            this._classIdentifiers = classIdentifiers;
         }
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -61,18 +61,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     "Instanceof node must have 1 child expression node supplying the expression to test");
             }
 
-            if (classIdentifiers == null || classIdentifiers.Length == 0) {
+            if (_classIdentifiers == null || _classIdentifiers.Length == 0) {
                 throw new ExprValidationException(
                     "Instanceof node must have 1 or more class identifiers to verify type against");
             }
 
-            var classList = GetClassSet(classIdentifiers, validationContext.ImportService);
+            var classList = GetClassSet(_classIdentifiers, validationContext.ImportService);
             Type[] classes;
             lock (this) {
                 classes = classList.ToArray();
             }
 
-            forge = new ExprInstanceofNodeForge(this, classes);
+            _forge = new ExprInstanceofNodeForge(this, classes);
             return null;
         }
 
@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             writer.Write(",");
 
             var delimiter = "";
-            for (var i = 0; i < classIdentifiers.Length; i++) {
+            for (var i = 0; i < _classIdentifiers.Length; i++) {
                 writer.Write(delimiter);
-                writer.Write(classIdentifiers[i]);
+                writer.Write(_classIdentifiers[i]);
                 delimiter = ",";
             }
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return false;
             }
 
-            if (Collections.AreEqual(other.classIdentifiers, classIdentifiers)) {
+            if (Collections.AreEqual(other._classIdentifiers, _classIdentifiers)) {
                 return true;
             }
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// Returns the list of class names or types to check instance of.
         /// </summary>
         /// <returns>class names</returns>
-        public string[] ClassIdentifiers => classIdentifiers;
+        public string[] ClassIdentifiers => _classIdentifiers;
 
         private ISet<Type> GetClassSet(
             string[] classIdentifiers,

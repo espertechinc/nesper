@@ -23,8 +23,6 @@ using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 
-using Microsoft.CodeAnalysis;
-
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
@@ -408,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env);
                 var expectedType = new object[][] {
                     new object[] { "c0", typeof(int[]) },
-                    new object[] { "c1", typeof(int?[]) }
+                    new object[] { "c1", typeof(int[]) }
                 };
                 env.AssertStatement(
                     "schema",
@@ -1336,7 +1334,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public class MyLocalSchemaTypeParamEvent<T>
         {
             private System.Collections.Generic.IList<string> listOfString;
-            private System.Collections.Generic.IList<Optional<int?>> listOfOptionalInteger;
+            private System.Collections.Generic.IList<Nullable<int>> listOfOptionalInteger;
             private IDictionary<string, int?> mapOfStringAndInteger;
             private IList<string>[] listArrayOfString;
             IList<string[]> listOfStringArray;
@@ -1346,7 +1344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             public IList<string> ListOfString => listOfString;
 
-            public IList<Optional<int?>> ListOfOptionalInteger => listOfOptionalInteger;
+            public IList<Nullable<int>> ListOfOptionalInteger => listOfOptionalInteger;
 
             public IDictionary<string, int?> MapOfStringAndInteger => mapOfStringAndInteger;
 

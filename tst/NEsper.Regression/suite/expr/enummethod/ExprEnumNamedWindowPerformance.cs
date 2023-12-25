@@ -53,16 +53,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                       "  x => (select * from Win where IntPrimitive = x.P00)" +
                       "}" +
                       "select " +
-                      "q(st0).where(x => TheString = key0) as val0, " +
-                      "q(st0).where(x => TheString = key0) as val1, " +
-                      "q(st0).where(x => TheString = key0) as val2, " +
-                      "q(st0).where(x => TheString = key0) as val3, " +
-                      "q(st0).where(x => TheString = key0) as val4, " +
-                      "q(st0).where(x => TheString = key0) as val5, " +
-                      "q(st0).where(x => TheString = key0) as val6, " +
-                      "q(st0).where(x => TheString = key0) as val7, " +
-                      "q(st0).where(x => TheString = key0) as val8, " +
-                      "q(st0).where(x => TheString = key0) as val9 " +
+                      "q(st0).where(x => TheString = Key0) as val0, " +
+                      "q(st0).where(x => TheString = Key0) as val1, " +
+                      "q(st0).where(x => TheString = Key0) as val2, " +
+                      "q(st0).where(x => TheString = Key0) as val3, " +
+                      "q(st0).where(x => TheString = Key0) as val4, " +
+                      "q(st0).where(x => TheString = Key0) as val5, " +
+                      "q(st0).where(x => TheString = Key0) as val6, " +
+                      "q(st0).where(x => TheString = Key0) as val7, " +
+                      "q(st0).where(x => TheString = Key0) as val8, " +
+                      "q(st0).where(x => TheString = Key0) as val9 " +
                       "from SupportBean_ST0 st0";
             env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -73,9 +73,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         for (var j = 0; j < 10; j++) {
-                            var coll = @event.Get("val" + j).Unwrap<object>();
+                            var coll = @event.Get("val" + j).Unwrap<SupportBean>();
                             Assert.AreEqual(1, coll.Count);
-                            var bean = (SupportBean)coll.First();
+                            var bean = coll.First();
                             Assert.AreEqual("K50", bean.TheString);
                             Assert.AreEqual(1050, bean.IntPrimitive);
                         }
@@ -94,8 +94,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             // test expression reuse
             var epl = "@name('s0') expression q {" +
-                      "  x => Win(TheString = x.key0).where(y => IntPrimitive = x.P00)" +
-                      "}" +
+                      "  x => Win(TheString = x.Key0).where(y => IntPrimitive = x.P00)" +
+                      "} " +
                       "select " +
                       "q(st0) as val0, " +
                       "q(st0) as val1, " +
@@ -117,9 +117,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         for (var j = 0; j < 10; j++) {
-                            var coll = @event.Get("val" + j).Unwrap<object>();
+                            var coll = @event.Get("val" + j).Unwrap<SupportBean>();
                             Assert.AreEqual(1, coll.Count);
-                            var bean = (SupportBean)coll.First();
+                            var bean = coll.First();
                             Assert.AreEqual("K50", bean.TheString);
                             Assert.AreEqual(1050, bean.IntPrimitive);
                         }

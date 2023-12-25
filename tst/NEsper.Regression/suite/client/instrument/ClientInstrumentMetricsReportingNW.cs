@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.AssertListener(
                 "X",
                 listener => {
-                    var received = ArrayHandlingUtil.Reorder("statementName", listener.NewDataListFlattened);
+                    var received = ArrayHandlingUtil.Reorder("StatementName", listener.NewDataListFlattened);
                     foreach (var theEvent in received) {
                         Log.Info(theEvent.Get("StatementName") + " = " + theEvent.Get("NumInput"));
                     }

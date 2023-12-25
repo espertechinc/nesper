@@ -101,33 +101,35 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             {
                 var collections = typeof(Collections).FullName;
                 var path = new RegressionPath();
-                var script = "create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
-                             "function mySplitScriptReturnEventBeanArray(value) {" +
-                             "  var split = value.split(',');\n" +
-                             "  var etype = host.resolveType('com.espertech.esper.common.client.EventBean');\n" +
-                             "  var events = host.newArr(etype, split.length);  " +
-                             "  for (var i = 0; i < split.length; i++) {\n" +
-                             "    var pvalue = split[i].substring(1);\n" +
-                             "    if (split[i].startsWith(\"A\")) {\n" +
-                             $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P0\", pvalue), \"AEvent\");\n" +
-                             "    }\n" +
-                             "    else if (split[i].startsWith(\"B\")) {\n" +
-                             $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P1\", pvalue), \"BEvent\");\n" +
-                             "    }\n" +
-                             "    else {\n" +
-                             "      xhost.throwException(\"UnsupportedOperationException\", \"Unrecognized type\");\n" +
-                             "    }\n" +
-                             "  }\n" +
-                             "  return events;\n" +
-                             "};" +
-                             "return mySplitScriptReturnEventBeanArray(value);" +
-                             "]";
+                var script =
+                    "create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
+                    "function mySplitScriptReturnEventBeanArray(value) {" +
+                    "  var split = value.split(',');\n" +
+                    "  var etype = host.resolveType('com.espertech.esper.common.client.EventBean');\n" +
+                    "  var events = host.newArr(etype, split.length);  " +
+                    "  for (var i = 0; i < split.length; i++) {\n" +
+                    "    var pvalue = split[i].substring(1);\n" +
+                    "    if (split[i].startsWith(\"A\")) {\n" +
+                    $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P0\", pvalue), \"AEvent\");\n" +
+                    "    }\n" +
+                    "    else if (split[i].startsWith(\"B\")) {\n" +
+                    $"      events[i] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"P1\", pvalue), \"BEvent\");\n" +
+                    "    }\n" +
+                    "    else {\n" +
+                    "      xhost.throwException(\"UnsupportedOperationException\", \"Unrecognized type\");\n" +
+                    "    }\n" +
+                    "  }\n" +
+                    "  return events;\n" +
+                    "};" +
+                    "return mySplitScriptReturnEventBeanArray(value);" +
+                    "]";
                 env.CompileDeploy(script, path);
 
-                var epl = "@public create schema BaseEvent();\n" +
-                          "@public create schema AEvent(p0 string) inherits BaseEvent;\n" +
-                          "@public create schema BEvent(p1 string) inherits BaseEvent;\n" +
-                          "@public @buseventtype create schema SplitEvent(value string);\n";
+                var epl = 
+                    "@public create schema BaseEvent();\n" +
+                    "@public create schema AEvent(P0 string) inherits BaseEvent;\n" +
+                    "@public create schema BEvent(P1 string) inherits BaseEvent;\n" +
+                    "@public @buseventtype create schema SplitEvent(value string);\n";
                 env.CompileDeploy(epl, path);
 
                 TryAssertionSplitExprReturnsEventBean(env, path, "mySplitUDFReturnEventBeanArray");
@@ -149,9 +151,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "s0",
                     listener => {
                         var events = listener.GetAndResetLastNewData();
-                        AssertSplitEx(events[0], "AEvent", "p0", "E1");
-                        AssertSplitEx(events[1], "BEvent", "p1", "E2");
-                        AssertSplitEx(events[2], "AEvent", "p0", "E3");
+                        AssertSplitEx(events[0], "AEvent", "P0", "E1");
+                        AssertSplitEx(events[1], "BEvent", "P1", "E2");
+                        AssertSplitEx(events[2], "AEvent", "P0", "E3");
                     });
 
                 env.UndeployModuleContaining("s0");

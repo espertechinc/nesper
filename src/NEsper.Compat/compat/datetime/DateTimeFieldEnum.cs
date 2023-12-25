@@ -23,21 +23,5 @@ namespace com.espertech.esper.compat.datetime
         DATE = 9,
         AM_PM = 11,
         SEMI_MONTH = 12
-
-        /*
-        public const int MILLISEC = 0;
-        public const int SECOND = 1;
-        public const int MINUTE = 2;
-        public const int HOUR = 3;
-        public const int DAY = 4;
-        public const int MONTH = 5;
-        public const int WEEK = 6;
-        public const int YEAR = 7;
-
-        public const int HOUR_OF_DAY = 3;
-        public const int DATE = 9;
-        public const int DAY_OF_MONTH = 4;
-        public const int AM_PM = 11;
-        */
     }
 }

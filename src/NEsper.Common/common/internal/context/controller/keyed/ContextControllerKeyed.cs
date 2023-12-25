@@ -91,7 +91,9 @@ namespace com.espertech.esper.common.@internal.context.controller.keyed
 
                         var keys = ContextControllerKeyedUtil.UnpackKey(key);
                         identifier.Keys = keys;
-                        if (filtered.Filter(identifier)) {
+
+                        var isFiltered = filtered.Filter(identifier);
+                        if (isFiltered) {
                             realization.ContextPartitionRecursiveVisit(
                                 path,
                                 subpathOrCPId,

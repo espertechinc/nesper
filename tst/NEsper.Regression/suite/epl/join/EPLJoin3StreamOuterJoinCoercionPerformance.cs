@@ -202,13 +202,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select * from " +
-                               "SupportBeanRange#keepall sbr " +
-                               " left outer join " +
-                               "SupportBean_ST0#keepall s0 on s0.key0=sbr.key" +
-                               " left outer join " +
-                               "SupportBean_ST1#keepall s1 on s1.key1=s0.key0" +
-                               " where s0.P00 between sbr.rangeStartLong and sbr.rangeEndLong";
+                var stmtText =
+                    "@name('s0') select * from " +
+                    "SupportBeanRange#keepall sbr " +
+                    " left outer join " +
+                    "SupportBean_ST0#keepall s0 on s0.Key0=sbr.Key" +
+                    " left outer join " +
+                    "SupportBean_ST1#keepall s1 on s1.Key1=s0.Key0" +
+                    " where s0.P00 between sbr.RangeStartLong and sbr.RangeEndLong";
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload

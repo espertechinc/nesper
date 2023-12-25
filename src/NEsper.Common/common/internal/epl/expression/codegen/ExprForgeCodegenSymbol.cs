@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             bool allowUnderlyingReferences,
             bool? newDataValue)
         {
-            this._allowUnderlyingReferences = allowUnderlyingReferences;
-            this._newDataValue = newDataValue;
+            _allowUnderlyingReferences = allowUnderlyingReferences;
+            _newDataValue = newDataValue;
         }
 
         public bool IsAllowUnderlyingReferences => _allowUnderlyingReferences;

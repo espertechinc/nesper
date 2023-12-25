@@ -158,10 +158,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var biOne = BigInteger.Parse("200");
                 SendAssert(env, biOne, 200.0m, biOne);
 
-                var bdTwo = ((decimal)Math.Pow(2d, 500500)) + 0.1m;
+                // the maximum value for Decimal is 7.9228162514264337593543950335 x 10^28
+                // approximlatey 2^87
+                //var bdTwo = ((decimal)Math.Pow(2d, 500500)) + 0.1m;
+                var bdTwo = ((decimal)Math.Pow(2d, 87)) + 0.1m;
                 SendAssert(env, bdTwo, bdTwo, bdTwo.AsBigInteger());
 
-                var biTwo = BigInteger.Pow(new BigInteger(2), 500500);
+                //var biTwo = BigInteger.Pow(new BigInteger(2), 500500);
+                var biTwo = BigInteger.Pow(new BigInteger(2), 87);
                 //SendAssert(env, biTwo, 2m, new BigDecimal(biTwo), biTwo);
 
                 SendAssert(env, null, null, null);
@@ -247,25 +251,32 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var path = new RegressionPath();
                 var epl =
                     "@Public @buseventtype " +
-                    "create schema MyEvent(arr_string System.Object, arr_primitive System.Object, " +
-                    "arr_boxed_one System.Object, arr_boxed_two System.Object, arr_object System.Object," +
-                    "arr_2dim_primitive System.Object, arr_2dim_object System.Object," +
-                    "arr_3dim_primitive System.Object, arr_3dim_object System.Object" +
+                    "create schema MyEvent(" +
+                    "arr_string System.Object, " +
+                    "arr_primitive System.Object, " +
+                    "arr_boxed_one System.Object, " +
+                    "arr_boxed_two System.Object, " +
+                    "arr_object System.Object," +
+                    "arr_2dim_primitive System.Object, " +
+                    "arr_2dim_object System.Object," +
+                    "arr_3dim_primitive System.Object, " +
+                    "arr_3dim_object System.Object" +
                     ");\n" +
                     "@Public create schema MyArrayEvent as " + typeof(MyArrayEvent).MaskTypeName() + ";\n";
                 env.CompileDeploy(epl, path);
 
-                var insert = "@name('s0') insert into MyArrayEvent select " +
-                             "cast(arr_string,string[]) as c0, " +
-                             "cast(arr_primitive,int[primitive]) as c1, " +
-                             "cast(arr_boxed_one,int[]) as c2, " +
-                             "cast(arr_boxed_two, System.Int32[]) as c3, " +
-                             "cast(arr_object, System.Object[]) as c4," +
-                             "cast(arr_2dim_primitive,int[primitive][]) as c5, " +
-                             "cast(arr_2dim_object, System.Object[][]) as c6," +
-                             "cast(arr_3dim_primitive,int[primitive][][]) as c7, " +
-                             "cast(arr_3dim_object, System.Object[][][]) as c8 " +
-                             "from MyEvent";
+                var insert =
+                    "@name('s0') insert into MyArrayEvent select " +
+                    "cast(arr_string,string[]) as c0, " +
+                    "cast(arr_primitive,int[primitive]) as c1, " +
+                    "cast(arr_boxed_one,int[]) as c2, " +
+                    "cast(arr_boxed_two,System.Int32[]) as c3, " +
+                    "cast(arr_object,System.Object[]) as c4, " +
+                    "cast(arr_2dim_primitive,int[primitive][]) as c5, " +
+                    "cast(arr_2dim_object,System.Object[][]) as c6, " +
+                    "cast(arr_3dim_primitive,int[primitive][][]) as c7, " +
+                    "cast(arr_3dim_object,System.Object[][][]) as c8 " +
+                    "from MyEvent";
                 env.CompileDeploy(soda, insert, path).AddListener("s0");
 
                 env.AssertStatement(
@@ -284,15 +295,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     });
 
                 IDictionary<string, object> map = new Dictionary<string, object>();
-                map.Put("arr_string", new string[] { "a" });
-                map.Put("arr_primitive", new int[] { 1 });
+                map.Put("arr_string", new[] { "a" });
+                map.Put("arr_primitive", new[] { 1 });
                 map.Put("arr_boxed_one", new int?[] { 2 });
                 map.Put("arr_boxed_two", new int?[] { 3 });
-                map.Put("arr_object", new SupportBean[] { new SupportBean("E1", 0) });
-                map.Put("arr_2dim_primitive", new int[][] { new int[] { 10 } });
-                map.Put("arr_2dim_object", new int?[][] { new int?[] { 11 } });
-                map.Put("arr_3dim_primitive", new int[][][] { new int[][] { new int[] { 12 } } });
-                map.Put("arr_3dim_object", new int?[][][] { new int?[][] { new int?[] { 13 } } });
+                map.Put("arr_object", new[] { new SupportBean("E1", 0) });
+                map.Put("arr_2dim_primitive", new[] { new[] { 10 } });
+                map.Put("arr_2dim_object", new[] { new object[] { 11 } });
+                map.Put("arr_3dim_primitive", new[] { new[] { new[] { 12 } } });
+                map.Put("arr_3dim_object", new[] { new[] { new object[] { 13 } } });
 
                 env.SendEventMap(map, "MyEvent");
 
@@ -585,7 +596,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => AssertResults(
                         theEvent,
-                        new object[] { beanOne, null, null, null, null, null, null, null }));
+                        new[] { beanOne, null, null, null, null, null, null, null }));
 
                 object beanTwo = new ISupportDImpl("", "", "");
                 env.SendEventBean(new SupportBeanDynRoot(beanTwo));
@@ -593,7 +604,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => AssertResults(
                         theEvent,
-                        new object[] { null, null, null, null, null, beanTwo, null, null }));
+                        new[] { null, null, null, null, null, beanTwo, null, null }));
 
                 object beanThree = new ISupportBCImpl("", "", "");
                 env.SendEventBean(new SupportBeanDynRoot(beanThree));
@@ -601,7 +612,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => AssertResults(
                         theEvent,
-                        new object[] { null, null, beanThree, null, beanThree, null, null, null }));
+                        new[] { null, null, beanThree, null, beanThree, null, null, null }));
 
                 object beanFour = new ISupportAImplSuperGImplPlus();
                 env.SendEventBean(new SupportBeanDynRoot(beanFour));
@@ -609,7 +620,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => AssertResults(
                         theEvent,
-                        new object[] { null, beanFour, beanFour, null, beanFour, null, beanFour, beanFour }));
+                        new[] { null, beanFour, beanFour, null, beanFour, null, beanFour, beanFour }));
 
                 object beanFive = new ISupportBaseABImpl("");
                 env.SendEventBean(new SupportBeanDynRoot(beanFive));
@@ -617,7 +628,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => AssertResults(
                         theEvent,
-                        new object[] { null, null, beanFive, beanFive, null, null, null, null }));
+                        new[] { null, null, beanFive, beanFive, null, null, null, null }));
 
                 env.UndeployAll();
             }

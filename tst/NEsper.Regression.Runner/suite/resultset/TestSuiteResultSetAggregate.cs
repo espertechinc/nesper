@@ -30,45 +30,32 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         public static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
-                typeof(SupportBean),
-                typeof(SupportBeanString),
-                typeof(SupportMarketDataBean),
-                typeof(SupportBeanNumeric),
-                typeof(SupportBean_S0),
-                typeof(SupportBean_S1),
-                typeof(SupportBean_A),
-                typeof(SupportBean_B),
-                typeof(SupportEventPropertyWithMethod),
-                typeof(SupportEventPropertyWithMethod),
-                typeof(SupportEventWithManyArray)
-            }) {
+                         typeof(SupportBean),
+                         typeof(SupportBeanString),
+                         typeof(SupportMarketDataBean),
+                         typeof(SupportBeanNumeric),
+                         typeof(SupportBean_S0),
+                         typeof(SupportBean_S1),
+                         typeof(SupportBean_A),
+                         typeof(SupportBean_B),
+                         typeof(SupportEventPropertyWithMethod),
+                         typeof(SupportEventPropertyWithMethod),
+                         typeof(SupportEventWithManyArray)
+                     }
+                    ) {
                 configuration.Common.AddEventType(clazz);
             }
 
             configuration.Common.AddImportType(typeof(SupportStaticMethodLib));
             configuration.Common.AddImportType(typeof(HashableMultiKey));
             configuration.Compiler.ByteCode.IsIncludeDebugSymbols = true;
-
             configuration.Compiler.AddPlugInAggregationFunctionForge(
                 "concatMethodAgg",
                 typeof(SupportConcatWManagedAggregationFunctionForge));
-
             var eventsAsList = new ConfigurationCompilerPlugInAggregationMultiFunction(
-                new[] {"eventsAsList"},
+                new[] { "eventsAsList" },
                 typeof(SupportAggMFEventsAsListForge));
             configuration.Compiler.AddPlugInAggregationMultiFunction(eventsAsList);
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateFiltered()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateFiltered.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateFirstEverLastEver()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateFirstEverLastEver.Executions());
         }
 
         [Test, RunInApplicationDomain]
@@ -78,33 +65,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         }
 
         [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateMaxMinGroupBy()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateMaxMinGroupBy.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateMedianAndDeviation()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateMedianAndDeviation.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateMinMax()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateMinMax.Executions());
-        }
-
-        [Test, RunInApplicationDomain]
         public void TestResultSetAggregateNTh()
         {
             RegressionRunner.Run(_session, new ResultSetAggregateNTh());
-        }
-
-        [Test, RunInApplicationDomain]
-        public void TestResultSetAggregateRate()
-        {
-            RegressionRunner.Run(_session, ResultSetAggregateRate.Executions());
         }
 
         /// <summary>
@@ -113,7 +76,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         /// RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregationMethodSorted : AbstractTestBase
         {
             public TestResultSetAggregationMethodSorted() : base(Configure)
@@ -121,7 +83,9 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
 
             [Test, RunInApplicationDomain]
-            public void WithDocSample() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithDocSample());
+            public void WithDocSample() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithDocSample());
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithInvalid());
@@ -130,37 +94,57 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             public void WithGrouped() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithGrouped());
 
             [Test, RunInApplicationDomain]
-            public void WithMultiCriteria() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithMultiCriteria());
+            public void WithMultiCriteria() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithMultiCriteria());
 
             [Test, RunInApplicationDomain]
-            public void WithOrderedDictionaryReference() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithOrderedDictionaryReference());
+            public void WithOrderedDictionaryReference() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithOrderedDictionaryReference());
 
             [Test, RunInApplicationDomain]
-            public void WithSubmapEventsBetween() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithSubmapEventsBetween());
+            public void WithSubmapEventsBetween() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithSubmapEventsBetween());
 
             [Test, RunInApplicationDomain]
-            public void WithGetContainsCounts() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithGetContainsCounts());
+            public void WithGetContainsCounts() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithGetContainsCounts());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstLastEnumerationAndDot() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithFirstLastEnumerationAndDot());
+            public void WithFirstLastEnumerationAndDot() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithFirstLastEnumerationAndDot());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstLast() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithFirstLast());
+            public void WithFirstLast() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithFirstLast());
 
             [Test, RunInApplicationDomain]
-            public void WithCFHLEnumerationAndDot() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithCFHLEnumerationAndDot());
+            public void WithCFHLEnumerationAndDot() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithCFHLEnumerationAndDot());
 
             [Test, RunInApplicationDomain]
             public void WithCFHL() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithCFHL());
 
             [Test, RunInApplicationDomain]
-            public void WithTableIdent() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithTableIdent());
+            public void WithTableIdent() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithTableIdent());
 
             [Test, RunInApplicationDomain]
-            public void WithTableAccess() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithTableAccess());
+            public void WithTableAccess() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithTableAccess());
 
             [Test, RunInApplicationDomain]
-            public void WithNonTable() => RegressionRunner.Run(_session, ResultSetAggregationMethodSorted.WithNonTable());
+            public void WithNonTable() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodSorted.WithNonTable());
         }
 
         /// <summary>
@@ -169,7 +153,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         /// RegressionRunner.Run(_session, ResultSetAggregateCountSum.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregateCountSum : AbstractTestBase
         {
             public TestResultSetAggregateCountSum() : base(Configure)
@@ -177,22 +160,32 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
 
             [Test, RunInApplicationDomain]
-            public void WithCountDistinctMultikeyWArray() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountDistinctMultikeyWArray());
+            public void WithCountDistinctMultikeyWArray() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountDistinctMultikeyWArray());
 
             [Test, RunInApplicationDomain]
-            public void WithSumNamedWindowRemoveGroup() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithSumNamedWindowRemoveGroup());
+            public void WithSumNamedWindowRemoveGroup() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithSumNamedWindowRemoveGroup());
 
             [Test, RunInApplicationDomain]
-            public void WithCountDistinctGrouped() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountDistinctGrouped());
+            public void WithCountDistinctGrouped() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountDistinctGrouped());
 
             [Test, RunInApplicationDomain]
             public void WithCountJoin() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountJoin());
 
             [Test, RunInApplicationDomain]
-            public void WithCountOneView() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountOneView());
+            public void WithCountOneView() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountOneView());
 
             [Test, RunInApplicationDomain]
-            public void WithCountOneViewCompile() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountOneViewCompile());
+            public void WithCountOneViewCompile() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountOneViewCompile());
 
             [Test, RunInApplicationDomain]
             public void WithGroupByCountNestedAggregationAvg() => RegressionRunner.Run(
@@ -200,19 +193,27 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 ResultSetAggregateCountSum.WithGroupByCountNestedAggregationAvg());
 
             [Test, RunInApplicationDomain]
-            public void WithCountOneViewOM() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountOneViewOM());
+            public void WithCountOneViewOM() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountOneViewOM());
 
             [Test, RunInApplicationDomain]
             public void WithSumHaving() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithSumHaving());
 
             [Test, RunInApplicationDomain]
-            public void WithCountHaving() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountHaving());
+            public void WithCountHaving() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountHaving());
 
             [Test, RunInApplicationDomain]
-            public void WithCountPlusStar() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountPlusStar());
+            public void WithCountPlusStar() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountPlusStar());
 
             [Test, RunInApplicationDomain]
-            public void WithCountSimple() => RegressionRunner.Run(_session, ResultSetAggregateCountSum.WithCountSimple());
+            public void WithCountSimple() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateCountSum.WithCountSimple());
         }
 
         /// <summary>
@@ -221,7 +222,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         /// RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregateFilterNamedParameter : AbstractTestBase
         {
             public TestResultSetAggregateFilterNamedParameter() : base(Configure)
@@ -229,22 +229,34 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
 
             [Test, RunInApplicationDomain]
-            public void WithIntoTableCountMinSketch() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithIntoTableCountMinSketch());
+            public void WithIntoTableCountMinSketch() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithIntoTableCountMinSketch());
 
             [Test, RunInApplicationDomain]
-            public void WithIntoTable() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithIntoTable());
+            public void WithIntoTable() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithIntoTable());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggPlugIn() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggPlugIn());
+            public void WithAccessAggPlugIn() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggPlugIn());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodPlugIn() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodPlugIn());
+            public void WithMethodPlugIn() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodPlugIn());
 
             [Test, RunInApplicationDomain]
-            public void WithFilterNamedParamInvalid() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithFilterNamedParamInvalid());
+            public void WithFilterNamedParamInvalid() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithFilterNamedParamInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithAuditAndReuse() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAuditAndReuse());
+            public void WithAuditAndReuse() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAuditAndReuse());
 
             [Test, RunInApplicationDomain]
             public void WithAccessAggSortedMulticriteria() => RegressionRunner.Run(
@@ -252,10 +264,14 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 ResultSetAggregateFilterNamedParameter.WithAccessAggSortedMulticriteria());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggSortedUnbound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggSortedUnbound());
+            public void WithAccessAggSortedUnbound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggSortedUnbound());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggSortedBound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggSortedBound());
+            public void WithAccessAggSortedBound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggSortedBound());
 
             [Test, RunInApplicationDomain]
             public void WithAccessAggLinearBoundMixedFilter() => RegressionRunner.Run(
@@ -263,97 +279,139 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 ResultSetAggregateFilterNamedParameter.WithAccessAggLinearBoundMixedFilter());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggLinearWIndex() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggLinearWIndex());
+            public void WithAccessAggLinearWIndex() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggLinearWIndex());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggLinearUnbound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggLinearUnbound());
+            public void WithAccessAggLinearUnbound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggLinearUnbound());
 
             [Test, RunInApplicationDomain]
-            public void WithAccessAggLinearBound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithAccessAggLinearBound());
+            public void WithAccessAggLinearBound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithAccessAggLinearBound());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggRateBound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggRateBound());
+            public void WithMethodAggRateBound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggRateBound());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggRateUnbound() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggRateUnbound());
+            public void WithMethodAggRateUnbound() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggRateUnbound());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggNth() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggNth());
+            public void WithMethodAggNth() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggNth());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggLeaving() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggLeaving());
+            public void WithMethodAggLeaving() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggLeaving());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggSQLMixedFilter() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggSQLMixedFilter());
+            public void WithMethodAggSQLMixedFilter() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggSQLMixedFilter());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAggSQLAll() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithMethodAggSQLAll());
+            public void WithMethodAggSQLAll() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithMethodAggSQLAll());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstAggSODA() => RegressionRunner.Run(_session, ResultSetAggregateFilterNamedParameter.WithFirstAggSODA());
+            public void WithFirstAggSODA() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFilterNamedParameter.WithFirstAggSODA());
         }
-        
+
         /// <summary>
         /// Auto-test(s): ResultSetAggregateSortedMinMaxBy
         /// <code>
         /// RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregateSortedMinMaxBy : AbstractTestBase
         {
-            public TestResultSetAggregateSortedMinMaxBy() : base(Configure) { }
+            public TestResultSetAggregateSortedMinMaxBy() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithNoDataWindow() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithNoDataWindow());
+            public void WithNoDataWindow() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithNoDataWindow());
 
             [Test, RunInApplicationDomain]
-            public void WithMultipleCriteria() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithMultipleCriteria());
+            public void WithMultipleCriteria() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithMultipleCriteria());
 
             [Test, RunInApplicationDomain]
-            public void WithMultipleCriteriaSimple() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithMultipleCriteriaSimple());
+            public void WithMultipleCriteriaSimple() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithMultipleCriteriaSimple());
 
             [Test, RunInApplicationDomain]
             public void WithNoAlias() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithNoAlias());
 
             [Test]
-            public void WithMinByMaxByOverWindow() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithMinByMaxByOverWindow());
+            public void WithMinByMaxByOverWindow() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithMinByMaxByOverWindow());
 
             [Test, RunInApplicationDomain]
-            public void WithMultipleOverlappingCategories() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithMultipleOverlappingCategories());
+            public void WithMultipleOverlappingCategories() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithMultipleOverlappingCategories());
 
             [Test, RunInApplicationDomain]
-            public void WithGroupedSortedMinMax() => RegressionRunner.Run(_session, ResultSetAggregateSortedMinMaxBy.WithGroupedSortedMinMax());
+            public void WithGroupedSortedMinMax() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateSortedMinMaxBy.WithGroupedSortedMinMax());
         }
-        
+
         /// <summary>
         /// Auto-test(s): ResultSetAggregationMethodWindow
         /// <code>
         /// RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregationMethodWindow : AbstractTestBase
         {
-            public TestResultSetAggregationMethodWindow() : base(Configure) { }
+            public TestResultSetAggregationMethodWindow() : base(Configure)
+            {
+            }
 
             [Test, RunInApplicationDomain]
             public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithListReference() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithListReference());
+            public void WithListReference() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodWindow.WithListReference());
 
             [Test, RunInApplicationDomain]
-            public void WithTableIdentWCount() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithTableIdentWCount());
+            public void WithTableIdentWCount() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodWindow.WithTableIdentWCount());
 
             [Test, RunInApplicationDomain]
-            public void WithTableAccess() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithTableAccess());
+            public void WithTableAccess() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodWindow.WithTableAccess());
 
             [Test, RunInApplicationDomain]
-            public void WithNonTable() => RegressionRunner.Run(_session, ResultSetAggregationMethodWindow.WithNonTable());
+            public void WithNonTable() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregationMethodWindow.WithNonTable());
         }
 
         /// <summary>
@@ -362,7 +420,6 @@ namespace com.espertech.esper.regressionrun.suite.resultset
         /// RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.Executions());
         /// </code>
         /// </summary>
-
         public class TestResultSetAggregateFirstLastWindow : AbstractTestBase
         {
             public TestResultSetAggregateFirstLastWindow() : base(Configure)
@@ -370,46 +427,74 @@ namespace com.espertech.esper.regressionrun.suite.resultset
             }
 
             [Test, RunInApplicationDomain]
-            public void WithOnDemandQuery() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOnDemandQuery());
+            public void WithOnDemandQuery() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithOnDemandQuery());
 
             [Test, RunInApplicationDomain]
-            public void WithNoParamChainedAndProperty() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithNoParamChainedAndProperty());
+            public void WithNoParamChainedAndProperty() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithNoParamChainedAndProperty());
 
             [Test, RunInApplicationDomain]
-            public void WithMixedNamedWindow() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithMixedNamedWindow());
+            public void WithMixedNamedWindow() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithMixedNamedWindow());
 
             [Test, RunInApplicationDomain]
-            public void WithLateInitialize() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithLateInitialize());
+            public void WithLateInitialize() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithLateInitialize());
 
             [Test, RunInApplicationDomain]
-            public void WithLastMaxMixedOnSelect() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithLastMaxMixedOnSelect());
+            public void WithLastMaxMixedOnSelect() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithLastMaxMixedOnSelect());
 
             [Test, RunInApplicationDomain]
-            public void WithOnDelete() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOnDelete());
+            public void WithOnDelete() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithOnDelete());
 
             [Test, RunInApplicationDomain]
-            public void WithOutputRateLimiting() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOutputRateLimiting());
+            public void WithOutputRateLimiting() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithOutputRateLimiting());
 
             [Test, RunInApplicationDomain]
-            public void WithWindowAndSumWGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowAndSumWGroup());
+            public void WithWindowAndSumWGroup() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithWindowAndSumWGroup());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstLastWindowGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastWindowGroup());
+            public void WithFirstLastWindowGroup() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithFirstLastWindowGroup());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstLastWindowNoGroup() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastWindowNoGroup());
+            public void WithFirstLastWindowNoGroup() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithFirstLastWindowNoGroup());
 
             [Test, RunInApplicationDomain]
-            public void WithBatchWindowGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithBatchWindowGrouped());
+            public void WithBatchWindowGrouped() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithBatchWindowGrouped());
 
             [Test, RunInApplicationDomain]
-            public void WithBatchWindow() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithBatchWindow());
+            public void WithBatchWindow() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithBatchWindow());
 
             [Test, RunInApplicationDomain]
-            public void WithOuterJoin1Access() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithOuterJoin1Access());
+            public void WithOuterJoin1Access() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithOuterJoin1Access());
 
             [Test, RunInApplicationDomain]
-            public void WithJoin2Access() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithJoin2Access());
+            public void WithJoin2Access() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithJoin2Access());
 
             [Test, RunInApplicationDomain]
             public void WithTypeAndColNameAndEquivalency() => RegressionRunner.Run(
@@ -417,34 +502,229 @@ namespace com.espertech.esper.regressionrun.suite.resultset
                 ResultSetAggregateFirstLastWindow.WithTypeAndColNameAndEquivalency());
 
             [Test, RunInApplicationDomain]
-            public void WithMethodAndAccessTogether() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithMethodAndAccessTogether());
+            public void WithMethodAndAccessTogether() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithMethodAndAccessTogether());
 
             [Test, RunInApplicationDomain]
-            public void WithSubquery() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithSubquery());
+            public void WithSubquery() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithSubquery());
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithInvalid());
+            public void WithInvalid() =>
+                RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithInvalid());
 
             [Test, RunInApplicationDomain]
-            public void WithPrevNthIndexedFirstLast() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithPrevNthIndexedFirstLast());
+            public void WithPrevNthIndexedFirstLast() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithPrevNthIndexedFirstLast());
 
             [Test, RunInApplicationDomain]
-            public void WithFirstLastIndexed() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithFirstLastIndexed());
+            public void WithFirstLastIndexed() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithFirstLastIndexed());
 
             [Test, RunInApplicationDomain]
-            public void WithWindowedGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowedGrouped());
+            public void WithWindowedGrouped() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithWindowedGrouped());
 
             [Test, RunInApplicationDomain]
-            public void WithWindowedUnGrouped() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithWindowedUnGrouped());
+            public void WithWindowedUnGrouped() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithWindowedUnGrouped());
 
             [Test, RunInApplicationDomain]
-            public void WithUnboundedStream() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithUnboundedStream());
+            public void WithUnboundedStream() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithUnboundedStream());
 
             [Test, RunInApplicationDomain]
-            public void WithUnboundedSimple() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithUnboundedSimple());
+            public void WithUnboundedSimple() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstLastWindow.WithUnboundedSimple());
 
             [Test, RunInApplicationDomain]
             public void WithStar() => RegressionRunner.Run(_session, ResultSetAggregateFirstLastWindow.WithStar());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateFiltered
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateFiltered.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateFiltered : AbstractTestBase
+        {
+            public TestResultSetAggregateFiltered() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithBlackWhitePercent() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFiltered.WithBlackWhitePercent());
+
+            [Test, RunInApplicationDomain]
+            public void WithCountVariations() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFiltered.WithCountVariations());
+
+            [Test, RunInApplicationDomain]
+            public void WithAllAggFunctions() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFiltered.WithAllAggFunctions());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastEver() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFiltered.WithFirstLastEver());
+
+            [Test, RunInApplicationDomain]
+            public void WithInvalid() => RegressionRunner.Run(_session, ResultSetAggregateFiltered.WithInvalid());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateFirstEverLastEver
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateFirstEverLastEver.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateFirstEverLastEver : AbstractTestBase
+        {
+            public TestResultSetAggregateFirstEverLastEver() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastEver() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstEverLastEver.WithFirstLastEver());
+
+            [Test, RunInApplicationDomain]
+            public void WithFirstLastInvalid() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstEverLastEver.WithFirstLastInvalid());
+
+            [Test, RunInApplicationDomain]
+            public void WithOnDelete() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateFirstEverLastEver.WithOnDelete());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateMaxMinGroupBy
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateMaxMinGroupBy.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateMaxMinGroupBy : AbstractTestBase
+        {
+            public TestResultSetAggregateMaxMinGroupBy() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithMax() => RegressionRunner.Run(_session, ResultSetAggregateMaxMinGroupBy.WithMax());
+
+            [Test, RunInApplicationDomain]
+            public void WithMaxOM() => RegressionRunner.Run(_session, ResultSetAggregateMaxMinGroupBy.WithMaxOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithMaxViewCompile() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMaxMinGroupBy.WithMaxViewCompile());
+
+            [Test, RunInApplicationDomain]
+            public void WithMaxJoin() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMaxMinGroupBy.WithMaxJoin());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoGroupHaving() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMaxMinGroupBy.WithNoGroupHaving());
+
+            [Test, RunInApplicationDomain]
+            public void WithNoGroupSelectHaving() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMaxMinGroupBy.WithNoGroupSelectHaving());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateMedianAndDeviation
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateMedianAndDeviation.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateMedianAndDeviation : AbstractTestBase
+        {
+            public TestResultSetAggregateMedianAndDeviation() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void Witht() => RegressionRunner.Run(_session, ResultSetAggregateMedianAndDeviation.Witht());
+
+            [Test, RunInApplicationDomain]
+            public void WithtJoinOM() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMedianAndDeviation.WithtJoinOM());
+
+            [Test, RunInApplicationDomain]
+            public void WithtJoin() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMedianAndDeviation.WithtJoin());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateMinMax
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateMinMax.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateMinMax : AbstractTestBase
+        {
+            public TestResultSetAggregateMinMax() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithinMaxNoDataWindowSubquery() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMinMax.WithinMaxNoDataWindowSubquery());
+
+            [Test, RunInApplicationDomain]
+            public void WithemoryMinHaving() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMinMax.WithemoryMinHaving());
+
+            [Test, RunInApplicationDomain]
+            public void WithinMaxNamedWindowWEver() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateMinMax.WithinMaxNamedWindowWEver());
+        }
+
+        /// <summary>
+        /// Auto-test(s): ResultSetAggregateRate
+        /// <code>
+        /// RegressionRunner.Run(_session, ResultSetAggregateRate.Executions());
+        /// </code>
+        /// </summary>
+        public class TestResultSetAggregateRate : AbstractTestBase
+        {
+            public TestResultSetAggregateRate() : base(Configure)
+            {
+            }
+
+            [Test, RunInApplicationDomain]
+            public void WithNonWindowed() => RegressionRunner.Run(
+                _session,
+                ResultSetAggregateRate.WithNonWindowed());
+
+            [Test, RunInApplicationDomain]
+            public void WithWindowed() => RegressionRunner.Run(_session, ResultSetAggregateRate.WithWindowed());
         }
     }
 } // end of namespace

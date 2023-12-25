@@ -10,7 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
-
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -42,7 +42,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Map
             IDictionary<string, object> mapInner = new Dictionary<string, object>();
-            mapInner.Put("myInsideInt", 10);
+            mapInner.Put("MyInsideInt", 10);
             IDictionary<string, object> topInner = new Dictionary<string, object>();
             topInner.Put("MyInt", 1);
             topInner.Put("MyString", "abc");
@@ -55,14 +55,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, OA_TYPENAME, FOA, oaTop, path);
 
             // XML
-            var xml = "<myevent MyInt=\"1\" MyString=\"abc\"><nested myInsideInt=\"10\"/></myevent>";
+            var xml = "<myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></myevent>";
             RunAssertion(env, XML_TYPENAME, FXML, xml, path);
 
             // Avro
             var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
             var innerSchema = schema.GetField("Nested").Schema.AsRecordSchema();
             var avroInner = new GenericRecord(innerSchema);
-            avroInner.Put("myInsideInt", 10);
+            avroInner.Put("MyInsideInt", 10);
             var avro = new GenericRecord(schema);
             avro.Put("MyInt", 1);
             avro.Put("MyString", "abc");
@@ -70,27 +70,23 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, AVRO_TYPENAME, FAVRO, avro, path);
 
             // Json
-            var schemasJson = "create json schema Nested(myInsideInt int);\n" +
-                              "@public @buseventtype @name('schema') create json schema " +
-                              JSON_TYPENAME +
-                              "(MyInt int, MyString string, nested Nested)";
+            var schemasJson =
+                "create json schema Nested(MyInsideInt int);\n" +
+                "@public @buseventtype @name('schema') create json schema " + JSON_TYPENAME + "(MyInt int, MyString string, Nested Nested)";
             env.CompileDeploy(schemasJson, path);
             var json = "{\n" +
                        "  \"MyInt\": 1,\n" +
                        "  \"MyString\": \"abc\",\n" +
                        "  \"Nested\": {\n" +
-                       "    \"myInsideInt\": 10\n" +
+                       "    \"MyInsideInt\": 10\n" +
                        "  }\n" +
                        "}";
             RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
 
             // Json-Class-Provided
-            var schemas = "@JsonSchema(ClassName='" +
-                          typeof(MyLocalJsonProvided).FullName +
-                          "') " +
-                          "@public @buseventtype @name('schema') create json schema " +
-                          JSONPROVIDED_TYPENAME +
-                          "()";
+            var schemas = 
+                "@JsonSchema(ClassName='" + typeof(MyLocalJsonProvided).MaskTypeName() + "') " +
+                "@public @buseventtype @name('schema') create json schema " + JSONPROVIDED_TYPENAME + "()";
             env.CompileDeploy(schemas, path);
             RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
         }
@@ -111,12 +107,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 eventBean => {
                     var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(eventBean.EventType);
                     var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-                    Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"myInsideInt\":10}}", json);
+                    Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
 
                     var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(eventBean.EventType);
                     var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
                     Assert.AreEqual(
-                        "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><nested><myInsideInt>10</myInsideInt></nested></root>",
+                        "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>",
                         xml);
                 });
 

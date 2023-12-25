@@ -335,8 +335,13 @@ namespace com.espertech.esper.common.@internal.@event.json.core
             string key,
             out object value)
         {
+            if (TryGetNativeKey(key, out var index)) {
+                if (TryGetNativeValue(index, out value)) {
+                    return true;
+                }
+            }
+
             return JsonValues.TryGetValue(key, out value);
-            //return TryGetNativeValue(key, out value) || JsonValues.TryGetValue(key, out value);
         }
 
         public void CopyTo(

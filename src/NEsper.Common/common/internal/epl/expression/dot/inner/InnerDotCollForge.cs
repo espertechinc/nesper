@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -23,24 +23,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 {
     public class InnerDotCollForge : ExprDotEvalRootChildInnerForge
     {
-        private readonly ExprForge rootForge;
+        private readonly ExprForge _rootForge;
 
         public InnerDotCollForge(ExprForge rootForge)
         {
-            this.rootForge = rootForge;
+            this._rootForge = rootForge;
         }
 
-        public ExprDotEvalRootChildInnerEval InnerEvaluator => new InnerDotCollEval(rootForge.ExprEvaluator);
+        public ExprDotEvalRootChildInnerEval InnerEvaluator => new InnerDotCollEval(_rootForge.ExprEvaluator);
 
         public CodegenExpression CodegenEvaluate(
             CodegenMethod parentMethod,
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            return FlexCast(
-                typeof(FlexCollection),
-                rootForge.EvaluateCodegen(
-                    rootForge.EvaluationType,
+            return Cast(
+                typeof(ICollection<object>),
+                _rootForge.EvaluateCodegen(
+                    _rootForge.EvaluationType,
                     parentMethod,
                     exprSymbol,
                     codegenClassScope));

@@ -25,10 +25,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprCaseNodeForgeEvalSyntax2 : ExprEvaluator
     {
-        private readonly ExprCaseNodeForge forge;
-        private readonly IList<UniformPair<ExprEvaluator>> whenThenNodeList;
-        private readonly ExprEvaluator compareExprNode;
-        private readonly ExprEvaluator optionalElseExprNode;
+        private readonly ExprCaseNodeForge _forge;
+        private readonly IList<UniformPair<ExprEvaluator>> _whenThenNodeList;
+        private readonly ExprEvaluator _compareExprNode;
+        private readonly ExprEvaluator _optionalElseExprNode;
 
         internal ExprCaseNodeForgeEvalSyntax2(
             ExprCaseNodeForge forge,
@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprEvaluator compareExprNode,
             ExprEvaluator optionalElseExprNode)
         {
-            this.forge = forge;
-            this.whenThenNodeList = whenThenNodeList;
-            this.compareExprNode = compareExprNode;
-            this.optionalElseExprNode = optionalElseExprNode;
+            this._forge = forge;
+            this._whenThenNodeList = whenThenNodeList;
+            this._compareExprNode = compareExprNode;
+            this._optionalElseExprNode = optionalElseExprNode;
         }
 
         public object Evaluate(
@@ -49,10 +49,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             // Case 2 expression example:
             //      case p when p1 then x [when p2 then y...] [else z]
-            var checkResult = compareExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var checkResult = _compareExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             object caseResult = null;
             var matched = false;
-            foreach (var p in whenThenNodeList) {
+            foreach (var p in _whenThenNodeList) {
                 var whenResult = p.First.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
 
                 if (Compare(checkResult, whenResult)) {
@@ -62,16 +62,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            if (!matched && optionalElseExprNode != null) {
-                caseResult = optionalElseExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            if (!matched && _optionalElseExprNode != null) {
+                caseResult = _optionalElseExprNode.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             }
 
             if (caseResult == null) {
                 return null;
             }
 
-            if (caseResult.GetType() != forge.EvaluationType && forge.IsNumericResult) {
-                caseResult = TypeHelper.CoerceBoxed(caseResult, forge.EvaluationType);
+            if (caseResult.GetType() != _forge.EvaluationType && _forge.IsNumericResult) {
+                caseResult = TypeHelper.CoerceBoxed(caseResult, _forge.EvaluationType);
             }
 
             return caseResult;
@@ -146,12 +146,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 return false;
             }
 
-            if (!forge.IsMustCoerce) {
+            if (!_forge.IsMustCoerce) {
                 return leftResult.Equals(rightResult);
             }
             else {
-                var left = forge.Coercer.CoerceBoxed(leftResult);
-                var right = forge.Coercer.CoerceBoxed(rightResult);
+                var left = _forge.Coercer.CoerceBoxed(leftResult);
+                var right = _forge.Coercer.CoerceBoxed(rightResult);
                 return left.Equals(right);
             }
         }

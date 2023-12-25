@@ -219,11 +219,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        var result = (IDictionary<string, EventBean>)theEvent.Get("s0");
+                        var result = theEvent.Get("s0")
+                            .AsStringDictionary()
+                            .TransformLeft<string, object, EventBean>();
                         Assert.AreSame(s0, result.Get("es0").Underlying);
                         Assert.AreSame(s1, result.Get("es1").Underlying);
 
-                        result = (IDictionary<string, EventBean>)theEvent.Get("s1");
+                        result = theEvent.Get("s1")
+                            .AsStringDictionary()
+                            .TransformLeft<string, object, EventBean>();
                         Assert.AreSame(s2, result.Get("es2").Underlying);
                         Assert.AreSame(s3, result.Get("es3").Underlying);
                     });

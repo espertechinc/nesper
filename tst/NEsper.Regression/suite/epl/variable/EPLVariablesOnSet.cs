@@ -755,7 +755,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                         var typeSet = statement.EventType;
                         Assert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1RTC"));
                         Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
-                        Assert.IsTrue(Arrays.Equals(typeSet.PropertyNames, new string[] { "var1RTC" }));
+                        Assert.IsTrue(Arrays.AreEqual(typeSet.PropertyNames, new string[] { "var1RTC" }));
                     });
 
                 var fieldsVar = new string[] { "var1RTC" };

@@ -62,13 +62,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select p0[0] as a, p0[1] as b, p1[0].IntPrimitive as c, p1[1] as d, p0 as e from MyArrayMap");
+                    "@name('s0') select P0[0] as a, P0[1] as b, P1[0].IntPrimitive as c, P1[1] as d, P0 as e from MyArrayMap");
                 env.AddListener("s0");
 
                 var p0 = new int[] { 1, 2, 3 };
                 var beans = new SupportBean[] { new SupportBean("e1", 5), new SupportBean("e2", 6) };
                 var theEvent = EventMapCore.MakeMap(
-                    new object[][] { new object[] { "p0", p0 }, new object[] { "p1", beans } });
+                    new object[][] { new object[] { "P0", p0 }, new object[] { "P1", beans } });
                 env.SendEventMap(theEvent, "MyArrayMap");
 
                 env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[] { 1, 2, 5, beans[1], p0 });
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.UndeployAll();
 
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0[0] as a, outer.p0[1] as b, outer.p1[0].IntPrimitive as c, outer.p1[1] as d, outer.p0 as e from MyArrayMapOuter");
+                    "@name('s0') select outer.P0[0] as a, outer.P0[1] as b, outer.P1[0].IntPrimitive as c, outer.P1[1] as d, outer.P0 as e from MyArrayMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = EventMapCore.MakeMap(new object[][] { new object[] { "outer", theEvent } });
@@ -111,12 +111,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy("@name('s0') select p0('k1') as a from MyMappedPropertyMap");
+                env.CompileDeploy("@name('s0') select P0('k1') as a from MyMappedPropertyMap");
                 env.AddListener("s0");
 
                 IDictionary<string, object> eventVal = new Dictionary<string, object>();
                 eventVal.Put("k1", "v1");
-                var theEvent = EventMapCore.MakeMap(new object[][] { new object[] { "p0", eventVal } });
+                var theEvent = EventMapCore.MakeMap(new object[][] { new object[] { "P0", eventVal } });
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "v1" });
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
                 env.UndeployAll();
 
-                env.CompileDeploy("@name('s0') select outer.p0('k1') as a from MyMappedPropertyMapOuter");
+                env.CompileDeploy("@name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
                 env.AddListener("s0");
 
                 var eventOuter = EventMapCore.MakeMap(new object[][] { new object[] { "outer", theEvent } });
@@ -160,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyArrayMapTwo");
+                    "@name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyArrayMapTwo");
                 env.AddListener("s0");
 
                 var n0Bean1 = EventMapCore.MakeMap(new object[][] { new object[] { "n0", 1 } });
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 var n0Bean22 = EventMapCore.MakeMap(new object[][] { new object[] { "n0", 3 } });
                 var n0Bean2 = new IDictionary<string, object>[] { n0Bean21, n0Bean22 };
                 var theEvent = EventMapCore.MakeMap(
-                    new object[][] { new object[] { "p0", n0Bean1 }, new object[] { "p1", n0Bean2 } });
+                    new object[][] { new object[] { "P0", n0Bean1 }, new object[] { "P1", n0Bean2 } });
                 var eventOuter = EventMapCore.MakeMap(new object[][] { new object[] { "outer", theEvent } });
                 env.SendEventMap(eventOuter, "MyArrayMapTwo");
 
@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
 
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "@name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyArrayMapTwo");
+                    "@name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyArrayMapTwo");
                 env.AddListener("s0");
 
                 env.SendEventMap(eventOuter, "MyArrayMapTwo");
@@ -205,7 +205,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy(
-                    "@name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyMapWithAMap");
+                    "@name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyMapWithAMap");
                 env.AddListener("s0");
 
                 var n0Bean1 = EventMapCore.MakeMap(new object[][] { new object[] { "n0", 1 } });
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 var n0Bean22 = EventMapCore.MakeMap(new object[][] { new object[] { "n0", 3 } });
                 var n0Bean2 = new IDictionary<string, object>[] { n0Bean21, n0Bean22 };
                 var theEvent = EventMapCore.MakeMap(
-                    new object[][] { new object[] { "p0", n0Bean1 }, new object[] { "p1", n0Bean2 } });
+                    new object[][] { new object[] { "P0", n0Bean1 }, new object[] { "P1", n0Bean2 } });
                 env.SendEventMap(theEvent, "MyMapWithAMap");
 
                 env.AssertEventNew(

@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create expression string js:myscript(p1) [\"--\"+p1+\"--\"]", path);
+                env.CompileDeploy("@public create expression string js:myscript(p1) [return \"--\"+p1+\"--\"]", path);
                 env.CompileDeploy("@public create expression myexpr {sb => '--'||TheString||'--'}", path);
 
                 // test mapped property syntax
@@ -161,8 +161,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@public create expression int js:abc(p1, p2) [p1*p2*10]", path);
-                env.CompileDeploy("@public create expression int js:abc(p1) [p1*10]", path);
+                env.CompileDeploy("@public create expression int js:abc(p1, p2) [return p1*p2*10]", path);
+                env.CompileDeploy("@public create expression int js:abc(p1) [return p1*10]", path);
 
                 var epl =
                     "@name('s0') select abc(IntPrimitive, DoublePrimitive) as c0, abc(IntPrimitive) as c1 from SupportBean";
@@ -292,9 +292,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // script assertion
                 TryAssertionLifecycleAndFilter(
                     env,
-                    "@public create expression boolean js:MyFilter(IntPrimitive) [IntPrimitive==1]",
+                    "@public create expression boolean js:MyFilter(IntPrimitive) [return IntPrimitive==1]",
                     "select * from SupportBean(MyFilter(IntPrimitive)) as sb",
-                    "@public create expression boolean js:MyFilter(IntPrimitive) [IntPrimitive==2]");
+                    "@public create expression boolean js:MyFilter(IntPrimitive) [return IntPrimitive==2]");
             }
 
             public ISet<RegressionFlag> Flags()

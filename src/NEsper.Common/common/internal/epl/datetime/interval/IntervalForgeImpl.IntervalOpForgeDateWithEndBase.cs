@@ -4,6 +4,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.interval
 {
@@ -25,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
             protected abstract CodegenExpression CodegenEvaluate(
                 CodegenExpressionRef startTs,
                 CodegenExpressionRef endTs,
-                CodegenExpressionRef paramStartTs,
-                CodegenExpressionRef paramEndTs,
+                CodegenExpression paramStartTs,
+                CodegenExpression paramEndTs,
                 CodegenMethod parentNode,
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope);
@@ -53,15 +54,20 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                     evaluationType,
                     "paramEndTs",
                     forgeEndTimestamp.EvaluateCodegen(evaluationType, methodNode, exprSymbol, codegenClassScope));
-                if (!evaluationType.IsPrimitive) {
+                if (evaluationType.CanBeNull()) {
                     methodNode.Block.IfRefNullReturnNull("paramEndTs");
                 }
 
+                var paramStartTs = CodegenExpressionBuilder.Unbox(
+                    CodegenExpressionBuilder.Ref("paramStartTs"), parameterType);
+                var paramEndTs = CodegenExpressionBuilder.Unbox(
+                    CodegenExpressionBuilder.Ref("paramEndTs"), evaluationType);
+                
                 var expression = CodegenEvaluate(
                     CodegenExpressionBuilder.Ref("startTs"),
                     CodegenExpressionBuilder.Ref("endTs"),
-                    CodegenExpressionBuilder.Ref("paramStartTs"),
-                    CodegenExpressionBuilder.Ref("paramEndTs"),
+                    paramStartTs,
+                    paramEndTs,
                     methodNode,
                     exprSymbol,
                     codegenClassScope);

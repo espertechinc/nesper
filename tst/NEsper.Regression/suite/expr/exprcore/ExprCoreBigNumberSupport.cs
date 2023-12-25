@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     2);
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("avgRate")));
+                    statement => Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("avgRate")));
                 SendBigNumEvent(env, 0, 5);
                 env.AssertEventNew(
                     "s0",

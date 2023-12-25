@@ -231,16 +231,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                RunAssertion(env, "IList<Integer>", "IList<Integer>", typeof(IList<int?>));
-                RunAssertion(env, "IList<IList<Integer>>", "IList<IList<Integer>>", typeof(IList<IList<int?>>));
+                RunAssertion(env, "IList<Nullable<Int32>>", "IList<Nullable<Int32>>", typeof(IList<int?>));
+                RunAssertion(env, "IList<IList<Nullable<Int32>>>", "IList<IList<Nullable<Int32>>>", typeof(IList<IList<int?>>));
                 RunAssertion(env, "IList<int[primitive]>", "IList<int[primitive]>", typeof(IList<int[]>));
 
-                RunAssertion(env, "Integer[]", "String[]", typeof(object[]));
+                RunAssertion(env, "Nullable<Int32>[]", "String[]", typeof(object));
 
-                RunAssertion(env, "IList<Integer>", "IList<Object>", typeof(IList<object>));
-                RunAssertion(env, "ICollection<Integer>", "IList<Object>", typeof(object));
+                RunAssertion(env, "IList<Nullable<Int32>>", "IList<Object>", typeof(object)); // IList<object> -- CLR coercion does not exist
+                RunAssertion(env, "ICollection<Nullable<Int32>>", "IList<Object>", typeof(object));
 
-                RunAssertion(env, "ICollection<Integer>", "null", typeof(ICollection<int?>));
+                RunAssertion(env, "ICollection<Nullable<Int32>>", "null", typeof(object));
             }
 
             private void RunAssertion(
@@ -272,11 +272,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string typeOne,
                 string typeTwo)
             {
-                return "create schema MyEvent(switch boolean, fieldOne " +
-                       typeOne +
-                       ", fieldTwo " +
-                       typeTwo +
-                       ");\n" +
+                return "create schema MyEvent(switch boolean, fieldOne " + typeOne + ", fieldTwo " + typeTwo + ");\n" +
                        "@name('s0') select case when switch then fieldOne else fieldTwo end as thecase from MyEvent;\n";
             }
 
@@ -284,11 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string typeOne,
                 string typeTwo)
             {
-                return "create schema MyEvent(switch boolean, fieldOne " +
-                       typeOne +
-                       ", fieldTwo " +
-                       typeTwo +
-                       ");\n" +
+                return "create schema MyEvent(switch boolean, fieldOne " + typeOne + ", fieldTwo " + typeTwo + ");\n" +
                        "@name('s0') select case switch when true then fieldOne when false then fieldTwo end as thecase from MyEvent;\n";
             }
         }
@@ -302,9 +294,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
             public void Run(RegressionEnvironment env)
             {
-                RunInvalid(env, "int[primitive]", "String[]", "Cannot coerce to int[] type String[]");
-                RunInvalid(env, "long[primitive]", "long[]", "Cannot coerce to long[] type Long[]");
-                RunInvalid(env, "null", "null", "Null-type return value is not allowed");
+                RunInvalid(env, "int[primitive]", "String[]", "Cannot coerce to System.Int32[] type System.String[]");
+                RunInvalid(env, "long[primitive]", "long[]", "Cannot coerce to System.Int64[] type System.Nullable<System.Int64>[]");
+                
+                // I don't this the following use case is possible because we normalize 'null' to typeof(object) in .NET
+                //RunInvalid(env, "null", "null", "Null-type return value is not allowed");
             }
 
             private void RunInvalid(
@@ -325,15 +319,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 string epl,
                 string detail)
             {
-                try {
-                    env.CompileWCheckedEx(epl);
-                    Assert.Fail();
-                }
-                catch (EPCompileException ex) {
-                    if (!ex.Message.Contains(detail)) {
-                        Assert.AreEqual(detail, ex.Message);
-                    }
-                }
+                var ex = Assert.Throws<EPCompileException>(() => env.CompileWCheckedEx(epl));
+                StringAssert.Contains(detail, ex!.Message);
             }
 
             private string GetEPLSyntaxOne(
@@ -372,7 +359,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertEventNew(
                     "s0",
-                    @event => EPAssertionUtil.AssertEqualsExactOrder((int?[])@event.Get("c1"), new int?[] { 1, 2 }));
+                    @event => EPAssertionUtil.AssertEqualsExactOrder(
+                        @event.Get("c1").UnwrapIntoArray<int>(), new int[] { 1, 2 }));
 
                 env.UndeployAll();
             }
@@ -1127,7 +1115,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         Expressions.CaseSwitch("IntPrimitive")
                             .SetElse(Expressions.Constant(2))
                             .Add(Expressions.Constant(1), Expressions.Constant(null))
-                            .Add(Expressions.Constant(2), Expressions.Constant(1.0))
+                            .Add(Expressions.Constant(2), Expressions.Constant(1.0d))
                             .Add(Expressions.Constant(3), Expressions.Constant(null)),
                         "p1");
                 model.FromClause = FromClause.Create(
@@ -1310,12 +1298,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') select case SupportEnum " +
-                          " when " +
-                          nameof(SupportEnum) +
-                          ".getValueForEnum(0) then 1 " +
-                          " when " +
-                          nameof(SupportEnum) +
-                          ".getValueForEnum(1) then 2 " +
+                          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) then 1 " +
+                          " when " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) then 2 " +
                           " end as p1 " +
                           " from " +
                           nameof(SupportBeanWithEnum) +
@@ -1341,21 +1325,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') select case IntPrimitive * 2 " +
-                          " when 2 then " +
-                          nameof(SupportEnum) +
-                          ".getValueForEnum(0) " +
-                          " when 4 then " +
-                          nameof(SupportEnum) +
-                          ".getValueForEnum(1) " +
-                          " else " +
-                          nameof(SupportEnum) +
-                          ".getValueForEnum(2) " +
+				var epl = "@Name('s0') select case IntPrimitive * 2 " +
+				          " when 2 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(0) " +
+				          " when 4 then " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(1) " +
+				          " else " + typeof(SupportEnumHelper).FullName + ".GetValueForEnum(2) " +
                           " end as p1 " +
                           " from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
-                env.AssertStmtType("s0", "p1", typeof(SupportEnum));
+                env.AssertStmtType("s0", "p1", typeof(SupportEnum?));
 
                 SendSupportBeanEvent(env, 1);
                 env.AssertEqualsNew("s0", "p1", SupportEnum.ENUM_VALUE_1);
@@ -1375,9 +1353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             public void Run(RegressionEnvironment env)
             {
                 var caseSubExpr = "case IntPrimitive when 1 then 0 end";
-                var epl = "@name('s0') select " +
-                          caseSubExpr +
-                          " from SupportBean#length(10)";
+                var epl = $"@name('s0') select {caseSubExpr} from SupportBean#length(10)";
 
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStmtType("s0", caseSubExpr, typeof(int?));

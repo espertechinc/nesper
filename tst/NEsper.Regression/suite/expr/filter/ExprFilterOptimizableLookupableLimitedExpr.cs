@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.util;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.filter;
 
@@ -195,8 +196,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create window MyWindow#keepall as SupportBean;\n" +
                               "@public create inlined_class \"\"\"\n" +
                               "  public class Helper {\n" +
-                              "    public static String doit(Object param) { return null;}\n" +
-                              "    public static String doit(Object one, Object two) { return null;}\n" +
+                              "    public static string Doit(object param) { return null;}\n" +
+                              "    public static string Doit(object one, object two) { return null;}\n" +
                               "  }\n" +
                               "\"\"\";\n" +
                               "@public create expression MyDeclaredExpr { (select TheString from MyWindow) };\n" +
@@ -204,9 +205,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create expression string js:MyJavaScript(param) [\"a\"];\n";
                 env.Compile(objects, path);
 
-                var hook = "@Hook(HookType=HookType.INTERNAL_FILTERSPEC, hook='" +
-                           typeof(SupportFilterPlanHook).FullName +
-                           "')";
+                var hook =
+                    $"@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='{typeof(SupportFilterPlanHook).FullName}')";
 
                 AssertDisqualified(
                     env,
@@ -228,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     path,
                     "SupportBeanArrayCollMap",
                     hook +
-                    "select * from SupportBeanArrayCollMap(id || setOfString.where(v => v=Id).firstOf() = 'ax')");
+                    "select * from SupportBeanArrayCollMap(Id || SetOfString.where(v => v=Id).firstOf() = 'ax')");
                 AssertDisqualified(
                     env,
                     path,
@@ -244,12 +244,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var eplWithLocalHelper = hook +
                                          "inlined_class \"\"\"\n" +
                                          "  public class LocalHelper {\n" +
-                                         "    public static String doit(Object param) {\n" +
+                                         "    public static string Doit(object param) {\n" +
                                          "      return null;\n" +
                                          "    }\n" +
                                          "  }\n" +
                                          "\"\"\"\n" +
-                                         "select * from SupportBean(LocalHelper.doit(TheString) = 'abc')";
+                                         "select * from SupportBean(LocalHelper.Doit(TheString) = 'abc')";
                 AssertDisqualified(env, path, "SupportBean", eplWithLocalHelper);
             }
 
@@ -335,8 +335,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl =
-                    "@name('s0') select * from SupportBean(DoublePrimitive + DoubleBoxed = Integer.parseInt('10'))";
+                var parser = typeof(SimpleTypeParserFunctions).FullName;
+                var epl = $"@name('s0') select * from SupportBean(DoublePrimitive + DoubleBoxed = {parser}.ParseInt32('10'))";
                 env.CompileDeploy(epl).AddListener("s0");
                 if (HasFilterIndexPlanAdvanced(env)) {
                     AssertFilterSvcSingle(env, "s0", "DoublePrimitive+DoubleBoxed", EQUAL);

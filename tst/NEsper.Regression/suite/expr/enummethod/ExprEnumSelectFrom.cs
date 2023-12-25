@@ -12,6 +12,7 @@ using System.Linq;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -170,7 +171,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var field = "c0";
                 var builder = new SupportEvalBuilder("SupportBean_ST0_Container");
-                builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = key0||'y'})");
+                builder.WithExpression(field, "Contained.selectFrom(x => new {c0 = Id||'x', c1 = Key0||'y'})");
 
                 builder.WithStatementConsumer(
                     stmt => AssertTypes(stmt.EventType, field, typeof(ICollection<IDictionary<string, object>>)));
@@ -267,12 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
         private static IDictionary<string, object>[] ToMapArray(object result)
         {
-            if (result == null) {
-                return null;
-            }
-
-            var val = (ICollection<IDictionary<string, object>>)result;
-            return val.ToArray();
+            return result.UnwrapIntoArray<IDictionary<string, object>>(true);
         }
     }
 } // end of namespace

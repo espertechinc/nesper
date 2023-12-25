@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.client.configuration.compiler
         ///     Returns indicator whether declared-expression-value-cache is enabled (true by default)
         /// </summary>
         /// <value>indicator</value>
-        public bool IsEnabledDeclaredExprValueCache { get; private set; } = true;
+        public bool IsEnabledDeclaredExprValueCache { get; set; } = true;
 
         /// <summary>
         /// Returns the setting instructing the compiler which level of filter index planning to perform (default is ADVANCED).

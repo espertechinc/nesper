@@ -69,7 +69,6 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.Add(next);
                         }
 
-                        //return FlexCollection.Of(result);
                         return result;
                     });
             }

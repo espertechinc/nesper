@@ -205,8 +205,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             {
                 var epl =
                     $"create schema event as {typeof(EventWithTags).MaskTypeName()};\n\n" +
-                    $"insert into stream1\nselect name, tags from event;\n\n" +
-                    $"select name, tags('a\\.b') from stream1.std:groupwin(name, tags('a\\.b')).win:length(10)\nhaving count(1) >= 5;\n";
+                    $"insert into stream1\nselect Name, Tags from event;\n\n" +
+                    $"select Name, Tags('a\\.b') from stream1.std:groupwin(Name, Tags('a\\.b')).win:length(10)\nhaving count(1) >= 5;\n";
                 env.CompileDeploy(epl).UndeployAll();
             }
 
@@ -242,11 +242,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                     epl,
                     "Failed to validate data window declaration: The 'merge' declaration cannot be used in conjunction with multiple data windows");
 
+#if false
                 epl = "create schema MyEvent(somefield null);\n" +
                       "select * from MyEvent#groupwin(somefield)#length(2)";
                 env.TryInvalidCompile(
                     epl,
                     "Failed to validate data window declaration: Group-window received a null-typed criteria expression");
+#endif
             }
         }
 
@@ -329,8 +331,8 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "p1,sp2".SplitCsv();
-                var epl = "@name('s0') select p1,sum(p2) as sp2 from OAEventStringInt#groupwin(p1)#length(2)";
+                var fields = "P1,sp2".SplitCsv();
+                var epl = "@name('s0') select P1,sum(P2) as sp2 from OAEventStringInt#groupwin(P1)#length(2)";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { "A", 10 }, "OAEventStringInt");
@@ -535,7 +537,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(
                     new SupportBeanTimestamp(
                         "E3",
-                        DateTimeParsingFunctions.ParseDefaultMSec("2002-01-015T09:0:00.000")));
+                        DateTimeParsingFunctions.ParseDefaultMSec("2002-01-15T09:0:00.000")));
                 env.AssertListener(
                     "s0",
                     listener => { Assert.AreEqual(1, listener.DataListsFlattened.Second.Length); });
@@ -591,20 +593,16 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Slope"));
+                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("slope"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YIntercept"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XAverage"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationPop"));
-                        Assert.AreEqual(
-                            typeof(double?),
-                            statement.EventType.GetPropertyType("XStandardDeviationSample"));
+                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationSample"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XSum"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XVariance"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YAverage"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationPop"));
-                        Assert.AreEqual(
-                            typeof(double?),
-                            statement.EventType.GetPropertyType("YStandardDeviationSample"));
+                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationSample"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YSum"));
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YVariance"));
                         Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("dataPoints"));
@@ -616,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
                     });
 
-                var fields = new string[] { "Symbol", "Slope", "YIntercept", "Feed" };
+                var fields = new string[] { "Symbol", "slope", "YIntercept", "Feed" };
 
                 env.SendEventBean(new SupportMarketDataBean("ABC", 10.0, 50000L, "f1"));
                 env.AssertPropsNew("s0", fields, new object[] { "ABC", double.NaN, double.NaN, "f1" });

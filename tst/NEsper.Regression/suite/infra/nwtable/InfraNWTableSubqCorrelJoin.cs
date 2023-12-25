@@ -19,11 +19,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withn(execs);
+            WithJoinAssertion(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withn(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithJoinAssertion(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             // named window

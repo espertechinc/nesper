@@ -109,8 +109,8 @@ namespace com.espertech.esper.common.@internal.compile.multikey
     
                     SampleKey sampleKey = (SampleKey) o;
     
-                    if (a != null ? !a.equals(sampleKey.a) : sampleKey.a != null) return false; // or Arrays.equals or deepEquals
-                    return b != null ? b.equals(sampleKey.b) : sampleKey.b == null; // or Arrays.equals or deepEquals
+                    if (a != null ? !a.equals(sampleKey.a) : sampleKey.a != null) return false; // or Arrays.AreEqual or DeepEquals
+                    return b != null ? b.equals(sampleKey.b) : sampleKey.b == null; // or Arrays.AreEqual or DeepEquals
                 }
                 */
             equalsMethod.Block
@@ -242,8 +242,8 @@ namespace com.espertech.esper.common.@internal.compile.multikey
         {
             // <code>
             // public int GetHashCode() {
-            //    int result = a != null ? a.hashCode() : 0; // (or Arrays.equals and Arrays.deepEquals)
-            //    result = 31 * result + (b != null ? b.hashCode() : 0); // (or Arrays.equals and Arrays.deepEquals)
+            //    int result = a != null ? a.hashCode() : 0; // (or Arrays.AreEqual and Arrays.DeepEquals)
+            //    result = 31 * result + (b != null ? b.hashCode() : 0); // (or Arrays.AreEqual and Arrays.DeepEquals)
             //    return result;
             // <code>
             

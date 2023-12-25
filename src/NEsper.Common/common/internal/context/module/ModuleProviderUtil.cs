@@ -26,6 +26,10 @@ namespace com.espertech.esper.common.@internal.context.module
             Type clazz;
             try {
                 clazz = classLoader.ResolveType(resourceClassName, true);
+                if (clazz == null)
+                {
+                    throw new TypeLoadException($"unable to load class {resourceClassName}");
+                }
             }
             catch (Exception e) {
                 throw new EPException(e);

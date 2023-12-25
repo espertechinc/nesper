@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
                 codegenMethodScope,
                 exprSymbol,
                 codegenClassScope,
-                TargetClass,
+                Ctor,
                 forges);
         }
     }

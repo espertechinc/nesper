@@ -1487,8 +1487,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     else {
                         expectedAll = SupportBean.GetBeansPerIndex(beans, indexesAll);
                         expectedWhere = SupportBean.GetBeansPerIndex(beans, indexesWhere);
-                        EPAssertionUtil.AssertEqualsExactOrder(expectedAll, (object[])received.Get("c0"));
-                        EPAssertionUtil.AssertEqualsExactOrder(expectedWhere, (ICollection<object>)received.Get("c1"));
+                        EPAssertionUtil.AssertEqualsExactOrder(expectedAll, received.Get("c0").UnwrapIntoArray<object>());
+                        EPAssertionUtil.AssertEqualsExactOrder(expectedWhere, received.Get("c1").Unwrap<object>());
                     }
 
                     EPAssertionUtil.AssertPropsMap((IDictionary<object, object>)received.Get("c2"), mapKeys, mapValues);

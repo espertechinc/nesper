@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.CompileDeploy(soda, "insert into MyWindow select * from SupportSpatialEventRectangle", path);
 
                 var epl =
-                    $"@name('s0') {IndexBackingTableInfo.INDEX_CALLBACK_HOOK} on SupportSpatialAABB as aabb select rects.Id as c0 from MyWindow as rects where rectangle(rects.X, rects.Y, rects.Width, rects.Height).intersects(rectangle(aabb.X, aabb.Y, aabb.Width, aabb.Height))";
+                    $"@name('s0') {IndexBackingTableInfo.INDEX_CALLBACK_HOOK} on SupportSpatialAABB as aabb select rects.Id as c0 from MyWindow as rects where rectangle(rects.X,rects.Y,rects.Width,rects.Height).intersects(rectangle(aabb.X,aabb.Y,aabb.Width,aabb.Height))";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
 
                 env.AssertThat(
@@ -1021,7 +1021,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     env.CompileExecuteFAF(
                         SupportSpatialUtil.BuildDeleteQueryWithInClause("RectangleWindow", "Id", first),
                         path);
-                    idList.RemoveAll(first);
+                    idList.RemoveAll(first.ToArray());
                 }
 
                 env.SendEventBean(new SupportSpatialAABB("", 0, 0, SIZE, SIZE));

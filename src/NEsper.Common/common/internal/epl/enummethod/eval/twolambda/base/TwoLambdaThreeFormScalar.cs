@@ -81,7 +81,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(typeof(IDictionary<object, object>), GetType(), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
             var hasIndex = numParameters >= 2;
             var hasSize = numParameters >= 3;
 

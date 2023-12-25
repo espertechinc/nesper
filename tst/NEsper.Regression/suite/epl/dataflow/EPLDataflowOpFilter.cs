@@ -169,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.CompileDeploy(graph);
 
             var source = new DefaultSupportSourceOp(events);
-            var capture = new DefaultSupportCaptureOp<object>(2, env.Container.LockManager());
+            var capture = new DefaultSupportCaptureOp(2, env.Container.LockManager());
             var options = new EPDataFlowInstantiationOptions();
             options.DataFlowInstanceUserObject = "myuserobject";
             options.DataFlowInstanceId = "myinstanceid";

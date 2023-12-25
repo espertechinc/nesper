@@ -22,8 +22,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
-using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
-    CodegenRelational; // LE
+using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.CodegenRelational;
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof
 {
@@ -78,9 +77,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(ICollection<object>);
+            return typeof(ICollection<>).MakeGenericType(inputCollectionType.GetComponentType());
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
@@ -92,14 +91,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
+            var elementType = inputCollectionType.GetComponentType();
             methodNode.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
-                .DeclareVar<IDictionary<object, object>>(
+                .DeclareVar(
+                    typeof(IDictionary<,>).MakeGenericType(typeof(object), elementType),
                     "distinct",
-                    NewInstance(typeof(LinkedHashMap<object, object>)));
+                    NewInstance(typeof(LinkedHashMap<,>).MakeGenericType(typeof(object), elementType)));
         }
 
         public override void ForEachBlock(

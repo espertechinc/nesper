@@ -678,7 +678,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             foreach (var aChainEval in chainEval) {
                 result = aChainEval.Evaluate(result, eventsPerStream, newData, exprEvaluatorContext);
                 if (result == null) {
-                    return result;
+                    return null;
                 }
             }
 
@@ -699,7 +699,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             var last = forges[^1];
-            var lastType = last.TypeInfo.GetCodegenReturnType();
+            var lastType = last.TypeInfo.GetCodegenReturnType().GetBoxedType();
             var methodNode = parent.MakeChild(lastType, typeof(ExprDotNodeUtility), codegenClassScope)
                 .AddParam(innerType, "inner");
 
@@ -708,7 +708,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             Type currentTargetType;
             if (optionalResultWrapLambda != null) {
                 currentTargetType = optionalResultWrapLambda.TypeInfo.GetCodegenReturnType();
-                if (!lastType.IsTypeVoid()) {
+                
+                if (lastType != typeof(void)) {
                     block.IfRefNullReturnNull("inner");
                 }
 
@@ -741,36 +742,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         new EPChainableTypeCodegenSharable(forges[i].TypeInfo, codegenClassScope));
                 }
 
-                var reftype = forges[i].TypeInfo.GetCodegenReturnType();
-                if (reftype.IsTypeVoid()) {
-                    block.Expression(
-                            forges[i]
-                                .Codegen(
-                                    Ref(currentTarget),
-                                    currentTargetType,
-                                    methodNode,
-                                    exprSymbol,
-                                    codegenClassScope))
+                var reftype = forges[i].TypeInfo.GetCodegenReturnType().GetBoxedType();
+                var invocation = forges[i]
+                    .Codegen(
+                        Ref(currentTarget),
+                        currentTargetType,
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope);
+                
+                if (reftype == typeof(void)) {
+                    block
+                        .Expression(invocation)
                         .Apply(Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, ConstantNull()));
                 }
                 else {
-                    block.DeclareVar(
-                        reftype,
-                        refname,
-                        forges[i]
-                            .Codegen(
-                                Ref(currentTarget),
-                                currentTargetType,
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope));
+                    invocation = CodegenLegoCast.CastSafeFromObjectType(reftype, invocation);
+                    
+					block.DeclareVar(reftype, refname, invocation);
                     currentTarget = refname;
                     currentTargetType = reftype;
-                    if (!reftype.IsPrimitive) {
+                    if (reftype.CanBeNull()) {
                         var ifBlock = block.IfRefNull(refname)
                             .Apply(
                                 Instblock(codegenClassScope, "aExprDotChainElement", typeInformation, ConstantNull()));
-                        if (!lastType.IsTypeVoid()) {
+						if (lastType != typeof(void)) {
                             ifBlock.BlockReturn(ConstantNull());
                         }
                         else {
@@ -782,7 +778,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
 
-            if (lastType.IsTypeVoid()) {
+			if (lastType == typeof(void)) {
                 block.MethodEnd();
             }
             else {
@@ -808,7 +804,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 ? null
                 : validationContext.StreamTypeService.EventTypes[0];
             return ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                methodTarget.Name,
+				methodTarget.FullName,
                 methodTarget,
                 methodName,
                 parameters,

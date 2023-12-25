@@ -290,10 +290,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             var path = new RegressionPath();
             env.CompileDeploy("create " + typeType + " schema Item(name string, Price double)", path);
-            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, Items Item[])", path);
+            env.CompileDeploy("create " + typeType + " schema PurchaseOrder(OrderId string, items Item[])", path);
             env.CompileDeploy("@public @buseventtype create schema TriggerEvent()", path);
             env.CompileDeploy(
-                    "@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as Items from TriggerEvent",
+                    "@name('s0') insert into PurchaseOrder select '001' as OrderId, new {name= 'i1', Price=10} as items from TriggerEvent",
                     path)
                 .AddListener("s0");
 
@@ -301,10 +301,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             EPAssertionUtil.AssertProps(
                 @event,
-                new[] { "OrderId", "Items[0].name", "Items[0].Price" },
+                new[] { "OrderId", "items[0].name", "items[0].Price" },
                 new object[] { "001", "i1", 10d });
 
-            var underlying = (EventBean[])@event.Get("Items");
+            var underlying = (EventBean[])@event.Get("items");
             Assert.AreEqual(1, underlying.Length);
             Assert.AreEqual("i1", underlying[0].Get("name"));
             Assert.AreEqual(10d, underlying[0].Get("Price"));
@@ -361,36 +361,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         internal class EPLInsertIntoTypableAndCaseNew : RegressionExecution
         {
-            private readonly EventRepresentationChoice representation;
+            private readonly EventRepresentationChoice _representation;
 
             public EPLInsertIntoTypableAndCaseNew(EventRepresentationChoice representation)
             {
-                this.representation = representation;
+                _representation = representation;
             }
 
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNested>() +
-                    "create schema Nested(p0 string, p1 int)",
+                    _representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedNested>() +
+                    "create schema Nested(P0 string, P1 int)",
                     path);
                 env.CompileDeploy(
-                    representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOuterType>() +
-                    "create schema OuterType(n0 Nested)",
+                    _representation.GetAnnotationTextWJsonProvided<MyLocalJsonProvidedOuterType>() +
+                    "create schema OuterType(N0 Nested)",
                     path);
 
-                var fields = new[] { "n0.p0", "n0.p1" };
+                var fields = new[] { "N0.P0", "N0.P1" };
                 env.CompileDeploy(
                         "@name('out') " +
                         "expression computeNested {\n" +
                         "  sb -> case\n" +
                         "  when IntPrimitive = 1 \n" +
-                        "    then new { p0 = 'a', p1 = 1}\n" +
-                        "  else new { p0 = 'b', p1 = 2 }\n" +
+                        "    then new { P0 = 'a', P1 = 1}\n" +
+                        "  else new { P0 = 'b', P1 = 2 }\n" +
                         "  end\n" +
                         "}\n" +
-                        "insert into OuterType select computeNested(sb) as n0 from SupportBean as sb",
+                        "insert into OuterType select computeNested(sb) as N0 from SupportBean as sb",
                         path)
                     .AddListener("out");
 
@@ -415,8 +415,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("create schema N1_1(p0 int)", path);
-                env.CompileDeploy("create schema N1_2(p1 N1_1)", path);
+                env.CompileDeploy("create schema N1_1(P0 int)", path);
+                env.CompileDeploy("create schema N1_2(P1 N1_1)", path);
 
                 // enumeration type is incompatible
                 env.CompileDeploy("create schema TypeOne(sbs SupportBean[])", path);
@@ -438,13 +438,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // typable - selected column type is incompatible
                 env.TryInvalidCompile(
                     path,
-                    "insert into N1_2 select new {p0='a'} as p1 from SupportBean",
-                    "Invalid assignment of column 'p0' of type 'System.String' to event property 'p0' typed as 'System.Nullable<System.Int32>', column and parameter types mismatch");
+                    "insert into N1_2 select new {P0='a'} as P1 from SupportBean",
+                    "Invalid assignment of column 'P0' of type 'System.String' to event property 'P0' typed as 'System.Nullable<System.Int32>', column and parameter types mismatch");
 
                 // typable - selected column type is not matching anything
                 env.TryInvalidCompile(
                     path,
-                    "insert into N1_2 select new {xxx='a'} as p1 from SupportBean",
+                    "insert into N1_2 select new {xxx='a'} as P1 from SupportBean",
                     "Failed to find property 'xxx' among properties for target event type 'N1_1'");
 
                 env.UndeployAll();
@@ -453,13 +453,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         public class MyLocalJsonProvidedNested
         {
-            public string p0;
-            public int p1;
+            public string P0;
+            public int P1;
         }
 
         public class MyLocalJsonProvidedOuterType
         {
-            public MyLocalJsonProvidedNested n0;
+            public MyLocalJsonProvidedNested N0;
         }
     }
 } // end of namespace

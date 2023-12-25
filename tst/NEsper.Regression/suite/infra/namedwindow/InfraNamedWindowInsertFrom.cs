@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 var path = new RegressionPath();
                 var epl =
                     "@public create " +
-                    rep.GetName() +
+                    rep.GetPublicName() +
                     " schema MyTwoColEvent(c0 string, c1 int);\n" +
                     "@public @name('window') create window MyWindow#keepall as MyTwoColEvent;\n" +
                     "insert into MyWindow select TheString as c0 from SupportBean;\n" +

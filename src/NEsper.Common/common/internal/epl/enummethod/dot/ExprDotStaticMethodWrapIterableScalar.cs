@@ -38,15 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             this.componentType = componentType;
         }
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
-            if (!(result is IEnumerable)) {
-                Log.Warn(
-                    "Expected iterable-type input from method '" + methodName + "' but received " + result.GetType());
+            if (result == null)
                 return null;
-            }
-
-            return result.Unwrap<EventBean>();
+            if (result.GetType().IsGenericEnumerable())
+                return result;
+            
+            Log.Warn(
+                "Expected iterable-type input from method '" + methodName + "' but received " + result.GetType());
+            return null;
         }
 
         public CodegenExpression CodegenConvertNonNull(

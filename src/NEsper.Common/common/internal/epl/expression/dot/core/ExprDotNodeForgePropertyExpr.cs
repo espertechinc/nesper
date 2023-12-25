@@ -21,8 +21,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgePropertyExpr : ExprDotNodeForge
     {
-        private readonly string propertyName;
-        private readonly string statementName;
+        private readonly string _propertyName;
+        private readonly string _statementName;
 
         internal ExprDotNodeForgePropertyExpr(
             ExprDotNodeImpl parent,
@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             EventPropertyGetterMappedSPI mappedGetter)
         {
             Parent = parent;
-            this.statementName = statementName;
-            this.propertyName = propertyName;
+            _statementName = statementName;
+            _propertyName = propertyName;
             StreamNum = streamNum;
             ExprForge = exprForge;
             EvaluationType = propertyType;
@@ -125,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         {
             var receivedText = received == null ? "null" : received.GetType().CleanName();
             return
-                $"Statement '{statementName}' property {propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
+                $"Statement '{_statementName}' property {_propertyName} parameter expression expected a value of {expectedType} but received {receivedText}";
         }
     }
 } // end of namespace

@@ -186,7 +186,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     fields[2],
                     "Contained.groupBy((k, i, s) => Id || '_' || Convert.ToString(i) || '_' || Convert.ToString(s), (v, i, s) => P00 + i*10 + s*100)");
 
-                var inner = typeof(ICollection<int>);
+                var inner = typeof(ICollection<int?>);
                 builder.WithStatementConsumer(
                     stmt =>
                         AssertTypesAllSame(

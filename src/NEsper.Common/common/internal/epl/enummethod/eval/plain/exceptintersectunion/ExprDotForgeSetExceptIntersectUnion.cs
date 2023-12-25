@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.methodbase;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat;
 
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.exceptintersectunion
@@ -91,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                                   enumMethodUsedName +
                                   "' requires an expression yielding a " +
                                   "collection of values of type '" +
-                                  collectionComponentType.Name +
+                                  collectionComponentType.CleanName() +
                                   "' as input parameter";
                     throw new ExprValidationException(message);
                 }
@@ -100,9 +101,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                     var message = "Enumeration method '" +
                                   enumMethodUsedName +
                                   "' expects scalar type '" +
-                                  collectionComponentType.Name +
+                                  collectionComponentType.CleanName() +
                                   "' but receives event type '" +
-                                  setType.Name +
+                                  setType.CleanName() +
                                   "'";
                     throw new ExprValidationException(message);
                 }

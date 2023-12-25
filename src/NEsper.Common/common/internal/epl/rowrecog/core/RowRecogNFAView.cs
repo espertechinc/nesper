@@ -37,6 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
         RowRecogNFAViewScheduleCallback
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+
+        private static int _hitCounter = 0;
         
         private readonly RowRecogNFAViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
@@ -255,6 +257,7 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // perform inter-ranking and elimination of duplicate matches
             if (!desc.IsAllMatches) {
                 endStates = RankEndStatesMultiPartition(endStates);
+                _hitCounter++;
             }
 
             // handle interval for the set of matches
@@ -636,10 +639,9 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             }
 
             var endStatesRanked = new List<RowRecogNFAStateEntry>();
-            var keyset = endStatesPerBeginEvent.Keys;
-            var keys = keyset.ToArray();
+            var keys = endStatesPerBeginEvent.Keys.ToArray();
             foreach (var key in keys) {
-                if (!endStatesPerBeginEvent.TryRemove(key, out var value)) {
+                if (!endStatesPerBeginEvent.TryRemove(key, out var value) || (value == null)) {
                     continue;
                 }
 

@@ -1117,6 +1117,29 @@ namespace com.espertech.esper.common.@internal.util
                 return typeof(char?);
             }
 
+            // handle arrays
+            if (types[0].IsArray) {
+                var componentType = types[0].GetComponentType();
+                var sameComponentType = true;
+                for (int ii = 1; ii < types.Count; ii++) {
+                    if (!types[ii].IsArray) {
+                        throw GetCoercionException(types[0], types[ii]);
+                    }
+                    var otherComponentType = types[ii].GetComponentType();
+                    if (componentType != otherComponentType) {
+                        if (componentType.IsPrimitive || otherComponentType.IsPrimitive) {
+                            throw GetCoercionException(types[0], types[ii]);
+                        }
+                        sameComponentType = false;
+                    }
+                }
+                if (sameComponentType) {
+                    return types[0];
+                }
+
+                return typeof(object[]);
+            }
+            
             // Check if all the same builtin type
             var isAllBuiltinTypes = true;
             var isAllNumeric = true;
@@ -1129,9 +1152,9 @@ namespace com.espertech.esper.common.@internal.util
             // handle all built-in types
             if (!isAllBuiltinTypes) {
                 foreach (var type in types) {
-                    if (IsBuiltinDataType(type)) {
-                        throw new CoercionException(
-                            "Cannot coerce to " + types[0].CleanName() + " type " + type.CleanName());
+                    if (IsBuiltinDataType(type))
+                    {
+                        throw GetCoercionException(types[0], type);
                     }
 
                     if (type != types[0]) {
@@ -1154,6 +1177,10 @@ namespace com.espertech.esper.common.@internal.util
             }
 
             return result;
+        }
+
+        private static CoercionException GetCoercionException(Type typeA, Type typeB) {
+            throw new CoercionException($"Cannot coerce to {typeA.CleanName()} type {typeB.CleanName()}");
         }
 
         public static string GetSimpleTypeName(this Type type)
@@ -2056,6 +2083,11 @@ namespace com.espertech.esper.common.@internal.util
         /// <returns></returns>
         public static object Instantiate(Type type)
         {
+            if (type == null)
+            {
+                throw new ArgumentNullException(nameof(type));
+            }
+            
             try {
                 return Activator.CreateInstance(type);
             }

@@ -289,9 +289,9 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 EPLJoinEventRepresentation.WithMapEventNotUnique());
 
             [Test, RunInApplicationDomain]
-            public void WithEventRepresentations() => RegressionRunner.Run(
+            public void WithEventRepresentations([Values] EventRepresentationChoice rep) => RegressionRunner.Run(
                 _session,
-                EPLJoinEventRepresentation.WithEventRepresentations());
+                EPLJoinEventRepresentation.WithEventRepresentations(rep));
         }
 
         /// <summary>

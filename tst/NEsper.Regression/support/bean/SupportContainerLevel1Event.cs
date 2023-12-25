@@ -12,16 +12,11 @@ namespace com.espertech.esper.regressionlib.support.bean
 {
     public class SupportContainerLevel1Event
     {
-        private readonly ISet<SupportContainerLevel2Event> level2s;
-
         public SupportContainerLevel1Event(ISet<SupportContainerLevel2Event> level2s)
         {
-            this.level2s = level2s;
+            this.Level2s = level2s;
         }
 
-        public ISet<SupportContainerLevel2Event> GetLevel2s()
-        {
-            return level2s;
-        }
+        public ISet<SupportContainerLevel2Event> Level2s { get; }
     }
 } // end of namespace

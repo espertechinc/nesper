@@ -26,19 +26,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithneModule(execs);
-            WiththerModule(execs);
+            WithnOneModule(execs);
+            WithOtherModule(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WiththerModule(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithOtherModule(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendAggregationMFInlinedOtherModule());
             return execs;
         }
 
-        public static IList<RegressionExecution> WithneModule(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithnOneModule(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new ClientExtendAggregationMFInlinedOneModule());
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             "        /// This handler handles the \"trieState\"-type table column\n" +
             "        /// <summary />\n" +
             "        public class TrieAggHandlerTrieState : AggregationMultiFunctionHandler {\n" +
-            "            public Type ReturnType => typeof(SupportTrie<string, object>);\n" +
+            "            public EPChainableType ReturnType => EPChainableTypeHelper.SingleValue(typeof(SupportTrie<string, object>));\n" +
             "\n" +
             "            public AggregationMultiFunctionStateKey AggregationStateUniqueKey {\n" +
             "                get => new InertAggregationMultiFunctionStateKey();\n" +
@@ -386,14 +386,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     () => {
                         var eplFAF = "select nameTrie as c0 from TableWithTrie";
                         var result = env.CompileExecuteFAF(eplFAF, path);
-                        var trie = (SupportTrie<string, object>)result.Array[0].Get("c0");
+                        var trie = (SupportTrie<string, IList<object>>)result.Array[0].Get("c0");
                         Assert.AreEqual(3, trie.PrefixMap("And").Count);
                     });
 
                 env.AssertIterator(
                     "table",
                     iterator => {
-                        var trie = (SupportTrie<string, object>)env.GetEnumerator("table").Advance().Get("nameTrie");
+                        var trie = (SupportTrie<string, IList<object>>)env.GetEnumerator("table").Advance().Get("nameTrie");
                         Assert.AreEqual(3, trie.PrefixMap("And").Count);
                     });
 
@@ -407,7 +407,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        var received = (IDictionary<string, IList<IDictionary<string, object>>>)@event.Get("c0");
+                        //var received = (IDictionary<string, IList<IDictionary<string, object>>>)@event.Get("c0");
+                        var received = (IDictionary<string, IList<object>>)@event.Get("c0");
                         Assert.AreEqual(expected.Count, received.Count);
                         foreach (var expectedEntry in expected) {
                             var eventsExpected = (IList<IDictionary<string, object>>)expectedEntry.Value;
@@ -425,7 +426,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplCreateInlined = "@name('clazz') @public create " + INLINEDCLASS_PREFIXMAP + ";\n";
+                var ns = NamespaceGenerator.Create();
+                var prefix = INLINEDCLASS_PREFIXMAP.Replace("${NAMESPACE}", ns);
+                var eplCreateInlined = "@name('clazz') @public create " + prefix + ";\n";
                 var path = new RegressionPath();
                 env.Compile(eplCreateInlined, path);
 
@@ -455,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "table",
                     "clazz",
                     EPObjectType.CLASSPROVIDED,
-                    "TrieAggForge");
+                    $"{ns}.TrieAggForge");
 
                 env.UndeployAll();
             }

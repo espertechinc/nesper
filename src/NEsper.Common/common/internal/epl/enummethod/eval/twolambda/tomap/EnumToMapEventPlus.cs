@@ -70,14 +70,17 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             }
         }
 
+        public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
+        public Type ValType => SecondExpression.EvaluationType ?? typeof(object); 
+        
         public override Type ReturnType()
         {
-            return typeof(IDictionary<object, object>);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, ValType), "Instance");
         }
 
         public override void InitBlock(
@@ -86,9 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<IDictionary<object, object>>(
-                "map",
-                NewInstance(typeof(NullableDictionary<object, object>)));
+            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
+            var nullType = typeof(NullableDictionary<,>).MakeGenericType(KeyType, ValType);
+            block.DeclareVar(dictType, "map", NewInstance(nullType));
         }
 
         public override void ForEachBlock(
@@ -97,12 +100,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<object>(
-                    "key",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<object>(
-                    "value",
-                    SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+            block
+                .DeclareVar(
+                    KeyType, "key", InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(
+                    ValType, "value", SecondExpression.EvaluateCodegen(ValType, methodNode, scope, codegenClassScope))
                 .Expression(ExprDotMethod(Ref("map"), "Put", Ref("key"), Ref("value")));
         }
 

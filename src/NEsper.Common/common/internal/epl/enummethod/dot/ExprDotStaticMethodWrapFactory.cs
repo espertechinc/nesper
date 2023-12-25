@@ -58,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             if (methodReturnType.IsGenericCollection()) {
-                Type genericType = methodReturnType.GetComponentType();
+                var genericType = methodReturnType.GetComponentType();
 
                 if (genericType == typeof(EventBean)) {
                     var eventType = RequireEventType(method, optionalEventTypeName, validationContext);
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             }
 
             if (methodReturnType.IsGenericEnumerable()) {
-                Type genericType = methodReturnType.GetComponentType();
+                var genericType = methodReturnType.GetComponentType();
 
                 if (genericType.IsBuiltinDataType()) {
                     return new ExprDotStaticMethodWrapIterableScalar(method.Name, genericType);

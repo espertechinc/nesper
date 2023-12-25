@@ -136,7 +136,8 @@ namespace com.espertech.esper.common.@internal.@event.map
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            return codegenMethodScope
+                .MakeChild(typeof(EventBean), GetType(), codegenClassScope)
                 .AddParam(typeof(IDictionary<string, object>), "underlying")
                 .Block
                 .DeclareVar<object>(

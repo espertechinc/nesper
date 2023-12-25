@@ -27,7 +27,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
         public static IList<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            WithEventRepresentations(execs);
+            
+            foreach (var rep in EventRepresentationChoiceExtensions.Values())
+            {
+                WithEventRepresentations(rep, execs);
+            }
+
             WithMapEventNotUnique(execs);
             WithWrapperEventNotUnique(execs);
             return execs;
@@ -47,15 +52,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             return execs;
         }
 
-        public static IList<RegressionExecution> WithEventRepresentations(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithEventRepresentations(
+            EventRepresentationChoice rep,
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLJoinJoinEventRepresentations());
+            execs.Add(new EPLJoinJoinEventRepresentations(rep));
             return execs;
         }
 
         private class EPLJoinJoinEventRepresentations : RegressionExecution
         {
+            private readonly EventRepresentationChoice _rep;
+            public EPLJoinJoinEventRepresentations(EventRepresentationChoice rep)
+            {
+                this._rep = rep;
+            }
+
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
@@ -64,29 +77,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(jsonSchemas, path);
                 var milestone = new AtomicLong();
 
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    var s0Type = $"S0_{rep.GetName()}";
-                    var s1Type = $"S1_{rep.GetName()}";
+                {
+                    var s0Type = $"S0_{_rep.GetPublicName()}";
+                    var s1Type = $"S1_{_rep.GetPublicName()}";
                     var eplOne =
                         $"select S0.Id as s0id, S1.Id as s1id, S0.P00 as s0p00, S1.P00 as s1p00 from {s0Type}#keepall as S0, {s1Type}#keepall as S1 where S0.Id = S1.Id";
                     TryJoinAssertion(
                         env,
                         eplOne,
-                        rep,
+                        _rep,
                         "s0id,s1id,s0p00,s1p00",
                         milestone,
                         path,
                         typeof(MyLocalJsonProvidedWFields));
                 }
 
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    var s0Type = $"S0_{rep.GetName()}";
-                    var s1Type = $"S1_{rep.GetName()}";
+                {
+                    var s0Type = $"S0_{_rep.GetPublicName()}";
+                    var s1Type = $"S1_{_rep.GetPublicName()}";
                     var eplTwo = $"select * from {s0Type}#keepall as s0, {s1Type}#keepall as s1 where s0.Id = s1.Id";
                     TryJoinAssertion(
                         env,
                         eplTwo,
-                        rep,
+                        _rep,
                         "s0.Id,s1.Id,s0.P00,s1.P00",
                         milestone,
                         path,
@@ -109,8 +122,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     .AddListener("s0")
                     .MilestoneInc(milestone);
 
-                var s0Name = $"S0_{rep.GetName()}";
-                var s1Name = $"S1_{rep.GetName()}";
+                var s0Name = $"S0_{rep.GetPublicName()}";
+                var s1Name = $"S1_{rep.GetPublicName()}";
 
                 SendRepEvent(env, rep, s0Name, "a", 1);
                 env.AssertListenerNotInvoked("s0");
@@ -217,14 +230,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         public class MyLocalJsonProvidedS0
         {
-            public string id;
-            public int p00;
+            public string Id;
+            public int P00;
         }
 
         public class MyLocalJsonProvidedS1
         {
-            public string id;
-            public int p00;
+            public string Id;
+            public int P00;
         }
 
         public class MyLocalJsonProvidedWFields

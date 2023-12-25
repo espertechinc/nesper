@@ -134,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var eplOne = "@name('s0') select * " +
                              "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
-                             "where si.array = sm.intOne and si.Value > sm.Value";
+                             "where si.Array = sm.IntOne and si.Value > sm.Value";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 SendIntArray(env, "I1", new int[] { 1, 2 }, 10);
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var eplOne = "@name('s0') select * " +
                              "from SupportEventWithIntArray#keepall as si, SupportEventWithManyArray#keepall as sm " +
-                             "where si.array = sm.intOne";
+                             "where si.Array = sm.IntOne";
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 SendIntArray(env, "I1", new int[] { 1, 2 });
@@ -261,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(eplOne).AddListener("s0");
 
                 var eplTwo =
-                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = key and IntBoxed in [RangeStart: RangeEnd]";
+                    "@name('s1') select sb.* from SupportBean#keepall sb, SupportBeanRange#lastevent where TheString = Key and IntBoxed in [RangeStart: RangeEnd]";
                 env.CompileDeploy(eplTwo).AddListener("s1");
 
                 // null join lookups
@@ -298,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 // test string compare
                 var eplThree =
-                    "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [rangeStartStr:rangeEndStr]";
+                    "@name('s2') select sb.* from SupportBeanRange#keepall sb, SupportBean#lastevent where TheString in [RangeStartStr:RangeEndStr]";
                 env.CompileDeploy(eplThree).AddListener("s2");
 
                 SendSupportBean(env, "P", 1, 1);

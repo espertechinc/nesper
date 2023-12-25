@@ -19,11 +19,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            Withe(execs);
+            WithJoinSimple(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithJoinSimple(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraNWTableJoinSimple(true));

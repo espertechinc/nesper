@@ -89,19 +89,27 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
 				typeof(ObjectArrayEventType),
 				Cast(typeof(ObjectArrayEventType), EventTypeUtility.ResolveTypeCodegen(_resultEventType, EPStatementInitServicesConstants.REF)));
 
+            var keyType = InnerExpression.EvaluationType ?? typeof(object);
+            var valType = _secondExpression.EvaluationType ?? typeof(object);
+            var dictionaryType = typeof(IDictionary<,>).MakeGenericType(keyType, valType);
+            
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(IDictionary<object, object>), typeof(EnumToMapScalar), scope, codegenClassScope)
-                .AddParam(PARAMS);
+                .MakeChildWithScope(dictionaryType, typeof(EnumToMapScalar), scope, codegenClassScope)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+            
             var hasIndex = _numParameters >= 2;
             var hasSize = _numParameters >= 3;
             
             var block = methodNode.Block
 				.IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
-				.BlockReturn(EnumValue(typeof(EmptyDictionary<object, object>), "Instance"));
+				.BlockReturn(EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(keyType, valType), "Instance"));
             
             block
-                .DeclareVar<IDictionary<object, object>>("map", NewInstance(typeof(NullableDictionary<object, object>)))
+                .DeclareVar(dictionaryType, "map", NewInstance(typeof(NullableDictionary<,>).MakeGenericType(keyType, valType)))
                 .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                 .DeclareVar<ObjectArrayEventBean>(
 					"resultEvent",
@@ -111,6 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
                         resultTypeMember))
                 .AssignArrayElement(REF_EPS, Constant(StreamNumLambda), Ref("resultEvent"))
                 .DeclareVar<object[]>("props", ExprDotName(Ref("resultEvent"), "Properties"));
+            
             if (hasIndex) {
 				block.DeclareVar<int>("count", Constant(-1));
             }
@@ -120,18 +129,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             }
 
             var forEach = block
-                .ForEach<object>("next", REF_ENUMCOLL)
+                .ForEachVar("next", REF_ENUMCOLL)
                 .AssignArrayElement("props", Constant(0), Ref("next"));
             if (hasIndex) {
                 forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));
             }
 
-            forEach.DeclareVar<object>(
+            forEach
+                .DeclareVar(
+                    keyType,
                     "key",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<object>(
+                    
+                    InnerExpression.EvaluateCodegen(keyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(
+                    valType,
                     "value",
-                    _secondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    _secondExpression.EvaluateCodegen(valType, methodNode, scope, codegenClassScope))
                 .Expression(ExprDotMethod(Ref("map"), "Put", Ref("key"), Ref("value")));
             block.MethodReturn(Ref("map"));
             return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);

@@ -22,18 +22,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprTypeofNodeForgeInnerEval : ExprTypeofNodeForge
     {
-        private readonly ExprTypeofNode parent;
+        private readonly ExprTypeofNode _parent;
 
         public ExprTypeofNodeForgeInnerEval(ExprTypeofNode parent)
         {
-            this.parent = parent;
+            this._parent = parent;
         }
 
-        public override ExprEvaluator ExprEvaluator => new InnerEvaluator(parent.ChildNodes[0].Forge.ExprEvaluator);
+        public override ExprEvaluator ExprEvaluator => new InnerEvaluator(_parent.ChildNodes[0].Forge.ExprEvaluator);
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;
 
-        public override ExprNodeRenderable ExprForgeRenderable => parent;
+        public override ExprNodeRenderable ExprForgeRenderable => _parent;
 
         public override CodegenExpression EvaluateCodegen(
             Type requiredType,
@@ -64,7 +64,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             methodNode.Block
                 .DeclareVar<object>(
                     "result",
-                    parent.ChildNodes[0].Forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
+                    _parent.ChildNodes[0].Forge.EvaluateCodegen(requiredType, methodNode, exprSymbol, codegenClassScope))
                 .IfRefNullReturnNull("result")
                 .MethodReturn(ExprDotMethodChain(Ref("result")).Add("GetType").Get("Name"));
             return LocalMethod(methodNode);
@@ -72,11 +72,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         private class InnerEvaluator : ExprEvaluator
         {
-            private readonly ExprEvaluator evaluator;
+            private readonly ExprEvaluator _evaluator;
 
             internal InnerEvaluator(ExprEvaluator evaluator)
             {
-                this.evaluator = evaluator;
+                this._evaluator = evaluator;
             }
 
             public virtual object Evaluate(
@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 bool isNewData,
                 ExprEvaluatorContext context)
             {
-                var result = evaluator.Evaluate(eventsPerStream, isNewData, context);
+                var result = _evaluator.Evaluate(eventsPerStream, isNewData, context);
 
                 return result?.GetType().GetSimpleName();
             }

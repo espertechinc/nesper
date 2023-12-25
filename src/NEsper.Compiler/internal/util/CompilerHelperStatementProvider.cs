@@ -74,7 +74,8 @@ namespace com.espertech.esper.compiler.@internal.util
 			int statementNumber,
 			ISet<string> statementNames,
 			ModuleCompileTimeServices moduleCompileTimeServices,
-			CompilerOptions compilerOptions)
+			CompilerOptions compilerOptions,
+			IArtifactRepository artifactRepository)
 		{
 
 			var compileTimeServices =
@@ -368,9 +369,6 @@ namespace com.espertech.esper.compiler.@internal.util
 					.OrderBy(c => c.ClassType.GetSortCode())
 					.ToList();
 
-				var container = compileTimeServices.Container;
-				var artifactRepository = container.ArtifactRepositoryManager().DefaultRepository;
-				
 				// We are making sure JsonEventType receives the underlying class itself
 				CompilableItemPostCompileLatch postCompile = CompilableItemPostCompileLatchDefault.INSTANCE;
 				foreach (var eventType in compileTimeServices.EventTypeCompileTimeRegistry.NewTypesAdded) {

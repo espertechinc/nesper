@@ -2422,7 +2422,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2532,7 +2532,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2623,7 +2623,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, TheString as c1 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, TheString as c1 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -2715,7 +2715,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var fields = "c0,c1,c2".SplitCsv();
                 env.CompileDeploy(
                     "@name('s0') context NestedContext select " +
-                    "context.FirstCtx.s0.id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",
+                    "context.FirstCtx.s0.Id as c0, context.SecondCtx.s2.Id as c1, TheString as c2 from SupportBean#keepall",
                     path);
                 env.AddListener("s0");
 
@@ -3060,7 +3060,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 extract[1] = second.Label;
                 paths.Add(extract);
 
-                return paths != null && Arrays.Equals(pathMatch, extract);
+                return paths != null && Arrays.AreEqual(pathMatch, extract);
             }
         }
     }

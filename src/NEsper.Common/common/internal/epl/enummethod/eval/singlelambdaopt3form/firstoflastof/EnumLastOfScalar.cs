@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
             return _resultType.GetCodegenReturnType().GetBoxedType();
         }
@@ -83,7 +83,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
             block.DeclareVar<object>("result", ConstantNull());
         }
@@ -103,7 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(Cast(ReturnTypeOfMethod(), Ref("result")));
+            block.MethodReturn(Ref("result"));
+            //block.MethodReturn(Cast(ReturnTypeOfMethod(TODO), Ref("result")));
         }
     }
 } // end of namespace

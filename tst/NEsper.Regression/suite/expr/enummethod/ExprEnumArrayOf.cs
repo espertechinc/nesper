@@ -16,12 +16,10 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
 
-using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsExactOrder
-using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
-// assertTypesAllSame
-using static com.espertech.esper.regressionlib.support.bean.SupportBean_ST0_Container; // make2Value
-// make2ValueNull
-using static com.espertech.esper.regressionlib.support.bean.SupportCollection; // makeString
+using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
+using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
+using static com.espertech.esper.regressionlib.support.bean.SupportBean_ST0_Container;
+using static com.espertech.esper.regressionlib.support.bean.SupportCollection;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -93,9 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 builder.WithExpression(fields[0], "Strvals.arrayOf()");
                 builder.WithExpression(fields[1], "Strvals.arrayOf(v => v)");
                 builder.WithExpression(fields[2], "Strvals.arrayOf( (v, i) => v || '_' || Convert.ToString(i))");
-                builder.WithExpression(
-                    fields[3],
-                    "Strvals.arrayOf( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
+                builder.WithExpression(fields[3], "Strvals.arrayOf( (v, i, s) => v || '_' || Convert.ToString(i) || '_' || Convert.ToString(s))");
                 builder.WithExpression(fields[4], "Strvals.arrayOf( (v, i) => i)");
 
                 builder.WithStatementConsumer(
@@ -103,7 +99,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                         stmt.EventType,
                         fields,
                         new Type[] {
-                            typeof(string[]), typeof(string[]), typeof(string[]), typeof(string[]), typeof(int?[])
+                            typeof(string[]),
+                            typeof(string[]), 
+                            typeof(string[]),
+                            typeof(string[]),
+                            typeof(int?[])
                         }));
 
                 builder.WithAssertion(SupportCollection.MakeString("A,B,C"))
@@ -216,7 +216,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             {
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportCollection");
-                builder.WithExpression(fields[0], "Strvals.selectfrom(v => Integer.parseInt(v)).arrayOf()");
+                builder.WithExpression(fields[0], "Strvals.selectfrom(v => Int32.Parse(v)).arrayOf()");
 
                 builder.WithStatementConsumer(stmt => AssertTypesAllSame(stmt.EventType, fields, typeof(int?[])));
 

@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileExecuteFAFNoResult("insert into MyInfra select 0 as value", path);
 
                 var epl =
-                    "on SupportBean update MyInfra set value = (select sum(value) as c0 from SupportEventWithIntArray#keepall group by array)";
+                    "on SupportBean update MyInfra set value = (select sum(Value) as c0 from SupportEventWithIntArray#keepall group by Array)";
                 env.CompileDeploy(epl, path);
 
                 env.SendEventBean(new SupportEventWithIntArray("E1", new int[] { 1, 2 }, 10));

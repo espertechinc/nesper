@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "${PREFIX} create table MyTable as (c count(*));\n" +
             "${PREFIX} create expression MyExpr { 1 };\n" +
             "${PREFIX} create expression double myscript(intvalue) [0];\n" +
-            "${PREFIX} create inlined_class \"\"\" public class MyClass { public static string DoIt() { return \"def\"; } }\"\"\";\n";
+            "${PREFIX} create inlined_class \"\"\" namespace ${NAMESPACE} { public class MyClass { public static string DoIt() { return \"def\"; } } }\"\"\";\n";
 
         private const string USER_EPL =
             "select 1 from MySchema;\n" +
@@ -46,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             "into table MyTable select count(*) as c from SupportBean;\n" +
             "select MyExpr() from SupportBean;\n" +
             "select myscript(1) from SupportBean;\n" +
-            "select MyClass.DoIt() from SupportBean;\n";
+            "select ${NAMESPACE}.MyClass.DoIt() from SupportBean;\n";
 
         public static IList<RegressionExecution> Executions()
         {

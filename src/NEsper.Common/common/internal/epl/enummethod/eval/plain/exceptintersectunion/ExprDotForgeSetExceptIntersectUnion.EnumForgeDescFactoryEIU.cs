@@ -13,18 +13,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
     {
         private class EnumForgeDescFactoryEIU : EnumForgeDescFactory
         {
-            private readonly EnumMethodEnum enumMethod;
-            private readonly EPChainableType type;
-            private readonly ExprDotEnumerationSourceForge enumSrc;
+            private readonly EnumMethodEnum _enumMethod;
+            private readonly EPChainableType _type;
+            private readonly ExprDotEnumerationSourceForge _enumSrc;
 
             public EnumForgeDescFactoryEIU(
                 EnumMethodEnum enumMethod,
                 EPChainableType type,
                 ExprDotEnumerationSourceForge enumSrc)
             {
-                this.enumMethod = enumMethod;
-                this.type = type;
-                this.enumSrc = enumSrc;
+                this._enumMethod = enumMethod;
+                this._type = type;
+                this._enumSrc = enumSrc;
             }
 
             public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)
@@ -37,22 +37,22 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 int streamCountIncoming,
                 StatementCompileTimeServices services)
             {
-                var scalar = type is EPChainableTypeClass;
+                var scalar = _type is EPChainableTypeClass;
                 EnumForge forge;
-                if (enumMethod == EnumMethodEnum.UNION) {
-                    forge = new EnumUnionForge(streamCountIncoming, enumSrc.Enumeration, scalar);
+                if (_enumMethod == EnumMethodEnum.UNION) {
+                    forge = new EnumUnionForge(streamCountIncoming, _enumSrc.Enumeration, scalar);
                 }
-                else if (enumMethod == EnumMethodEnum.INTERSECT) {
-                    forge = new EnumIntersectForge(streamCountIncoming, enumSrc.Enumeration, scalar);
+                else if (_enumMethod == EnumMethodEnum.INTERSECT) {
+                    forge = new EnumIntersectForge(streamCountIncoming, _enumSrc.Enumeration, scalar);
                 }
-                else if (enumMethod == EnumMethodEnum.EXCEPT) {
-                    forge = new EnumExceptForge(streamCountIncoming, enumSrc.Enumeration, scalar);
+                else if (_enumMethod == EnumMethodEnum.EXCEPT) {
+                    forge = new EnumExceptForge(streamCountIncoming, _enumSrc.Enumeration, scalar);
                 }
                 else {
-                    throw new ArgumentException("Invalid enumeration method for this factory: " + enumMethod);
+                    throw new ArgumentException("Invalid enumeration method for this factory: " + _enumMethod);
                 }
 
-                return new EnumForgeDesc(type, forge);
+                return new EnumForgeDesc(_type, forge);
             }
         }
     }

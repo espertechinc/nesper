@@ -23,11 +23,10 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
         public static string GetMethodName(this DataInputOutputSerdeForgeEventSerdeMethod value)
         {
             return value switch {
-                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENT => "nullableEvent",
-                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTARRAY => "nullableEventArray",
-                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTORUNDERLYING => "nullableEventOrUnderlying",
-                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTARRAYORUNDERLYING =>
-                    "nullableEventArrayOrUnderlying",
+                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENT => "NullableEvent",
+                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTARRAY => "NullableEventArray",
+                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTORUNDERLYING => "NullableEventOrUnderlying",
+                DataInputOutputSerdeForgeEventSerdeMethod.NULLABLEEVENTARRAYORUNDERLYING => "NullableEventArrayOrUnderlying",
                 _ => throw new ArgumentOutOfRangeException(nameof(value), value, null)
             };
         }

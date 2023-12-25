@@ -59,11 +59,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             props[0] = item;
                             props[1] = 0;
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
-                            if (pass == null || false.Equals(pass)) {
-                                return FlexCollection.Empty;
+                            if (pass == null || false.Equals(pass))
+                            {
+                                return EmptyList<object>.Instance;
                             }
 
-                            return FlexCollection.OfObject(item);
+                            return Collections.SingletonList<object>(item);
                         }
 
                         var result = new ArrayDeque<object>();
@@ -81,12 +82,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             result.Add(next);
                         }
 
-                        return FlexCollection.Of(result);
+                        return result;
                     });
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
             return typeof(ICollection<object>);
         }
@@ -101,7 +102,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
             _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneScalar(

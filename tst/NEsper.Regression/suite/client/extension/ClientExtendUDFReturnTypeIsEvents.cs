@@ -69,13 +69,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
         {
             env.CompileDeploy("select myItemProducerInvalidNoType(TheString) as c0 from SupportBean");
             env.TryInvalidCompile(
-                "select myItemProducerInvalidNoType(TheString).where(v =>  v.Id='Id1') as c0 from SupportBean",
+                "select myItemProducerInvalidNoType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
                 "Failed to validate select-clause expression 'myItemProducerInvalidNoType(TheStri...(68 chars)': Method 'MyItemProducerEventBeanArray' returns EventBean-array but does not provide the event type name [");
 
             // test invalid: event type name invalid
             env.TryInvalidCompile(
-                "select myItemProducerInvalidWrongType(TheString).where(v =>  v.Id='Id1') as c0 from SupportBean",
-                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v -> v.Id='Id1') as c0 from SupportBean]");
+                "select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean",
+                "Failed to validate select-clause expression 'myItemProducerInvalidWrongType(TheS...(74 chars)': Method 'MyItemProducerEventBeanArray' returns event type 'dummy' and the event type cannot be found [select myItemProducerInvalidWrongType(TheString).where(v => v.Id='Id1') as c0 from SupportBean]");
 
             env.UndeployAll();
         }

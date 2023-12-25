@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
                     CodegenBlock arrayBlock;
 
                     var elementType = arraySet.ArrayType.GetComponentType();
-                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (assignedType == null || !assignedType.CanBeNull());
+                    var arrayOfPrimitiveNullRHS = elementType.IsPrimitive && (assignedType == null || assignedType.CanBeNull());
                     if (arrayOfPrimitiveNullRHS) {
                         assigned = Unbox(assigned, assignedType);
                         arrayBlock = method.Block.IfNull(@ref)

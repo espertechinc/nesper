@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 
@@ -62,7 +63,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         {
             var method = codegenMethodScope
                 .MakeChild(typeof(BigInteger?), typeof(EnumAverageDecimalScalarNoParam), codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS)
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
                 .DeclareVar<BigInteger>("sum", EnumValue(typeof(BigInteger), "Zero"))
                 .DeclareVar<int>("count", Constant(0))

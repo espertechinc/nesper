@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             return configuration;
         }
 
-        protected static void Configure(Configuration configuration)
+        private static void Configure(Configuration configuration)
         {
             foreach (var clazz in new[] {
                          typeof(SupportBean),

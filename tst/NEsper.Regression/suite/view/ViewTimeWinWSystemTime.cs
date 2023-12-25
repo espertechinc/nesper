@@ -33,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             env.AssertStatement(
                 "s0",
-                statement => { Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("Average")); });
+                statement => { Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average")); });
 
             // Send 2 events, E1 and E2 at +0sec
             env.SendEventBean(MakeBean(SYMBOL, 10, 500));

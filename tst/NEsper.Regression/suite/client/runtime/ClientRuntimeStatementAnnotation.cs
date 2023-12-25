@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using com.espertech.esper.common.client.annotation;
 using com.espertech.esper.common.client.soda;
 using com.espertech.esper.common.@internal.epl.annotation;
@@ -153,16 +153,21 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                         annotations = SortAlpha(annotations);
                         Assert.AreEqual(6, annotations.Length);
 
-                        Assert.AreEqual(typeof(MyAnnotationSimpleAttribute), annotations[0].GetType());
-                        Assert.AreEqual("abc", ((MyAnnotationValueAttribute)annotations[1]).Value);
-                        Assert.AreEqual("XYZ", ((MyAnnotationValueDefaultedAttribute)annotations[2]).Value);
-                        Assert.AreEqual("STMTONE", ((NameAttribute)annotations[5]).Value);
+                        var simpleAttribute = annotations.OfType<MyAnnotationSimpleAttribute>().First();
+                        Assert.NotNull(simpleAttribute);
+                        Assert.AreEqual(typeof(MyAnnotationSimpleAttribute), simpleAttribute.GetType());
+                        var valueAttribute = annotations.OfType<MyAnnotationValueAttribute>().First();
+                        Assert.AreEqual("abc", valueAttribute.Value);
+                        var valueDefaultedAttribute = annotations.OfType<MyAnnotationValueDefaultedAttribute>().First();
+                        Assert.AreEqual("XYZ", valueDefaultedAttribute.Value);
+                        var nameAttribute = annotations.OfType<NameAttribute>().First();
+                        Assert.AreEqual("STMTONE", nameAttribute.Value);
 
-                        var enumval = (MyAnnotationValueEnumAttribute)annotations[3];
+                        var enumval = annotations.OfType<MyAnnotationValueEnumAttribute>().First();
                         Assert.AreEqual(SupportEnum.ENUM_VALUE_2, enumval.SupportEnumDef);
                         Assert.AreEqual(SupportEnum.ENUM_VALUE_3, enumval.SupportEnum);
 
-                        var pair = (MyAnnotationValuePairAttribute)annotations[4];
+                        var pair = annotations.OfType<MyAnnotationValuePairAttribute>().First();
                         Assert.AreEqual("a", pair.StringVal);
                         Assert.AreEqual(-1, pair.IntVal);
                         Assert.AreEqual(2L, pair.LongVal);
@@ -373,10 +378,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "s0",
                     statement => {
                         var annotations = statement.Annotations;
-                        annotations = SortAlpha(annotations);
                         Assert.AreEqual(2, annotations.Length);
 
-                        var nested = (MyAnnotationNestedAttribute)annotations[0];
+                        var nested = annotations
+                            .OfType<MyAnnotationNestedAttribute>()
+                            .First();
                         Assert.IsNotNull(nested.NestableSimple);
                         Assert.IsTrue(Arrays.DeepEquals(ToObjectArray(nested.NestableValues.Arr), new object[] { 2, 1 }));
                         Assert.AreEqual(999, nested.NestableValues.Val);
@@ -402,14 +408,16 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "s0",
                     statement => {
                         var annotations = statement.Annotations;
-                        annotations = SortAlpha(annotations);
                         Assert.AreEqual(2, annotations.Length);
 
-                        var nested = (MyAnnotationWArrayAndClassAttribute)annotations[0];
+                        var nested = annotations
+                            .OfType<MyAnnotationWArrayAndClassAttribute>()
+                            .First();
+                        
                         Assert.AreEqual(1, nested.Priorities[0].Value);
                         Assert.AreEqual(3, nested.Priorities[1].Value);
                         Assert.AreEqual(typeof(string), nested.ClassOne);
-                        Assert.AreEqual(typeof(int?), nested.ClassTwo);
+                        Assert.AreEqual(typeof(int), nested.ClassTwo);
                     });
 
                 env.UndeployAll();
@@ -570,15 +578,12 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             bool isSyntax,
             string message)
         {
-            try {
-                env.Compiler.Compile(stmtText, new CompilerArguments(env.Configuration));
-                Assert.Fail();
-            }
-            catch (EPCompileException ex) {
-                var first = ex.Items[0];
-                Assert.AreEqual(isSyntax, first is EPCompileExceptionSyntaxItem);
-                Assert.AreEqual(message, ex.Message);
-            }
+            var ex = Assert.Throws<EPCompileException>(() =>
+                env.Compiler.Compile(stmtText, new CompilerArguments(env.Configuration)));
+
+            var first = ex.Items[0];
+            Assert.AreEqual(isSyntax, first is EPCompileExceptionSyntaxItem);
+            StringAssert.StartsWith(message, ex.Message);
         }
 
         private static void AssertStatement(RegressionEnvironment env)
@@ -603,23 +608,27 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             annotations = SortAlpha(annotations);
             Assert.AreEqual(3, annotations.Length);
 
-            Assert.AreEqual(typeof(DescriptionAttribute), annotations[0].GetType());
-            Assert.AreEqual("MyTestStmt description", ((DescriptionAttribute)annotations[0]).Value);
-            Assert.AreEqual("@Description(\"MyTestStmt description\")", annotations[0].ToString());
+            var descriptionAttribute = annotations.OfType<DescriptionAttribute>().First();
+            Assert.NotNull(descriptionAttribute);
+            Assert.AreEqual("MyTestStmt description", descriptionAttribute.Value);
+            Assert.AreEqual("@Description(\"MyTestStmt description\")", descriptionAttribute.ToString());
 
-            Assert.AreEqual(typeof(NameAttribute), annotations[1].GetType());
-            Assert.AreEqual("MyTestStmt", ((NameAttribute)annotations[1]).Value);
+            var nameAttribute = annotations.OfType<NameAttribute>().First();
+            Assert.NotNull(nameAttribute);
+            Assert.AreEqual("MyTestStmt", nameAttribute.Value);
             Assert.AreEqual("MyTestStmt", stmt.Name);
-            Assert.AreEqual("@name(\"MyTestStmt\")", annotations[1].ToString());
+            Assert.AreEqual("@Name(\"MyTestStmt\")", nameAttribute.ToString());
 
-            Assert.AreEqual(typeof(TagAttribute), annotations[2].GetType());
-            Assert.AreEqual("UserId", ((TagAttribute)annotations[2]).Name);
-            Assert.AreEqual("value", ((TagAttribute)annotations[2]).Value);
-            Assert.AreEqual("@Tag(name=\"UserId\", value=\"value\")", annotations[2].ToString());
+            var tagAttribute = annotations.OfType<TagAttribute>().First();
+            Assert.NotNull(tagAttribute);
+            Assert.AreEqual("UserId", ((TagAttribute)tagAttribute).Name);
+            Assert.AreEqual("value", ((TagAttribute)tagAttribute).Value);
+            Assert.AreEqual("@Tag(Name=\"UserId\", Value=\"value\")", tagAttribute.ToString());
 
-            Assert.IsFalse(annotations[2].Equals(annotations[1]));
-            Assert.IsTrue(annotations[1].Equals(annotations[1]));
-            Assert.IsTrue(annotations[1].GetHashCode() != 0);
+            Assert.AreNotEqual(tagAttribute, nameAttribute);
+            Assert.AreEqual(nameAttribute, nameAttribute);
+            Assert.AreSame(nameAttribute, nameAttribute);
+            Assert.That(nameAttribute.GetHashCode(), Is.Not.EqualTo(0));
         }
     }
 } // end of namespace

@@ -24,31 +24,31 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     /// </summary>
     public class ExprMinMaxRowNodeForgeEval : ExprEvaluator
     {
-        private readonly ExprMinMaxRowNodeForge forge;
-        private readonly MinMaxTypeEnumComputer computer;
+        private readonly ExprMinMaxRowNodeForge _forge;
+        private readonly MinMaxTypeEnumComputer _computer;
 
         public ExprMinMaxRowNodeForgeEval(
             ExprMinMaxRowNodeForge forge,
             ExprEvaluator[] evaluators,
             ExprForge[] forges)
         {
-            this.forge = forge;
+            this._forge = forge;
             if (forge.EvaluationType == typeof(BigInteger)) {
                 var convertors = new BigIntegerCoercer[evaluators.Length];
                 for (var i = 0; i < evaluators.Length; i++) {
                     convertors[i] = SimpleNumberCoercerFactory.GetCoercerBigInteger(forges[i].EvaluationType);
                 }
 
-                computer = new MinMaxTypeEnumComputer.MinMaxComputerBigIntCoerce(
+                _computer = new MinMaxTypeEnumComputer.MinMaxComputerBigIntCoerce(
                     evaluators,
                     convertors,
                     forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX);
             }
             else if (forge.ForgeRenderable.MinMaxTypeEnum == MinMaxTypeEnum.MAX) {
-                computer = new MinMaxTypeEnumComputer.MaxComputerDoubleCoerce(evaluators);
+                _computer = new MinMaxTypeEnumComputer.MaxComputerDoubleCoerce(evaluators);
             }
             else {
-                computer = new MinMaxTypeEnumComputer.MinComputerDoubleCoerce(evaluators);
+                _computer = new MinMaxTypeEnumComputer.MinComputerDoubleCoerce(evaluators);
             }
         }
 
@@ -57,12 +57,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = computer.Execute(eventsPerStream, isNewData, exprEvaluatorContext);
+            var result = _computer.Execute(eventsPerStream, isNewData, exprEvaluatorContext);
             if (result == null) {
                 return null;
             }
 
-            return TypeHelper.CoerceBoxed(result, forge.EvaluationType);
+            return TypeHelper.CoerceBoxed(result, _forge.EvaluationType);
         }
 
         public static CodegenExpression Codegen(

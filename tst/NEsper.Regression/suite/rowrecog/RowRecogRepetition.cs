@@ -92,12 +92,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a0_id,a1_id,b_id".SplitCsv();
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_id, A[1].Id as a1_id, B.Id as b_id\n" +
                       "  pattern (A{,2} B)\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100,\n" +
-                      "\tB as B.temp >= 102)";
+                      "\tA as A.Temp >= 100,\n" +
+                      "\tB as B.Temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
@@ -121,14 +121,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a0_id,a1_id,a2_id,b_id".SplitCsv();
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_id, A[1].Id as a1_id, A[2].Id as a2_id, B.Id as b_id\n" +
                       "  pattern (" +
                       pattern +
                       ")\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100,\n" +
-                      "\tB as B.temp >= 102)";
+                      "\tA as A.Temp >= 100,\n" +
+                      "\tB as B.Temp >= 102)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
@@ -151,11 +151,11 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             var fields = "a0_id,a1_id".SplitCsv();
             var epl = "@name('s0') select * from TemperatureSensorEvent\n" +
                       "match_recognize (\n" +
-                      "  partition by device\n" +
+                      "  partition by Device\n" +
                       "  measures A[0].Id as a0_id, A[1].Id as a1_id\n" +
                       "  pattern (A{2})\n" +
                       "  define \n" +
-                      "\tA as A.temp >= 100)";
+                      "\tA as A.Temp >= 100)";
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(new object[] { "E1", 1, 99d }, "TemperatureSensorEvent");
@@ -814,11 +814,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             string before,
             string after)
         {
-            var hook = "@Hook(type=" +
-                       typeof(HookType).FullName +
-                       ".INTERNAL_COMPILE,hook='" +
-                       SupportStatementCompileHook.ResetGetClassName() +
-                       "')";
+            var hook = "@Hook(HookType=" + typeof(HookType).FullName + ".INTERNAL_COMPILE,Hook='" + SupportStatementCompileHook.ResetGetClassName() + "')";
             var epl = hook +
                       "@name('s0') select * from SupportBean#keepall " +
                       "match_recognize (" +

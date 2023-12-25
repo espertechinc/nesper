@@ -105,10 +105,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
                         continue;
                     }
 
+                    isSimple = true;
                     isRequiresIndex = false;
                     isRequiresMapkey = false;
                     isIndexed = false;
                     isMapped = false;
+                    isFragment = underlyingType.IsFragmentableType();
 
 #if false
                     if (type.IsGenericStringDictionary()) {

@@ -25,11 +25,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public class StringParserComputer : CasterParserComputer,
             CasterParserComputerForge
         {
-            private readonly SimpleTypeParserSPI parser;
+            private readonly SimpleTypeParserSPI _parser;
 
             public StringParserComputer(SimpleTypeParserSPI parser)
             {
-                this.parser = parser;
+                this._parser = parser;
             }
 
             public object Compute(
@@ -38,7 +38,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 bool newData,
                 ExprEvaluatorContext exprEvaluatorContext)
             {
-                return parser.Parse(input.ToString());
+                return _parser.Parse(input.ToString());
             }
 
             public bool IsConstantForConstInput => true;
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprForgeCodegenSymbol exprSymbol,
                 CodegenClassScope codegenClassScope)
             {
-                return parser.Codegen(input);
+                return _parser.Codegen(input);
             }
 
             public CasterParserComputer EvaluatorComputer => this;

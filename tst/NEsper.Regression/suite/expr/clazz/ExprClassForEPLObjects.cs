@@ -121,13 +121,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "Nestable type configuration encountered an unexpected property type name");
 #endif
                 
-                var eplNamedWindow = $"{EscapeClass("public class MyType {}")} create window MyWindow(myfield MyType)\n";
+                var eplNamedWindow =
+                    EscapeClass("public class MyType {}") +
+                    "create window MyWindow(myfield MyType)\n";
                 env.TryInvalidCompile(
                     eplNamedWindow,
                     "Nestable type configuration encountered an unexpected property type name");
 
-                var eplTable = EscapeClass("public class MyType {}") +
-                               "create table MyTable(myfield MyType)\n";
+                var eplTable = 
+                    EscapeClass("public class MyType {}") +
+                    "create table MyTable(myfield MyType)\n";
                 env.TryInvalidCompile(eplTable, "skip");
             }
         }
@@ -187,7 +190,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     "method:MyFromClauseMethod.GetBeans() as s";
 
                 var compiled = env.Compile(epl, path);
-                var assemblyTypes = compiled.Assemblies.SelectMany(_ => _.GetExportedTypes());
+                var assemblyTypes = compiled.Assemblies
+                    .SelectMany(_ => _.GetExportedTypes())
+                    .ToList();
                 foreach (var assemblyType in assemblyTypes) {
                     if (assemblyType.Name.Contains("MyFromClauseMethod")) {
                         Assert.Fail("EPCompiled should not contain create-class class");

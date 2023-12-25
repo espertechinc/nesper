@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(_type);
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
             if (!result.GetType().IsArray) {
                 return null;

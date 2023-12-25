@@ -765,10 +765,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
         private static void TryAssertion2StreamInnerWGroupBy(RegressionEnvironment env)
         {
-            var epl = "@buseventtype @public create objectarray schema E1 (Id string, grp string, value int);\n" +
-                      "@buseventtype @public create objectarray schema E2 (Id string, value2 int);\n" +
-                      "@name('s0') select count(*) as c0, sum(E1.Value) as c1, E1.Id as c2 " +
-                      "from E1 unidirectional inner join E2#keepall on E1.Id = E2.Id group by E1.grp";
+            var epl =
+                "@buseventtype @public create objectarray schema E1 (Id string, grp string, value int);\n" +
+                "@buseventtype @public create objectarray schema E2 (Id string, value2 int);\n" +
+                "@name('s0') select count(*) as c0, sum(E1.value) as c1, E1.Id as c2 " +
+                "from E1 unidirectional inner join E2#keepall on E1.Id = E2.Id group by E1.grp";
             env.CompileDeploy(epl, new RegressionPath());
             env.AddListener("s0");
             var fields = "c0,c1,c2".SplitCsv();

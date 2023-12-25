@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 }
                 catch (EPDeployException ex) {
                     Assert.That(ex.RolloutItemNumber, Is.EqualTo(-1));
-                    SupportMessageAssertUtil.AssertMessage(ex, "Deployment by Id 'ABC' already exists");
+                    SupportMessageAssertUtil.AssertMessage(ex, "Deployment by id 'ABC' already exists");
                 }
 
                 env.UndeployAll();
@@ -190,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     SupportDeploymentStateListener.GetSingleEventAndReset(),
                     true,
                     deploymentId,
-                    "default",
+                    env.RuntimeURI,
                     1,
                     -1);
 
@@ -199,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     SupportDeploymentStateListener.GetSingleEventAndReset(),
                     false,
                     deploymentId,
-                    "default",
+                    env.RuntimeURI,
                     1,
                     -1);
 
@@ -221,8 +221,8 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 };
                 env.Rollout(rolloutItems, null);
                 var events = SupportDeploymentStateListener.GetNEventsAndReset(2);
-                AssertEvent(events[0], true, env.DeploymentId("s0"), "default", 2, 0);
-                AssertEvent(events[1], true, env.DeploymentId("s2"), "default", 1, 1);
+                AssertEvent(events[0], true, env.DeploymentId("s0"), env.RuntimeURI, 2, 0);
+                AssertEvent(events[1], true, env.DeploymentId("s2"), env.RuntimeURI, 1, 1);
                 env.Deployment.RemoveAllDeploymentStateListeners();
 
                 env.UndeployAll();

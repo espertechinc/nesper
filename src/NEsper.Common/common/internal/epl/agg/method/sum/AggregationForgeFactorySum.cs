@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             _resultType = GetSumAggregatorType(inputValueType);
             
             var distinctValueType = !parent.IsDistinct ? null : inputValueType;
-            if (_resultType == typeof(BigInteger)) {
+            if (_resultType.IsTypeBigInteger()) {
                 _aggregator = new AggregatorSumBigInteger(
                     distinctValueType,
                     distinctSerde,
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
 
         private Type GetSumAggregatorType(Type type)
         {
-            if (type == typeof(BigInteger)) {
+            if (type.IsTypeBigInteger()) {
                 return typeof(BigInteger);
             }
 

@@ -141,7 +141,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                     }
 
                     configuration.Compiler.AddPlugInSingleRowFunction(
-                        funcs[i] + "_" + rep.GetName(),
+                        funcs[i] + "_" + rep.GetPublicName(),
                         typeof(EPLContainedEventSplitExpr),
                         methods[i]);
                 }

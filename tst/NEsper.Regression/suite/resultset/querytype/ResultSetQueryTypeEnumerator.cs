@@ -17,7 +17,7 @@ using NUnit.Framework;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
-    public class ResultSetQueryTypeIterator
+    public class ResultSetQueryTypeEnumerator
     {
         public static ICollection<RegressionExecution> Executions()
         {
@@ -246,22 +246,22 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 object eventOne = SendEvent(env, "SYM", 1);
-                AssertIterator(env, new object[] { eventOne });
+                AssertIterator(env, new[] { eventOne });
 
                 object eventTwo = SendEvent(env, "OCC", 2);
-                AssertIterator(env, new object[] { eventTwo, eventOne });
+                AssertIterator(env, new[] { eventTwo, eventOne });
 
                 object eventThree = SendEvent(env, "TOC", 3);
-                AssertIterator(env, new object[] { eventTwo, eventOne, eventThree });
+                AssertIterator(env, new[] { eventTwo, eventOne, eventThree });
 
                 object eventFour = SendEvent(env, "SYM", 0);
-                AssertIterator(env, new object[] { eventTwo, eventFour, eventOne, eventThree });
+                AssertIterator(env, new[] { eventTwo, eventFour, eventOne, eventThree });
 
                 object eventFive = SendEvent(env, "SYM", 10);
-                AssertIterator(env, new object[] { eventTwo, eventFour, eventOne, eventFive, eventThree });
+                AssertIterator(env, new[] { eventTwo, eventFour, eventOne, eventFive, eventThree });
 
                 object eventSix = SendEvent(env, "SYM", 4);
-                AssertIterator(env, new object[] { eventTwo, eventFour, eventSix, eventFive, eventThree });
+                AssertIterator(env, new[] { eventTwo, eventFour, eventSix, eventFive, eventThree });
 
                 env.UndeployAll();
             }
@@ -280,7 +280,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "Volume" };
+                var fields = new[] { "Symbol", "Volume" };
                 var stmtText =
                     "@name('s0') select Symbol, Volume from SupportMarketDataBean#length(3) order by Symbol, Volume";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -288,27 +288,25 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 1);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 1L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 1L } });
 
                 SendEvent(env, "OCC", 2);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "OCC", 2L }, new object[] { "SYM", 1L } });
+                    new[] { new object[] { "OCC", 2L }, new object[] { "SYM", 1L } });
 
                 SendEvent(env, "SYM", 0);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "OCC", 2L }, new object[] { "SYM", 0L }, new object[] { "SYM", 1L } });
+                    new[] { new object[] { "OCC", 2L }, new object[] { "SYM", 0L }, new object[] { "SYM", 1L } });
 
                 SendEvent(env, "OCC", 3);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "OCC", 2L }, new object[] { "OCC", 3L }, new object[] { "SYM", 0L } });
+                    new[] { new object[] { "OCC", 2L }, new object[] { "OCC", 3L }, new object[] { "SYM", 0L } });
 
                 env.UndeployAll();
             }
@@ -318,7 +316,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "vol" };
+                var fields = new[] { "Symbol", "vol" };
                 var stmtText = "@name('s0') select Symbol, Volume * 10 as vol from SupportMarketDataBean#length(5)" +
                                " where Volume < 0";
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -328,13 +326,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator("s0", fields, null);
 
                 SendEvent(env, "SYM", -1);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -10L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -10L } });
 
                 SendEvent(env, "SYM", -6);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -10L }, new object[] { "SYM", -60L } });
+                    new[] { new object[] { "SYM", -10L }, new object[] { "SYM", -60L } });
 
                 env.Milestone(0);
 
@@ -343,14 +341,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -10L }, new object[] { "SYM", -60L } });
+                    new[] { new object[] { "SYM", -10L }, new object[] { "SYM", -60L } });
 
                 SendEvent(env, "SYM", -9);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "SYM", -10L }, new object[] { "SYM", -60L }, new object[] { "SYM", -90L } });
+                    new[] { new object[] { "SYM", -10L }, new object[] { "SYM", -60L }, new object[] { "SYM", -90L } });
 
                 env.Milestone(1);
 
@@ -358,16 +355,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -60L }, new object[] { "SYM", -90L } });
+                    new[] { new object[] { "SYM", -60L }, new object[] { "SYM", -90L } });
 
                 SendEvent(env, "SYM", 3);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -90L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -90L } });
 
                 env.Milestone(2);
 
                 SendEvent(env, "SYM", 4);
                 SendEvent(env, "SYM", 5);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -90L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -90L } });
 
                 env.Milestone(3);
 
@@ -382,7 +379,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol " +
@@ -392,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(0);
 
                 SendEvent(env, "SYM", 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
 
                 env.Milestone(1);
 
@@ -400,19 +397,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "OCC", 5L }, new object[] { "SYM", 100L } });
+                    new[] { new object[] { "OCC", 5L }, new object[] { "SYM", 100L } });
 
                 SendEvent(env, "SYM", 10);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "OCC", 5L }, new object[] { "SYM", 110L } });
+                    new[] { new object[] { "OCC", 5L }, new object[] { "SYM", 110L } });
 
                 SendEvent(env, "OCC", 6);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "OCC", 11L }, new object[] { "SYM", 110L } });
+                    new[] { new object[] { "OCC", 11L }, new object[] { "SYM", 110L } });
 
                 env.Milestone(2);
 
@@ -420,8 +417,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "ATB", 8L }, new object[] { "OCC", 11L }, new object[] { "SYM", 110L } });
+                    new[] { new object[] { "ATB", 8L }, new object[] { "OCC", 11L }, new object[] { "SYM", 110L } });
 
                 env.Milestone(3);
 
@@ -429,8 +425,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "ATB", 15L }, new object[] { "OCC", 11L }, new object[] { "SYM", 10L } });
+                    new[] { new object[] { "ATB", 15L }, new object[] { "OCC", 11L }, new object[] { "SYM", 10L } });
 
                 env.UndeployAll();
             }
@@ -440,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol";
@@ -449,10 +444,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
 
                 SendEvent(env, "SYM", 10);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 110L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 110L } });
 
                 env.Milestone(0);
 
@@ -460,13 +455,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 110L }, new object[] { "TAC", 1L } });
+                    new[] { new object[] { "SYM", 110L }, new object[] { "TAC", 1L } });
 
                 SendEvent(env, "SYM", 11);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 121L }, new object[] { "TAC", 1L } });
+                    new[] { new object[] { "SYM", 121L }, new object[] { "TAC", 1L } });
 
                 env.Milestone(1);
 
@@ -474,14 +469,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 121L }, new object[] { "TAC", 3L } });
+                    new[] { new object[] { "SYM", 121L }, new object[] { "TAC", 3L } });
 
                 SendEvent(env, "OCC", 55);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "SYM", 21L }, new object[] { "TAC", 3L }, new object[] { "OCC", 55L } });
+                    new[] { new object[] { "SYM", 21L }, new object[] { "TAC", 3L }, new object[] { "OCC", 55L } });
 
                 env.Milestone(2);
 
@@ -489,15 +483,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "TAC", 3L }, new object[] { "SYM", 11L }, new object[] { "OCC", 59L } });
+                    new[] { new object[] { "TAC", 3L }, new object[] { "SYM", 11L }, new object[] { "OCC", 59L } });
 
                 SendEvent(env, "OCC", 3);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "SYM", 11L }, new object[] { "TAC", 2L }, new object[] { "OCC", 62L } });
+                    new[] { new object[] { "SYM", 11L }, new object[] { "TAC", 2L }, new object[] { "OCC", 62L } });
 
                 env.UndeployAll();
             }
@@ -507,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol having sum(Volume) > 10";
@@ -515,18 +507,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
 
                 SendEvent(env, "SYM", 5);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 105L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 105L } });
 
                 env.Milestone(0);
 
                 SendEvent(env, "TAC", 1);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 105L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 105L } });
 
                 SendEvent(env, "SYM", 3);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 108L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 108L } });
 
                 env.Milestone(1);
 
@@ -534,19 +526,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 108L }, new object[] { "TAC", 13L } });
+                    new[] { new object[] { "SYM", 108L }, new object[] { "TAC", 13L } });
 
                 SendEvent(env, "OCC", 55);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "TAC", 13L }, new object[] { "OCC", 55L } });
+                    new[] { new object[] { "TAC", 13L }, new object[] { "OCC", 55L } });
 
                 SendEvent(env, "OCC", 4);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "TAC", 13L }, new object[] { "OCC", 59L } });
+                    new[] { new object[] { "TAC", 13L }, new object[] { "OCC", 59L } });
 
                 env.Milestone(2);
 
@@ -554,7 +546,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "TAC", 12L }, new object[] { "OCC", 62L } });
+                    new[] { new object[] { "TAC", 12L }, new object[] { "OCC", 62L } });
 
                 env.UndeployAll();
             }
@@ -564,7 +556,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "msg" };
+                var fields = new[] { "Symbol", "msg" };
                 var stmtText = "@name('s0') insert into Cutoff " +
                                "select Symbol, (Convert.ToString(count(*)) || 'x1000.0') as msg " +
                                "from SupportMarketDataBean#groupwin(Symbol)#length(1) " +
@@ -580,7 +572,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportMarketDataBean("SYM", 100000d, 0L, null));
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", "1x1000.0" } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", "1x1000.0" } });
 
                 env.SendEventBean(new SupportMarketDataBean("SYM", 1d, 1L, null));
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -593,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "Price", "sumVol" };
+                var fields = new[] { "Symbol", "Price", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol " +
@@ -602,7 +594,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -1d, 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
 
                 env.Milestone(0);
 
@@ -610,13 +602,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 12L } });
+                    new[] { new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 12L } });
 
                 SendEvent(env, "TAC", -3, 13);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }
                     });
@@ -627,7 +619,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 101L }, new object[] { "SYM", -4d, 101L },
                         new object[] { "TAC", -2d, 25L }, new object[] { "TAC", -3d, 25L }
                     });
@@ -638,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "OCC", -5d, 99L }, new object[] { "SYM", -1d, 101L },
                         new object[] { "SYM", -4d, 101L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }
@@ -648,7 +640,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "OCC", -5d, 99L }, new object[] { "SYM", -4d, 1L },
                         new object[] { "TAC", -2d, 27L }, new object[] { "TAC", -3d, 27L },
                         new object[] { "TAC", -6d, 27L }
@@ -662,7 +654,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "Price", "sumVol" };
+                var fields = new[] { "Symbol", "Price", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol";
@@ -671,13 +663,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -1d, 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
 
                 SendEvent(env, "TAC", -2, 12);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 12L } });
+                    new[] { new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 12L } });
 
                 env.Milestone(0);
 
@@ -685,7 +677,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }
                     });
@@ -696,7 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 101L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }, new object[] { "SYM", -4d, 101L }
                     });
@@ -705,7 +697,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 101L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }, new object[] { "SYM", -4d, 101L },
                         new object[] { "OCC", -5d, 99L }
@@ -715,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "TAC", -2d, 27L }, new object[] { "TAC", -3d, 27L },
                         new object[] { "SYM", -4d, 1L }, new object[] { "OCC", -5d, 99L },
                         new object[] { "TAC", -6d, 27L }
@@ -729,7 +721,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "Price", "sumVol" };
+                var fields = new[] { "Symbol", "Price", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, Price, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol having sum(Volume) > 20";
@@ -738,13 +730,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", -1d, 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
 
                 SendEvent(env, "TAC", -2, 12);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", -1d, 100L } });
+                    new[] { new object[] { "SYM", -1d, 100L } });
 
                 env.Milestone(0);
 
@@ -752,7 +744,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 100L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }
                     });
@@ -761,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 101L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }, new object[] { "SYM", -4d, 101L }
                     });
@@ -772,7 +764,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "SYM", -1d, 101L }, new object[] { "TAC", -2d, 25L },
                         new object[] { "TAC", -3d, 25L }, new object[] { "SYM", -4d, 101L },
                         new object[] { "OCC", -5d, 99L }
@@ -784,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] {
+                    new[] {
                         new object[] { "TAC", -2d, 27L }, new object[] { "TAC", -3d, 27L },
                         new object[] { "OCC", -5d, 99L }, new object[] { "TAC", -6d, 27L }
                     });
@@ -797,7 +789,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) ";
 
@@ -805,13 +797,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
 
                 SendEvent(env, "TAC", 1);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
+                    new[] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
 
                 env.Milestone(0);
 
@@ -819,15 +811,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "SYM", 104L }, new object[] { "TAC", 104L }, new object[] { "MOV", 104L } });
+                    new[] { new object[] { "SYM", 104L }, new object[] { "TAC", 104L }, new object[] { "MOV", 104L } });
 
                 SendEvent(env, "SYM", 10);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "TAC", 14L }, new object[] { "MOV", 14L }, new object[] { "SYM", 14L } });
+                    new[] { new object[] { "TAC", 14L }, new object[] { "MOV", 14L }, new object[] { "SYM", 14L } });
 
                 env.UndeployAll();
             }
@@ -837,7 +827,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select irstream Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) " +
                                " order by Symbol asc";
@@ -845,20 +835,19 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { "SYM", 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
 
                 SendEvent(env, "TAC", 1);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
+                    new[] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
 
                 SendEvent(env, "MOV", 3);
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "MOV", 104L }, new object[] { "SYM", 104L }, new object[] { "TAC", 104L } });
+                    new[] { new object[] { "MOV", 104L }, new object[] { "SYM", 104L }, new object[] { "TAC", 104L } });
 
                 env.Milestone(0);
 
@@ -866,8 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "MOV", 14L }, new object[] { "SYM", 14L }, new object[] { "TAC", 14L } });
+                    new[] { new object[] { "MOV", 14L }, new object[] { "SYM", 14L }, new object[] { "TAC", 14L } });
 
                 env.UndeployAll();
             }
@@ -877,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "Symbol", "sumVol" };
+                var fields = new[] { "Symbol", "sumVol" };
                 var stmtText = "@name('s0') select Symbol, sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) having sum(Volume) > 100";
 
@@ -894,7 +882,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
+                    new[] { new object[] { "SYM", 101L }, new object[] { "TAC", 101L } });
 
                 env.Milestone(1);
 
@@ -902,8 +890,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator(
                     "s0",
                     fields,
-                    new object[][]
-                        { new object[] { "SYM", 104L }, new object[] { "TAC", 104L }, new object[] { "MOV", 104L } });
+                    new[] { new object[] { "SYM", 104L }, new object[] { "TAC", 104L }, new object[] { "MOV", 104L } });
 
                 SendEvent(env, "SYM", 10);
                 env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
@@ -916,30 +903,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "sumVol" };
+                var fields = new[] { "sumVol" };
                 var stmtText = "@name('s0') select sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) ";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { null } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { null } });
 
                 env.Milestone(0);
 
                 SendEvent(env, 100);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 100L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 100L } });
 
                 env.Milestone(1);
 
                 SendEvent(env, 50);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 150L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 150L } });
 
                 SendEvent(env, 25);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 175L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 175L } });
 
                 env.Milestone(2);
 
                 SendEvent(env, 10);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 85L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 85L } });
 
                 env.UndeployAll();
             }
@@ -949,7 +936,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = new string[] { "sumVol" };
+                var fields = new[] { "sumVol" };
                 var stmtText = "@name('s0') select sum(Volume) as sumVol " +
                                "from SupportMarketDataBean#length(3) having sum(Volume) > 100";
 
@@ -962,10 +949,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(0);
 
                 SendEvent(env, 50);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 150L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 150L } });
 
                 SendEvent(env, 25);
-                env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 175L } });
+                env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { 175L } });
 
                 env.Milestone(1);
 

@@ -289,7 +289,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 var propertyName = theBase.PropertyNameAtomic;
 
                 // For the next property if there is one, check how to property type is defined
-                if (ii < (propertiesCount - 1)) {
+                if (ii == (propertiesCount - 1)) {
                     continue;
                 }
 

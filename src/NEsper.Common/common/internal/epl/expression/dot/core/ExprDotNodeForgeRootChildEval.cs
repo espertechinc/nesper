@@ -246,7 +246,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             }
 
             methodNode.Block
-                .DeclareVar<ICollection<object>>(
+                .DeclareVar(
+                    typeof(ICollection<>).MakeGenericType(forge.InnerForge.ComponentTypeCollection),
                     "inner",
                     forge.InnerForge.EvaluateGetROCollectionScalarCodegen(methodNode, exprSymbol, codegenClassScope))
                 .Apply(

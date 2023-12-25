@@ -25,26 +25,26 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapArrayEvents : ExprDotStaticMethodWrap
     {
-        private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private BeanEventType type;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly BeanEventType _type;
 
         public ExprDotStaticMethodWrapArrayEvents(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventType type)
         {
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.type = type;
+            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            this._type = type;
         }
 
-        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(_type);
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
             if (!result.GetType().IsArray) {
                 return null;
             }
 
-            return new WrappingCollection(eventBeanTypedEventFactory, type, result);
+            return new WrappingCollection(_eventBeanTypedEventFactory, _type, result);
         }
 
         public CodegenExpression CodegenConvertNonNull(
@@ -59,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 typeof(BeanEventType),
                 Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
+                    EventTypeUtility.ResolveTypeCodegen(_type, EPStatementInitServicesConstants.REF)));
             return NewInstance(
                 typeof(WrappingCollection),
                 eventSvcMember,
@@ -69,23 +69,23 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
         public class WrappingCollection : ICollection<EventBean>
         {
-            private EventBeanTypedEventFactory eventBeanTypedEventFactory;
-            private BeanEventType type;
-            private Array array;
+            private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+            private readonly BeanEventType _type;
+            private readonly Array _array;
 
             public WrappingCollection(
                 EventBeanTypedEventFactory eventBeanTypedEventFactory,
                 BeanEventType type,
                 object array)
             {
-                this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-                this.type = type;
-                this.array = (Array)array;
+                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                this._type = type;
+                this._array = (Array)array;
             }
 
-            public int Count => array.Length;
+            public int Count => _array.Length;
 
-            public bool IsEmpty => array.Length == 0;
+            public bool IsEmpty => _array.Length == 0;
 
             public bool IsReadOnly => true;
 
@@ -96,10 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 
             public IEnumerator<EventBean> GetEnumerator()
             {
-                for (var ii = 0; ii < array.Length; ii++) {
-                    yield return eventBeanTypedEventFactory.AdapterForTypedObject(
-                        array.GetValue(ii),
-                        type);
+                for (var ii = 0; ii < _array.Length; ii++) {
+                    yield return _eventBeanTypedEventFactory.AdapterForTypedObject(
+                        _array.GetValue(ii),
+                        _type);
                 }
             }
 

@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "@public create inlined_class \"\"\"\n" +
                               "  using com.espertech.esper.common.client.hook.singlerowfunc;\n" +
                               "  using com.espertech.esper.common.client.configuration.compiler;\n" +
-                              "  [ExtensionSingleRowFunction(Name=\"doit\", MethodName=\"Doit\", FilterOptimizable=ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED)]\n" +
+                              "  [ExtensionSingleRowFunction(Name=\"doit\", MethodName=\"DoIt\", FilterOptimizable=ConfigurationCompilerPlugInSingleRowFunction.FilterOptimizableEnum.DISABLED)]\n" +
                               "  public class Helper {\n" +
                               "    public static string DoIt(object param) {\n" +
                               "      return null;\n" +
@@ -564,9 +564,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                               "\"\"\";\n" +
                               "@public create expression MyDeclaredExpr { (select TheString from MyWindow) };\n" +
                               "@public create expression MyHandThrough {v => v};" +
-                              "@public create expression string js:MyJavaScript() [\"a\"];\n";
+                              "@public create expression string js:MyJavaScript() [return \"a\"];\n";
                 env.Compile(objects, path);
-                var hook = $"@Hook(HookType=HookType.INTERNAL_FILTERSPEC, hook='{nameof(SupportFilterPlanHook)}')";
+                var hook = $"@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='{nameof(SupportFilterPlanHook)}')";
 
                 // Core disqualifing: non-constant variables, tables, subselects, lambda, plug-in UDF with filter-opt-disabled, scripts
                 AssertDisqualified(
@@ -588,7 +588,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     env,
                     path,
                     "SupportBeanArrayCollMap",
-                    hook + "select * from SupportBeanArrayCollMap(id = SetOfString.where(v => v=Id).firstOf())");
+                    hook + "select * from SupportBeanArrayCollMap(Id = SetOfString.where(v => v=Id).firstOf())");
                 AssertDisqualified(
                     env,
                     path,
@@ -622,7 +622,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                                          "    }\n" +
                                          "  }\n" +
                                          "\"\"\"\n" +
-                                         "select * from SupportBean(TheString regexp LocalHelper.Doit('abc'))";
+                                         "select * from SupportBean(TheString regexp LocalHelper.DoIt('abc'))";
                 AssertDisqualified(env, path, "SupportBean", eplWithLocalHelper);
             }
 

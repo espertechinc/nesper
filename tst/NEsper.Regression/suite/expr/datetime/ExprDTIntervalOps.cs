@@ -194,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             public void Run(RegressionEnvironment env)
             {
                 var epl = "create variable int somenumber = 1;\n" +
-                          "@name('s0') select longdate.before(longdate, somenumber) as c0 from SupportDateTime;\n";
+                          "@name('s0') select LongDate.before(LongDate, somenumber) as c0 from SupportDateTime;\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T09:00:00.000"));
@@ -212,15 +212,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.CompileDeploy("@public create variable int somenumber = 1", path);
 
                 var epl = "@name('s0') select " +
-                          "longdate.before(longdate, somenumber years) as c0," +
-                          "longdate.before(longdate, somenumber month) as c1, " +
-                          "longdate.before(longdate, somenumber weeks) as c2, " +
-                          "longdate.before(longdate, somenumber days) as c3, " +
-                          "longdate.before(longdate, somenumber hours) as c4, " +
-                          "longdate.before(longdate, somenumber minutes) as c5, " +
-                          "longdate.before(longdate, somenumber seconds) as c6, " +
-                          "longdate.before(longdate, somenumber milliseconds) as c7, " +
-                          "longdate.before(longdate, somenumber microseconds) as c8 " +
+                          "LongDate.before(LongDate, somenumber years) as c0," +
+                          "LongDate.before(LongDate, somenumber month) as c1, " +
+                          "LongDate.before(LongDate, somenumber weeks) as c2, " +
+                          "LongDate.before(LongDate, somenumber days) as c3, " +
+                          "LongDate.before(LongDate, somenumber hours) as c4, " +
+                          "LongDate.before(LongDate, somenumber minutes) as c5, " +
+                          "LongDate.before(LongDate, somenumber seconds) as c6, " +
+                          "LongDate.before(LongDate, somenumber milliseconds) as c7, " +
+                          "LongDate.before(LongDate, somenumber microseconds) as c8 " +
                           " from SupportDateTime";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
@@ -235,13 +235,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "c0,c1,c2,c3,c4".SplitCsv();
-                var epl = "@name('s0') select " +
-                          "longdate.set('month', 1).before(LongPrimitive) as c0, " +
-                          "utildate.set('month', 1).before(LongPrimitive) as c1," +
-                          "caldate.set('month', 1).before(LongPrimitive) as c2," +
-                          "localdate.set('month', 1).before(LongPrimitive) as c3," +
-                          "zoneddate.set('month', 1).before(LongPrimitive) as c4 " +
+                var fields = new[] { "c0", "c1", "c2" };
+                var epl = "@Name('s0') select " +
+                          "LongDate.set('month', 1).before(LongPrimitive) as c0, " +
+                          "DateTimeOffset.set('month', 1).before(LongPrimitive) as c1," +
+                          "DateTimeEx.set('month', 1).before(LongPrimitive) as c2 " +
                           "from SupportDateTime unidirectional, SupportBean#lastevent";
                 env.CompileDeploy(epl).AddListener("s0");
 
@@ -250,10 +248,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.SendEventBean(bean);
 
                 env.SendEventBean(SupportDateTime.Make("2002-05-30T09:00:00.000"));
-                env.AssertPropsNew("s0", fields, new object[] { true, true, true, true, true });
+                env.AssertPropsNew("s0", fields, new object[] { true, true, true });
 
                 env.SendEventBean(SupportDateTime.Make("2003-05-30T08:00:00.000"));
-                env.AssertPropsNew("s0", fields, new object[] { false, false, false, false, false });
+                env.AssertPropsNew("s0", fields, new object[] { false, false, false });
 
                 env.UndeployAll();
             }
@@ -266,13 +264,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var seedTime = "2002-05-30T09:00:00.000"; // seed is time for B
 
                 object[][] expected = {
-                    new object[] { "2999-01-01T09:00:00.001", 0, true }, // sending in A
+                    new object[] { "2999-01-01T09:00:00.001", 0, true } // sending in A
                 };
                 AssertExpression(env, seedTime, 0, "a.withDate(2001, 1, 1).before(b)", expected, null);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2999-01-01T10:00:00.001", 0, false },
-                    new object[] { "2999-01-01T08:00:00.001", 0, true },
+                    new object[] { "2999-01-01T08:00:00.001", 0, true }
                 };
                 AssertExpression(
                     env,
@@ -283,19 +282,22 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     null);
 
                 // Test end-timestamp preserved when using calendar op
-                expected = new object[][] {
-                    new object[] { "2002-05-30T08:59:59.000", 2000, false },
+                expected = new[]
+                {
+                    new object[] { "2002-05-30T08:59:59.000", 2000, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.before(b)", expected, null);
-                expected = new object[][] {
-                    new object[] { "2002-05-30T08:59:59.000", 2000, false },
+                expected = new[]
+                {
+                    new object[] { "2002-05-30T08:59:59.000", 2000, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.withTime(8, 59, 59, 0).before(b)", expected, null);
 
                 // Test end-timestamp preserved when using calendar op
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:01.000", 0, false },
-                    new object[] { "2002-05-30T09:00:01.001", 0, true },
+                    new object[] { "2002-05-30T09:00:01.001", 0, true }
                 };
                 AssertExpression(env, seedTime, 1000, "a.after(b)", expected, null);
 
@@ -311,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // wrong 1st parameter - string
                 env.TryInvalidCompile(
                     "select a.before('x') from SupportTimeStartEndA as a",
-                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'System.String', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                    "Failed to validate select-clause expression 'a.before('x')': Failed to resolve enumeration method, date-time method or mapped property 'a.before('x')': For date-time method 'before' the first parameter expression returns 'System.String', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
 
                 // wrong 1st parameter - event not defined with timestamp expression
                 env.TryInvalidCompile(
@@ -321,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // wrong 1st parameter - boolean
                 env.TryInvalidCompile(
                     "select a.before(true) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'boolean', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                    "Failed to validate select-clause expression 'a.before(true)': For date-time method 'before' the first parameter expression returns 'System.Boolean', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
 
                 // wrong zero parameters
                 env.TryInvalidCompile(
@@ -331,21 +333,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // wrong target
                 env.TryInvalidCompile(
                     "select TheString.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received String");
+                    "Failed to validate select-clause expression 'TheString.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received System.String");
                 env.TryInvalidCompile(
                     "select b.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
                     "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property");
                 env.TryInvalidCompile(
-                    "select a.get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.get(\"month\").before(a)': Failed to resolve method 'get': Could not find enumeration method, date-time method, instance method or property named 'get'");
+                    "select a.Get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
+                    "Failed to validate select-clause expression 'a.Get(\"month\").before(a)': Invalid input for date-time method 'before' ");
 
                 // test before/after
                 env.TryInvalidCompile(
                     "select a.before(b, 'abc') from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(b,\"abc\")': Failed to validate date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received String ");
+                    "Failed to validate select-clause expression 'a.before(b,\"abc\")': Failed to validate date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 1 but received System.String ");
                 env.TryInvalidCompile(
                     "select a.before(b, 1, 'def') from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
-                    "Failed to validate select-clause expression 'a.before(b,1,\"def\")': Failed to validate date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received String ");
+                    "Failed to validate select-clause expression 'a.before(b,1,\"def\")': Failed to validate date-time method 'before', expected a time-period expression or a numeric-type result for expression parameter 2 but received System.String ");
                 env.TryInvalidCompile(
                     "select a.before(b, 1, 2, 3) from SupportTimeStartEndA#lastevent as a, SupportTimeStartEndB#lastevent as b",
                     "Failed to validate select-clause expression 'a.before(b,1,2,3)': Parameters mismatch for date-time method 'before', the method has multiple footprints accepting an expression providing timestamp or timestamped-event, or an expression providing timestamp or timestamped-event and an expression providing interval start value, or an expression providing timestamp or timestamped-event and an expression providing interval start value and an expression providing interval finishes value, but receives 4 expressions ");
@@ -409,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             {
                 var fields = "c0,c1".SplitCsv();
                 var epl = "@name('s0') select " +
-                          "a.longdateStart.before(b.LongdateStart) as c0," +
+                          "a.LongdateStart.before(b.LongdateStart) as c0," +
                           "a.before(b) as c1 " +
                           " from SupportTimeStartEndA#lastevent as a, " +
                           "      SupportTimeStartEndB#lastevent as b";
@@ -437,29 +439,27 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.000", 0, true },
                     new object[] { "2002-05-30T08:59:59.999", 0, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
 
-                var expressions = new string[] {
+                var expressions = new[] {
                     "a.before(b)",
                     "a.before(b, 1 millisecond)",
                     "a.before(b, 1 millisecond, 1000000000L)",
                     "a.LongdateStart.before(b)",
-                    "a.utildateStart.before(b)",
-                    "a.caldateStart.before(b)",
+                    "a.DateTimeStart.before(b)",
+                    "a.DateTimeExStart.before(b)",
                     "a.before(b.LongdateStart)",
-                    "a.before(b.utildateStart)",
-                    "a.before(b.caldateStart)",
-                    "a.longdateStart.before(b.LongdateStart)",
-                    "a.longdateStart.before(b.LongdateStart)",
-                    "a.utildateStart.before(b.utildateStart)",
-                    "a.caldateStart.before(b.caldateStart)",
-                    "a.utildateStart.before(b.caldateStart)",
-                    "a.utildateStart.before(b.LongdateStart)",
-                    "a.caldateStart.before(b.utildateStart)",
-                    "a.caldateStart.before(b.LongdateStart)",
-                    "a.ldtStart.before(b.ldtStart)",
-                    "a.zdtStart.before(b.zdtStart)"
+                    "a.before(b.DateTimeStart)",
+                    "a.before(b.DateTimeExStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.LongdateStart.before(b.LongdateStart)",
+                    "a.DateTimeStart.before(b.DateTimeStart)",
+                    "a.DateTimeExStart.before(b.DateTimeExStart)",
+                    "a.DateTimeStart.before(b.DateTimeExStart)",
+                    "a.DateTimeStart.before(b.LongdateStart)",
+                    "a.DateTimeExStart.before(b.DateTimeStart)",
+                    "a.DateTimeExStart.before(b.LongdateStart)"
                 };
                 var seedTime = "2002-05-30T09:00:00.000";
                 foreach (var expression in expressions) {
@@ -478,7 +478,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 seedTime = "2002-05-30T09:00:00.000";
                 expectedValidator = new BeforeValidator(1L, long.MaxValue);
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, true },
                     new object[] { "2002-05-30T08:59:59.000", 999, true },
                     new object[] { "2002-05-30T08:59:59.000", 1000, false },
@@ -486,24 +487,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 0, true },
                     new object[] { "2002-05-30T08:59:59.999", 1, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.before(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100000, "a.before(b)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, true },
                     new object[] { "2002-05-30T08:59:59.899", 0, true },
                     new object[] { "2002-05-30T08:59:59.900", 0, true },
                     new object[] { "2002-05-30T08:59:59.901", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 expectedValidator = new BeforeValidator(100L, long.MaxValue);
                 AssertExpression(env, seedTime, 0, "a.before(b, 100 milliseconds)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100000, "a.before(b, 100 milliseconds)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.499", 0, false },
                     new object[] { "2002-05-30T08:59:59.499", 1, true },
@@ -517,7 +520,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.900", 1, false },
                     new object[] { "2002-05-30T08:59:59.901", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 expectedValidator = new BeforeValidator(100L, 500L);
                 AssertExpression(
@@ -546,13 +549,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 SetVStartEndVariables(env, 200, 800);
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.199", 0, false },
                     new object[] { "2002-05-30T08:59:59.199", 1, true },
                     new object[] { "2002-05-30T08:59:59.200", 0, true },
                     new object[] { "2002-05-30T08:59:59.800", 0, true },
-                    new object[] { "2002-05-30T08:59:59.801", 0, false },
+                    new object[] { "2002-05-30T08:59:59.801", 0, false }
                 };
                 expectedValidator = new BeforeValidator(200L, 800L);
                 AssertExpression(
@@ -564,12 +568,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 // test negative and reversed max and min
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.500", 0, false },
                     new object[] { "2002-05-30T09:00:00.990", 0, false },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
                     new object[] { "2002-05-30T09:00:00.500", 0, true },
-                    new object[] { "2002-05-30T09:00:00.501", 0, false },
+                    new object[] { "2002-05-30T09:00:00.501", 0, false }
                 };
                 expectedValidator = new BeforeValidator(-500L, -100L);
                 AssertExpression(
@@ -589,14 +594,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // test month logic
                 seedTime = "2002-03-01T09:00:00.000";
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-02-01T09:00:00.000", 0, true },
                     new object[] { "2002-02-01T09:00:00.001", 0, false }
                 };
                 expectedValidator = new BeforeValidator(GetMillisecForDays(28), long.MaxValue);
                 AssertExpression(env, seedTime, 100, "a.before(b, 1 month)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-01-01T08:59:59.999", 0, false },
                     new object[] { "2002-01-01T09:00:00.000", 0, true },
                     new object[] { "2002-01-11T09:00:00.000", 0, true },
@@ -617,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 object[][] expected = {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, true },
+                    new object[] { "2002-05-30T09:00:00.001", 0, true }
                 };
                 AssertExpression(env, seedTime, 0, "a.after(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 0, "a.after(b, 1 millisecond)", expected, expectedValidator);
@@ -638,10 +645,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 AssertExpression(env, seedTime, 0, "a.startTS.after(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 0, "a.after(b.startTS)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
-                    new object[] { "2002-05-30T09:00:00.002", 0, true },
+                    new object[] { "2002-05-30T09:00:00.002", 0, true }
                 };
                 AssertExpression(env, seedTime, 1, "a.after(b)", expected, expectedValidator);
                 AssertExpression(
@@ -652,11 +660,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expected,
                     expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.099", 0, false },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
-                    new object[] { "2002-05-30T09:00:00.101", 0, true },
+                    new object[] { "2002-05-30T09:00:00.101", 0, true }
                 };
                 expectedValidator = new AfterValidator(100L, long.MaxValue);
                 AssertExpression(env, seedTime, 0, "a.after(b, 100 milliseconds)", expected, expectedValidator);
@@ -668,12 +677,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expected,
                     expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.099", 0, false },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
                     new object[] { "2002-05-30T09:00:00.500", 0, true },
-                    new object[] { "2002-05-30T09:00:00.501", 0, false },
+                    new object[] { "2002-05-30T09:00:00.501", 0, false }
                 };
                 expectedValidator = new AfterValidator(100L, 500L);
                 AssertExpression(
@@ -702,12 +712,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 SetVStartEndVariables(env, 200, 800);
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.199", 0, false },
                     new object[] { "2002-05-30T09:00:00.200", 0, true },
                     new object[] { "2002-05-30T09:00:00.800", 0, true },
-                    new object[] { "2002-05-30T09:00:00.801", 0, false },
+                    new object[] { "2002-05-30T09:00:00.801", 0, false }
                 };
                 expectedValidator = new AfterValidator(200L, 800L);
                 AssertExpression(
@@ -719,11 +730,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 // test negative distances
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.599", 0, false },
                     new object[] { "2002-05-30T08:59:59.600", 0, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 expectedValidator = new AfterValidator(-500L, -100L);
                 AssertExpression(
@@ -743,14 +755,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // test month logic
                 seedTime = "2002-02-01T09:00:00.000";
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-03-01T09:00:00.099", 0, false },
                     new object[] { "2002-03-01T09:00:00.100", 0, true }
                 };
                 expectedValidator = new AfterValidator(GetMillisecForDays(28), long.MaxValue);
                 AssertExpression(env, seedTime, 100, "a.after(b, 1 month)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-03-01T09:00:00.099", 0, false },
                     new object[] { "2002-03-01T09:00:00.100", 0, true },
                     new object[] { "2002-04-01T09:00:00.100", 0, true },
@@ -769,7 +783,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 object[][] expected = {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.coincides(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 0, "a.coincides(b, 0 millisecond)", expected, expectedValidator);
@@ -777,16 +791,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 AssertExpression(env, seedTime, 0, "a.startTS.coincides(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 0, "a.coincides(b.startTS)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 1, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 1, false },
+                    new object[] { "2002-05-30T09:00:00.001", 1, false }
                 };
                 AssertExpression(env, seedTime, 1, "a.coincides(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 1, "a.coincides(b, 0, 0)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.899", 0, false },
                     new object[] { "2002-05-30T08:59:59.900", 0, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
@@ -795,7 +811,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 101, false },
                     new object[] { "2002-05-30T09:00:00.099", 0, true },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
-                    new object[] { "2002-05-30T09:00:00.101", 0, false },
+                    new object[] { "2002-05-30T09:00:00.101", 0, false }
                 };
                 expectedValidator = new CoincidesValidator(100L);
                 AssertExpression(env, seedTime, 0, "a.coincides(b, 100 milliseconds)", expected, expectedValidator);
@@ -807,14 +823,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expected,
                     expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.799", 0, false },
                     new object[] { "2002-05-30T08:59:59.800", 0, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
                     new object[] { "2002-05-30T09:00:00.099", 0, true },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
                     new object[] { "2002-05-30T09:00:00.200", 0, true },
-                    new object[] { "2002-05-30T09:00:00.201", 0, false },
+                    new object[] { "2002-05-30T09:00:00.201", 0, false }
                 };
                 expectedValidator = new CoincidesValidator(200L, 500L);
                 AssertExpression(
@@ -825,7 +842,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expected,
                     expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.799", 0, false },
                     new object[] { "2002-05-30T08:59:59.799", 200, false },
                     new object[] { "2002-05-30T08:59:59.799", 201, false },
@@ -837,7 +855,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.050", 0, true },
                     new object[] { "2002-05-30T09:00:00.099", 0, true },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
-                    new object[] { "2002-05-30T09:00:00.101", 0, false },
+                    new object[] { "2002-05-30T09:00:00.101", 0, false }
                 };
                 expectedValidator = new CoincidesValidator(200L, 50L);
                 AssertExpression(
@@ -859,13 +877,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 SetVStartEndVariables(env, 200, 70);
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.800", 0, false },
                     new object[] { "2002-05-30T08:59:59.800", 179, false },
                     new object[] { "2002-05-30T08:59:59.800", 180, true },
                     new object[] { "2002-05-30T08:59:59.800", 200, true },
                     new object[] { "2002-05-30T08:59:59.800", 320, true },
-                    new object[] { "2002-05-30T08:59:59.800", 321, false },
+                    new object[] { "2002-05-30T08:59:59.800", 321, false }
                 };
                 expectedValidator = new CoincidesValidator(200L, 70L);
                 AssertExpression(
@@ -878,7 +897,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
                 // test month logic
                 seedTime = "2002-02-01T09:00:00.000"; // lasts to "2002-04-01T09:00:00.000" (28+31 days)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-02-15T09:00:00.099", GetMillisecForDays(28 + 14), true },
                     new object[] { "2002-01-01T08:00:00.000", GetMillisecForDays(28 + 30), false }
                 };
@@ -907,21 +927,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.001", 99, false },
                     new object[] { "2002-05-30T09:00:00.099", 0, true },
                     new object[] { "2002-05-30T09:00:00.099", 1, false },
-                    new object[] { "2002-05-30T09:00:00.100", 0, false },
+                    new object[] { "2002-05-30T09:00:00.100", 0, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.during(b)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 1, false },
+                    new object[] { "2002-05-30T09:00:00.001", 1, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.during(b)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.001", 0, true },
-                    new object[] { "2002-05-30T09:00:00.001", 2000000, true },
+                    new object[] { "2002-05-30T09:00:00.001", 2000000, true }
                 };
                 AssertExpression(
                     env,
@@ -932,7 +954,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     null); // want to use null-validator here
 
                 // test 1-parameter footprint
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
@@ -945,13 +968,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.015", 84, true },
                     new object[] { "2002-05-30T09:00:00.015", 85, false },
                     new object[] { "2002-05-30T09:00:00.016", 80, false },
-                    new object[] { "2002-05-30T09:00:00.099", 0, false },
+                    new object[] { "2002-05-30T09:00:00.099", 0, false }
                 };
                 expectedValidator = new DuringValidator(15L);
                 AssertExpression(env, seedTime, 100, "a.during(b, 15 milliseconds)", expected, expectedValidator);
 
                 // test 2-parameter footprint
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
@@ -968,7 +992,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.020", 60, true },
                     new object[] { "2002-05-30T09:00:00.020", 59, false },
                     new object[] { "2002-05-30T09:00:00.021", 68, false },
-                    new object[] { "2002-05-30T09:00:00.099", 0, false },
+                    new object[] { "2002-05-30T09:00:00.099", 0, false }
                 };
                 expectedValidator = new DuringValidator(5L, 20L);
                 AssertExpression(
@@ -980,7 +1004,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 // test 4-parameter footprint
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
                     new object[] { "2002-05-30T09:00:00.004", 85, false },
@@ -992,7 +1017,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.020", 50, true },
                     new object[] { "2002-05-30T09:00:00.020", 70, true },
                     new object[] { "2002-05-30T09:00:00.020", 71, false },
-                    new object[] { "2002-05-30T09:00:00.021", 55, false },
+                    new object[] { "2002-05-30T09:00:00.021", 55, false }
                 };
                 expectedValidator = new DuringValidator(5L, 20L, 10L, 30L);
                 AssertExpression(
@@ -1022,13 +1047,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.099", 0, false },
                     new object[] { "2002-05-30T09:00:00.099", 1, true },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
-                    new object[] { "2002-05-30T09:00:00.101", 0, false },
+                    new object[] { "2002-05-30T09:00:00.101", 0, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.finishes(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100, "a.finishes(b, 0)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100, "a.finishes(b, 0 milliseconds)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 99, false },
                     new object[] { "2002-05-30T09:00:00.001", 93, false },
@@ -1040,7 +1066,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.104", 0, true },
                     new object[] { "2002-05-30T09:00:00.104", 1, true },
                     new object[] { "2002-05-30T09:00:00.105", 0, true },
-                    new object[] { "2002-05-30T09:00:00.105", 1, false },
+                    new object[] { "2002-05-30T09:00:00.105", 1, false }
                 };
                 expectedValidator = new FinishesValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.finishes(b, 5 milliseconds)", expected, expectedValidator);
@@ -1063,13 +1089,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 102, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 50, false },
-                    new object[] { "2002-05-30T09:00:00.000", 100, false },
+                    new object[] { "2002-05-30T09:00:00.000", 100, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.finishedBy(b)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100, "a.finishedBy(b, 0)", expected, expectedValidator);
                 AssertExpression(env, seedTime, 100, "a.finishedBy(b, 0 milliseconds)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.000", 1094, false },
                     new object[] { "2002-05-30T08:59:59.000", 1095, true },
@@ -1082,7 +1109,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 95, false },
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
-                    new object[] { "2002-05-30T09:00:00.000", 105, false },
+                    new object[] { "2002-05-30T09:00:00.000", 105, false }
                 };
                 expectedValidator = new FinishedByValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.finishedBy(b, 5 milliseconds)", expected, expectedValidator);
@@ -1103,12 +1130,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 102, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 50, false },
-                    new object[] { "2002-05-30T09:00:00.000", 102, false },
+                    new object[] { "2002-05-30T09:00:00.000", 102, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.includes(b)", expected, expectedValidator);
 
                 // test 1-parameter form
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.000", 1100, false },
                     new object[] { "2002-05-30T08:59:59.000", 1105, false },
@@ -1123,13 +1151,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 106, true },
                     new object[] { "2002-05-30T08:59:59.999", 107, false },
                     new object[] { "2002-05-30T09:00:00.000", 105, false },
-                    new object[] { "2002-05-30T09:00:00.000", 106, false },
+                    new object[] { "2002-05-30T09:00:00.000", 106, false }
                 };
                 expectedValidator = new IncludesValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.includes(b, 5 milliseconds)", expected, expectedValidator);
 
                 // test 2-parameter form
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.000", 1100, false },
                     new object[] { "2002-05-30T08:59:59.000", 1105, false },
@@ -1142,7 +1171,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.995", 110, true },
                     new object[] { "2002-05-30T08:59:59.995", 125, true },
                     new object[] { "2002-05-30T08:59:59.995", 126, false },
-                    new object[] { "2002-05-30T08:59:59.996", 112, false },
+                    new object[] { "2002-05-30T08:59:59.996", 112, false }
                 };
                 expectedValidator = new IncludesValidator(5L, 20L);
                 AssertExpression(
@@ -1154,7 +1183,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     expectedValidator);
 
                 // test 4-parameter form
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.000", 1100, false },
                     new object[] { "2002-05-30T08:59:59.000", 1105, false },
@@ -1167,7 +1197,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.995", 115, true },
                     new object[] { "2002-05-30T08:59:59.995", 135, true },
                     new object[] { "2002-05-30T08:59:59.995", 136, false },
-                    new object[] { "2002-05-30T08:59:59.996", 124, false },
+                    new object[] { "2002-05-30T08:59:59.996", 124, false }
                 };
                 expectedValidator = new IncludesValidator(5L, 20L, 10L, 30L);
                 AssertExpression(
@@ -1193,12 +1223,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 1, true },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
                     new object[] { "2002-05-30T09:00:00.000", 1, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 AssertExpression(env, seedTime, 0, "a.meets(b)", expected, expectedValidator);
 
                 // test 1-parameter form
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 0, false },
                     new object[] { "2002-05-30T08:59:59.000", 994, false },
                     new object[] { "2002-05-30T08:59:59.000", 995, true },
@@ -1215,7 +1246,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 1, true },
                     new object[] { "2002-05-30T09:00:00.000", 5, true },
                     new object[] { "2002-05-30T09:00:00.005", 0, true },
-                    new object[] { "2002-05-30T09:00:00.005", 1, false },
+                    new object[] { "2002-05-30T09:00:00.005", 1, false }
                 };
                 expectedValidator = new MeetsValidator(5L);
                 AssertExpression(env, seedTime, 0, "a.meets(b, 5 milliseconds)", expected, expectedValidator);
@@ -1232,19 +1263,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.990", 0, false },
                     new object[] { "2002-05-30T09:00:00.100", 0, true },
                     new object[] { "2002-05-30T09:00:00.100", 500, true },
-                    new object[] { "2002-05-30T09:00:00.101", 0, false },
+                    new object[] { "2002-05-30T09:00:00.101", 0, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.metBy(b)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.999", 1, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, true },
-                    new object[] { "2002-05-30T09:00:00.000", 1, true },
+                    new object[] { "2002-05-30T09:00:00.000", 1, true }
                 };
                 AssertExpression(env, seedTime, 0, "a.metBy(b)", expected, expectedValidator);
 
                 // test 1-parameter form
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.994", 0, false },
                     new object[] { "2002-05-30T08:59:59.994", 5, false },
                     new object[] { "2002-05-30T08:59:59.995", 0, true },
@@ -1252,12 +1285,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 20, true },
                     new object[] { "2002-05-30T09:00:00.005", 0, true },
                     new object[] { "2002-05-30T09:00:00.005", 1000, true },
-                    new object[] { "2002-05-30T09:00:00.006", 0, false },
+                    new object[] { "2002-05-30T09:00:00.006", 0, false }
                 };
                 expectedValidator = new MetByValidator(5L);
                 AssertExpression(env, seedTime, 0, "a.metBy(b, 5 milliseconds)", expected, expectedValidator);
 
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.994", 0, false },
                     new object[] { "2002-05-30T08:59:59.994", 5, false },
                     new object[] { "2002-05-30T08:59:59.995", 0, false },
@@ -1265,7 +1299,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.095", 0, true },
                     new object[] { "2002-05-30T09:00:00.105", 0, true },
                     new object[] { "2002-05-30T09:00:00.105", 5000, true },
-                    new object[] { "2002-05-30T09:00:00.106", 0, false },
+                    new object[] { "2002-05-30T09:00:00.106", 0, false }
                 };
                 expectedValidator = new MetByValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.metBy(b, 5 milliseconds)", expected, expectedValidator);
@@ -1288,12 +1322,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 2, true },
                     new object[] { "2002-05-30T08:59:59.999", 100, true },
                     new object[] { "2002-05-30T08:59:59.999", 101, false },
-                    new object[] { "2002-05-30T09:00:00.000", 0, false },
+                    new object[] { "2002-05-30T09:00:00.000", 0, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.overlaps(b)", expected, expectedValidator);
 
                 // test 1-parameter form (overlap by not more then X msec)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 1000, false },
                     new object[] { "2002-05-30T08:59:59.000", 1001, true },
                     new object[] { "2002-05-30T08:59:59.000", 1005, true },
@@ -1304,13 +1339,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 6, true },
                     new object[] { "2002-05-30T08:59:59.999", 7, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.000", 5, false },
+                    new object[] { "2002-05-30T09:00:00.000", 5, false }
                 };
                 expectedValidator = new OverlapsValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.overlaps(b, 5 milliseconds)", expected, expectedValidator);
 
                 // test 2-parameter form (overlap by min X and not more then Y msec)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 1004, false },
                     new object[] { "2002-05-30T08:59:59.000", 1005, true },
                     new object[] { "2002-05-30T08:59:59.000", 1010, true },
@@ -1321,7 +1357,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T08:59:59.999", 12, false },
                     new object[] { "2002-05-30T08:59:59.999", 12, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
-                    new object[] { "2002-05-30T09:00:00.000", 5, false },
+                    new object[] { "2002-05-30T09:00:00.000", 5, false }
                 };
                 expectedValidator = new OverlapsValidator(5L, 10L);
                 AssertExpression(
@@ -1349,12 +1385,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.099", 1, false },
                     new object[] { "2002-05-30T09:00:00.099", 2, true },
                     new object[] { "2002-05-30T09:00:00.100", 0, false },
-                    new object[] { "2002-05-30T09:00:00.100", 1, false },
+                    new object[] { "2002-05-30T09:00:00.100", 1, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.overlappedBy(b)", expected, expectedValidator);
 
                 // test 1-parameter form (overlap by not more then X msec)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 1000, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 1, false },
@@ -1367,13 +1404,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.099", 1, false },
                     new object[] { "2002-05-30T09:00:00.099", 2, true },
                     new object[] { "2002-05-30T09:00:00.099", 100, true },
-                    new object[] { "2002-05-30T09:00:00.100", 100, false },
+                    new object[] { "2002-05-30T09:00:00.100", 100, false }
                 };
                 expectedValidator = new OverlappedByValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.overlappedBy(b, 5 milliseconds)", expected, expectedValidator);
 
                 // test 2-parameter form (overlap by min X and not more then Y msec)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.000", 1000, false },
                     new object[] { "2002-05-30T09:00:00.000", 0, false },
                     new object[] { "2002-05-30T09:00:00.000", 1, false },
@@ -1386,7 +1424,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.095", 6, true },
                     new object[] { "2002-05-30T09:00:00.096", 5, false },
                     new object[] { "2002-05-30T09:00:00.096", 100, false },
-                    new object[] { "2002-05-30T09:00:00.100", 100, false },
+                    new object[] { "2002-05-30T09:00:00.100", 100, false }
                 };
                 expectedValidator = new OverlappedByValidator(5L, 10L);
                 AssertExpression(
@@ -1411,12 +1449,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 1, true },
                     new object[] { "2002-05-30T09:00:00.000", 99, true },
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
-                    new object[] { "2002-05-30T09:00:00.001", 0, false },
+                    new object[] { "2002-05-30T09:00:00.001", 0, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.starts(b)", expected, expectedValidator);
 
                 // test 1-parameter form (max distance between start times)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.994", 6, false },
                     new object[] { "2002-05-30T08:59:59.995", 0, true },
                     new object[] { "2002-05-30T08:59:59.995", 104, true },
@@ -1428,7 +1467,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.001", 0, true },
                     new object[] { "2002-05-30T09:00:00.005", 94, true },
                     new object[] { "2002-05-30T09:00:00.005", 95, false },
-                    new object[] { "2002-05-30T09:00:00.005", 100, false },
+                    new object[] { "2002-05-30T09:00:00.005", 100, false }
                 };
                 expectedValidator = new StartsValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.starts(b, 5 milliseconds)", expected, expectedValidator);
@@ -1447,12 +1486,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.000", 100, false },
                     new object[] { "2002-05-30T09:00:00.000", 101, true },
                     new object[] { "2002-05-30T09:00:00.001", 0, false },
-                    new object[] { "2002-05-30T09:00:00.001", 101, false },
+                    new object[] { "2002-05-30T09:00:00.001", 101, false }
                 };
                 AssertExpression(env, seedTime, 100, "a.startedBy(b)", expected, expectedValidator);
 
                 // test 1-parameter form (max distance between start times)
-                expected = new object[][] {
+                expected = new[]
+                {
                     new object[] { "2002-05-30T08:59:59.994", 6, false },
                     new object[] { "2002-05-30T08:59:59.995", 0, false },
                     new object[] { "2002-05-30T08:59:59.995", 105, false },
@@ -1464,7 +1504,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     new object[] { "2002-05-30T09:00:00.001", 100, true },
                     new object[] { "2002-05-30T09:00:00.005", 94, false },
                     new object[] { "2002-05-30T09:00:00.005", 95, false },
-                    new object[] { "2002-05-30T09:00:00.005", 96, true },
+                    new object[] { "2002-05-30T09:00:00.005", 96, true }
                 };
                 expectedValidator = new StartedByValidator(5L);
                 AssertExpression(env, seedTime, 100, "a.startedBy(b, 5 milliseconds)", expected, expectedValidator);
@@ -1519,7 +1559,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.CompileDeploy(epl).AddListener("s0");
 
             env.SendEventObjectArray(
-                new object[] { fieldType.MakeStart(seedTime), fieldType.MakeEnd(seedTime, seedDuration) },
+                new[] { fieldType.MakeStart(seedTime), fieldType.MakeEnd(seedTime, seedDuration) },
                 "B_" + fieldType.GetName());
 
             foreach (var test in timestampsAndResult) {
@@ -1541,7 +1581,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 }
 
                 env.SendEventObjectArray(
-                    new object[] { fieldType.MakeStart(testtime), fieldType.MakeEnd(testtime, testduration) },
+                    new[] { fieldType.MakeStart(testtime), fieldType.MakeEnd(testtime, testduration) },
                     "A_" + fieldType.GetName());
 
                 env.AssertListener(
@@ -1631,8 +1671,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class BeforeValidator : Validator
         {
-            private long? start;
-            private long? end;
+            private readonly long? end;
+            private readonly long? start;
 
             public BeforeValidator(
                 long? start,
@@ -1655,8 +1695,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class AfterValidator : Validator
         {
-            private long? start;
-            private long? end;
+            private readonly long? end;
+            private readonly long? start;
 
             public AfterValidator(
                 long? start,
@@ -1679,8 +1719,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class CoincidesValidator : Validator
         {
-            private readonly long? startThreshold;
             private readonly long? endThreshold;
+            private readonly long? startThreshold;
 
             public CoincidesValidator()
             {
@@ -1716,14 +1756,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         private class DuringValidator : Validator
         {
-            private int form;
-            private long? threshold;
-            private long? minThreshold;
-            private long? maxThreshold;
-            private long? minStartThreshold;
-            private long? maxStartThreshold;
-            private long? minEndThreshold;
-            private long? maxEndThreshold;
+            private readonly int form;
+            private readonly long? maxEndThreshold;
+            private readonly long? maxStartThreshold;
+            private readonly long? maxThreshold;
+            private readonly long? minEndThreshold;
+            private readonly long? minStartThreshold;
+            private readonly long? minThreshold;
+            private readonly long? threshold;
 
             public DuringValidator()
             {
@@ -1802,7 +1842,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class FinishesValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public FinishesValidator()
             {
@@ -1835,7 +1875,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class FinishedByValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public FinishedByValidator()
             {
@@ -1868,14 +1908,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class IncludesValidator : Validator
         {
-            private int form;
-            private long? threshold;
-            private long? minThreshold;
-            private long? maxThreshold;
-            private long? minStartThreshold;
-            private long? maxStartThreshold;
-            private long? minEndThreshold;
-            private long? maxEndThreshold;
+            private readonly int form;
+            private readonly long? maxEndThreshold;
+            private readonly long? maxStartThreshold;
+            private readonly long? maxThreshold;
+            private readonly long? minEndThreshold;
+            private readonly long? minStartThreshold;
+            private readonly long? minThreshold;
+            private readonly long? threshold;
 
             public IncludesValidator()
             {
@@ -1954,7 +1994,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class MeetsValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public MeetsValidator()
             {
@@ -1983,7 +2023,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class MetByValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public MetByValidator()
             {
@@ -2012,10 +2052,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class OverlapsValidator : Validator
         {
-            private int form;
-            private long? threshold;
-            private long? minThreshold;
-            private long? maxThreshold;
+            private readonly int form;
+            private readonly long? maxThreshold;
+            private readonly long? minThreshold;
+            private readonly long? threshold;
 
             public OverlapsValidator()
             {
@@ -2073,10 +2113,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class OverlappedByValidator : Validator
         {
-            private int form;
-            private long? threshold;
-            private long? minThreshold;
-            private long? maxThreshold;
+            private readonly int form;
+            private readonly long? maxThreshold;
+            private readonly long? minThreshold;
+            private readonly long? threshold;
 
             public OverlappedByValidator()
             {
@@ -2134,7 +2174,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class StartsValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public StartsValidator()
             {
@@ -2163,7 +2203,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
         public class StartedByValidator : Validator
         {
-            private long? threshold;
+            private readonly long? threshold;
 
             public StartedByValidator()
             {

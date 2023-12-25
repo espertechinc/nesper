@@ -122,7 +122,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override void ReturnResult(CodegenBlock block)
         {
             block.MethodReturn(
-                FlexCast(
+                Cast(
                     _returnType,
                     StaticMethod(
                         typeof(EnumMostLeastFrequentHelper),

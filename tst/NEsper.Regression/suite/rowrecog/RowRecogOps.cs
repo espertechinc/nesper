@@ -552,7 +552,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             {
                 var text = "@name('s0') select * from SupportRecogBean#keepall " +
                            "match_recognize (" +
-                           "  partition by value" +
+                           "  partition by Value" +
                            "  measures A.TheString as a_string " +
                            "  pattern (A B) " +
                            "  define " +

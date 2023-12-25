@@ -20,23 +20,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapArrayScalar : ExprDotStaticMethodWrap
     {
-        private readonly Type arrayType;
-        private readonly string methodName;
+        private readonly Type _arrayType;
+        private readonly string _methodName;
 
         public ExprDotStaticMethodWrapArrayScalar(
             string methodName,
             Type arrayType)
         {
-            this.methodName = methodName;
-            this.arrayType = arrayType;
+            _methodName = methodName;
+            _arrayType = arrayType;
         }
 
         public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfSingleValue(
-            arrayType.GetElementType());
+            _arrayType.GetElementType());
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
-            return result.Unwrap<EventBean>(false);
+            if (result == null)
+                return null;
+            if (result.GetType().IsGenericCollection())
+                return result;
+
+            return result.Unwrap<object>(false);
         }
 
         public CodegenExpression CodegenConvertNonNull(
@@ -46,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
         {
             return CollectionUtil.ArrayToCollectionAllowNullCodegen(
                 codegenMethodScope,
-                arrayType,
+                _arrayType,
                 result,
                 codegenClassScope);
         }

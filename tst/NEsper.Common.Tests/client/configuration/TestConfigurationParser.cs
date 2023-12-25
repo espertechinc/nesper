@@ -359,7 +359,7 @@ namespace com.espertech.esper.common.client.configuration
             // variables
             Assert.AreEqual(3, common.Variables.Count);
             var variable = common.Variables.Get("var1");
-            Assert.AreEqual(typeof(int).FullName, variable.VariableType);
+            Assert.AreEqual(typeof(int?).FullName, variable.VariableType);
             Assert.AreEqual("1", variable.InitializationValue);
             Assert.IsFalse(variable.IsConstant);
             variable = common.Variables.Get("var2");

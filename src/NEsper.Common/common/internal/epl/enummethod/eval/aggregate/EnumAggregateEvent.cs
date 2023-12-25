@@ -95,15 +95,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.aggregate
                     EventTypeUtility.ResolveTypeCodegen(_eventType, EPStatementInitServicesConstants.REF)));
 
             var innerType = _innerExpression.EvaluationType;
-            var initType = _initialization.EvaluationType;
-            if (initType != innerType && initType.GetBoxedType() == innerType) {
+            var initType = _initialization.EvaluationType.GetBoxedType();
+            if (initType != innerType && initType == innerType) {
                 initType = innerType;
             }
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(initType, typeof(EnumAggregateEvent), scope, codegenClassScope)
-                .AddParam(EnumForgeCodegenNames.PARAMS);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block;
             block

@@ -119,18 +119,5 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.take
 
             return result;
         }
-
-        public static FlexCollection EvaluateEnumMethodTakeLast(
-            FlexCollection enumcoll,
-            int size)
-        {
-            if (enumcoll.IsEventBeanCollection) {
-                return FlexCollection.Of(
-                    EvaluateEnumMethodTakeLast(enumcoll.EventBeanCollection, size));
-            }
-
-            return FlexCollection.Of(
-                EvaluateEnumMethodTakeLast(enumcoll.ObjectCollection, size));
-        }
     }
 } // end of namespace

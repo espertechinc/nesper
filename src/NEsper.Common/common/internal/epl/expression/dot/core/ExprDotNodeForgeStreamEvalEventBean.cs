@@ -20,15 +20,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotNodeForgeStreamEvalEventBean : ExprEvaluator
     {
-        private readonly ExprDotNodeForgeStream forge;
-        private readonly ExprDotEval[] evaluators;
+        private readonly ExprDotNodeForgeStream _forge;
+        private readonly ExprDotEval[] _evaluators;
 
         public ExprDotNodeForgeStreamEvalEventBean(
             ExprDotNodeForgeStream forge,
             ExprDotEval[] evaluators)
         {
-            this.forge = forge;
-            this.evaluators = evaluators;
+            this._forge = forge;
+            this._evaluators = evaluators;
         }
 
         public object Evaluate(
@@ -36,14 +36,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             bool isNewData,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var theEvent = eventsPerStream[forge.StreamNumber];
+            var theEvent = eventsPerStream[_forge.StreamNumber];
             if (theEvent == null) {
                 return null;
             }
 
             return ExprDotNodeUtility.EvaluateChain(
-                forge.Evaluators,
-                evaluators,
+                _forge.Evaluators,
+                _evaluators,
                 theEvent,
                 eventsPerStream,
                 isNewData,

@@ -47,12 +47,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             _method = method;
         }
 
-        public object GetBeanProp(object @object)
+        public object GetBeanProp(object value)
         {
-            return GetBeanPropInternal(@object, _key);
+            return GetBeanPropInternal(value, _key);
         }
 
-        public bool IsBeanExistsProperty(object @object)
+        public bool IsBeanExistsProperty(object value)
         {
             return true; // Property exists as the property is not dynamic (unchecked)
         }
@@ -137,14 +137,14 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         }
 
         private object GetBeanPropInternal(
-            object @object,
+            object value,
             object key)
         {
             try {
-                return _method.Invoke(@object, new[] { key });
+                return _method.Invoke(value, new[] { key });
             }
             catch (InvalidCastException e) {
-                throw PropertyUtility.GetMismatchException(_method, @object, e);
+                throw PropertyUtility.GetMismatchException(_method, value, e);
             }
             catch (TargetInvocationException e) {
                 throw PropertyUtility.GetTargetException(_method, e);
@@ -169,10 +169,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             var parameterTypes = method.GetParameterTypes();
             var returnType = method.ReturnType;
             return codegenMethodScope.MakeChild(returnType, typeof(KeyedMethodPropertyGetter), codegenClassScope)
-                .AddParam(targetType, "@object")
+                .AddParam(targetType, "value")
                 .AddParam(parameterTypes[0], "key")
                 .Block
-                .MethodReturn(ExprDotMethod(Ref("@object"), method.Name, Ref("key")));
+                .MethodReturn(ExprDotMethod(Ref("value"), method.Name, Ref("key")));
         }
 
         public override string ToString()

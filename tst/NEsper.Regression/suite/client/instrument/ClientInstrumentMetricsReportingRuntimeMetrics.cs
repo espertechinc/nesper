@@ -33,14 +33,14 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.CompileDeploy("select * from pattern[timer:interval(5 sec)]");
 
             SendTimer(env, 11000);
-            env.AssertPropsNew("s0", fields, new object[] { "default", 11000L, 1L, 1L, 1L });
+            env.AssertPropsNew("s0", fields, new object[] { env.RuntimeURI, 11000L, 1L, 1L, 1L });
 
             env.SendEventBean(new SupportBean());
             env.SendEventBean(new SupportBean());
 
             SendTimer(env, 20000);
             SendTimer(env, 21000);
-            env.AssertPropsNew("s0", fields, new object[] { "default", 21000L, 4L, 3L, 0L });
+            env.AssertPropsNew("s0", fields, new object[] { env.RuntimeURI, 21000L, 4L, 3L, 0L });
 
             var cpuGoal = 10.0d; // milliseconds of execution time
 

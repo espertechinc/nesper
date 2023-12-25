@@ -580,19 +580,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             {
                 var eplDeclare = "@name('s0') " +
                                  "expression subq {" +
-                                 " x => (select IntPrimitive from SupportBean#keepall where TheString = x.pcommon)" + // a common field
+                                 " x => (select IntPrimitive from SupportBean#keepall where TheString = x.Pcommon)" + // a common field
                                  "} " +
                                  "select subq(one) as val1, subq(two) as val2 " +
                                  "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 TryAssertionSubqueryJoinSameField(env, eplDeclare);
 
                 var eplAlias = "@name('s0') " +
-                               "expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = pcommon) }" +
+                               "expression subq alias for {(select IntPrimitive from SupportBean#keepall where TheString = Pcommon) }" +
                                "select subq as val1, subq as val2 " +
                                "from SupportBean_ST0#lastevent as one, SupportBean_ST1#lastevent as two";
                 env.TryInvalidCompile(
                     eplAlias,
-                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=pcommon': Property named 'pcommon' is ambiguous as is valid for more then one stream");
+                    "Failed to plan subquery number 1 querying SupportBean: Failed to validate filter expression 'TheString=Pcommon': Property named 'Pcommon' is ambiguous as is valid for more then one stream");
             }
 
             private void TryAssertionSubqueryJoinSameField(
@@ -792,28 +792,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             public void Run(RegressionEnvironment env)
             {
                 var epl = "@name('s0') expression subqnamedwin {" +
-                          "  x => MyWindow(val0 = x.key0).where(y => val1 > 10)" +
+                          "  x => MyWindow(val0 = x.Key0).where(y => val1 > 10)" +
                           "} " +
                           "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // more or less prefixes
                 epl = "@name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(val0 = x.key0).where(y => y.val1 > 10)" +
+                      "  x => MyWindow(val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with property-explicit stream name
                 epl = "@name('s0') expression subqnamedwin {" +
-                      "  x => MyWindow(MyWindow.val0 = x.key0).where(y => y.val1 > 10)" +
+                      "  x => MyWindow(MyWindow.val0 = x.Key0).where(y => y.val1 > 10)" +
                       "} " +
                       "select subqnamedwin(t) as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
                 // with alias
                 epl =
-                    "@name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.key0).where(y => y.val1 > 10)}" +
+                    "@name('s0') expression subqnamedwin alias for {MyWindow(MyWindow.val0 = t.Key0).where(y => y.val1 > 10)}" +
                     "select subqnamedwin as c0 from SupportBean_ST0 as t";
                 TryAssertionSubqNWCorrelated(env, epl);
 
@@ -978,26 +978,26 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
         {
             public void Run(RegressionEnvironment env)
             {
-                var eplScalarDeclare = "@name('s0') expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
-                                       "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
+                var eplScalarDeclare =
+                    "@name('s0') expression scalarfilter {s => Strvals.where(y => y != 'E1') } " +
+                    "select scalarfilter(t).where(x => x != 'E2') as val1 from SupportCollection as t";
                 TryAssertionScalarReturn(env, eplScalarDeclare);
 
-                var eplScalarAlias = "@name('s0') expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
-                                     "select scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
+                var eplScalarAlias =
+                    "@name('s0') expression scalarfilter alias for {Strvals.where(y => y != 'E1')}" +
+                    "select scalarfilter.where(x => x != 'E2') as val1 from SupportCollection";
                 TryAssertionScalarReturn(env, eplScalarAlias);
 
                 // test with cast and with on-select and where-clause use
-                var inner = "case when myEvent.one = 'X' then 0 else cast(myEvent.one, long) end ";
-                var eplCaseDeclare = "@name('s0') expression theExpression { myEvent => " +
-                                     inner +
-                                     "} " +
-                                     "on SupportBeanObject as myEvent select mw.* from MyWindowFirst as mw where mw.myObject = theExpression(myEvent)";
+                var inner = "case when myEvent.One = 'X' then 0 else cast(myEvent.One, long) end ";
+                var eplCaseDeclare =
+                    "@name('s0') expression theExpression { myEvent => " + inner + "} " +
+                    "on SupportBeanObject as myEvent select mw.* from MyWindowFirst as mw where mw.myObject = theExpression(myEvent)";
                 TryAssertionNamedWindowCast(env, eplCaseDeclare, "First");
 
-                var eplCaseAlias = "@name('s0') expression theExpression alias for {" +
-                                   inner +
-                                   "}" +
-                                   "on SupportBeanObject as myEvent select mw.* from MyWindowSecond as mw where mw.myObject = theExpression";
+                var eplCaseAlias =
+                    "@name('s0') expression theExpression alias for {" + inner + "}" +
+                    "on SupportBeanObject as myEvent select mw.* from MyWindowSecond as mw where mw.myObject = theExpression";
                 TryAssertionNamedWindowCast(env, eplCaseAlias, "Second");
             }
 

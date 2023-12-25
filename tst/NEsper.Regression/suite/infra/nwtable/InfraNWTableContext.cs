@@ -18,11 +18,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static IList<RegressionExecution> Executions()
         {
             var execs = new List<RegressionExecution>();
-            Witht(execs);
+            WithContext(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Witht(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithContext(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraContext(true));

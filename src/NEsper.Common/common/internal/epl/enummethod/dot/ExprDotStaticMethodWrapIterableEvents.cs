@@ -26,25 +26,28 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
 {
     public class ExprDotStaticMethodWrapIterableEvents : ExprDotStaticMethodWrap
     {
-        private readonly EventBeanTypedEventFactory eventBeanTypedEventFactory;
-        private readonly BeanEventType type;
+        private readonly EventBeanTypedEventFactory _eventBeanTypedEventFactory;
+        private readonly BeanEventType _type;
 
         public ExprDotStaticMethodWrapIterableEvents(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventType type)
         {
-            this.eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this.type = type;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _type = type;
         }
 
-        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(type);
+        public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(_type);
 
-        public ICollection<EventBean> ConvertNonNull(object result)
+        public object ConvertNonNull(object result)
         {
+            if (result is ICollection<EventBean> eventBeanCollection)
+                return eventBeanCollection;
+            
             // there is a need to read the iterator to the cache since if it's iterated twice, the iterator is already exhausted
             return result
                 .UnwrapEnumerable<object>()
-                .Select(v => eventBeanTypedEventFactory.AdapterForTypedObject(v, type))
+                .Select(v => _eventBeanTypedEventFactory.AdapterForTypedObject(v, _type))
                 .ToList();
 
             //return new WrappingCollection(eventBeanTypedEventFactory, type, ((IEnumerable) result).GetEnumerator());
@@ -60,9 +63,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             var typeMember = classScope.AddDefaultFieldUnshared(
                 true,
                 typeof(BeanEventType),
-                FlexCast(
+                Cast(
                     typeof(BeanEventType),
-                    EventTypeUtility.ResolveTypeCodegen(type, EPStatementInitServicesConstants.REF)));
+                    EventTypeUtility.ResolveTypeCodegen(_type, EPStatementInitServicesConstants.REF)));
             return StaticMethod(
                 typeof(ExprDotStaticMethodWrapIterableEvents),
                 "UnwrapEventBeans",

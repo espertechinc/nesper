@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                            "@public create table MyTable(y string);\n" +
                                            "@public create context MyContext start SupportBean_S0 end SupportBean_S1;\n" +
                                            "@public create expression myScript() [ 2 ];\n" +
-                                           "@public create inlined_class \"\"\" public class MyClass { public static stringDoIt(string parameter) { return \"def\"; } }\"\"\";\n" +
+                                           "@public create inlined_class \"\"\" public class MyClass { public static string DoIt(string parameter) { return \"def\"; } }\"\"\";\n" +
                                            "@public @buseventtype create json schema CarLocUpdateEvent(CarId string, Direction int);\n";
 
         private const string EPL_CONSUME = "@name('s0') select myvariable as c0, myExpr() as c1, myScript() as c2," +

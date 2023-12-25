@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 // subquery with aggregation
                 env.CompileDeploy(
-                    "select (select name, count(*) as cnt from Zone#keepall group by name).where(v => cnt > 1) from LocationReport");
+                    "select (select Name, count(*) as cnt from Zone#keepall group by Name).where(v => cnt > 1) from LocationReport");
 
                 env.UndeployAll();
             }
@@ -210,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployModuleContaining("s0");
 
                 epl =
-                    "@name('s0') select ZoneWindow(name in ('Z4', 'Z5', 'Z3')).where(z => inrect(z.Rectangle, Location)) as zones from Item";
+                    "@name('s0') select ZoneWindow(Name in ('Z4', 'Z5', 'Z3')).where(z => inrect(z.Rectangle, Location)) as zones from Item";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 env.SendEventBean(new Zone("Z3", new Rectangle(0, 0, 20, 20)));
@@ -394,7 +394,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select Items.where(i => i.Type=\"L\").groupby(i => assetIdPassenger) as luggagePerPerson from LocationReport");
+                    "select Items.where(i => i.Type=\"L\").groupby(i => AssetIdPassenger) as luggagePerPerson from LocationReport");
                 AssertStmt(env, path, "select Items.where((p,ind) => p.Type=\"P\" and ind>2) from LocationReport");
                 AssertStmt(
                     env,
@@ -436,7 +436,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select (select name from Zone#unique(name)).orderBy() as orderedZones from pattern [every timer:interval(30)]");
+                    "select (select Name from Zone#unique(Name)).orderBy() as orderedZones from pattern [every timer:interval(30)]");
 
                 env.CompileDeploy(
                     "@buseventtype @public create schema MyEvent as (seqone String[], seqtwo String[])",
@@ -446,7 +446,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 AssertStmt(
                     env,
                     path,
-                    "select window(assetId).orderBy() as orderedAssetIds from Item#time(10) group by AssetId");
+                    "select window(AssetId).orderBy() as orderedAssetIds from Item#time(10) group by AssetId");
                 AssertStmt(
                     env,
                     path,

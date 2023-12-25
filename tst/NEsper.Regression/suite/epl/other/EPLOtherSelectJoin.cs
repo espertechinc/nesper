@@ -156,19 +156,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         var data = listener.LastOldData;
                         Assert.AreSame(holder.eventsA[0], listener.LastOldData[0].Get("streamA"));
                         Assert.That(
-                            holder.eventsASetTwo[0],
+                            holder.eventsB[0],
                             Is
-                                .EqualTo(data[0].Get("streamB"))
-                                .Or
-                                .EqualTo(data[1].Get("streamB"))); // B order arbitrary
-
+                                .EqualTo(data[0].Get("streamB")).Or
+                                .EqualTo(data[1].Get("streamB")));    // B order arbitrary
+                        
                         Assert.AreSame(holder.eventsA[0], listener.LastOldData[1].Get("streamA"));
 
                         Assert.That(
                             holder.eventsBSetTwo[0],
                             Is
-                                .EqualTo(data[0].Get("streamB"))
-                                .Or
+                                .EqualTo(data[0].Get("streamB")).Or
                                 .EqualTo(data[1].Get("streamB")));
 
                         Assert.IsNull(listener.LastNewData);

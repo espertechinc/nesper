@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-
+using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -423,32 +423,17 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             Type expectedType,
             CodegenExpression expression)
         {
-            return expectedType == typeof(FlexCollection)
-                ? FlexWrap(expression)
-                : Cast(expectedType, expression);
+            throw new NotSupportedException("use of obsolete code");
+            //return expectedType == typeof(FlexCollection)
+            //    ? FlexWrap(expression)
+            //    : Cast(expectedType, expression);
         }
 
         public static CodegenExpression FlexWrap(
             CodegenExpression expression)
         {
-            return StaticMethod(typeof(FlexCollection), "Of", expression);
-        }
-
-        public static CodegenExpression FlexEvent(
-            CodegenExpression expression)
-        {
-            return StaticMethod(typeof(FlexCollection), "OfEvent", expression);
-        }
-
-        public static CodegenExpression FlexValue(
-            CodegenExpression expression)
-        {
-            return StaticMethod(typeof(FlexCollection), "OfObject", expression);
-        }
-
-        public static CodegenExpression FlexEmpty()
-        {
-            return EnumValue(typeof(FlexCollection), "Empty");
+            throw new NotSupportedException("use of obsolete code");
+            //return StaticMethod(typeof(FlexCollection), "Of", expression);
         }
 
         public static CodegenExpression Unwrap<T>(
@@ -464,6 +449,24 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.model.expression
             return StaticMethod(
                 typeof(CompatExtensions),
                 "Unwrap",
+                new[] { elementType },
+                expression,
+                ConstantTrue());
+        }
+
+        public static CodegenExpression UnwrapIntoArray<T>(
+            CodegenExpression expression)
+        {
+            return UnwrapIntoArray(typeof(T), expression);
+        }
+
+        public static CodegenExpression UnwrapIntoArray(
+            Type elementType,
+            CodegenExpression expression)
+        {
+            return StaticMethod(
+                typeof(CompatExtensions),
+                "UnwrapIntoArray",
                 new[] { elementType },
                 expression,
                 ConstantTrue());

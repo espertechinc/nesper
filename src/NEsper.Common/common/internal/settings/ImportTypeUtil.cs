@@ -44,8 +44,10 @@ namespace com.espertech.esper.common.@internal.settings
             if (classIdent.TypeParameters.Count != 0) {
                 typeName += $"`{classIdent.TypeParameters.Count}";
             }
-            
-            var plain = TypeHelper.GetTypeForSimpleName(typeName, importService.TypeResolver);
+
+            var plain = TypeHelper
+                .GetTypeForSimpleName(typeName, importService.TypeResolver);
+
             if (plain != null) {
                 return ParameterizeType(
                     plain,
@@ -186,9 +188,17 @@ namespace com.espertech.esper.common.@internal.settings
                 types.Add(type);
             }
 
-            plain = TypeHelper.GetArrayType(plain, arrayDimensions);
-
-            return plain.MakeGenericType(types.ToArray());
+            try
+            {
+                var typeWithParameters = plain.MakeGenericType(types.ToArray());
+                var typeWithParametersAsArray = TypeHelper.GetArrayType(typeWithParameters, arrayDimensions);
+                return typeWithParametersAsArray;
+            }
+            catch (ArgumentException e)
+            {
+                Console.WriteLine(e);
+                throw;
+            }
         }
     }
 } // end of namespace

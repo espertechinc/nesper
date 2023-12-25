@@ -58,9 +58,13 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var paths = plan.Paths;
             IList<FilterValueSetParam[]> pathList = new List<FilterValueSetParam[]>(paths.Length);
             foreach (var path in paths) {
-                var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
-                if (controlResult == null || false.Equals(controlResult)) {
-                    continue;
+                if (path.PathNegate != null)
+                {
+                    var controlResult = path.PathNegate?.Evaluate(eventsPerStream, true, exprEvaluatorContext);
+                    if (controlResult == null || false.Equals(controlResult))
+                    {
+                        continue;
+                    }
                 }
 
                 var triplets = path.Triplets;

@@ -16,7 +16,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         public const string NAME = "event_identity_equals";
 
-        private ExprEventIdentityEqualsNodeForge forge;
+        private ExprEventIdentityEqualsNodeForge _forge;
 
         public override ExprNode Validate(ExprValidationContext validationContext)
         {
@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                     "'");
             }
 
-            forge = new ExprEventIdentityEqualsNodeForge(this, undOne, undTwo);
+            _forge = new ExprEventIdentityEqualsNodeForge(this, undOne, undTwo);
             return null;
         }
 
@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 

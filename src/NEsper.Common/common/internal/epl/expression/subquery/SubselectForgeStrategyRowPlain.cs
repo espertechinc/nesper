@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             "@event",
                             symbols.GetAddMatchingEvents(method));
                         {
-                            @foreach.DeclareVar<object>(
+                            @foreach.DeclareVar<EventBean>(
                                     "fragment",
                                     eval.Getter.EventBeanFragmentCodegen(Ref("@event"), method, classScope))
                                 .IfRefNull("fragment")
@@ -242,7 +242,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     return ConstantNull();
                 }
                 else {
-                    var method = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+                    var method = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
                     method.Block
                         .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                         .ApplyTri(DECLARE_EVENTS_SHIFTED, method, symbols);
@@ -256,7 +256,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             .DeclareVar<object>("value", selectClause)
                             .ExprDotMethod(Ref("result"), "Add", Ref("value"));
                     }
-                    method.Block.MethodReturn(FlexWrap(Ref("result")));
+                    method.Block.MethodReturn(Ref("result"));
                     return LocalMethod(method);
                 }
             }
@@ -265,7 +265,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 return ConstantNull();
             }
 
-            var methodX = parent.MakeChild(typeof(FlexCollection), GetType(), classScope);
+            var methodX = parent.MakeChild(typeof(IList<object>), GetType(), classScope);
             methodX.Block
                 .DeclareVar<IList<object>>("result", NewInstance(typeof(List<object>)))
                 .ApplyTri(DECLARE_EVENTS_SHIFTED, methodX, symbols);
@@ -288,7 +288,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                 foreachX.DeclareVar<object>("value", selectClauseX)
                     .ExprDotMethod(Ref("result"), "Add", Ref("value"));
             }
-            methodX.Block.MethodReturn(FlexWrap(Ref("result")));
+            methodX.Block.MethodReturn(Ref("result"));
             return LocalMethod(methodX);
         }
 

@@ -813,7 +813,7 @@ wideningConversions.AddAll (floatWrappers);
             AtomicLong conversionCount)
         {
             if (invocationParameter == null) {
-                return !declarationParameter.CanBeNull();
+                return declarationParameter.CanBeNull();
             }
 
             if (optionalAllowEventBeanType != null &&

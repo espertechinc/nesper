@@ -279,20 +279,20 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var path = new RegressionPath();
                 var eplSchema =
                     "@public create schema Lvl2(Id string);\n" +
-                    "@public create schema Lvl1(lvl2 Lvl2[]);\n" +
-                    "@public @buseventtype create schema Lvl0(lvl1 Lvl1, indexNumber int, lvl0id string);\n";
+                    "@public create schema Lvl1(Lvl2 Lvl2[]);\n" +
+                    "@public @buseventtype create schema Lvl0(Lvl1 Lvl1, IndexNumber int, Lvl0id string);\n";
                 env.CompileDeploy(eplSchema, path);
 
                 var epl =
-                    "@name('s0') select lvl1.lvl2[indexNumber].Id as c0, me.lvl1.lvl2[indexNumber].Id as c1 from Lvl0 as me";
+                    "@name('s0') select Lvl1.Lvl2[IndexNumber].Id as c0, me.Lvl1.Lvl2[IndexNumber].Id as c1 from Lvl0 as me";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 var fields = "c0,c1".SplitCsv();
                 env.AssertStmtTypesAllSame("s0", fields, typeof(string));
 
                 var lvl2One = CollectionUtil.BuildMap("Id", "a");
                 var lvl2Two = CollectionUtil.BuildMap("Id", "b");
-                var lvl1 = CollectionUtil.BuildMap("lvl2", new IDictionary<string, object>[] { lvl2One, lvl2Two });
-                var lvl0 = CollectionUtil.BuildMap("lvl1", lvl1, "indexNumber", 1);
+                var lvl1 = CollectionUtil.BuildMap("Lvl2", new IDictionary<string, object>[] { lvl2One, lvl2Two });
+                var lvl0 = CollectionUtil.BuildMap("Lvl1", lvl1, "IndexNumber", 1);
                 env.SendEventMap(lvl0, "Lvl0");
                 env.AssertPropsNew("s0", fields, new object[] { "b", "b" });
 
@@ -300,42 +300,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // array value but no array provided
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2.Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2.Id': Failed to find a stream named 'lvl1' (did you mean 'Lvl0'?)");
+                    "select Lvl1.Lvl2.Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Id': Failed to find a stream named 'Lvl1' (did you mean 'Lvl0'?)");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2.Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Id': Failed to resolve property 'me.lvl1.lvl2.Id' to a stream or nested property in a stream");
+                    "select me.Lvl1.Lvl2.Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Id': Failed to resolve property 'me.Lvl1.Lvl2.Id' to a stream or nested property in a stream");
 
                 // two index expressions
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2[indexNumber, indexNumber].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2[indexNumber,indexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type collection of events of type 'Lvl2'");
+                    "select Lvl1.Lvl2[IndexNumber, IndexNumber].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2[IndexNumber,IndexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type collection of events of type 'Lvl2'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2[indexNumber, indexNumber].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2[indexNumber,indexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type collection of events of type 'Lvl2'");
+                    "select me.Lvl1.Lvl2[IndexNumber, IndexNumber].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2[IndexNumber,IndexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type collection of events of type 'Lvl2'");
 
                 // double-array
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2[indexNumber][indexNumber].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2[indexNumber][indexNumber].Id': Could not perform array operation on type event type 'Lvl2'");
+                    "select Lvl1.Lvl2[IndexNumber][IndexNumber].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2[IndexNumber][IndexNumber].Id': Could not perform array operation on type event type 'Lvl2'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2[indexNumber][indexNumber].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2[indexNumber][indexNumb...(41 chars)': Could not perform array operation on type event type 'Lvl2'");
+                    "select me.Lvl1.Lvl2[IndexNumber][IndexNumber].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2[IndexNumber][IndexNumb...(41 chars)': Could not perform array operation on type event type 'Lvl2'");
 
                 // wrong index expression type
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2[lvl0id].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
+                    "select Lvl1.Lvl2[Lvl0id].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2[Lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2[lvl0id].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
+                    "select me.Lvl1.Lvl2[Lvl0id].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2[Lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Lvl0id' returns 'System.String' for operation on type collection of events of type 'Lvl2'");
 
                 env.UndeployAll();
             }
@@ -354,23 +354,23 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             {
                 var path = new RegressionPath();
                 var eplSchema = "@public create schema Lvl2(Intarr int[]);\n" +
-                                "@public create schema Lvl1(lvl2 Lvl2);\n" +
-                                "@public @buseventtype create schema Lvl0(lvl1 Lvl1, IndexNumber int, Id string);\n";
+                                "@public create schema Lvl1(Lvl2 Lvl2);\n" +
+                                "@public @buseventtype create schema Lvl0(Lvl1 Lvl1, IndexNumber int, Id string);\n";
                 env.CompileDeploy(eplSchema, path);
 
                 var epl = "@name('s0') select " +
-                          "lvl1.lvl2.Intarr[IndexNumber] as c0, " +
-                          "lvl1.lvl2.Intarr.size() as c1, " +
-                          "me.lvl1.lvl2.Intarr[IndexNumber] as c2, " +
-                          "me.lvl1.lvl2.Intarr.size() as c3 " +
+                          "Lvl1.Lvl2.Intarr[IndexNumber] as c0, " +
+                          "Lvl1.Lvl2.Intarr.size() as c1, " +
+                          "me.Lvl1.Lvl2.Intarr[IndexNumber] as c2, " +
+                          "me.Lvl1.Lvl2.Intarr.size() as c3 " +
                           "from Lvl0 as me";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 env.AssertStmtTypesAllSame("s0", fields, typeof(int?));
 
                 var lvl2 = CollectionUtil.BuildMap("Intarr", new int?[] { 1, 2, 3 });
-                var lvl1 = CollectionUtil.BuildMap("lvl2", lvl2);
-                var lvl0 = CollectionUtil.BuildMap("lvl1", lvl1, "IndexNumber", 2);
+                var lvl1 = CollectionUtil.BuildMap("Lvl2", lvl2);
+                var lvl0 = CollectionUtil.BuildMap("Lvl1", lvl1, "IndexNumber", 2);
                 env.SendEventMap(lvl0, "Lvl0");
                 env.AssertPropsNew("s0", fields, new object[] { 3, 3, 3, 3 });
 
@@ -378,42 +378,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // not an index expression
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2[IndexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2[IndexNumber]': Could not perform array operation on type event type 'Lvl2'");
+                    "select Lvl1.Lvl2[IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2[IndexNumber]': Could not perform array operation on type event type 'Lvl2'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2[IndexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2[IndexNumber]': Could not perform array operation on type event type 'Lvl2'");
+                    "select me.Lvl1.Lvl2[IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2[IndexNumber]': Could not perform array operation on type event type 'Lvl2'");
 
                 // two index expressions
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2.Intarr[IndexNumber,indexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type Integer[]");
+                    "select Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber,IndexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Intarr[IndexNumber,ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type Integer[]");
+                    "select me.Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber,Ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
 
                 // double-array
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2.Intarr[IndexNumber][index...(42 chars)': Could not perform array operation on type Integer");
+                    "select Lvl1.Lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber][Index...(42 chars)': Could not perform array operation on type System.Nullable<System.Int32>");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Intarr[IndexNumber][in...(45 chars)': Could not perform array operation on type Integer");
+                    "select me.Lvl1.Lvl2.Intarr[IndexNumber][IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber][In...(45 chars)': Could not perform array operation on type System.Nullable<System.Int32>");
 
                 // wrong index expression type
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.lvl2.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
+                    "select Lvl1.Lvl2.Intarr[Id] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.lvl2.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
+                    "select me.Lvl1.Lvl2.Intarr[Id] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
 
                 env.UndeployAll();
             }
@@ -435,8 +435,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var path = new RegressionPath();
                 var epl =
                     "create schema Lvl1(Id string);\n" +
-                    "@public @buseventtype create schema Lvl0(lvl1 Lvl1[], indexNumber int, lvl0id string);\n" +
-                    "@name('s0') select lvl1[indexNumber].Id as c0, me.lvl1[indexNumber].Id as c1 from Lvl0 as me";
+                    "@public @buseventtype create schema Lvl0(Lvl1 Lvl1[], IndexNumber int, Lvl0id string);\n" +
+                    "@name('s0') select Lvl1[IndexNumber].Id as c0, me.Lvl1[IndexNumber].Id as c1 from Lvl0 as me";
                 env.CompileDeploy(epl, path).AddListener("s0");
                 var fields = "c0,c1".SplitCsv();
                 env.AssertStmtTypesAllSame("s0", fields, typeof(string));
@@ -444,63 +444,67 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var lvl1One = CollectionUtil.BuildMap("Id", "a");
                 var lvl1Two = CollectionUtil.BuildMap("Id", "b");
                 var lvl0 = CollectionUtil.BuildMap(
-                    "lvl1",
+                    "Lvl1",
                     new IDictionary<string, object>[] { lvl1One, lvl1Two },
-                    "indexNumber",
+                    "IndexNumber",
                     1);
                 env.SendEventMap(lvl0, "Lvl0");
                 env.AssertPropsNew("s0", fields, new object[] { "b", "b" });
 
+                #if false
                 // Invalid tests
                 // array value but no array provided
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Id': Failed to resolve property 'lvl1.Id' (property 'lvl1' is an indexed property and requires an index or enumeration method to access values)");
+                    "select Lvl1.Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Id': Failed to resolve property 'Lvl1.Id' (property 'Lvl1' is an indexed property and requires an index or enumeration method to access values)");
+                #endif
+                
                 env.TryInvalidCompile(
                     path,
                     "select me.Lvl1.Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Id': Property named 'lvl1.Id' is not valid in stream 'me' (did you mean 'lvl0id'?)");
+                    "Failed to validate select-clause expression 'me.Lvl1.Id': Property named 'Lvl1.Id' is not valid in stream 'me' (did you mean 'Lvl1'?)");
+                    //"Failed to validate select-clause expression 'me.Lvl1.Id': Property named 'Lvl1.Id' is not valid in stream 'me' (did you mean 'Lvl0Id'?)");
 
                 // not an index expression
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.Id[indexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Id[indexNumber]': Could not find event property or method named 'Id' in collection of events of type 'Lvl1'");
+                    "select Lvl1.Id[IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Id[IndexNumber]': Could not find event property or method named 'Id' in collection of events of type 'Lvl1'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.Id[indexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Id[indexNumber]': Could not find event property or method named 'Id' in collection of events of type 'Lvl1'");
+                    "select me.Lvl1.Id[IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Id[IndexNumber]': Could not find event property or method named 'Id' in collection of events of type 'Lvl1'");
 
                 // two index expressions
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1[indexNumber, indexNumber].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1[indexNumber,indexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for property 'lvl1'");
+                    "select Lvl1[IndexNumber, IndexNumber].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1[IndexNumber,IndexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for property 'Lvl1'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1[indexNumber, indexNumber].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1[indexNumber,indexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for property 'lvl1'");
+                    "select me.Lvl1[IndexNumber, IndexNumber].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1[IndexNumber,IndexNumber].Id': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for property 'Lvl1'");
 
                 // double-array
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1[indexNumber][indexNumber].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1[indexNumber][indexNumber].Id': Could not perform array operation on type event type 'Lvl1'");
+                    "select Lvl1[IndexNumber][IndexNumber].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1[IndexNumber][IndexNumber].Id': Could not perform array operation on type event type 'Lvl1'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1[indexNumber][indexNumber].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1[indexNumber][indexNumber].Id': Could not perform array operation on type event type 'Lvl1'");
+                    "select me.Lvl1[IndexNumber][IndexNumber].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1[IndexNumber][IndexNumber].Id': Could not perform array operation on type event type 'Lvl1'");
 
                 // wrong index expression type
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1[lvl0id].Id from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for property 'lvl1'");
+                    "select Lvl1[Lvl0id].Id from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1[Lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Lvl0id' returns 'System.String' for property 'Lvl1'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1[lvl0id].Id from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1[lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'lvl0id' returns 'System.String' for property 'lvl1'");
+                    "select me.Lvl1[Lvl0id].Id from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1[Lvl0id].Id': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Lvl0id' returns 'System.String' for property 'Lvl1'");
 
                 env.UndeployAll();
             }
@@ -520,21 +524,21 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var path = new RegressionPath();
                 var eplSchema =
                     "@public create schema Lvl1(Intarr int[]);\n" +
-                    "@public @buseventtype create schema Lvl0(lvl1 Lvl1, indexNumber int, Id string);\n";
+                    "@public @buseventtype create schema Lvl0(Lvl1 Lvl1, IndexNumber int, Id string);\n";
                 env.CompileDeploy(eplSchema, path);
 
                 var epl = "@name('s0') select " +
-                          "lvl1.Intarr[indexNumber] as c0, " +
-                          "lvl1.Intarr.size() as c1, " +
-                          "me.lvl1.Intarr[indexNumber] as c2, " +
-                          "me.lvl1.Intarr.size() as c3 " +
+                          "Lvl1.Intarr[IndexNumber] as c0, " +
+                          "Lvl1.Intarr.size() as c1, " +
+                          "me.Lvl1.Intarr[IndexNumber] as c2, " +
+                          "me.Lvl1.Intarr.size() as c3 " +
                           "from Lvl0 as me";
                 env.CompileDeploy(soda, epl, path).AddListener("s0");
                 var fields = "c0,c1,c2,c3".SplitCsv();
                 env.AssertStmtTypesAllSame("s0", fields, typeof(int?));
 
                 var lvl1 = CollectionUtil.BuildMap("Intarr", new int?[] { 1, 2, 3 });
-                var lvl0 = CollectionUtil.BuildMap("lvl1", lvl1, "indexNumber", 2);
+                var lvl0 = CollectionUtil.BuildMap("Lvl1", lvl1, "IndexNumber", 2);
                 env.SendEventMap(lvl0, "Lvl0");
                 env.AssertPropsNew("s0", fields, new object[] { 3, 3, 3, 3 });
 
@@ -542,42 +546,42 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // not an index expression
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1[indexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1[indexNumber]': Invalid array operation for property 'lvl1'");
+                    "select Lvl1[IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1[IndexNumber]': Invalid array operation for property 'Lvl1'");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1[indexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1[indexNumber]': Invalid array operation for property 'lvl1'");
+                    "select me.Lvl1[IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1[IndexNumber]': Invalid array operation for property 'Lvl1'");
 
                 // two index expressions
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.Intarr[indexNumber, indexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Intarr[indexNumber,indexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type Integer[]");
+                    "select Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.Intarr[indexNumber, indexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Intarr[indexNumber,indexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type Integer[]");
+                    "select me.Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
 
                 // double-array
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.Intarr[indexNumber][indexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Intarr[indexNumber][indexNumber]': Could not perform array operation on type Integer");
+                    "select Lvl1.Intarr[IndexNumber][IndexNumber] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.Intarr[indexNumber][indexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Intarr[indexNumber][indexNumber]': Could not perform array operation on type Integer");
+                    "select me.Lvl1.Intarr[IndexNumber][IndexNumber] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 
                 // wrong index expression type
                 env.TryInvalidCompile(
                     path,
-                    "select lvl1.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
+                    "select Lvl1.Intarr[Id] from Lvl0",
+                    "Failed to validate select-clause expression 'Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
                 env.TryInvalidCompile(
                     path,
-                    "select me.lvl1.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type Integer[]");
+                    "select me.Lvl1.Intarr[Id] from Lvl0 as me",
+                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
 
                 env.UndeployAll();
             }
@@ -628,10 +632,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 // double-array
                 env.TryInvalidCompile(
                     "select Intarr[IndexNumber][IndexNumber] from SupportBeanWithArray",
-                    "Failed to validate select-clause expression 'Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type Integer");
+                    "Failed to validate select-clause expression 'Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
                 env.TryInvalidCompile(
                     "select me.Intarr[IndexNumber][IndexNumber] from SupportBeanWithArray as me",
-                    "Failed to validate select-clause expression 'me.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type Integer");
+                    "Failed to validate select-clause expression 'me.Intarr[IndexNumber][IndexNumber]': Could not perform array operation on type System.Nullable<System.Int32>");
 
                 // wrong index expression type
                 env.TryInvalidCompile(

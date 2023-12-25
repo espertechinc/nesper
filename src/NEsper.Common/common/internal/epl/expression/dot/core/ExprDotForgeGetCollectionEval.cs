@@ -23,15 +23,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 {
     public class ExprDotForgeGetCollectionEval : ExprDotEval
     {
-        private readonly ExprDotForgeGetCollection forge;
-        private readonly ExprEvaluator indexExpression;
+        private readonly ExprDotForgeGetCollection _forge;
+        private readonly ExprEvaluator _indexExpression;
 
         public ExprDotForgeGetCollectionEval(
             ExprDotForgeGetCollection forge,
             ExprEvaluator indexExpression)
         {
-            this.forge = forge;
-            this.indexExpression = indexExpression;
+            this._forge = forge;
+            this._indexExpression = indexExpression;
         }
 
         public object Evaluate(
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 return null;
             }
 
-            var index = indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
+            var index = _indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (index is int indexNum) {
                 return CollectionElementAt(target, indexNum);
             }
@@ -73,9 +73,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             return collection.Skip(indexNum).FirstOrDefault();
         }
 
-        public EPChainableType TypeInfo => forge.TypeInfo;
+        public EPChainableType TypeInfo => _forge.TypeInfo;
 
-        public ExprDotForge DotForge => forge;
+        public ExprDotForge DotForge => _forge;
 
         public static CodegenExpression Codegen(
             ExprDotForgeGetCollection forge,

@@ -576,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "Failed to validate assignment expression 'abc=1': Property 'abc' is not available for write access [update istream MyXmlEvent set abc=1]");
                 env.TryInvalidCompile(
                     path,
-                    "update istream SupportBeanErrorTestingOne set value='1'",
+                    "update istream SupportBeanErrorTestingOne set Value='1'",
                     "The update-clause requires the underlying event representation to support copy (via Serializable by default) [update istream SupportBeanErrorTestingOne set value='1']");
                 env.TryInvalidCompile(
                     path,

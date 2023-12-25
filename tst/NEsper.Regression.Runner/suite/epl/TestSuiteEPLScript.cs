@@ -13,7 +13,6 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.script;
 using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
-
 using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.suite.epl
@@ -23,58 +22,121 @@ namespace com.espertech.esper.regressionrun.suite.epl
     {
         public static void Configure(Configuration configuration)
         {
-            foreach (var clazz in new[] {
-                typeof(SupportBean),
-                typeof(SupportBean_S0),
-                typeof(SupportColorEvent),
-                typeof(SupportRFIDSimpleEvent)
-            }) {
+            foreach (var clazz in new[]
+                     {
+                         typeof(SupportBean),
+                         typeof(SupportBean_S0),
+                         typeof(SupportColorEvent),
+                         typeof(SupportRFIDSimpleEvent)
+                     }
+                    )
                 configuration.Common.AddEventType(clazz);
-            }
 
             configuration.Common.AddImportType(typeof(MyImportedClass));
         }
 
         /// <summary>
-        /// Auto-test(s): EPLScriptExpression
-        /// <code>
+        ///     Auto-test(s): EPLScriptExpression
+        ///     <code>
         /// RegressionRunner.Run(_session, EPLScriptExpression.Executions());
         /// </code>
         /// </summary>
-
         public class TestEPLScriptExpression : AbstractTestBase
         {
-            public TestEPLScriptExpression() : base(Configure) { }
+            public TestEPLScriptExpression() : base(Configure)
+            {
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithReturnNullWhenNumeric() => RegressionRunner.Run(_session, EPLScriptExpression.WithReturnNullWhenNumeric());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithReturnNullWhenNumeric()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithReturnNullWhenNumeric());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithSubqueryParam() => RegressionRunner.Run(_session, EPLScriptExpression.WithSubqueryParam());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithSubqueryParam()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithSubqueryParam());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithJavaScriptStatelessReturnPassArgs() => RegressionRunner.Run(_session, EPLScriptExpression.WithJavaScriptStatelessReturnPassArgs());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithJavaScriptStatelessReturnPassArgs()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithJavaScriptStatelessReturnPassArgs());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithParserMVELSelectNoArgConstant() => RegressionRunner.Run(_session, EPLScriptExpression.WithParserMVELSelectNoArgConstant());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithParserMVELSelectNoArgConstant()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithParserMVELSelectNoArgConstant());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithInvalidScriptJS() => RegressionRunner.Run(_session, EPLScriptExpression.WithInvalidScriptJS());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithInvalidScriptJS()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithInvalidScriptJS());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithInvalidRegardlessDialect() => RegressionRunner.Run(_session, EPLScriptExpression.WithInvalidRegardlessDialect());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithInvalidRegardlessDialect()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithInvalidRegardlessDialect());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithDocSamples() => RegressionRunner.Run(_session, EPLScriptExpression.WithDocSamples());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithDocSamples()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithDocSamples());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithScriptReturningEvents() => RegressionRunner.Run(_session, EPLScriptExpression.WithScriptReturningEvents());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithScriptReturningEvents()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithScriptReturningEvents());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithQuoteEscape() => RegressionRunner.Run(_session, EPLScriptExpression.WithQuoteEscape());
+            [Test]
+            [RunInApplicationDomain]
+            public void WithQuoteEscape()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithQuoteEscape());
+            }
 
-            [Test, RunInApplicationDomain]
-            public void WithScripts() => RegressionRunner.Run(_session, EPLScriptExpression.WithScripts());  
+            [Test]
+            [RunInApplicationDomain]
+            public void WithScripts()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithScripts());
+            }
+
+            [Test]
+            [RunInApplicationDomain]
+            public void WithInvalidScriptMVEL()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithInvalidScriptMVEL());
+            }
+
+            [Test]
+            [RunInApplicationDomain]
+            public void WithMVELStatelessReturnPassArgs()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithMVELStatelessReturnPassArgs());
+            }
+
+            [Test]
+            [RunInApplicationDomain]
+            public void WithGenericResultType()
+            {
+                RegressionRunner.Run(_session, EPLScriptExpression.WithGenericResultType());
+            }
         }
     }
 } // end of namespace

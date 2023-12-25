@@ -26,11 +26,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public class NumberCasterComputer : CasterParserComputerForge,
             CasterParserComputer
         {
-            private readonly SimpleTypeCaster numericTypeCaster;
+            private readonly SimpleTypeCaster _numericTypeCaster;
 
             public NumberCasterComputer(SimpleTypeCaster numericTypeCaster)
             {
-                this.numericTypeCaster = numericTypeCaster;
+                this._numericTypeCaster = numericTypeCaster;
             }
 
             public object Compute(
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprEvaluatorContext exprEvaluatorContext)
             {
                 if (input.IsNumber()) {
-                    return numericTypeCaster.Cast(input);
+                    return _numericTypeCaster.Cast(input);
                 }
 
                 return null;
@@ -57,7 +57,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 CodegenClassScope codegenClassScope)
             {
                 if (inputType.CanNotBeNull() || inputType.IsTypeNumeric()) {
-                    return numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
+                    return _numericTypeCaster.Codegen(input, inputType, codegenMethodScope, codegenClassScope);
                 }
 
                 var methodNode = codegenMethodScope
@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 methodNode.Block
                     .IfInstanceOf("input", typeof(object))
                     .BlockReturn(
-                        numericTypeCaster.Codegen(
+                        _numericTypeCaster.Codegen(
                             CodegenExpressionBuilder.Ref("input"),
                             inputType,
                             methodNode,

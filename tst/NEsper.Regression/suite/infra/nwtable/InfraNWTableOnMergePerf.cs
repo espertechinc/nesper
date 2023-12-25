@@ -22,11 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         public static ICollection<RegressionExecution> Executions()
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
-            Withe(execs);
+            WithPerformance(execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> Withe(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithPerformance(IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
             execs.Add(new InfraPerformance(true, EventRepresentationChoice.OBJECTARRAY));

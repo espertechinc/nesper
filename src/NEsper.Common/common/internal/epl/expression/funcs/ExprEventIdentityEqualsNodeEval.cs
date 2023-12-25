@@ -18,15 +18,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
     public class ExprEventIdentityEqualsNodeEval : ExprEvaluator
     {
-        private readonly int streamLeft;
-        private readonly int streamRight;
+        private readonly int _streamLeft;
+        private readonly int _streamRight;
 
         public ExprEventIdentityEqualsNodeEval(
             int streamLeft,
             int streamRight)
         {
-            this.streamLeft = streamLeft;
-            this.streamRight = streamRight;
+            this._streamLeft = streamLeft;
+            this._streamRight = streamRight;
         }
 
         public object Evaluate(
@@ -34,8 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             bool isNewData,
             ExprEvaluatorContext context)
         {
-            var left = eventsPerStream[streamLeft];
-            var right = eventsPerStream[streamRight];
+            var left = eventsPerStream[_streamLeft];
+            var right = eventsPerStream[_streamRight];
             if (left == null || right == null) {
                 return null;
             }

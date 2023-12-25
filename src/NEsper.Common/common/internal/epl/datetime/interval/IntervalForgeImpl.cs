@@ -152,7 +152,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.interval
                             methodNameUse +
                             "' the first parameter expression returns '" +
                             _forgeTimestamp.EvaluationType +
-                            "', however requires a Date, Calendar, Long-type return value or event (with timestamp)");
+                            "', however requires a Date, DateTimeEx, Long-type return value or event (with timestamp)");
                     }
                 }
             }

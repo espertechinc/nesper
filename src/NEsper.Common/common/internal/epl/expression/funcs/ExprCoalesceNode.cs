@@ -23,19 +23,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
     {
         [JsonIgnore]
         [NonSerialized]
-        private ExprCoalesceNodeForge forge;
+        private ExprCoalesceNodeForge _forge;
 
         public ExprEvaluator ExprEvaluator {
             get {
-                CheckValidated(forge);
-                return forge.ExprEvaluator;
+                CheckValidated(_forge);
+                return _forge.ExprEvaluator;
             }
         }
 
         public override ExprForge Forge {
             get {
-                CheckValidated(forge);
-                return forge;
+                CheckValidated(_forge);
+                return _forge;
             }
         }
 
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 }
             }
 
-            forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
+            _forge = new ExprCoalesceNodeForge(this, resultType, isNumericCoercion);
             return null;
         }
 
