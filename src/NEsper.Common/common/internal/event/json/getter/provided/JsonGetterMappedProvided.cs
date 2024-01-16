@@ -17,26 +17,26 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     /// </summary>
     public sealed class JsonGetterMappedProvided : JsonGetterMappedBase
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterMappedProvided(
             string key,
             string underlyingClassName,
             FieldInfo field) : base(key, underlyingClassName)
         {
-            this.field = field;
+            this._field = field;
         }
 
-        public override string FieldName => field.Name;
+        public override string FieldName => _field.Name;
 
         public override object GetJsonProp(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(@object, field, Key);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(@object, _field, Key);
         }
 
         public override bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedExists(@object, field, Key);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedExists(@object, _field, Key);
         }
     }
 } // end of namespace

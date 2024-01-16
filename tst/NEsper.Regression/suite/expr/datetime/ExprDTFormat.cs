@@ -96,18 +96,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var fields = "val0,val1,val2,val3".SplitCsv();
                 var eplFragment =
                     "@name('s0') select " +
-                    "DateTimeEx.format(\"" +
-                    sdfPattern +
-                    "\") as val0," +
-                    "DateTimeOffset.format(\"" +
-                    sdfPattern +
-                    "\") as val1," +
-                    "DateTime.format(\"" +
-                    sdfPattern +
-                    "\") as val2," +
-                    "LongDate.format(\"" +
-                    sdfPattern +
-                    "\") as val3" +
+                    $"DateTimeEx.format(\"{sdfPattern}\") as val0," +
+                    $"DateTimeOffset.format(\"{sdfPattern}\") as val1," +
+                    $"DateTime.format(\"{sdfPattern}\") as val2," +
+                    $"LongDate.format(\"{sdfPattern}\") as val3" +
                     " from SupportDateTime";
                 env.CompileDeploy(eplFragment).AddListener("s0");
                 env.AssertStmtTypesAllSame("s0", fields, typeof(string));
@@ -130,7 +122,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "s0",
                     fields,
                     new object[] {
-                        null, null, null, null, null, null, null
+                        null,
+                        null,
+                        null,
+                        null
                     });
 
                 env.UndeployAll();

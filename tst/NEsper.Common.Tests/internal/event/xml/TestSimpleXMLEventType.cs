@@ -70,21 +70,21 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestIndexedProperties()
         {
-            Assert.AreEqual("5", theEvent.Get("Nested1.Nested2.prop3[2]"));
-            Assert.AreEqual(typeof(string), theEvent.EventType.GetPropertyType("Nested1.Nested2.prop3[2]"));
+            Assert.AreEqual("5", theEvent.Get("nested1.nested2.prop3[2]"));
+            Assert.AreEqual(typeof(string), theEvent.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
         [Test]
         public void TestMappedProperties()
         {
-            Assert.AreEqual("SAMPLE_V8", theEvent.Get("Nested3.Nested4('a').prop5[1]"));
-            Assert.AreEqual("SAMPLE_V10", theEvent.Get("Nested3.Nested4('c').prop5[0]"));
+            Assert.AreEqual("SAMPLE_V8", theEvent.Get("nested3.nested4('a').prop5[1]"));
+            Assert.AreEqual("SAMPLE_V10", theEvent.Get("nested3.nested4('c').prop5[0]"));
         }
 
         [Test]
         public void TestNestedProperties()
         {
-            Assert.AreEqual("true", theEvent.Get("Nested1.prop2"));
+            Assert.AreEqual("true", theEvent.Get("nested1.prop2"));
         }
 
         [Test]

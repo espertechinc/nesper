@@ -130,10 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationSimple " +
                     "@MyAnnotationValue('abc') " +
                     "@MyAnnotationValueDefaulted " +
-                    "@MyAnnotationValueEnum(SupportEnum=" +
-                    typeof(SupportEnum).FullName +
-                    ".ENUM_VALUE_3) " +
-                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
+                    "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3) " +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5) " +
                     "@name('STMTONE') " +
                     "select * from SupportBean";
                 var stmtTextFormatted = 
@@ -141,7 +139,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     "@MyAnnotationValue('abc')" + NEWLINE + 
                     "@MyAnnotationValueDefaulted" + NEWLINE +
                     "@MyAnnotationValueEnum(SupportEnum=" + typeof(SupportEnum).FullName + ".ENUM_VALUE_3)" + NEWLINE +
-                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=True,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
+                    "@MyAnnotationValuePair(StringVal='a',IntVal=-1,LongVal=2,BooleanVal=true,CharVal='x',ByteVal=10,ShortVal=20,DoubleVal=2.5)" + NEWLINE +
                     "@name('STMTONE')" + NEWLINE +
                     "select *" + NEWLINE + "from SupportBean";
                 env.CompileDeploy(stmtText);
@@ -196,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.UndeployAll();
 
                 // test array
-                stmtText = "@MyAnnotationValueArray(Value={1,2,3},IntArray={4,5},DoubleArray={},StringArray={'X'}) @Name('s0') select * from SupportBean";
+                stmtText = "@MyAnnotationValueArray(Value={1L,2L,3L},IntArray={4,5},DoubleArray={},StringArray={'X'}) @Name('s0') select * from SupportBean";
                 env.CompileDeploy(stmtText);
 
                 AssertStatement(env);
@@ -253,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'stringArray' but received a Integer-typed value [@MyAnnotationValueArray(intArray={},doubleArray={},stringArray={1},value={}) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'StringArray' but received a Integer-typed value [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean]");
 
                 TryInvalidAnnotation(
                     env,

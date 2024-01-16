@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
-            var returnType = forge.TypeInfo.GetCodegenReturnType();
+            var returnType = forge.TypeInfo.GetCodegenReturnType().GetBoxedType();
             var methodNode = codegenMethodScope
                 .MakeChild(returnType, typeof(ExprDotForgeEnumMethodEval), codegenClassScope)
                 .AddParam(innerType, "param");
@@ -114,11 +114,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 Ref("coll"),
                 collectionType,
                 refIsNewData,
-                refExprEvalCtx);
+                refExprEvalCtx,
+                returnType);
             
             if (forge.IsCache) {
-                block.DeclareVar<
-                        ExpressionResultCacheEntryLongArrayAndObj>(
+                block.DeclareVar<ExpressionResultCacheEntryLongArrayAndObj>(
                         "cacheValue",
                         ExprDotMethod(Ref("cache"), "GetEnumerationMethodLastValue", forgeMember))
                     .IfCondition(NotEqualsNull(Ref("cacheValue")))
@@ -160,7 +160,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                             "AllocateCopyEventLambda",
                             refEps,
                             Constant(forge.EnumEvalNumRequiredEvents)))
-                    .TryReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, returnInvocation))
+                    //.TryReturn(CodegenLegoCast.CastSafeFromObjectType(returnType, returnInvocation))
+                    .TryReturn(returnInvocation)
                     .TryFinally()
                     .Expression(ExprDotMethod(Ref("cache"), "PopContext"))
                     .BlockEnd()

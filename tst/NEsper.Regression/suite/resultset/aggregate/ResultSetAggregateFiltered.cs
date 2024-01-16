@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 env.TryInvalidCompile(
                     "select count(*, IntPrimitive) from SupportBean",
-                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns Integer [select count(*, IntPrimitive) from SupportBean]");
+                    "Failed to validate select-clause expression 'count(*,IntPrimitive)': Invalid filter expression parameter to the aggregation function 'count' is expected to return a boolean value but returns System.Nullable<System.Int32> [select count(*, IntPrimitive) from SupportBean]");
 
                 env.TryInvalidCompile(
                     "select fmin(IntPrimitive) from SupportBean",

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -17,13 +16,10 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
-{
-    public class EnumAverageDoubleScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average {
+    public class EnumAverageDoubleScalar : ThreeFormScalar {
         public EnumAverageDoubleScalar(
             ExprDotEvalParamLambda lambda,
             ObjectArrayEventType fieldEventType,
@@ -78,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return typeof(double?);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return null;
         }
@@ -98,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type inputCollectionType)
         {
             var innerType = InnerExpression.EvaluationType;
             block.DeclareVar(

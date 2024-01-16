@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Linq;
 using Avro.Generic;
 
 using com.espertech.esper.common.client.scopetest;
@@ -649,9 +649,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var path = new RegressionPath();
             var epl = "@public on OrderBean as oe " +
-                      "insert into StartEvent select oe.Orderdetail.OrderId as oi " +
-                      "insert into ThenEvent select * from [select oe.Orderdetail.OrderId as oi, ItemId from Orderdetail.Items] as Item " +
-                      "insert into MoreEvent select oe.Orderdetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from Orderdetail.Items] as Item " +
+                      "insert into StartEvent select oe.OrderDetail.OrderId as oi " +
+                      "insert into ThenEvent select * from [select oe.OrderDetail.OrderId as oi, ItemId from OrderDetail.Items] as Item " +
+                      "insert into MoreEvent select oe.OrderDetail.OrderId as oi, Item.ItemId as ItemId from [select oe, * from OrderDetail.Items] as Item " +
                       "output all";
             env.CompileDeploy(soda, epl, path);
 
@@ -688,11 +688,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var epl = "@name('split') @public on OrderBean " +
-                      "insert into BeginEvent select Orderdetail.OrderId as OrderId " +
-                      "insert into OrderItem select * from [select Orderdetail.OrderId as OrderId, * from Orderdetail.Items] " +
-                      "insert into EndEvent select Orderdetail.OrderId as OrderId " +
-                      "output all";
+            var epl =
+                "@name('split') @public on OrderBean " +
+                "insert into BeginEvent select OrderDetail.OrderId as OrderId " +
+                "insert into OrderItem select * from [select OrderDetail.OrderId as OrderId, * from OrderDetail.Items] " +
+                "insert into EndEvent select OrderDetail.OrderId as OrderId " +
+                "output all";
             env.CompileDeploy(soda, epl, path);
             env.AssertStatement(
                 "split",
@@ -710,8 +711,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         env.DeploymentId("split"),
                         "OrderItem");
                     Assert.AreEqual(
-                        "[Amount, ItemId, Price, ProductId, OrderId]",
-                        CompatExtensions.Render(orderItemType.PropertyNames));
+                        "[\"Amount\", \"ItemId\", \"OrderId\", \"Price\", \"ProductId\"]",
+                        CompatExtensions.Render(orderItemType.PropertyNames.OrderBy(_ => _).ToArray()));
                 });
 
             env.SendEventBean(OrderBeanFactory.MakeEventOne());
@@ -743,12 +744,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool soda)
         {
             var path = new RegressionPath();
-            var fieldsOrderId = "oe.Orderdetail.OrderId".SplitCsv();
+            var fieldsOrderId = "oe.OrderDetail.OrderId".SplitCsv();
             var epl = "@public on OrderBean as oe " +
-                      "insert into HeaderEvent select Orderdetail.OrderId as OrderId where 1=2 " +
-                      "insert into StreamOne select * from [select oe, * from Orderdetail.Items] where ProductId=\"10020\" " +
-                      "insert into StreamTwo select * from [select oe, * from Orderdetail.Items] where ProductId=\"10022\" " +
-                      "insert into StreamThree select * from [select oe, * from Orderdetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
+                      "insert into HeaderEvent select OrderDetail.OrderId as OrderId where 1=2 " +
+                      "insert into StreamOne select * from [select oe, * from OrderDetail.Items] where ProductId=\"10020\" " +
+                      "insert into StreamTwo select * from [select oe, * from OrderDetail.Items] where ProductId=\"10022\" " +
+                      "insert into StreamThree select * from [select oe, * from OrderDetail.Items] where ProductId in (\"10020\",\"10025\",\"10022\")";
             env.CompileDeploy(soda, epl, path);
 
             var listenerEPL = new string[]

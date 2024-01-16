@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,13 +18,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
-{
-    public class EnumTakeWhileScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile {
+    public class EnumTakeWhileScalar : ThreeFormScalar {
         private CodegenExpression _innerValue;
 
         public EnumTakeWhileScalar(
@@ -59,8 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             props[0] = item;
                             props[1] = 0;
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
-                            if (pass == null || false.Equals(pass))
-                            {
+                            if (pass == null || false.Equals(pass)) {
                                 return EmptyList<object>.Instance;
                             }
 
@@ -89,13 +84,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(ICollection<object>);
+            return inputCollectionType;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
-            //return EnumForgeCodegenNames.REF_ENUMCOLL;
-            return EnumValue(typeof(EmptyList<object>), "Instance");
+            var componentType = inputCollectionType.GetComponentType();
+            return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
         }
 
         public override void InitBlock(
@@ -110,14 +105,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 numParameters,
                 block,
                 _innerValue,
-                InnerExpression.EvaluationType);
+                InnerExpression.EvaluationType,
+                inputCollectionType.GetComponentType());
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,

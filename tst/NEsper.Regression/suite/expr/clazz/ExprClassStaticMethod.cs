@@ -143,7 +143,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     () => {
                         Assert.AreEqual(1, support.Contexts.Count);
                         var ctx = support.Contexts[0];
-                        Assert.AreEqual("MyUtility", ctx.GetClassFiles()[0]); // .ThisClassName
+
+                        var artifact = ctx.Artifact;
+                        Assert.NotNull(artifact);
+                        CollectionAssert.Contains(artifact.TypeNames, "MyUtility");
                     });
             }
         }

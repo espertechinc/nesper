@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,13 +17,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom
-{
-    public class EnumSelectFromEvent : ThreeFormEventPlain
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom {
+    public class EnumSelectFromEvent : ThreeFormEventPlain {
         public EnumSelectFromEvent(ExprDotEvalParamLambda lambda) : base(lambda)
         {
         }
@@ -32,7 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -59,12 +56,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return typeof(ICollection<object>);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
             return EnumValue(typeof(EmptyList<object>), "Instance");
@@ -74,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             block.DeclareVar<ArrayDeque<object>>(
                 "result",
@@ -85,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             block.DeclareVar<object>(
                     "item",

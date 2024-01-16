@@ -12,6 +12,7 @@ using System.IO;
 using System.Text.Json.Serialization;
 
 using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.client.soda
 {
@@ -205,8 +206,21 @@ namespace com.espertech.esper.common.client.soda
 
                 writer.Write("}");
             }
+            else if (second.GetType().IsGenericList())
+            {
+                var asList = second.AsObjectList(MagicMarker.SingletonInstance);
+                var delimiter = "";
+                writer.Write("{");
+                foreach (var value in asList) {
+                    writer.Write(delimiter);
+                    ToEPL(writer, value);
+                    delimiter = ",";
+                }
+
+                writer.Write("}");
+            }
             else {
-                writer.Write(second.ToString());
+                writer.Write(second.RenderValue());
             }
         }
 

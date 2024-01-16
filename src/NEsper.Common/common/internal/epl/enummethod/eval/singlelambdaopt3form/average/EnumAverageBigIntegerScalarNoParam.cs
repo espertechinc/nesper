@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Numerics;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -16,14 +15,11 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average {
     public class EnumAverageBigIntegerScalarNoParam : EnumForgeBasePlain,
-        EnumEval
-    {
+        EnumEval {
         public EnumAverageBigIntegerScalarNoParam(int streamCountIncoming) : base(streamCountIncoming)
         {
         }
@@ -70,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .Block
                 .DeclareVar<BigInteger>("sum", EnumValue(typeof(BigInteger), "Zero"))
                 .DeclareVar<int>("count", Constant(0))
-                .ForEach<object>("num", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEachVar("num", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("num")
                 .BlockContinue()
                 .IncrementRef("count")

@@ -362,12 +362,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                         }
                     }
                     catch (ExprValidationException ex) {
-                        e = ex;
-                        shouldRethrowE = !TryResolveAsStreamName(identNode, e, validationContext, out result);
-                    }
-
-                    if (shouldRethrowE) {
-                        throw;
+                        if (!TryResolveAsStreamName(identNode, validationContext, out result)) {
+                            throw;
+                        }
                     }
                 }
                 else {
@@ -500,7 +497,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 }
                 catch (ExprValidationException e) {
                     throw new ExprValidationException(
-                        $"Failed to resolve enumeration method, date-time method or mapped property '{mappedProperty}': {e.Message}");
+                        $"Failed to resolve enumeration method, date-time method or mapped property '{mappedProperty}': {e.Message}", e);
                 }
 
                 exprNode = result;
@@ -580,7 +577,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
 
         private static bool TryResolveAsStreamName(
             ExprIdentNode identNode,
-            ExprValidationException existingException,
             ExprValidationContext validationContext, 
             out ExprNode exprNode)
         {

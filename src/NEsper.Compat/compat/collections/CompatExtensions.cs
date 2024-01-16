@@ -1205,6 +1205,33 @@ namespace com.espertech.esper.compat.collections
             return Unwrap<T>(value, includeNullValues).ToArray();
         }
 
+        public static Array UnwrapIntoArray(
+            this object value,
+            Type componentType,
+            bool includeNullValues = true)
+        {
+            if (value == null) {
+                return null;
+            }
+
+            if (value is Array valueAsArray)
+            {
+                var arrayType = value.GetType();
+                if (arrayType.GetComponentType() == componentType)
+                {
+                    return valueAsArray;
+                }
+            }
+
+            var method = typeof(CompatExtensions)
+                .GetMethod("UnwrapIntoArray", new[] { typeof(object), typeof(bool) })?
+                .MakeGenericMethod(componentType);
+            var result = (Array) method
+                .Invoke(null, new object[] { value, includeNullValues });
+
+            return result;
+        }
+
         public static IList<T> UnwrapIntoList<T>(
             this object value,
             bool includeNullValues = true)
@@ -1277,22 +1304,17 @@ namespace com.espertech.esper.compat.collections
                 return enumerableT;
             }
 
-            if (value is IEnumerable<object>) {
-                var expression = (IEnumerable<object>) value;
-                expression = includeNullValues
-                    ? expression.Where(o => o == null || o is T)
-                    : expression.Where(o => o is T);
-
-                return expression.Cast<T>();
+            if (value is IEnumerable<object> enumerableOfObject) {
+                return includeNullValues
+                    ? enumerableOfObject.Where(o => o == null || o is T).Cast<T>()
+                    : enumerableOfObject.OfType<T>();
             }
 
             if (value is IEnumerable enumerable) {
                 var expression = enumerable.Cast<object>();
-                expression = includeNullValues
-                    ? expression.Where(o => o == null || o is T)
-                    : expression.Where(o => o is T);
-
-                return expression.Cast<T>();
+                return includeNullValues
+                    ? expression.Where(o => o == null || o is T).Cast<T>()
+                    : expression.OfType<T>();
             }
 
             if (value is IEnumerator enumerator) {
@@ -1304,8 +1326,8 @@ namespace com.espertech.esper.compat.collections
                             result.Add(currentAsT);
                         }
                     }
-                    else if (current is T) {
-                        result.Add((T) current);
+                    else if (current is T currentAsT) {
+                        result.Add(currentAsT);
                     }
                 }
 

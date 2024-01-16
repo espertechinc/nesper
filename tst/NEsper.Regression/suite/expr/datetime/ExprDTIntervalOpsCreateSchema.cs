@@ -30,16 +30,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
 
             // test Bean-type Date-type timestamps
             var startA = "2002-05-30T09:00:00.000";
-            var epl = "@public @buseventtype create schema SupportBeanXXX as " +
-                      typeof(SupportBean).FullName +
-                      " starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
+            var epl = $"@public @buseventtype create schema SupportBeanXXX as {typeof(SupportBean).FullName} starttimestamp LongPrimitive endtimestamp LongBoxed;\n";
             epl += "@name('s0') select a.get('month') as val0 from SupportBeanXXX a;\n";
             env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
             var theEvent = new SupportBean();
             theEvent.LongPrimitive = DateTimeParsingFunctions.ParseDefaultMSec(startA);
             env.SendEventBean(theEvent, "SupportBeanXXX");
-            env.AssertEqualsNew("s0", "val0", 4);
+            env.AssertEqualsNew("s0", "val0", 5);
 
             env.UndeployAll();
         }

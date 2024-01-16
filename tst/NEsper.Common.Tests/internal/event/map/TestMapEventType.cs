@@ -206,7 +206,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Nested.NestedValue"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("MyComplexBean.Indexed[1]"));
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyComplexBean.Mapped('a')"));
-            Assert.AreEqual(null, eventType.GetPropertyType("MyNullType"));
+            Assert.AreEqual(typeof(object), eventType.GetPropertyType("MyNullType"));
 
             Assert.IsNull(eventType.GetPropertyType("dummy"));
             Assert.IsNull(eventType.GetPropertyType("MySupportBean.dfgdg"));
@@ -287,21 +287,15 @@ namespace com.espertech.esper.common.@internal.@event.map
                 new object[] {"nodefmap.Item?", typeof(object), "|nodefmap.Item|"},
                 new object[] {"map.objOne", typeof(SupportBean_B), new SupportBean_B("B1")},
                 new object[] {"map.simpleOne", typeof(int?), 20},
-                new[] {
-                    "map.mapOne", typeof(IDictionary<string, object>),
-                    testData.Get("map").AsDataMap().Get("mapOne")
-                },
+                new object[] {"map.mapOne", typeof(IDictionary<string, object>), testData.Get("map").AsDataMap().Get("mapOne") },
                 new object[] {"map.mapOne.objTwo", typeof(SupportBean_C), new SupportBean_C("C1")},
-                new[] {
-                    "map.mapOne.mapTwo", typeof(IDictionary<string, object>),
-                    testData.Get("map").AsDataMap().Get("mapOne").AsDataMap().Get("mapTwo")
-                },
+                new object[] {"map.mapOne.mapTwo", typeof(IDictionary<string, object>), testData.Get("map").AsDataMap().Get("mapOne").AsDataMap().Get("mapTwo") },
                 new object[] {"map.mapOne.mapTwo.simpleThree", typeof(long?), 4000L},
                 new object[] {"map.mapOne.mapTwo.objThree", typeof(SupportBean_D), new SupportBean_D("D1")},
                 new object[] {"simple", typeof(double?), 1d},
                 new object[] {"obj", typeof(SupportBean_A), new SupportBean_A("A1")},
-                new[] {"nodefmap", typeof(IDictionary<string, object>), testData.Get("nodefmap")},
-                new[] {"map", typeof(IDictionary<string, object>), testData.Get("map")}
+                new object[] {"nodefmap", typeof(IDictionary<string, object>), testData.Get("nodefmap")},
+                new object[] {"map", typeof(IDictionary<string, object>), testData.Get("map")}
             };
 
             // assert getter available for all properties

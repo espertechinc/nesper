@@ -231,16 +231,28 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Run(RegressionEnvironment env)
             {
-                RunAssertion(env, "IList<Nullable<Int32>>", "IList<Nullable<Int32>>", typeof(IList<int?>));
-                RunAssertion(env, "IList<IList<Nullable<Int32>>>", "IList<IList<Nullable<Int32>>>", typeof(IList<IList<int?>>));
+                // "int32" will resolve as "Nullable<System.Int32>" our tests validate both representations
+                
+                RunAssertion(env, "IList<Nullable<System.Int32>>", "IList<Nullable<System.Int32>>", typeof(IList<int?>));
+                RunAssertion(env, "IList<Int32>", "IList<Int32>", typeof(IList<int?>));
+                
+                RunAssertion(env, "IList<IList<Nullable<System.Int32>>>", "IList<IList<Nullable<System.Int32>>>", typeof(IList<IList<int?>>));
+                RunAssertion(env, "IList<IList<Int32>>", "IList<IList<Int32>>", typeof(IList<IList<int?>>));
+
                 RunAssertion(env, "IList<int[primitive]>", "IList<int[primitive]>", typeof(IList<int[]>));
+                
+                RunAssertion(env, "Nullable<System.Int32>[]", "String[]", typeof(Array));
+                RunAssertion(env, "Int32[]", "String[]", typeof(Array));
 
-                RunAssertion(env, "Nullable<Int32>[]", "String[]", typeof(object));
-
-                RunAssertion(env, "IList<Nullable<Int32>>", "IList<Object>", typeof(object)); // IList<object> -- CLR coercion does not exist
-                RunAssertion(env, "ICollection<Nullable<Int32>>", "IList<Object>", typeof(object));
-
-                RunAssertion(env, "ICollection<Nullable<Int32>>", "null", typeof(object));
+                // IList<object> -- CLR coercion does not exist
+                RunAssertion(env, "IList<Nullable<System.Int32>>", "IList<Object>", typeof(object));
+                RunAssertion(env, "IList<Int32>", "IList<Object>", typeof(object));
+                
+                RunAssertion(env, "ICollection<Nullable<System.Int32>>", "IList<Object>", typeof(object));
+                RunAssertion(env, "ICollection<Int32>", "IList<Object>", typeof(object));
+                
+                RunAssertion(env, "ICollection<Nullable<System.Int32>>", "null", typeof(object));
+                RunAssertion(env, "ICollection<Int32>", "null", typeof(object));
             }
 
             private void RunAssertion(

@@ -503,7 +503,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // AssertDisqualified(env, path, "SupportBean", $"TheString={namespc}.Helper.Doit(me)");
                 // AssertDisqualified(env, path, "SupportBean", "BoolPrimitive=event_identity_equals(me, me)");
                 // AssertDisqualified(env, path, "SupportBean", "TheString=MyDeclaredExpr()");
-                AssertDisqualified(env, path, "SupportBean", "IntPrimitive=me.TheString.Length");
+                AssertDisqualified(env, path, "SupportBean", "IntPrimitive=TheString.Length");
                 // AssertDisqualified(env, path, "SupportBean", "IntPrimitive = funcOne('hello')");
                 // AssertDisqualified(env, path, "SupportBean", "BoolPrimitive = exists(TheString)");
                 // AssertDisqualified(env, path, "SupportBean", "TheString = MyJavaScript('a')");
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             string typeName,
             string filters)
         {
-            var hook = $"@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='{typeof(SupportFilterPlanHook).FullName}')";
+            var hook = $"@Hook(HookType=HookType.INTERNAL_FILTERSPEC, Hook='{typeof(SupportFilterPlanHook).FullName}') ";
             var epl = hook + "select * from " + typeName + "(" + filters + ") as me";
             SupportFilterPlanHook.Reset();
             env.Compile(epl, path);

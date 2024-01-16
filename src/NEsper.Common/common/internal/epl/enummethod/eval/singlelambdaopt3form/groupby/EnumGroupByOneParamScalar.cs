@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -16,13 +15,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.groupby
-{
-    public class EnumGroupByOneParamScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.groupby {
+    public class EnumGroupByOneParamScalar : ThreeFormScalar {
         public EnumGroupByOneParamScalar(
             ExprDotEvalParamLambda lambda,
             ObjectArrayEventType fieldEventType,
@@ -33,7 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -74,14 +71,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
+        public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
+
         public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(IDictionary<object, object>);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, inputCollectionType);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
-            return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, inputCollectionType), "Instance");
         }
 
         public override void InitBlock(
@@ -91,23 +90,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type inputCollectionType)
         {
-            block.DeclareVar<IDictionary<object, object>>("result", NewInstance<LinkedHashMap<object, object>>());
+            var valType = inputCollectionType;
+            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
+            var mapType = typeof(LinkedHashMap<,>).MakeGenericType(KeyType, valType);
+
+            block.DeclareVar(dictType, "result", NewInstance(mapType));
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
-            block.DeclareVar<object>(
-                    "key",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<ICollection<object>>(
-                    "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
+            var valType = inputCollectionType;
+            var componentType = valType.GetComponentType();
+            var listType = typeof(List<>).MakeGenericType(componentType);
+
+            block
+                .DeclareVar(KeyType, "key",
+                    InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(valType, "value", ExprDotMethod(Ref("result"), "Get", Ref("key")))
                 .IfRefNull("value")
-                .AssignRef("value", NewInstance(typeof(List<object>)))
+                .AssignRef("value", NewInstance(listType))
                 .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
                 .BlockEnd()
                 .Expression(ExprDotMethod(Ref("value"), "Add", Ref("next")));

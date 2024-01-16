@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     public class JsonGetterIndexedProvidedBaseNative : BaseNativePropertyGetter,
         JsonEventPropertyGetter
     {
-        private readonly FieldInfo field;
-        private readonly int index;
+        private readonly FieldInfo _field;
+        private readonly int _index;
 
         public JsonGetterIndexedProvidedBaseNative(
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field,
             int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
-            this.field = field;
-            this.index = index;
+            this._field = field;
+            this._index = index;
         }
 
         public override CodegenExpression EventBeanGetCodegen(
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingGetCodegen(
-                CastUnderlying(field.DeclaringType, beanExpression),
+                CastUnderlying(_field.DeclaringType, beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -61,8 +61,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayValueAtIndex",
-                ExprDotName(underlyingExpression, field.Name),
-                Constant(index));
+                ExprDotName(underlyingExpression, _field.Name),
+                Constant(_index));
         }
 
         public override CodegenExpression EventBeanExistsCodegen(
@@ -71,7 +71,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             CodegenClassScope codegenClassScope)
         {
             return UnderlyingExistsCodegen(
-                CastUnderlying(field.DeclaringType, beanExpression),
+                CastUnderlying(_field.DeclaringType, beanExpression),
                 codegenMethodScope,
                 codegenClassScope);
         }
@@ -84,8 +84,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayExistsAtIndex",
-                ExprDotName(underlyingExpression, field.Name),
-                Constant(index));
+                ExprDotName(underlyingExpression, _field.Name),
+                Constant(_index));
         }
 
         public override bool IsExistsProperty(EventBean eventBean)
@@ -100,13 +100,13 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public object GetJsonProp(object @object)
         {
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, field);
-            return CollectionUtil.ArrayValueAtIndex((Array) value, index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, _field);
+            return CollectionUtil.ArrayValueAtIndex((Array) value, _index);
         }
 
         public bool GetJsonExists(object @object)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, field, index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedPropExists(@object, _field, _index);
         }
 
         public object GetJsonFragment(object @object)
@@ -115,7 +115,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
                 return null;
             }
 
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, field, index);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(@object, _field, _index);
             if (value == null) {
                 return null;
             }
@@ -123,7 +123,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return GetFragmentFromValue(value);
         }
 
-        public override Type TargetType => field.DeclaringType;
+        public override Type TargetType => _field.DeclaringType;
 
         public override Type BeanPropType => typeof(object);
     }

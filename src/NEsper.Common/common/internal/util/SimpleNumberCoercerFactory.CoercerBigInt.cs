@@ -44,13 +44,15 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBigInteger();
             }
 
-            public Type ReturnType => typeof(BigInteger);
+            public Type ReturnType => typeof(BigInteger?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType)
             {
-                return CodegenBigInt(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    : CodegenBigInt(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(

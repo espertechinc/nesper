@@ -7,17 +7,13 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.compile.multikey;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof
-{
-    public class EnumDistinctOfHelper
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof {
+    public class EnumDistinctOfHelper {
         public static void ForEachBlock(
             CodegenBlock block,
             CodegenExpression eval,

@@ -37,6 +37,7 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Runtime.Threading.IsInternalTimerEnabled = false;
 			configuration.Common.AddImportNamespace(typeof(FileSinkFactory));
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
+			configuration.Common.EventMeta.IsEnableXmlXsd = true;
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 			_runtimeProvider = new EPRuntimeProvider();
 			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);
@@ -52,7 +53,6 @@ namespace com.espertech.esperio.regression.adapter
 			        "DefaultSupportSourceOp -> mystreamOne<MyMapEvent> {}" +
 			        "FileSink(mystreamOne, mystreamOne) {file: 'x:\\a.bb'}";
 			TryInvalidCompileGraph(_runtime, graph,
-				"Error during compilation: " +
 				"Failed to obtain operator 'FileSink': " +
 				"FileSinkForge expected a single input port");
 

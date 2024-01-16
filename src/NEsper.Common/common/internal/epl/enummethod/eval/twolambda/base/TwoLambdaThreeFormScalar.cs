@@ -36,21 +36,21 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
 
         public int NumParameters => numParameters;
 
-        public abstract Type ReturnType();
+        public abstract Type ReturnType(Type inputCollectionType);
 
-        public abstract CodegenExpression ReturnIfEmptyOptional();
+        public abstract CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType);
 
         public abstract void InitBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope);
+            CodegenClassScope codegenClassScope, Type inputCollectionType);
 
         public abstract void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope);
+            CodegenClassScope codegenClassScope, Type inputCollectionType);
 
         public abstract void ReturnResult(CodegenBlock block);
 
@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
 
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
-                .MakeChildWithScope(typeof(IDictionary<object, object>), GetType(), scope, codegenClassScope)
+                .MakeChildWithScope(ReturnType(premade.EnumcollType), GetType(), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
                 .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
@@ -88,14 +88,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
             var hasIndex = numParameters >= 2;
             var hasSize = numParameters >= 3;
 
-            var returnIfEmpty = ReturnIfEmptyOptional();
+            var returnIfEmpty = ReturnIfEmptyOptional(premade.EnumcollType);
             if (returnIfEmpty != null) {
                 methodNode.Block
                     .IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
                     .BlockReturn(returnIfEmpty);
             }
 
-            InitBlock(methodNode.Block, methodNode, scope, codegenClassScope);
+            InitBlock(methodNode.Block, methodNode, scope, codegenClassScope, premade.EnumcollType);
             methodNode.Block
                 .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                 .DeclareVar<ObjectArrayEventBean>(
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
                 forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));
             }
 
-            ForEachBlock(forEach, methodNode, scope, codegenClassScope);
+            ForEachBlock(forEach, methodNode, scope, codegenClassScope, premade.EnumcollType);
 
             ReturnResult(methodNode.Block);
             return LocalMethod(methodNode, premade.Eps, premade.Enumcoll, premade.IsNewData, premade.ExprCtx);

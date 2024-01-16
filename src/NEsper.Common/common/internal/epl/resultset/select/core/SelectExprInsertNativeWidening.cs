@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.util;
-
+using com.espertech.esper.compat;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.resultset.select.core
@@ -76,9 +76,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                                 // no action
                             }
                             else {
-                                var evalClass = evalType;
-                                leaf.Block.DeclareVar(evalClass, refname, expression);
-                                if (!evalClass.IsPrimitive) {
+                                leaf.Block.DeclareVar(evalType, refname, expression);
+                                if (!evalType.IsPrimitive) {
                                     leaf.Block.IfRefNotNull(refname)
                                         .AssignArrayElement(
                                             "values",

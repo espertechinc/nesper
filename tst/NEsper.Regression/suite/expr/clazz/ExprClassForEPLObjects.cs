@@ -120,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     eplPropertyType,
                     "Nestable type configuration encountered an unexpected property type name");
 #endif
-                
+            
                 var eplNamedWindow =
                     EscapeClass("public class MyType {}") +
                     "create window MyWindow(myfield MyType)\n";
@@ -143,6 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                     EscapeClass("public class MyScriptResult {}") +
                     "expression Object[] js:myItemProducerScript() [\n" +
                     "function myItemProducerScript() {" +
+                    "  \n" +
                     "  var arrayType = host.resolveType(\"MyScriptResult\");\n" +
                     "  var rows = host.newArr(arrayType, 2);\n" +
                     "  return rows;\n" +
@@ -154,8 +155,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
                 env.AssertThat(
                     () => {
-                        var ex = Assert.Throws<EPException>(() => env.SendEventBean(new SupportBean("E1", 1)));
-                        AssertMessage(ex, "Unexpected exception in statement 's0'");
+                        // in .NET the resolver can resolve the type because we have the artifact resolver
+                        // in Java, they rely on Java.type() in the v8 runtime which will not have visibility
+                        // to the classpathloader... hence, Java fails, but .NET is expected to function
+                        env.SendEventBean(new SupportBean("E1", 1));
+                        //AssertMessage(ex, "Unexpected exception in statement 's0'");
                     });
 
                 env.UndeployAll();

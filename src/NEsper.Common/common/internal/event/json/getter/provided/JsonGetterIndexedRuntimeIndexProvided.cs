@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     /// </summary>
     public sealed class JsonGetterIndexedRuntimeIndexProvided : EventPropertyGetterIndexedSPI
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterIndexedRuntimeIndexProvided(FieldInfo field)
         {
-            this.field = field;
+            this._field = field;
         }
 
         public CodegenExpression EventBeanGetIndexedCodegen(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "ArrayValueAtIndex",
-                ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name),
+                ExprDotName(CastUnderlying(_field.DeclaringType, beanExpression), _field.Name),
                 key);
         }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventBean eventBean,
             int index)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, field, index);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedIndexedProp(eventBean.Underlying, _field, index);
         }
     }
 } // end of namespace

@@ -62,7 +62,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
         public static ObjectArrayEventType MakeOATypeCompileTime(
             EventTypeMetadata metadata,
-            IDictionary<string, object> properyTypes,
+            IDictionary<string, object> propertyTypes,
             EventType[] optionalSuperTypes,
             ISet<EventType> optionalDeepSupertypes,
             string startTimestampName,
@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ArgumentException("Invalid application type " + metadata.ApplicationType);
             }
 
-            IDictionary<string, object> verified = ResolvePropertyTypes(properyTypes, eventTypeCompileTimeResolver);
+            IDictionary<string, object> verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
             return new ObjectArrayEventType(
                 metadata,
                 verified,

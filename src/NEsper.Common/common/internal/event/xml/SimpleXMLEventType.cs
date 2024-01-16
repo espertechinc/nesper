@@ -18,6 +18,7 @@ using com.espertech.esper.common.client.meta;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.@event.property;
 using com.espertech.esper.common.@internal.@event.propertyparser;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
@@ -37,6 +38,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
+        private readonly long _id = DebugId<SimpleXMLEventType>.NewId(); 
+        
         private readonly bool isResolvePropertiesAbsolute;
         private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
         private readonly string defaultNamespacePrefix;

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -19,17 +18,14 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmax {
     public class EnumMinMaxScalarNoParam : EnumForgeBasePlain,
         EnumForge,
-        EnumEval
-    {
+        EnumEval {
         private readonly bool _max;
         private readonly EPChainableType _resultType;
 
@@ -94,7 +90,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
                 .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT)
                 .Block
-                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
+                .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." +
+                                 MethodBase.GetCurrentMethod()!.Name)
                 .DeclareVar(innerTypeBoxed, "minKey", ConstantNull())
                 .DeclareVar(args.EnumcollType, "coll", EnumForgeCodegenNames.REF_ENUMCOLL);
 

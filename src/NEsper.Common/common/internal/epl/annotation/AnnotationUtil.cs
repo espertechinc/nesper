@@ -319,21 +319,39 @@ namespace com.espertech.esper.common.@internal.epl.annotation
                 return CreateAttributeInstance((AnnotationDesc) value, importService);
             }
 
-            if (!(value is Array valueAsArray)) {
-                throw new AnnotationException(
-                    "Annotation '" +
-                    annotationClass.GetSimpleName() +
-                    "' requires a " +
-                    annotationAttribute.AnnotationType.GetSimpleName() +
-                    "-typed value for attribute '" +
-                    annotationAttribute.Name +
-                    "' but received " +
-                    "a " +
-                    value.GetType().GetSimpleName() +
-                    "-typed value");
+            var componentType = annotationAttribute.AnnotationType.GetElementType();
+
+            if (!(value is Array valueAsArray))
+            {
+                valueAsArray = null;
+                
+                // sometimes lists can be converted to arrays
+                if (value.GetType().IsGenericList())
+                {
+                    var elementType = value.GetType().GetComponentType();
+                    if ((elementType == componentType) || 
+                        (elementType.IsAssignableFrom(componentType)))
+                    {
+                        valueAsArray = value.UnwrapIntoArray(componentType);
+                    }
+                }
+                
+                if (valueAsArray == null)
+                {
+                    throw new AnnotationException(
+                        "Annotation '" +
+                        annotationClass.GetSimpleName() +
+                        "' requires a " +
+                        annotationAttribute.AnnotationType.GetSimpleName() +
+                        "-typed value for attribute '" +
+                        annotationAttribute.Name +
+                        "' but received " +
+                        "a " +
+                        value.GetType().GetSimpleName() +
+                        "-typed value");
+                }
             }
 
-            var componentType = annotationAttribute.AnnotationType.GetElementType();
             var array = Arrays.CreateInstanceChecked(componentType, valueAsArray.Length);
 
             for (var i = 0; i < valueAsArray.Length; i++) {

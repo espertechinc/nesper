@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -18,15 +17,12 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby
-{
-    public class EnumMinMaxByScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.minmaxby {
+    public class EnumMinMaxByScalar : ThreeFormScalar {
         private readonly bool _max;
         private readonly EPChainableType _resultType;
         private readonly Type _innerTypeBoxed;
@@ -48,7 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -104,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return _resultTypeBoxed;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return ConstantNull();
         }
@@ -124,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type inputCollectionType)
         {
             block
                 .DeclareVar(

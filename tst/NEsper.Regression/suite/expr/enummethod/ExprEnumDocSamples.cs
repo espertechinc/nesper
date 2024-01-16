@@ -656,19 +656,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 ValidateWithVerifier(
                     env,
                     "{1, 2, 3}.arrayOf()",
-                    result => EPAssertionUtil.AssertEqualsExactOrder((object[])result, new object[] { 1, 2, 3 }));
+                    result => EPAssertionUtil.AssertEqualsExactOrder(result.Unwrap<object>(), new object[] { 1, 2, 3 }));
                 ValidateWithVerifier(
                     env,
                     "{1, 2, 3}.arrayOf(v => v+1)",
-                    result => EPAssertionUtil.AssertEqualsExactOrder((object[])result, new object[] { 2, 3, 4 }));
+                    result => EPAssertionUtil.AssertEqualsExactOrder(result.Unwrap<object>(), new object[] { 2, 3, 4 }));
                 ValidateWithVerifier(
                     env,
                     "{1, 2, 3}.arrayOf((v, index) => v+index)",
-                    result => EPAssertionUtil.AssertEqualsExactOrder((object[])result, new object[] { 1, 3, 5 }));
+                    result => EPAssertionUtil.AssertEqualsExactOrder(result.Unwrap<object>(), new object[] { 1, 3, 5 }));
                 ValidateWithVerifier(
                     env,
                     "{1, 2, 3}.arrayOf((v, index, size) => v+index+size)",
-                    result => EPAssertionUtil.AssertEqualsExactOrder((object[])result, new object[] { 4, 6, 8 }));
+                    result => EPAssertionUtil.AssertEqualsExactOrder(result.Unwrap<object>(), new object[] { 4, 6, 8 }));
                 Validate(
                     env,
                     "{1, 2, 3}.toMap(k => 'K' || Convert.ToString(k), v => 'V' || Convert.ToString(v))",

@@ -18,23 +18,23 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     /// </summary>
     public sealed class JsonGetterNestedProvided : JsonGetterNestedBase
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterNestedProvided(
             JsonEventPropertyGetter innerGetter,
             string underlyingClassName,
             FieldInfo field) : base(innerGetter, underlyingClassName)
         {
-            this.field = field;
+            this._field = field;
         }
 
-        public override string FieldName => field.Name;
+        public override string FieldName => _field.Name;
 
-        public override Type FieldType => field.FieldType;
+        public override Type FieldType => _field.FieldType;
 
         public override object GetJsonProp(object @object)
         {
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, field);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, _field);
             if (value == null) {
                 return null;
             }
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override bool GetJsonExists(object @object)
         {
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, field);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, _field);
             if (value == null) {
                 return false;
             }
@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public override object GetJsonFragment(object @object)
         {
-            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, field);
+            var value = JsonFieldGetterHelperProvided.GetJsonProvidedSimpleProp(@object, _field);
             if (value == null) {
                 return null;
             }

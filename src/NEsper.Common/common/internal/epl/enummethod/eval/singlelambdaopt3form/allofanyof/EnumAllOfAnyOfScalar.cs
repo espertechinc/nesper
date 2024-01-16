@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -15,13 +14,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; //constant;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof
-{
-    public class EnumAllOfAnyOfScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof {
+    public class EnumAllOfAnyOfScalar : ThreeFormScalar {
         private readonly bool _all;
 
         public EnumAllOfAnyOfScalar(
@@ -82,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return typeof(bool?);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return Constant(_all);
         }
@@ -100,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type inputCollectionType)
         {
             CodegenLegoBooleanExpression.CodegenReturnBoolIfNullOrBool(
                 block,

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,13 +17,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where
-{
-    public class EnumWhereScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where {
+    public class EnumWhereScalar : ThreeFormScalar {
         public EnumWhereScalar(
             ExprDotEvalParamLambda lambda,
             ObjectArrayEventType fieldEventType,
@@ -75,13 +71,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(ICollection<object>);
+            return inputCollectionType;
+            //return typeof(ICollection<object>);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
+            var componentType = inputCollectionType.GetComponentType();
+            return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
-            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
@@ -91,14 +89,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type inputCollectionType)
         {
-            block.DeclareVar<ArrayDeque<object>>("result", NewInstance(typeof(ArrayDeque<object>)));
+            var itemType = inputCollectionType.GetComponentType();
+            var arrayType = typeof(ArrayDeque<>).MakeGenericType(itemType);
+
+            block.DeclareVar(arrayType, "result", NewInstance(arrayType));
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 block,

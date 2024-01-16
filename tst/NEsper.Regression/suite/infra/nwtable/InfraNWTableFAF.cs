@@ -1647,7 +1647,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 if (namedWindow) {
                     env.CompileExecuteFAF("delete from MyInfra", path);
                     env.SendEventBean(new SupportBean("A", 10));
-                    env.CompileExecuteFAF("update MyInfra mw set mw.setTheString('XYZ'), doubleInt(mw)", path);
+                    env.CompileExecuteFAF("update MyInfra mw set mw.SetTheString('XYZ'), doubleInt(mw)", path);
                     env.AssertPropsPerRowIterator(
                         "TheInfra",
                         "TheString,IntPrimitive".SplitCsv(),

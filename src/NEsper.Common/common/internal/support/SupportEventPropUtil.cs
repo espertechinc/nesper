@@ -19,10 +19,10 @@ namespace com.espertech.esper.common.@internal.support
     public class SupportEventPropUtil
     {
         public static void AssertPropsEquals(
-            EventPropertyDescriptor[] received,
+            IList<EventPropertyDescriptor> received,
             params SupportEventPropDesc[] expected)
         {
-            AssertEquals(received.Length, expected.Length);
+            AssertEquals(received.Count, expected.Length);
 
             IDictionary<string, EventPropertyDescriptor> receivedProps =
                 new Dictionary<string, EventPropertyDescriptor>();

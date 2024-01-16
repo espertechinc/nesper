@@ -960,6 +960,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
         /// RegressionRunner.Run(_session, InfraNWTableFAFIndex.Executions());
         /// </code>
         /// </summary>
+        [Parallelizable(ParallelScope.Fixtures)]
         public class TestInfraNWTableFAFIndex : AbstractTestBase
         {
             public TestInfraNWTableFAFIndex() : base(Configure)

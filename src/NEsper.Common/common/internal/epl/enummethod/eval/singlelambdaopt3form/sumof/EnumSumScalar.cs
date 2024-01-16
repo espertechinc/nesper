@@ -8,20 +8,16 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // Ref;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
-{
-    public class EnumSumScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof {
+    public class EnumSumScalar : ThreeFormScalar {
         private readonly ExprDotEvalSumMethodFactory sumMethodFactory;
 
         public EnumSumScalar(
@@ -36,7 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -71,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return sumMethodFactory.ValueType;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return null;
         }
@@ -90,7 +87,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type inputCollectionType)
         {
             var innerType = InnerExpression.EvaluationType;
             block.DeclareVar(

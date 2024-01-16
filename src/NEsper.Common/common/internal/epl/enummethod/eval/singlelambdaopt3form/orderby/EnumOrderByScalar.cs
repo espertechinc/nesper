@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,13 +17,10 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
-{
-    public class EnumOrderByScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby {
+    public class EnumOrderByScalar : ThreeFormScalar {
         private readonly bool _descending;
         private readonly Type _innerBoxedType;
 
@@ -41,7 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -81,12 +78,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
+        public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
+
         public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(ICollection<object>);
+            return inputCollectionType;
+            //return typeof(ICollection<>).MakeGenericType(typeof(object));
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return null;
         }
@@ -98,10 +98,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type inputCollectionType)
         {
+            var keyType = KeyType;
+            var valType = inputCollectionType;
+            var dictType = typeof(IOrderedDictionary<,>).MakeGenericType(keyType, valType);
+            var implType = typeof(OrderedListDictionary<,>).MakeGenericType(keyType, valType);
+
             block
-                .DeclareVar<IOrderedDictionary<object, ICollection<object>>>(
-                    "sort",
-                    NewInstance(typeof(OrderedListDictionary<object, ICollection<object>>)))
+                .DeclareVar(dictType, "sort", NewInstance(implType))
                 .DeclareVar<bool>("hasColl", ConstantFalse());
         }
 
@@ -109,9 +112,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
-            EnumOrderByHelper.SortingCode<object>(
+            EnumOrderByHelper.SortingCode(
+                inputCollectionType.GetComponentType(),
                 block,
                 _innerBoxedType,
                 InnerExpression,

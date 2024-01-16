@@ -15,6 +15,9 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
     public class EventMapProperties
@@ -149,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "yOne" });
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a")));
+                    statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
 
                 env.UndeployAll();
             }

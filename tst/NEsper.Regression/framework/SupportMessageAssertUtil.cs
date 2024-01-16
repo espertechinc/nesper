@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.framework
         {
             try {
                 @event.Get(propertyName);
-                Assert.Fail();
+                Assert.Fail("Property named '" + propertyName + "' exists, but should be considered invalid");
             }
             catch (PropertyAccessException ex) {
                 // expected

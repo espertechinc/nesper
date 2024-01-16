@@ -7,14 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
-{
-    public interface ExprDotEvalSumMethodFactory
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof {
+    public interface ExprDotEvalSumMethodFactory {
         ExprDotEvalSumMethod SumAggregator { get; }
 
         Type ValueType { get; }

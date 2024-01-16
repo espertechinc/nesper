@@ -58,6 +58,27 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
         {
         }
 
+        protected void ApplyEvalUnbox(
+            CodegenMethod method,
+            ExprForge[] forges,
+            out CodegenExpressionRef value,
+            out Type valueType)
+        {
+            // it is possible that "val" is actually a "nullable" type even though we
+            // have checked the value.  In this block, we unbox the type and unbox the
+            // value.
+            value = Ref("val");
+            valueType = forges[0].EvaluationType;
+            if (valueType.CanBeNull()) {
+                var valueTypeUnboxed = valueType.GetUnboxedType();
+                if (valueTypeUnboxed != valueType) {
+                    method.Block.DeclareVar(valueTypeUnboxed, "uval", Unbox(value, valueType));
+                    valueType = valueTypeUnboxed;
+                    value = Ref("uval");
+                }
+            }
+        }
+        
         protected override void ApplyEvalEnterFiltered(
             CodegenMethod method,
             ExprForgeCodegenSymbol symbols,
@@ -65,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             ApplyEvalValuePrefix(true, method, symbols, forges, classScope);
-            ApplyEvalEnterNonNull(Ref("val"), forges[0].EvaluationType, method, symbols, forges, classScope);
+            ApplyEvalUnbox(method, forges, out var value, out var valueType);
+            ApplyEvalEnterNonNull(value, valueType, method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableEnterFiltered(
@@ -85,7 +107,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             CodegenClassScope classScope)
         {
             ApplyEvalValuePrefix(false, method, symbols, forges, classScope);
-            ApplyEvalLeaveNonNull(Ref("val"), forges[0].EvaluationType.GetBoxedType(), method, symbols, forges, classScope);
+            ApplyEvalUnbox(method, forges, out var value, out var valueType);
+            ApplyEvalLeaveNonNull(value, valueType, method, symbols, forges, classScope);
         }
 
         protected override void ApplyTableLeaveFiltered(

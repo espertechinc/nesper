@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
@@ -20,7 +21,7 @@ namespace com.espertech.esper.common.@internal.compile.compiler
     {
         public CompilerAbstractionCompilationContext(
             ModuleCompileTimeServices services,
-            Consumer<object> compileResultConsumer,
+            Consumer<IArtifact> compileResultConsumer,
             IList<EPCompiled> path)
         {
             Services = services;
@@ -42,7 +43,7 @@ namespace com.espertech.esper.common.@internal.compile.compiler
 
         public ModuleCompileTimeServices Services { get; }
 
-        public Consumer<object> CompileResultConsumer { get; }
+        public Consumer<IArtifact> CompileResultConsumer { get; }
 
         public string GeneratedCodeNamespace => Services.Namespace;
 

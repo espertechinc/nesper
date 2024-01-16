@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.settings
             }
 
             var plain = TypeHelper
-                .GetTypeForSimpleName(typeName, importService.TypeResolver);
+                .GetTypeForSimpleName(typeName, importService.TypeResolver, true);
 
             if (plain != null) {
                 return ParameterizeType(

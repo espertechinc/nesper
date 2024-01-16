@@ -468,10 +468,14 @@ namespace com.espertech.esper.common.@internal.support
             EventType eventType,
             params SupportEventTypeAssertionEnum[] assertions)
         {
+            var eventTypePropertyDescriptors = eventType.PropertyDescriptors
+                .OrderBy(_ => _.PropertyName)
+                .ToArray();
+
             for (var propNum = 0; propNum < expectedArr.Length; propNum++) {
                 var message = "Failed assertion for property " + propNum;
-                var prop = eventType.PropertyDescriptors[propNum];
-
+                var prop = eventTypePropertyDescriptors[propNum];
+                
                 for (var i = 0; i < assertions.Length; i++) {
                     var assertion = assertions[i];
                     var expected = expectedArr[propNum][i];

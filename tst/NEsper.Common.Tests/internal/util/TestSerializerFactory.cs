@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.util
 
             // null values are simply not serialized
             bytes = serializerFactory.Serialize(new[] { serializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
-            Assert.AreEqual(0, bytes.Length);
+            Assert.AreEqual(0, bytes[0].Length);
         }
     }
 } // end of namespace

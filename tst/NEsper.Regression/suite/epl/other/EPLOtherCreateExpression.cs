@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.util;
 using com.espertech.esper.common.@internal.support;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
@@ -136,14 +137,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.UndeployAll();
 
                 // test script chained synax
-                var eplScript = "@public create expression " +
-                                typeof(SupportBean).FullName +
-                                " js:callIt() [ new " +
-                                typeof(SupportBean).FullName +
-                                "('E1', 10); ]";
+                var supportBean = typeof(SupportBean).FullName;
+                var eplScript = $"@public create expression {supportBean} js:callIt() [ return host.newObj(host.resolveType('{supportBean}'), 'E1', 10); ]";
                 env.CompileDeploy(eplScript, path);
                 env.CompileDeploy(
-                        "@name('s0') select callIt() as val0, callIt().TheString as val1 from SupportBean as sb",
+                        "@name('s0') select callIt() as val0, callIt().GetTheString() as val1 from SupportBean as sb",
                         path)
                     .AddListener("s0");
                 env.SendEventBean(new SupportBean());

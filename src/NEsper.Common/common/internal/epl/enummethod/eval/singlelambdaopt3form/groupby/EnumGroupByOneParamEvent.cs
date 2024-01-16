@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,13 +16,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.groupby
-{
-    public class EnumGroupByOneParamEvent : ThreeFormEventPlain
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.groupby {
+    public class EnumGroupByOneParamEvent : ThreeFormEventPlain {
         public EnumGroupByOneParamEvent(ExprDotEvalParamLambda lambda) : base(lambda)
         {
         }
@@ -31,7 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -41,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             return EmptyDictionary<object, ICollection<object>>.Instance;
                         }
 
-                        var result = new Dictionary<object, ICollection<object>>();
-                        var beans = (ICollection<EventBean>)enumcoll;
+                        var result = new HashMap<object, ICollection<object>>();
+                        var beans = enumcoll.Unwrap<EventBean>();
                         foreach (var next in beans) {
                             eventsLambda[StreamNumLambda] = next;
 
@@ -63,26 +60,30 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         }
 
         public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
-        public Type ValType => typeof(ICollection<object>); 
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
+            var valType = GenericExtensions.GetDictionaryValueType(desiredReturnType);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, ValType), "Instance");
+            var valType = GenericExtensions.GetDictionaryValueType(desiredReturnType);
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, valType), "Instance");
         }
 
         public override void InitBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type desiredReturnType)
         {
-            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
-            var nullType = typeof(NullableDictionary<,>).MakeGenericType(KeyType, ValType);
+            var valType = GenericExtensions.GetDictionaryValueType(desiredReturnType);
+            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
+            var nullType = typeof(NullableDictionary<,>).MakeGenericType(KeyType, valType);
+
             block.DeclareVar(dictType, "result", NewInstance(nullType));
         }
 
@@ -90,21 +91,20 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
-            block.DeclareVar(
-                    KeyType,
-                    "key",
+            var valType = GenericExtensions.GetDictionaryValueType(desiredReturnType);
+            var itemType = GenericExtensions.GetComponentType(valType);
+            var listType = typeof(List<>).MakeGenericType(itemType);
+
+            block.DeclareVar(KeyType, "key",
                     InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
-                .DeclareVar(
-                    ValType,
-                    "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
+                .DeclareVar(valType, "value", ExprDotMethod(Ref("result"), "Get", Ref("key")))
                 .IfRefNull("value")
-                .AssignRef("value", NewInstance(typeof(List<object>)))
+                .AssignRef("value", NewInstance(listType))
                 .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
                 .BlockEnd()
-                .Expression(ExprDotMethod(Ref("value"), "Add", ExprDotUnderlying(Ref("next"))));
+                .Expression(ExprDotMethod(Ref("value"), "Add", Cast(itemType, ExprDotUnderlying(Ref("next")))));
         }
 
         public override void ReturnResult(CodegenBlock block)

@@ -12,10 +12,8 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base
-{
-    public class ThreeFormEventPlusFactory : ThreeFormBaseFactory
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base {
+    public class ThreeFormEventPlusFactory : ThreeFormBaseFactory {
         private readonly EventType eventType;
         private readonly string streamName;
         private readonly ObjectArrayEventType fieldType;

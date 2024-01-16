@@ -287,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 AssertType(env, typeof(HashableMultiKey), "firstkey,lastkey,lowerkey");
 
-                PrepareTestData(env, new BTreeDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
+                PrepareTestData(env, new OrderedListDictionary<int, IList<SupportBean>>()); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
 
@@ -325,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(IOrderedDictionary<ICollection<object>, EventBean>), "sm");
                 AssertType(env, typeof(SupportBean), "eblastof");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 for (var start = 0; start < 12; start++) {
@@ -377,7 +377,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 AssertType(env, typeof(IOrderedDictionary<ICollection<object>, EventBean>), "nmr");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -418,7 +418,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(bool?), "ck");
                 AssertType(env, typeof(string), "geid");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -467,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(string), "feid,leid");
                 AssertType(env, typeof(SupportBean), "fefo,feslo,lefo,leslo");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(SupportBean[]), "fes,les");
                 AssertType(env, typeof(int?), "fk,lk");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -568,7 +568,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(string), "ceid,feid,heid,leid");
                 AssertType(env, typeof(SupportBean), "cefo,fefo,hefo,lefo,ceslo,feslo,heslo,leslo");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -630,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 AssertType(env, typeof(SupportBean[]), "ces,fes,hes,les");
                 AssertType(env, typeof(int?), "ck,fk,hk,lk");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 PrepareTestData(env, treemap); // 1, 1, 4, 6, 6, 8, 9
 
                 env.Milestone(0);
@@ -665,7 +665,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             public void Run(RegressionEnvironment env)
             {
                 var fields = "c0".SplitCsv();
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+				var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
 
                 var epl =
                     "@name('s0') select sorted(IntPrimitive).floorEvent(IntPrimitive-1) as c0 from SupportBean#length(3) as sb";
@@ -698,7 +698,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "@name('s0') select MyTable.sortcol.floorEvent(Id) as c0 from SupportBean_S0";
                 env.CompileDeploy(epl).AddListener("s0");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 MakeSendBean(env, treemap, "E1", 10);
                 MakeSendBean(env, treemap, "E2", 20);
                 MakeSendBean(env, treemap, "E3", 30);
@@ -737,7 +737,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         path)
                     .AddListener("s0");
 
-                var treemap = new BTreeDictionary<int, IList<SupportBean>>();
+                var treemap = new OrderedListDictionary<int, IList<SupportBean>>();
                 MakeSendBean(env, treemap, "E1", 10);
                 MakeSendBean(env, treemap, "E2", 20);
                 MakeSendBean(env, treemap, "E3", 30);

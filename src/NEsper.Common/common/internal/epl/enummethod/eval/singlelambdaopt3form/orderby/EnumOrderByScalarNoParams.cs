@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -15,14 +14,11 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby {
     public class EnumOrderByScalarNoParams : EnumForgeBasePlain,
-        EnumEval
-    {
+        EnumEval {
         private readonly bool _descending;
 
         public EnumOrderByScalarNoParams(
@@ -58,8 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
+            var componentType = args.EnumcollType.GetComponentType();
+            var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
+            var listType = typeof(List<>).MakeGenericType(componentType);
+
             var block = codegenMethodScope
-                .MakeChild(typeof(ICollection<object>), typeof(EnumOrderByScalarNoParams), codegenClassScope)
+                .MakeChild(collectionType, typeof(EnumOrderByScalarNoParams), codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
                 .AddParam(args.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
@@ -69,16 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     Or(
                         EqualsNull(EnumForgeCodegenNames.REF_ENUMCOLL),
                         ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty")))
-                .BlockReturn(EnumValue(typeof(EmptyList<object>), "Instance"))
-                .DeclareVar<List<object>>(
-                    "list",
-                    NewInstance(typeof(List<object>), EnumForgeCodegenNames.REF_ENUMCOLL));
+                .BlockReturn(EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance"))
+                .DeclareVar(listType, "list", NewInstance(listType, EnumForgeCodegenNames.REF_ENUMCOLL));
             if (_descending) {
                 block.StaticMethod(
                     typeof(Collections),
                     "SortInPlace",
                     Ref("list"),
-                    StaticMethod(typeof(Comparers), "Inverse", new[] { typeof(object) }));
+                    StaticMethod(typeof(Comparers), "Inverse", new[] { componentType }));
             }
             else {
                 block.StaticMethod(typeof(Collections), "SortInPlace", Ref("list"));

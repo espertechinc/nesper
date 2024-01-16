@@ -11,6 +11,8 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
+using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
@@ -305,7 +307,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 }
             }
 
-            EPAssertionUtil.AssertMapOfCollection((IDictionary<string, object>)val, keys, values, extractorEvents);
+            var asObjectDictionary = val.AsObjectDictionary(MagicMarker.SingletonInstance);
+            Assert.NotNull(asObjectDictionary);
+            EPAssertionUtil.AssertMapOfCollection(asObjectDictionary, keys, values, extractorEvents);
         }
     }
 } // end of namespace

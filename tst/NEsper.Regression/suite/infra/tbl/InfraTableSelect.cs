@@ -291,8 +291,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean_S1(6, "G1", "a", "b")); // merge more values
 
-                object[] rowValues =
-                    { "G1", 10, "a", new SupportBean[] { e1Sb }, 100L, "b", new SupportBean_S0[] { e2Sb0 } };
+                object[] rowValues = { "G1", 10, "a", new SupportBean[] { e1Sb }, 100L, "b", new SupportBean_S0[] { e2Sb0 } };
+
                 RunAssertionSubqueryWindowAgg(env, path, rowValues);
                 RunAssertionOnSelectWindowAgg(env, path, expectedType, rowValues);
                 RunAssertionSubquerySelectStar(env, path, rowValues);

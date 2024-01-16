@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -16,13 +15,11 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
-
+using com.espertech.esper.compat.collections;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
-{
-    public class EnumLastOfScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof {
+    public class EnumLastOfScalar : ThreeFormScalar {
         private readonly EPChainableType _resultType;
 
         public EnumLastOfScalar(
@@ -37,7 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -74,7 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return _resultType.GetCodegenReturnType().GetBoxedType();
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
             return ConstantNull();
         }
@@ -86,14 +84,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type inputCollectionType)
         {
-            block.DeclareVar<object>("result", ConstantNull());
+            block.DeclareVar(inputCollectionType.GetComponentType().GetBoxedType(), "result", ConstantNull());
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type inputCollectionType)
         {
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 block,

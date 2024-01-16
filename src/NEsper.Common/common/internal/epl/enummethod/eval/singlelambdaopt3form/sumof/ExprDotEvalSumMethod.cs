@@ -6,10 +6,8 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
-{
-    public interface ExprDotEvalSumMethod
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof {
+    public interface ExprDotEvalSumMethod {
         void Enter(object value);
 
         object Value { get; }

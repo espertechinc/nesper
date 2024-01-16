@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     "s0",
                     statement => {
                         var typeSelectAll = statement.EventType;
-                        AssertEventTypeDefault(typeSelectAll);
+                        AssertEventTypeDefault(typeSelectAll, true);
                         Assert.AreEqual(typeof(object), statement.EventType.UnderlyingType);
                     });
 
@@ -357,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 fields = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue";
                 env.CompileDeploy("@name('s0') select " + fields + " from MyVariantTwoTypedSB").AddListener("s0");
-                env.AssertStatement("s0", statement => AssertEventTypeDefault(statement.EventType));
+                env.AssertStatement("s0", statement => AssertEventTypeDefault(statement.EventType, false));
 
                 // coerces to the higher resolution type, accepts boxed versus not boxed
                 env.SendEventBean(new SupportBeanVariantStream("s1", true, 1, 20, 30, SupportEnum.ENUM_VALUE_1));
@@ -709,13 +709,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             }
         }
 
-        private static void AssertEventTypeDefault(EventType eventType)
+        private static void AssertEventTypeDefault(EventType eventType, bool isVariant)
         {
             var expected = "TheString,BoolBoxed,IntPrimitive,LongPrimitive,DoublePrimitive,EnumValue".SplitCsv();
             var propertyNames = eventType.PropertyNames;
             
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
-            
+
             Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
             Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
             Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
             SupportEventPropUtil.AssertPropsEquals(
                 eventType.PropertyDescriptors.ToArray(),
-                new SupportEventPropDesc("TheString", typeof(string)),
+                new SupportEventPropDesc("TheString", typeof(string)).WithIndexed(!isVariant),
                 new SupportEventPropDesc("BoolBoxed", typeof(bool?)),
                 new SupportEventPropDesc("IntPrimitive", typeof(int?)),
                 new SupportEventPropDesc("LongPrimitive", typeof(long?)),

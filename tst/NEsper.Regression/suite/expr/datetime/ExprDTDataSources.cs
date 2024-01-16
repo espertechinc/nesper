@@ -209,12 +209,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 // test PONO inheritance via create-schema
                 path.Clear();
                 var eplPONO =
-                    "@public @buseventtype create schema InterfaceType as " +
-                    typeof(SupportStartTSEndTSInterface).FullName +
-                    " starttimestamp StartTS endtimestamp EndTS;\n" +
-                    "@public @buseventtype create schema DerivedType as " +
-                    typeof(SupportStartTSEndTSImpl).FullName +
-                    " inherits InterfaceType";
+                    $"@public @buseventtype create schema InterfaceType as {typeof(SupportStartTSEndTSInterface).FullName} starttimestamp StartTS endtimestamp EndTS;\n" +
+                    $"@public @buseventtype create schema DerivedType as {typeof(SupportStartTSEndTSImpl).FullName} inherits InterfaceType";
                 env.CompileDeploy(eplPONO, path);
 
                 var compiled = env.Compile(
@@ -235,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 String eplXML = "@XMLSchema(RootElementName='root', SchemaText='') " +
                                 "@XMLSchemaField(Name='StartTS', XPath='/abc', Type='string', CastToType='long')" +
                                 "@XMLSchemaField(Name='EndTS', XPath='/def', Type='string', CastToType='long')" +
-                                "create xml schema MyXMLEvent() starttimestamp StartTS endtimestamp EndTS;\n";
+                                "@public @buseventtype create xml schema MyXMLEvent() starttimestamp StartTS endtimestamp EndTS;\n";
                 env.CompileDeploy(eplXML, path);
 
                 compiled = env.Compile(
@@ -269,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.TryInvalidCompile(
                     path,
                     "create schema T12 as (StartTSOne null, EndTSXXX long) starttimestamp StartTSOne endtimestamp EndTSXXX",
-                    "Declared start timestamp property 'StartTSOne' is expected to return a Date, Calendar or long-typed value but returns 'null'");
+                    "Declared start timestamp property 'StartTSOne' is expected to return a DateTimeEx, DateTime, DateTimeOffset or long-typed value but returns 'System.Object'");
 
                 env.UndeployAll();
             }

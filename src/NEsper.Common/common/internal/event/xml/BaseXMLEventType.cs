@@ -187,8 +187,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
                     var returnType = SchemaUtil.ToReturnType(property.Type, property.OptionalCastToType);
                     var isIndexed =
-                        returnType.IsArray ||
-                        returnType.IsGenericEnumerable();
+                        (returnType == typeof(XmlNodeList)) ||
+                        (returnType.IsArray) ||
+                        (returnType.IsGenericEnumerable());
                     
                     var desc = new EventPropertyDescriptor(
                         property.Name,

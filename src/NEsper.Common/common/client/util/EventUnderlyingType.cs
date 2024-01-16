@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Xml;
 using com.espertech.esper.common.@internal.@event.avro;
 
 namespace com.espertech.esper.common.client.util
@@ -62,21 +62,14 @@ namespace com.espertech.esper.common.client.util
         /// <returns>default underlying type</returns>
         public static Type GetUnderlyingClass(this EventUnderlyingType underlyingType)
         {
-            switch (underlyingType) {
-                case EventUnderlyingType.OBJECTARRAY:
-                    return typeof(object[]);
-
-                case EventUnderlyingType.MAP:
-                    return typeof(IDictionary<string, object>);
-
-                case EventUnderlyingType.AVRO:
-                    return null;
-
-                case EventUnderlyingType.JSON:
-                    return typeof(object);
-            }
-
-            throw new ArgumentException("invalid value", nameof(underlyingType));
+            return underlyingType switch
+            {
+                EventUnderlyingType.OBJECTARRAY => typeof(object[]),
+                EventUnderlyingType.MAP => typeof(IDictionary<string, object>),
+                EventUnderlyingType.AVRO => null,
+                EventUnderlyingType.JSON => typeof(object),
+                _ => throw new ArgumentException("invalid value", nameof(underlyingType))
+            };
         }
 
         /// <summary>

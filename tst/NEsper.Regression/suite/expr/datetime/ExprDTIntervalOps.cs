@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.TryInvalidCompile(
                     "select a.before(b) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
                     "Failed to validate select-clause expression 'a.before(b)': For date-time method 'before' the first parameter is event type 'SupportBean', however no timestamp property has been defined for this event type");
-
+                
                 // wrong 1st parameter - boolean
                 env.TryInvalidCompile(
                     "select a.before(true) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
@@ -338,8 +338,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "select b.before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
                     "Failed to validate select-clause expression 'b.before(a)': Date-time enumeration method 'before' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property");
                 env.TryInvalidCompile(
-                    "select a.Get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
-                    "Failed to validate select-clause expression 'a.Get(\"month\").before(a)': Invalid input for date-time method 'before' ");
+                    "select a.get('month').before(a) from SupportTimeStartEndA#lastevent as a, SupportBean#lastevent as b",
+                    "Failed to validate select-clause expression 'a.get(\"month\").before(a)': Failed to resolve method 'get': Could not find enumeration method, date-time method, instance method or property named 'get'");
 
                 // test before/after
                 env.TryInvalidCompile(

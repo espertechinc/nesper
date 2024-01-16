@@ -32,6 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
     public class EventInfraPropertyMappedIndexed : RegressionExecution
     {
         private static readonly Type BEAN_TYPE = typeof(MyIMEvent);
+        
         public const string XML_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "XML";
         public const string MAP_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "Map";
         public const string OA_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "OA";
@@ -39,52 +40,78 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         public const string JSON_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "Json";
         public const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyMappedIndexed) + "JsonProvided";
 
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyMappedIndexed(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-
-            RunAssertion(
-                env,
-                BEAN_TYPE.Name,
-                FBEAN,
-                new MyIMEvent(new[] { "v1", "v2" }, Collections.SingletonMap("k1", "v1")),
-                path);
-
-            RunAssertion(
-                env,
-                MAP_TYPENAME,
-                FMAP,
-                TwoEntryMap<string, object>(
-                    "Indexed", new[] { "v1", "v2" },
-                    "Mapped", Collections.SingletonMap("k1", "v1")),
-                path);
-
-            RunAssertion(
-                env,
-                OA_TYPENAME,
-                FOA,
-                new object[] { new[] { "v1", "v2" }, Collections.SingletonMap("k1", "v1") },
-                path);
-
-            // Avro
-            var avroSchema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
-            var datum = new GenericRecord(avroSchema);
-            datum.Put("Indexed", Arrays.AsList("v1", "v2"));
-            datum.Put("Mapped", Collections.SingletonMap("k1", "v1"));
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, datum, path);
-
-            // Json
-            var mapType = typeof(IDictionary<string, object>).CleanName();
-            env.CompileDeploy($"@public @buseventtype @name('schema') create json schema {JSON_TYPENAME} (Indexed string[], Mapped `{mapType}`)", path);
             var json = "{\"Mapped\":{\"k1\":\"v1\"},\"Indexed\":[\"v1\",\"v2\"]}";
-            RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
 
-            // Json+ProvidedClass
-            env.CompileDeploy(
-                $"@public @buseventtype @name('schema') @JsonSchema(ClassName='{typeof(MyLocalJsonProvided).FullName}') " +
-                $"create json schema {JSONPROVIDED_TYPENAME}()",
-                path);
-            RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.DEFAULT:
+                    RunAssertion(
+                        env,
+                        BEAN_TYPE.Name,
+                        FBEAN,
+                        new MyIMEvent(new string[] { "v1", "v2" }, Collections.SingletonDataMap("k1", "v1")),
+                        path);
+                    break;
+
+                case EventRepresentationChoice.MAP:
+                    RunAssertion(
+                        env,
+                        MAP_TYPENAME,
+                        FMAP,
+                        TwoEntryMap<string, object>(
+                            "Indexed", new[] { "v1", "v2" },
+                            "Mapped", Collections.SingletonDataMap("k1", "v1")),
+                        path);
+                    break;
+
+                case EventRepresentationChoice.OBJECTARRAY:
+                    RunAssertion(
+                        env,
+                        OA_TYPENAME,
+                        FOA,
+                        new object[] { new[] { "v1", "v2" }, Collections.SingletonDataMap("k1", "v1") },
+                        path);
+                    break;
+
+                case EventRepresentationChoice.AVRO:
+                    // Avro
+                    var avroSchema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
+                    var datum = new GenericRecord(avroSchema);
+                    datum.Put("Indexed", Arrays.AsList("v1", "v2"));
+                    datum.Put("Mapped", Collections.SingletonMap("k1", "v1"));
+                    RunAssertion(env, AVRO_TYPENAME, FAVRO, datum, path);
+                    break;
+
+                case EventRepresentationChoice.JSON:
+                    // Json
+                    var mapType = typeof(IDictionary<string, object>).CleanName();
+                    env.CompileDeploy($"@public @buseventtype @name('schema') create json schema {JSON_TYPENAME} (Indexed string[], Mapped `{mapType}`)", path);
+                    RunAssertion(env, JSON_TYPENAME, FJSON, json, path);
+                    break;
+
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    // Json+ProvidedClass
+                    env.CompileDeploy(
+                        $"@public @buseventtype @name('schema') @JsonSchema(ClassName='{typeof(MyLocalJsonProvided).FullName}') " +
+                        $"create json schema {JSONPROVIDED_TYPENAME}()",
+                        path);
+                    RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, json, path);
+                    break;
+            }
         }
 
         private void RunAssertion(
@@ -120,7 +147,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionEventInvalidProp(EventBean @event)
         {
-            foreach (var prop in Arrays.AsList("xxxx", "Mapped[1]", "Indexed('a')", "Mapped.x", "Indexed.x")) {
+            // "Mapped[1]" <== technically a valid property
+            foreach (var prop in Arrays.AsList("xxxx", "Indexed('a')", "Mapped.x", "Indexed.x")) {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
@@ -135,11 +163,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 () => {
                     var eventType = env.Runtime.EventTypeService.GetBusEventType(typeName);
                     var mapType = underlying is GenericRecord
-                        ? typeof(IDictionary<string, object>)
-                        : typeof(IDictionary<string, string>);
+                        ? typeof(IDictionary<string, string>)
+                        : typeof(IDictionary<string, object>);
                     var mapValueType = mapType.GetDictionaryValueType();
                     
-                    var expectedType = new object[][] {
+                    var expectedType = new[]
+                    {
                         new object[] { "Indexed", typeof(string[]), null, null },
                         new object[] { "Mapped", mapType, null, null }
                     };
@@ -175,22 +204,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                             .WithComponentType(typeof(string)),
                         eventType.GetPropertyDescriptor("Indexed"));
 
-                    Type mappedType;
-                    Type componentType;
-                    if (typeName.Equals(MAP_TYPENAME) ||
-                        typeName.Equals(OA_TYPENAME) ||
-                        typeName.Equals(JSON_TYPENAME)) {
-                        componentType = typeof(object);
-                        mappedType = typeof(IDictionary<string, object>);
-                    }
-                    else {
-                        componentType = typeof(string);
-                        mappedType = typeof(IDictionary<string, string>);
-                    }
-
                     AssertPropEquals(
-                        new SupportEventPropDesc("Mapped", mappedType)
-                            .WithComponentType(componentType)
+                        new SupportEventPropDesc("Mapped", mapType)
+                            .WithComponentType(mapValueType)
                             .WithMapped(),
                         eventType.GetPropertyDescriptor("Mapped"));
 
@@ -207,13 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 () => {
                     var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName);
 
-                    foreach (var prop in Arrays.AsList(
-                                 "xxxx",
-                                 "MyString[0]",
-                                 "Indexed('a')",
-                                 "Indexed.x",
-                                 "Mapped[0]",
-                                 "Mapped.x")) {
+                    foreach (var prop in Arrays.AsList("xxxx", "myString[0]", "Indexed('a')", "Indexed.x", "Mapped[0]", "Mapped.x")) {
                         Assert.AreEqual(false, eventType.IsProperty(prop));
                         Assert.AreEqual(null, eventType.GetPropertyType(prop));
                         Assert.IsNull(eventType.GetPropertyDescriptor(prop));
@@ -225,7 +235,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         {
             public MyIMEvent(
                 string[] indexed,
-				IDictionary<string, string> mapped)
+				IDictionary<string, object> mapped)
             {
 				this.Indexed = indexed;
 				this.Mapped = mapped;
@@ -233,13 +243,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
 			public string[] Indexed { get; }
 
-			public IDictionary<string, string> Mapped { get; }
+			public IDictionary<string, object> Mapped { get; }
         }
 
         public class MyLocalJsonProvided
         {
 			public string[] Indexed;
-			public IDictionary<string, string> Mapped;
+			public IDictionary<string, object> Mapped;
         }
     }
 } // end of namespace

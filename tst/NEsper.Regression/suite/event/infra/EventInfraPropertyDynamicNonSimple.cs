@@ -11,11 +11,10 @@ using System.Collections.Generic;
 using System.Xml;
 
 using Avro.Generic;
-
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
-using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.@event;
 
 using NEsper.Avro.Extensions;
@@ -25,6 +24,7 @@ using NUnit.Framework;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -39,6 +39,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         public static readonly string JSONPROVIDED_TYPENAME =
             nameof(EventInfraPropertyDynamicNonSimple) + "JsonProvided";
 
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyDynamicNonSimple(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+        
         public ISet<RegressionFlag> Flags()
         {
             return Collections.Set(RegressionFlag.EXCLUDEWHENINSTRUMENTED);
@@ -49,89 +60,112 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             var notExists = MultipleNotExists(4);
             var path = new RegressionPath();
 
-            // Bean
-            var bean = SupportBeanComplexProps.MakeDefaultBean();
-            var beanTests = new Pair<object, object>[] {
-                new Pair<object, object>(
-                    bean,
-                    AllExist(
-                        bean.GetIndexed(0),
-                        bean.GetIndexed(1),
-                        bean.GetMapped("keyOne"),
-                        bean.GetMapped("keyTwo")))
-            };
-            RunAssertion(env, nameof(SupportBeanComplexProps), FBEAN, null, beanTests, typeof(object), path);
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.DEFAULT:
+                    // Bean
+                    var bean = SupportBeanComplexProps.MakeDefaultBean();
+                    var beanTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>(
+                            bean,
+                            AllExist(
+                                bean.GetIndexed(0),
+                                bean.GetIndexed(1),
+                                bean.GetMapped("keyOne"),
+                                bean.GetMapped("keyTwo")))
+                    };
+                    RunAssertion(env, nameof(SupportBeanComplexProps), FBEAN, null, beanTests, typeof(object), path);
 
-            // Map
-            var mapTests = new Pair<object, object>[] {
-                new Pair<object, object>(Collections.SingletonMap("somekey", "10"), notExists),
-                new Pair<object, object>(
-                    TwoEntryMap<string, object>(
-                        "Indexed",
-                        new int[] { 1, 2 },
-                        "Mapped",
-                        TwoEntryMap<string, object>("keyOne", 3, "keyTwo", 4)),
-                    AllExist(1, 2, 3, 4)),
-            };
-            RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object), path);
+                    // XML
+                    var xmlTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>("", notExists),
+                        new Pair<object, object>(
+                            "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>",
+                            AllExist("1", "2", "3", "4"))
+                    };
+                    RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
 
-            // Object-Array
-            var oaTests = new Pair<object, object>[] {
-                new Pair<object, object>(new object[] { null, null }, notExists),
-                new Pair<object, object>(
-                    new object[] { new int[] { 1, 2 }, TwoEntryMap("keyOne", 3, "keyTwo", 4) },
-                    AllExist(1, 2, 3, 4)),
-            };
-            RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object), path);
+                    break;
 
-            // XML
-            var xmlTests = new Pair<object, object>[] {
-                new Pair<object, object>("", notExists),
-                new Pair<object, object>(
-                    "<Indexed>1</Indexed><Indexed>2</Indexed><Mapped id=\"keyOne\">3</Mapped><Mapped Id=\"keyTwo\">4</Mapped>",
-                    AllExist("1", "2", "3", "4"))
-            };
-            RunAssertion(env, XML_TYPENAME, FXML, xmlToValue, xmlTests, typeof(XmlNode), path);
+                case EventRepresentationChoice.MAP:
+                    // Map
+                    var mapTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>(Collections.SingletonMap("somekey", "10"), notExists),
+                        new Pair<object, object>(
+                            TwoEntryMap<string, object>(
+                                "Indexed",
+                                new int[] { 1, 2 },
+                                "Mapped",
+                                TwoEntryMap<string, object>("keyOne", 3, "keyTwo", 4)),
+                            AllExist(1, 2, 3, 4)),
+                    };
+                    RunAssertion(env, MAP_TYPENAME, FMAP, null, mapTests, typeof(object), path);
+                    break;
 
-            // Avro
-            var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
-            var datumOne = new GenericRecord(schema);
-            var datumTwo = new GenericRecord(schema);
-            datumTwo.Put("Indexed", Arrays.AsList(1, 2));
-            datumTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
-            var avroTests = new Pair<object, object>[] {
-                new Pair<object, object>(datumOne, notExists),
-                new Pair<object, object>(datumTwo, AllExist(1, 2, 3, 4)),
-            };
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path);
+                case EventRepresentationChoice.OBJECTARRAY:
+                    // Object-Array
+                    var oaTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>(new object[] { null, null }, notExists),
+                        new Pair<object, object>(
+                            new object[] { new int[] { 1, 2 }, TwoEntryMap("keyOne", 3, "keyTwo", 4) },
+                            AllExist(1, 2, 3, 4)),
+                    };
+                    RunAssertion(env, OA_TYPENAME, FOA, null, oaTests, typeof(object), path);
+                    break;
 
-            // Json
-            env.CompileDeploy(
-                "@JsonSchema(Dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()",
-                path);
-            var jsonTests = new Pair<object, object>[] {
-                new Pair<object, object>("{}", notExists),
-                new Pair<object, object>(
-                    "{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
-                    AllExist("1", "2", "3", "4"))
-            };
-            RunAssertion(env, JSON_TYPENAME, FJSON, null, jsonTests, typeof(object), path);
+                case EventRepresentationChoice.AVRO:
+                    // Avro
+                    var schema = env.RuntimeAvroSchemaPreconfigured(AVRO_TYPENAME).AsRecordSchema();
+                    var datumOne = new GenericRecord(schema);
+                    var datumTwo = new GenericRecord(schema);
+                    datumTwo.Put("Indexed", Arrays.AsList(1, 2));
+                    datumTwo.Put("Mapped", TwoEntryMap("keyOne", 3, "keyTwo", 4));
+                    var avroTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>(datumOne, notExists),
+                        new Pair<object, object>(datumTwo, AllExist(1, 2, 3, 4)),
+                    };
+                    RunAssertion(env, AVRO_TYPENAME, FAVRO, null, avroTests, typeof(object), path);
+                    break;
 
-            // Json-Provided-Class
-            var jsonProvidedTests = new Pair<object, object>[] {
-                new Pair<object, object>("{}", notExists),
-                new Pair<object, object>(
-                    "{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
-                    AllExist(1, 2, "3", "4"))
-            };
-            env.CompileDeploy(
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJsonProvided).FullName +
-                "') @public @buseventtype create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "()",
-                path);
-            RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, null, jsonProvidedTests, typeof(object), path);
+                case EventRepresentationChoice.JSON:
+                    // Json
+                    env.CompileDeploy(
+                        "@JsonSchema(Dynamic=true) @public @buseventtype create json schema " + JSON_TYPENAME + "()",
+                        path);
+                    var jsonTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>("{}", notExists),
+                        new Pair<object, object>(
+                            "{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
+                            AllExist("1", "2", "3", "4"))
+                    };
+                    RunAssertion(env, JSON_TYPENAME, FJSON, null, jsonTests, typeof(object), path);
+                    break;
+
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    // Json-Provided-Class
+                    var jsonProvidedTests = new Pair<object, object>[]
+                    {
+                        new Pair<object, object>("{}", notExists),
+                        new Pair<object, object>(
+                            "{\"Mapped\":{\"keyOne\":\"3\",\"keyTwo\":\"4\"},\"Indexed\":[\"1\",\"2\"]}",
+                            AllExist(1, 2, "3", "4"))
+                    };
+                    env.CompileDeploy(
+                        "@JsonSchema(ClassName='" +
+                        typeof(MyLocalJsonProvided).FullName +
+                        "') @public @buseventtype create json schema " +
+                        JSONPROVIDED_TYPENAME +
+                        "()",
+                        path);
+                    RunAssertion(env, JSONPROVIDED_TYPENAME, FJSON, null, jsonProvidedTests, typeof(object), path);
+                    break;
+            }
         }
 
         private void RunAssertion(

@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // Console.WriteLine("Ending " + DateTime.print(new Date()));
                 var delta = (PerformanceObserver.NanoTime - start) / 1000d / 1000d;
                 // Console.WriteLine("Delta=" + (delta + " msec"));
-                Assert.IsTrue(delta < 500);
+                Assert.Less(delta,  500);
 
                 env.UndeployAll();
             }

@@ -412,8 +412,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 var expectedAggType = new object[][] {
                     new object[] { "varaggESC.Keys()", typeof(object[]) },
-                    new object[] { "varaggESC[P00].theEvents", typeof(SupportBean[]) },
                     new object[] { "varaggESC[P00]", typeof(IDictionary<string, object>) },
+                    new object[] { "varaggESC[P00].theEvents", typeof(SupportBean[]) },
                     new object[] { "varaggESC[P00].theEvents.last(*)", typeof(SupportBean) },
                     new object[] { "varaggESC[P00].theEvents.window(*).take(1)", typeof(ICollection<SupportBean>) },
                 };

@@ -1,11 +1,8 @@
 ﻿using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
-{
-    public partial class ExprDotForgeSumOf
-    {
-        private class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod
-        {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof {
+    public partial class ExprDotForgeSumOf {
+        private class ExprDotEvalSumMethodInteger : ExprDotEvalSumMethod {
             private int sum;
             private long cnt;
 

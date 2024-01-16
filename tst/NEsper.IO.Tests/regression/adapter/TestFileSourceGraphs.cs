@@ -275,7 +275,7 @@ namespace com.espertech.esperio.regression.adapter
 			TryInvalidCompileGraph(
 				_runtime,
 				graph,
-				"Error during compilation: " + 
+				//"Error during compilation: " + 
 				"Failed to obtain operator 'FileSource': " +
 				"No event type provided for output, please provide an event type name");
 

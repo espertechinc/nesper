@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -26,16 +27,18 @@ namespace com.espertech.esper.common.@internal.util
 
             public object CoerceBoxed(object value)
             {
-                return value.AsByte();
+                return value.AsBoxedByte();
             }
 
-            public Type ReturnType => typeof(byte);
+            public Type ReturnType => typeof(byte?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType)
             {
-                return CodegenByte(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    : CodegenByte(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(

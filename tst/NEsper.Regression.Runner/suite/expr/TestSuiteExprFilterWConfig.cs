@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionrun.suite.expr
             configuration.Common.AddVariable("var_optimizable_relop", typeof(int), 10, true);
             configuration.Common.AddVariable("var_optimizable_start", typeof(int), 10, true);
             configuration.Common.AddVariable("var_optimizable_end", typeof(int), 11, true);
-            configuration.Common.AddVariable("var_optimizable_array", "int[]", new int[] { 10, 11 }, true);
+            configuration.Common.AddVariable("var_optimizable_array", "int[]", new int?[] { 10, 11 }, true);
             configuration.Common.AddVariable("var_optimizable_start_string", typeof(string), "c", true);
             configuration.Common.AddVariable("var_optimizable_end_string", typeof(string), "d", true);
 

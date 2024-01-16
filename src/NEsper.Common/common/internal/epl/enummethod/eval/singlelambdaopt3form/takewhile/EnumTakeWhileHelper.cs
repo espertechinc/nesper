@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -17,13 +16,10 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
-{
-    public class EnumTakeWhileHelper
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile {
+    public class EnumTakeWhileHelper {
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -48,11 +44,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             int numParameters,
             CodegenBlock block,
             CodegenExpression innerValue,
-            Type evaluationType)
+            Type evaluationType,
+            Type itemType)
         {
+            var arrayDequeType = typeof(ArrayDeque<>).MakeGenericType(itemType);
             var blockSingle = block
                 .IfCondition(EqualsIdentity(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), Constant(1)))
-                .DeclareVar<object>("item", ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
+                .DeclareVar(itemType, "item", ExprDotMethodChain(EnumForgeCodegenNames.REF_ENUMCOLL).Add("First"))
                 .AssignArrayElement("props", Constant(0), Ref("item"));
             if (numParameters >= 2) {
                 blockSingle.AssignArrayElement("props", Constant(1), Constant(0));
@@ -62,11 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 blockSingle,
                 evaluationType,
                 innerValue,
-                EnumValue(typeof(EmptyList<object>), "Instance"));
-            
-            blockSingle.BlockReturn(Ref("item"));
+                EnumValue(typeof(EmptyList<>).MakeGenericType(itemType), "Instance"));
 
-            block.DeclareVar<ArrayDeque<object>>("result", NewInstance<ArrayDeque<object>>());
+            blockSingle.BlockReturn(
+                StaticMethod(typeof(Collections), "SingletonList", Ref("item")));
+
+            block.DeclareVar(arrayDequeType, "result", NewInstance(arrayDequeType));
         }
 
         public static void InitBlockSizeOneEvent(

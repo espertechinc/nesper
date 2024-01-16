@@ -8,18 +8,14 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
-{
-    public class EnumOrderByHelper
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby {
+    public class EnumOrderByHelper {
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>
@@ -27,18 +23,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         /// <param name="hasColl">collection flag</param>
         /// <param name="descending">true for descending</param>
         /// <returns>collection</returns>
-        public static ICollection<T> EnumOrderBySortEval<T>(
-            IOrderedDictionary<object, ICollection<T>> sort,
+        public static ICollection<TV> EnumOrderBySortEval<TK, TV>(
+            IOrderedDictionary<TK, ICollection<TV>> sort,
             bool hasColl,
             bool descending)
         {
-            IDictionary<object, ICollection<T>> sorted = descending ? sort.Invert() : sort;
+            IDictionary<TK, ICollection<TV>> sorted = descending ? sort.Invert() : sort;
 
             // if (!hasColl) {
             // 	return sorted.Values;
             // }
 
-            var coll = new ArrayDeque<T>();
+            var coll = new ArrayDeque<TV>();
             foreach (var entry in sorted) {
                 coll.AddAll(entry.Value);
             }
@@ -54,7 +50,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            var componentType = typeof(T);
+            SortingCode(typeof(T), block, innerBoxedType, innerExpression, methodNode, scope, codegenClassScope);
+        }
+
+        public static void SortingCode(
+            Type componentType,
+            CodegenBlock block,
+            Type innerBoxedType,
+            ExprForge innerExpression,
+            CodegenMethod methodNode,
+            ExprForgeCodegenSymbol scope,
+            CodegenClassScope codegenClassScope)
+        {
             var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
             var dequeType = typeof(ArrayDeque<>).MakeGenericType(componentType);
 

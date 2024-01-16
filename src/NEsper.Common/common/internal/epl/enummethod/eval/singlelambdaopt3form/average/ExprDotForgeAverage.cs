@@ -8,7 +8,6 @@
 
 using System;
 using System.Numerics;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -17,10 +16,8 @@ using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.common.@internal.util;
 
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average
-{
-    public class ExprDotForgeAverage : ExprDotForgeLambdaThreeForm
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.average {
+    public class ExprDotForgeAverage : ExprDotForgeLambdaThreeForm {
         protected override EPChainableType InitAndNoParamsReturnType(
             EventType inputEventType,
             Type collectionComponentType)

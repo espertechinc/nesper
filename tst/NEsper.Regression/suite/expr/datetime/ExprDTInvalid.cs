@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
             env.TryInvalidCompile(
                 epl,
                 "Failed to validate select-clause expression 'window(*).set(\"hour\",1)': Date-time enumeration method 'set' requires either a DateTimeEx, DateTimeOffset, DateTime, or long value as input or events of an event type that declares a timestamp property but received collection of events of type 'SupportBean'");
-
+            
             // invalid incompatible params
             epl = "select DateTimeOffset.set('invalid') from SupportDateTime";
             env.TryInvalidCompile(

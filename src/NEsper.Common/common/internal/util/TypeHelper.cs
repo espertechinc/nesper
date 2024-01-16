@@ -1137,7 +1137,7 @@ namespace com.espertech.esper.common.@internal.util
                     return types[0];
                 }
 
-                return typeof(object[]);
+                return typeof(Array);
             }
             
             // Check if all the same builtin type

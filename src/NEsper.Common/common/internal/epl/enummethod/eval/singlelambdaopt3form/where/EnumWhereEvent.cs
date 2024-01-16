@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -18,13 +17,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where
-{
-    public class EnumWhereEvent : ThreeFormEventPlain
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.where {
+    public class EnumWhereEvent : ThreeFormEventPlain {
         public EnumWhereEvent(ExprDotEvalParamLambda lambda) : base(lambda)
         {
         }
@@ -62,12 +58,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return typeof(ICollection<EventBean>);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
             return EnumValue(typeof(EmptyList<EventBean>), "Instance");
@@ -77,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             block.DeclareVar<ArrayDeque<EventBean>>("result", NewInstance(typeof(ArrayDeque<EventBean>)));
         }
@@ -86,7 +82,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 block,

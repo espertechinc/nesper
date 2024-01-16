@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
 
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
     public class EventMapCore

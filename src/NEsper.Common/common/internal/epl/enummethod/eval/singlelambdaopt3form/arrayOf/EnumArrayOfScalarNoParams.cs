@@ -7,20 +7,16 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf
-{
-    public class EnumArrayOfScalarNoParams : EnumForge
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf {
+    public class EnumArrayOfScalarNoParams : EnumForge {
         private readonly Type _arrayComponentType;
 
         public EnumArrayOfScalarNoParams(Type arrayComponentType)
@@ -66,10 +62,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     typeof(EnumArrayOfScalarNoParams),
                     scope,
                     codegenClassScope)
-                    .AddParam(ExprForgeCodegenNames.FP_EPS)
-                    .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
-                    .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
-                    .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
+                .AddParam(ExprForgeCodegenNames.FP_EPS)
+                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
+                .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
 
             var block = methodNode.Block
                 .IfCondition(ExprDotMethod(EnumForgeCodegenNames.REF_ENUMCOLL, "IsEmpty"))
@@ -79,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     "result",
                     NewArrayByLength(_arrayComponentType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")))
                 .DeclareVar<int>("count", Constant(0));
-            block.ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
+            block.ForEachVar("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .AssignArrayElement(Ref("result"), Ref("count"), Cast(_arrayComponentType, Ref("next")))
                 .IncrementRef("count");
             block.MethodReturn(Ref("result"));

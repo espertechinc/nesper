@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             var end = PerformanceObserver.MicroTime;
             var delta = (end - start) / 1000;
-            Assert.IsTrue(delta < 500);
+            Assert.Less(delta, 500);
 
             Thread.Sleep(1000);
 

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -18,24 +18,17 @@ namespace com.espertech.esper.compiler.client.option
 	/// </summary>
 	public class InlinedClassInspectionContext
 	{
-		private readonly object[] classFiles;
+		private readonly IArtifact _artifact;
 
 		/// <summary>
 		/// Ctor.
 		/// </summary>
-		/// <param name="classFiles">class files</param>
-		public InlinedClassInspectionContext(object[] classFiles)
+		/// <param name="artifact">artifact</param>
+		public InlinedClassInspectionContext(IArtifact artifact)
 		{
-			this.classFiles = classFiles;
+			_artifact = artifact;
 		}
 
-		/// <summary>
-		/// Returns the class files
-		/// </summary>
-		/// <returns>class files</returns>
-		public object[] GetClassFiles()
-		{
-			return classFiles;
-		}
+		public IArtifact Artifact => _artifact;
 	}
 } // end of namespace

@@ -9,7 +9,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
@@ -20,13 +19,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
-{
-    public class EnumTakeWhileEventPlus : ThreeFormEventPlus
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile {
+    public class EnumTakeWhileEventPlus : ThreeFormEventPlus {
         private CodegenExpression _innerValue;
 
         public EnumTakeWhileEventPlus(
@@ -39,7 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -90,12 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return typeof(ICollection<EventBean>);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
             return EnumValue(typeof(EmptyList<EventBean>), "Instance");
@@ -105,11 +102,11 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneEventPlus(
-                numParameters,
+                NumParameters,
                 block,
                 _innerValue,
                 StreamNumLambda,
@@ -120,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,

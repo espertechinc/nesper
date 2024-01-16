@@ -143,8 +143,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new InfraInnerTypeAndVariable(true, rep));
-            execs.Add(new InfraInnerTypeAndVariable(false, rep));
+
+            if (!rep.IsAvroOrJsonEvent())
+            {
+                execs.Add(new InfraInnerTypeAndVariable(true, rep));
+                execs.Add(new InfraInnerTypeAndVariable(false, rep));
+            }
+
             return execs;
         }
 
@@ -1293,17 +1298,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
                 env.CompileDeploy("@name('createvar') @public create variable boolean myvar", path);
 
-                var epl = "@name('Merge') on MyEventSchema me " +
-                          "merge MyInfraITV mw " +
-                          "where me.col1 = mw.c1 " +
-                          " when not matched and myvar then " +
-                          "  insert select col1 as c1, col2 as c2 " +
-                          " when not matched and myvar = false then " +
-                          "  insert select 'A' as c1, null as c2 " +
-                          " when not matched and myvar is null then " +
-                          "  insert select 'B' as c1, me.col2 as c2 " +
-                          " when matched then " +
-                          "  delete";
+                var epl =
+                    "@name('Merge') on MyEventSchema me " +
+                    "merge MyInfraITV mw " +
+                    "where me.col1 = mw.c1 " +
+                    " when not matched and myvar then " +
+                    "  insert select col1 as c1, col2 as c2 " +
+                    " when not matched and myvar = false then " +
+                    "  insert select 'A' as c1, null as c2 " +
+                    " when not matched and myvar is null then " +
+                    "  insert select 'B' as c1, me.col2 as c2 " +
+                    " when matched then " +
+                    "  delete";
+                
                 env.CompileDeploy(epl, path).AddListener("Merge");
                 var fields = "c1,c2.in1,c2.in2".SplitCsv();
 

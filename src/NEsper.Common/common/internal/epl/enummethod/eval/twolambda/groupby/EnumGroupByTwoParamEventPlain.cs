@@ -68,14 +68,18 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
             }
         }
 
+        public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
+        public Type ItemType => SecondExpression.EvaluationType;
+        public Type ValType => typeof(ICollection<>).MakeGenericType(ItemType);
+
         public override Type ReturnType()
         {
-            return typeof(IDictionary<object, object>);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional()
         {
-            return EnumValue(typeof(EmptyDictionary<object, object>), "Instance");
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, ValType), "Instance");
         }
 
         public override void InitBlock(
@@ -84,9 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<IDictionary<object, object>>(
-                "result",
-                NewInstance(typeof(NullableDictionary<object, object>)));
+            var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, ValType);
+            var mapType = typeof(NullableDictionary<,>).MakeGenericType(KeyType, ValType);
+            block.DeclareVar(dictType, "result", NewInstance(mapType));
         }
 
         public override void ForEachBlock(
@@ -95,17 +99,16 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.gro
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope)
         {
-            block.DeclareVar<object>(
-                    "key",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<object>(
-                    "entry",
-                    SecondExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
-                .DeclareVar<ICollection<object>>(
-                    "value",
-                    Cast(typeof(ICollection<object>), ExprDotMethod(Ref("result"), "Get", Ref("key"))))
+            var itemType = ItemType;
+            var listType = typeof(List<>).MakeGenericType(itemType);
+            var valType = ValType;
+            
+            block
+                .DeclareVar(KeyType, "key", InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(itemType, "entry", SecondExpression.EvaluateCodegen(itemType, methodNode, scope, codegenClassScope))
+                .DeclareVar(valType, "value", ExprDotMethod(Ref("result"), "Get", Ref("key")))
                 .IfRefNull("value")
-                .AssignRef("value", NewInstance(typeof(List<object>)))
+                .AssignRef("value", NewInstance(listType))
                 .Expression(ExprDotMethod(Ref("result"), "Put", Ref("key"), Ref("value")))
                 .BlockEnd()
                 .Expression(ExprDotMethod(Ref("value"), "Add", Ref("entry")));

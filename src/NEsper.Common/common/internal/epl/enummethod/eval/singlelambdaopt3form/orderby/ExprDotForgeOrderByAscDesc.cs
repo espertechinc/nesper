@@ -7,17 +7,14 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
 using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.@base;
 using com.espertech.esper.common.@internal.rettype;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby
-{
-    public class ExprDotForgeOrderByAscDesc : ExprDotForgeLambdaThreeForm
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.orderby {
+    public class ExprDotForgeOrderByAscDesc : ExprDotForgeLambdaThreeForm {
         protected override EPChainableType InitAndNoParamsReturnType(
             EventType inputEventType,
             Type collectionComponentType)

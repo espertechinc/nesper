@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,13 +17,10 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf
-{
-    public class EnumArrayOfEvent : ThreeFormEventPlain
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.arrayOf {
+    public class EnumArrayOfEvent : ThreeFormEventPlain {
         private readonly Type _arrayComponentType;
 
         public EnumArrayOfEvent(
@@ -64,12 +60,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod()
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return TypeHelper.GetArrayType(_arrayComponentType);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             return NewArrayByLength(_arrayComponentType, Constant(0));
         }
@@ -78,9 +74,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type desiredReturnType)
         {
-            var arrayType = ReturnTypeOfMethod();
+            var arrayType = ReturnTypeOfMethod(desiredReturnType);
             block.DeclareVar(
                     arrayType,
                     "result",
@@ -92,7 +89,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type desiredReturnType)
         {
             block.DeclareVar<object>(
                     "item",

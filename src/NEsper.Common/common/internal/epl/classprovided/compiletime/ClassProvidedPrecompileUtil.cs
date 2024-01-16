@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
     {
         public static ClassProvidedPrecompileResult CompileClassProvided(
             IList<string> classTexts,
-            Consumer<object> compileResultConsumer,
+            Consumer<IArtifact> compileResultConsumer,
             StatementCompileTimeServices compileTimeServices,
             ClassProvidedPrecompileResult optionalPrior)
         {
@@ -34,16 +34,8 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                 return ClassProvidedPrecompileResult.EMPTY;
             }
 
-            IList<string> classWithText = new List<string>(classTexts.Count);
-            foreach (var classText in classTexts) {
-                if (string.IsNullOrWhiteSpace(classText)) {
-                    continue;
-                }
-
-                classWithText.Add(classText);
-            }
-
-            if (classWithText.IsEmpty()) {
+            classTexts = classTexts.Where(_ => !string.IsNullOrWhiteSpace(_)).ToList();
+            if (classTexts.IsEmpty()) {
                 return ClassProvidedPrecompileResult.EMPTY;
             }
 
@@ -61,8 +53,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             // can be compiled into its own .class file.  Technically, we can create netmodules, but even then
             // its a container for classes.
 
-            var compilables = new List<CompilableClass>();
+            var allTypes = compileTimeServices.CompilerAbstraction.NewArtifactCollection();
 
+#if DEPRECATED
+            var compilables = new List<CompilableClass>();
             foreach (var classText in classTexts.Where(_ => !string.IsNullOrWhiteSpace(_))) {
                 index++;
 
@@ -70,7 +64,14 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
                 var className = $"provided_{index}_{classNameId}";
                 compilables.Add(new CompilableClass(classText, className));
             }
+#endif
 
+            var ctx = new CompilerAbstractionCompilationContext(
+                compileTimeServices.Services, compileResultConsumer, EmptyList<EPCompiled>.Instance);
+            var result = compileTimeServices.CompilerAbstraction.CompileSources(
+                classTexts, ctx, allTypes);
+
+#if DEPRECATED
             ICompileArtifact artifact;
             try {
                 artifact = compileTimeServices.CompilerServices.Compile(
@@ -79,7 +80,10 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
             catch (CompilerServicesCompileException ex) {
                 throw HandleException(ex, "Failed to compile class");
             }
+#endif
 
+            var artifact = result.Artifact;
+            
             foreach (var exportedTypeName in artifact.TypeNames) {
                 if (existingTypes.ContainsKey(exportedTypeName)) {
                     throw new ExprValidationException("Duplicate class by name '" + exportedTypeName + "'");
@@ -92,7 +96,7 @@ namespace com.espertech.esper.common.@internal.epl.classprovided.compiletime
 
             IRuntimeArtifact runtimeArtifact = artifact.Runtime;
             foreach (var exportedType in runtimeArtifact.Assembly.ExportedTypes) {
-                existingTypes.Add(exportedType.FullName, exportedType);
+                existingTypes.Add(exportedType.FullName!, exportedType);
             }
 
             return new ClassProvidedPrecompileResult(runtimeArtifact, existingTypes.Values.ToList());

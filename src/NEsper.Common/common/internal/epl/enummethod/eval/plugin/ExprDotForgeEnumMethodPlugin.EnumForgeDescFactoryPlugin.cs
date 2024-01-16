@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                     expectedStateReturnType = typeof(EventBean);
                 }
                 else if (returnType is EPChainableTypeEventMulti) {
-                    expectedStateReturnType = typeof(EventBean);
+                    expectedStateReturnType = typeof(ICollection<EventBean>);
                 }
                 else if (returnType is EPChainableTypeNull) {
                     expectedStateReturnType = null;

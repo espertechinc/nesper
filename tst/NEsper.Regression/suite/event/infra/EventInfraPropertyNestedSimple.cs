@@ -42,42 +42,63 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private const string JSON_TYPENAME = nameof(EventInfraPropertyNestedSimple) + "Json";
         private const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyNestedSimple) + "JsonProvided";
 
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyNestedSimple(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+        
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
 
-            RunAssertion(
-                env,
-                BEAN_TYPENAME,
-                FBEAN,
-                typeof(InfraNestedSimplePropLvl1),
-                typeof(InfraNestedSimplePropLvl1).FullName,
-                path);
-            RunAssertion(env, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
-            RunAssertion(env, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
-            RunAssertion(env, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".l1", path);
-            RunAssertion(env, AVRO_TYPENAME, FAVRO, typeof(GenericRecord), AVRO_TYPENAME + "_1", path);
+            string epl;
+            
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.OBJECTARRAY:
+                    RunAssertion(env, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.MAP:
+                    RunAssertion(env, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.AVRO:
+                    RunAssertion(env, AVRO_TYPENAME, FAVRO, typeof(GenericRecord), AVRO_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.JSON:
+                    epl = "@public create json schema " + JSON_TYPENAME + "_4(Lvl4 int);\n" +
+                          "@public create json schema " + JSON_TYPENAME + "_3(Lvl3 int, L4 " + JSON_TYPENAME + "_4);\n" +
+                          "@public create json schema " + JSON_TYPENAME + "_2(Lvl2 int, L3 " + JSON_TYPENAME + "_3);\n" +
+                          "@public create json schema " + JSON_TYPENAME + "_1(Lvl1 int, L2 " + JSON_TYPENAME + "_2);\n" +
+                          "@name('types') " +
+                          "@public @buseventtype create json schema " + JSON_TYPENAME + "(L1 " + JSON_TYPENAME + "_1);\n";
 
-            var epl =
-                "@public create json schema " + JSON_TYPENAME + "_4(lvl4 int);\n" +
-                "@public create json schema " + JSON_TYPENAME + "_3(lvl3 int, l4 " + JSON_TYPENAME + "_4);\n" +
-                "@public create json schema " + JSON_TYPENAME + "_2(lvl2 int, l3 " + JSON_TYPENAME + "_3);\n" +
-                "@public create json schema " + JSON_TYPENAME + "_1(lvl1 int, l2 " + JSON_TYPENAME + "_2);\n" +
-                "@name('types') " +
-                "@public @buseventtype create json schema " + JSON_TYPENAME + "(l1 " + JSON_TYPENAME + "_1);\n";
-
-            env.CompileDeploy(epl, path);
-            RunAssertion(env, JSON_TYPENAME, FJSON, null, JSON_TYPENAME + "_1", path);
-
-            epl = $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedTop).MaskTypeName()}') @name('types') @public @buseventtype create json schema {JSONPROVIDED_TYPENAME}();\n";
-            env.CompileDeploy(epl, path);
-            RunAssertion(
-                env,
-                JSONPROVIDED_TYPENAME,
-                FJSON,
-                typeof(MyLocalJSONProvidedLvl1),
-                typeof(MyLocalJSONProvidedLvl1).FullName,
-                path);
+                    env.CompileDeploy(epl, path);
+                    RunAssertion(env, JSON_TYPENAME, FJSON, null, JSON_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    epl = $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedTop).MaskTypeName()}') @name('types') @public @buseventtype create json schema {JSONPROVIDED_TYPENAME}();\n";
+                    env.CompileDeploy(epl, path);
+                    RunAssertion(
+                        env,
+                        JSONPROVIDED_TYPENAME,
+                        FJSON,
+                        typeof(MyLocalJSONProvidedLvl1),
+                        typeof(MyLocalJSONProvidedLvl1).FullName,
+                        path);
+                    break;
+                case EventRepresentationChoice.DEFAULT:
+                    RunAssertion(env, BEAN_TYPENAME, FBEAN, typeof(InfraNestedSimplePropLvl1), typeof(InfraNestedSimplePropLvl1).FullName, path);
+                    RunAssertion(env, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".L1", path);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             env.UndeployAll();
         }
@@ -229,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             }
 
             AssertPropEquals(
-                new SupportEventPropDesc("l1", nestedClass)
+                new SupportEventPropDesc("L1", nestedClass)
                     .WithComponentType(componentType)
                     .WithFragment()
                     .WithIndexed(false)

@@ -703,7 +703,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     fields,
                     new object[][]
-                        { new object[] { "ABC", 50d }, new object[] { "IBM", 50d }, new object[] { "MSFT", 50d } },
+                    {
+                        new object[] { "ABC", 50d },
+                        new object[] { "IBM", 50d },
+                        new object[] { "MSFT", 50d }
+                    },
                     null);
 
                 SendTimer(env, 1500);
@@ -714,9 +718,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertPropsPerRowIRPair(
                     "s0",
                     fields,
-                    new object[][] {
-                        new object[] { "ABC", 98d }, new object[] { "IBM", 98d }, new object[] { "MSFT", 98d },
-                        new object[] { "YAH", 98d }, new object[] { "s4", 98d }
+                    new object[][]
+                    {
+                        new object[] { "ABC", 98d },
+                        new object[] { "IBM", 98d },
+                        new object[] { "MSFT", 98d },
+                        new object[] { "s4", 98d },
+                        new object[] { "YAH", 98d }
                     },
                     null);
 
@@ -724,7 +732,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertPropsPerRowLastNew(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "YAH", 48d }, new object[] { "s4", 48d } });
+                    new object[][]
+                    {
+                        new object[] { "s4", 48d },
+                        new object[] { "YAH", 48d }
+                    });
 
                 SendTimer(env, 12000);
                 env.AssertPropsPerRowLastNew("s0", fields, null);
@@ -776,9 +788,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertPropsPerRowLastNew(
                     "s0",
                     fields,
-                    new object[][] {
-                        new object[] { "ABC", 98d }, new object[] { "IBM", 98d }, new object[] { "MSFT", 98d },
-                        new object[] { "YAH", 98d }, new object[] { "s4", 98d }
+                    new object[][]
+                    {
+                        new object[] { "ABC", 98d },
+                        new object[] { "IBM", 98d },
+                        new object[] { "MSFT", 98d },
+                        new object[] { "s4", 98d },
+                        new object[] { "YAH", 98d }
+
                     });
 
                 SendTimer(env, 10500);
@@ -786,7 +803,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertPropsPerRowLastNew(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "YAH", 48d }, new object[] { "s4", 48d } });
+                    new object[][]
+                    {
+                        new object[] { "s4", 48d },
+                        new object[] { "YAH", 48d }
+                    });
 
                 SendTimer(env, 11500);
                 SendTimer(env, 12000);

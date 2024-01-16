@@ -7,22 +7,18 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.sumof {
     public class EnumSumScalarNoParams : EnumForgeBasePlain,
         EnumForge,
-        EnumEval
-    {
+        EnumEval {
         private readonly ExprDotEvalSumMethodFactory _sumMethodFactory;
 
         public EnumSumScalarNoParams(
@@ -69,7 +65,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             _sumMethodFactory.CodegenDeclare(block);
 
             var forEach = block
-                .ForEach<object>("next", EnumForgeCodegenNames.REF_ENUMCOLL)
+                .ForEachVar("next", EnumForgeCodegenNames.REF_ENUMCOLL)
                 .IfRefNull("next")
                 .BlockContinue();
             _sumMethodFactory.CodegenEnterObjectTypedNonNull(forEach, Ref("next"));

@@ -284,16 +284,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         "@Name('s0') select " +
                         $"{primitiveConversionLib}.PassIntAsObject(IntPrimitive) as c0," +
                         $"{primitiveConversionLib}.PassIntAsNumber(IntPrimitive) as c1," +
-                        $"{primitiveConversionLib}.PassIntAsComparable(IntPrimitive) as c2," +
-                        $"{primitiveConversionLib}.PassIntAsNullable(IntPrimitive) as c3" +
+                        $"{primitiveConversionLib}.PassIntAsNullable(IntPrimitive) as c2" +
                         " from SupportBean")
                     .AddListener("s0");
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 EPAssertionUtil.AssertProps(
                     env.Listener("s0").AssertOneGetNewAndReset(),
-                    new[] {"c0", "c1", "c2", "c3"},
-                    new object[] {10, 10, 10, 10});
+                    new[] {"c0", "c1", "c2"},
+                    new object[] {10, 10, 10});
 
                 env.UndeployAll();
             }

@@ -320,7 +320,6 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 var path = new RegressionPath();
                 
-                #if false
                 env.CompileDeploy("@public create table aggvar_grouped_string (key string primary key, total count(*))", path);
                 env.CompileDeploy(
                     "@public create table aggvar_twogrouped (keyone string primary key, keytwo string primary key, total count(*))",
@@ -394,9 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "create table abc as (total count(*) primary key)",
                     "Column 'total' may not be tagged as primary key, an expression cannot become a primary key column [");
-                
-                #endif
-                
+               
                 env.TryInvalidCompile(
                     path,
                     "create table abc as (arr SupportBean primary key)",
@@ -409,6 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     path,
                     "create table abc as (mystr string primary keys)",
                     "Invalid keyword 'keys' encountered, expected 'primary key' [");
+                
                 env.TryInvalidCompile(
                     path,
                     "create table SomeSchema as (mystr string)",
@@ -420,41 +418,42 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // table-not-found
                 env.TryInvalidCompile(
                     path,
-                    "into table xxx select count(*) as Total from SupportBean group by IntPrimitive",
+                    "into table xxx select count(*) as total from SupportBean group by IntPrimitive",
                     "Invalid into-table clause: Failed to find table by name 'xxx' [");
+
                 // group-by key type and count of group-by expressions
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_grouped_string select count(*) as Total from SupportBean group by IntPrimitive",
-                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'System.Int32' but the table expects 'System.String' [");
+                    "into table aggvar_grouped_string select count(*) as total from SupportBean group by IntPrimitive",
+                    "Incompatible type returned by a group-by expression for use with table 'aggvar_grouped_string', the group-by expression 'IntPrimitive' returns 'System.Nullable<System.Int32>' but the table expects 'System.String' [");
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_grouped_string select count(*) as Total from SupportBean group by TheString, IntPrimitive",
+                    "into table aggvar_grouped_string select count(*) as total from SupportBean group by TheString, IntPrimitive",
                     "Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are 2 group-by expressions [");
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_ungrouped select count(*) as Total from SupportBean group by TheString",
+                    "into table aggvar_ungrouped select count(*) as total from SupportBean group by TheString",
                     "Incompatible number of group-by expressions for use with table 'aggvar_ungrouped', the table expects no group-by expressions and provided are 1 group-by expressions [");
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_grouped_string select count(*) as Total from SupportBean",
+                    "into table aggvar_grouped_string select count(*) as total from SupportBean",
                     "Incompatible number of group-by expressions for use with table 'aggvar_grouped_string', the table expects 1 group-by expressions and provided are no group-by expressions [");
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvarctx select count(*) as Total from SupportBean",
-                    "Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [into table aggvarctx select count(*) as Total from SupportBean]");
+                    "into table aggvarctx select count(*) as total from SupportBean",
+                    "Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [into table aggvarctx select count(*) as total from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "context MyOtherContext into table aggvarctx select count(*) as Total from SupportBean",
-                    "Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext into table aggvarctx select count(*) as Total from SupportBean]");
+                    "context MyOtherContext into table aggvarctx select count(*) as total from SupportBean",
+                    "Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext into table aggvarctx select count(*) as total from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_ungrouped select count(*) as Total, aggvar_ungrouped from SupportBean",
-                    "Invalid use of table 'aggvar_ungrouped', aggregate-into requires write-only, the expression 'aggvar_ungrouped' is not allowed [into table aggvar_ungrouped select count(*) as Total, aggvar_ungrouped from SupportBean]");
+                    "into table aggvar_ungrouped select count(*) as total, aggvar_ungrouped from SupportBean",
+                    "Invalid use of table 'aggvar_ungrouped', aggregate-into requires write-only, the expression 'aggvar_ungrouped' is not allowed [into table aggvar_ungrouped select count(*) as total, aggvar_ungrouped from SupportBean]");
                 // unidirectional join not supported
                 env.TryInvalidCompile(
                     path,
-                    "into table aggvar_ungrouped select count(*) as Total from SupportBean unidirectional, SupportBean_S0#keepall",
+                    "into table aggvar_ungrouped select count(*) as total from SupportBean unidirectional, SupportBean_S0#keepall",
                     "Into-table does not allow unidirectional joins [");
                 // requires aggregation
                 env.TryInvalidCompile(
@@ -468,16 +467,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // invalid access keys type and count
                 env.TryInvalidCompile(
                     path,
-                    "select aggvar_ungrouped['a'].Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_ungrouped[\"a\"].Total': Incompatible number of key expressions for use with table 'aggvar_ungrouped', the table expects no key expressions and provided are 1 key expressions [select aggvar_ungrouped['a'].Total from SupportBean]");
+                    "select aggvar_ungrouped['a'].total from SupportBean",
+                    "Failed to validate select-clause expression 'aggvar_ungrouped[\"a\"].total': Incompatible number of key expressions for use with table 'aggvar_ungrouped', the table expects no key expressions and provided are 1 key expressions [select aggvar_ungrouped['a'].total from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "select aggvar_grouped_string.Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string.Total': Failed to resolve property 'aggvar_grouped_string.Total' to a stream or nested property in a stream");
+                    "select aggvar_grouped_string.total from SupportBean",
+                    "Failed to validate select-clause expression 'aggvar_grouped_string.total': Failed to resolve property 'aggvar_grouped_string.total' to a stream or nested property in a stream");
                 env.TryInvalidCompile(
                     path,
-                    "select aggvar_grouped_string[5].Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].Total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'System.Int32' but the table expects 'System.String' [select aggvar_grouped_string[5].Total from SupportBean]");
+                    "select aggvar_grouped_string[5].total from SupportBean",
+                    "Failed to validate select-clause expression 'aggvar_grouped_string[5].total': Incompatible type returned by a key expression for use with table 'aggvar_grouped_string', the key expression '5' returns 'System.Nullable<System.Int32>' but the table expects 'System.String' [select aggvar_grouped_string[5].total from SupportBean]");
 
                 // top-level variable use without "keys" function
                 env.TryInvalidCompile(
@@ -498,12 +497,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "Failed to validate select-clause expression 'aggvarctx_ungrouped_window.win.dumm...(41 chars)': Failed to resolve 'aggvarctx_ungrouped_window.win.dummy' to a property, single-row function, aggregation function, script, stream or class name [select aggvarctx_ungrouped_window.win.dummy(123) from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "context MyOtherContext select aggvarctx.Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvarctx.Total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.Total from SupportBean]");
+                    "context MyOtherContext select aggvarctx.total from SupportBean",
+                    "Failed to validate select-clause expression 'aggvarctx.total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.total from SupportBean]");
                 env.TryInvalidCompile(
                     path,
-                    "context MyOtherContext select aggvarctx.Total from SupportBean",
-                    "Failed to validate select-clause expression 'aggvarctx.Total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.Total from SupportBean]");
+                    "context MyOtherContext select aggvarctx.total from SupportBean",
+                    "Failed to validate select-clause expression 'aggvarctx.total': Table by name 'aggvarctx' has been declared for context 'MyContext' and can only be used within the same context [context MyOtherContext select aggvarctx.total from SupportBean]");
                 env.TryInvalidCompile(
                     path,
                     "select aggvar_grouped_int[0].a.b from SupportBean",
@@ -512,8 +511,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // invalid use in non-contextual evaluation
                 env.TryInvalidCompile(
                     path,
-                    "select * from SupportBean#time(aggvar_ungrouped.Total sec)",
-                    "Failed to validate data window declaration: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.Total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here");
+                    "select * from SupportBean#time(aggvar_ungrouped.total sec)",
+                    "Failed to validate data window declaration: Error in view 'time', Invalid parameter expression 0 for Time view: Failed to validate view parameter expression 'aggvar_ungrouped.total seconds': Invalid use of table access expression, expression 'aggvar_ungrouped' is not allowed here");
                 // indexed property expression but not an aggregtion-type variable
                 env.CompileDeploy("create objectarray schema MyEvent(abc int[])");
                 // view use
@@ -533,12 +532,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // join invalid
                 env.TryInvalidCompile(
                     path,
-                    "select aggvar_grouped_int[1].Total.countMinSketchFrequency(TheString) from SupportBean",
-                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].Total.CountMi...(62 chars)': Failed to resolve method 'CountMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'System.Int64' with matching parameter number and expected parameter type(s) 'System.String' ");
+                    "select aggvar_grouped_int[1].total.countMinSketchFrequency(TheString) from SupportBean",
+                    "Failed to validate select-clause expression 'aggvar_grouped_int[1].total.countMi...(62 chars)': Failed to resolve method 'countMinSketchFrequency': Could not find enumeration method, date-time method, instance method or property named 'countMinSketchFrequency' in class 'System.Nullable<System.Int64>' with matching parameter number and expected parameter type(s) 'System.String' ");
                 env.TryInvalidCompile(
                     path,
-                    "select Total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
-                    "Failed to validate select-clause expression 'Total.CountMinSketchFrequency(TheString)': Failed to resolve method 'CountMinSketchFrequency': Could not find");
+                    "select total.countMinSketchFrequency(TheString) from aggvar_grouped_int, SupportBean unidirectional",
+                    "Failed to validate select-clause expression 'total.countMinSketchFrequency(TheString)': Failed to resolve method 'countMinSketchFrequency': Could not find");
                 // cannot be marked undirectional
                 env.TryInvalidCompile(
                     path,
@@ -583,7 +582,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 // cannot use null-type key
                 env.TryInvalidCompile(
                     path,
-                    "create table MyTable(somefield null primary key, Id string)",
+                    "create table MyTable(somefield null primary key, id string)",
                     "Incorrect syntax near 'null' (a reserved keyword)");
 
                 env.UndeployAll();

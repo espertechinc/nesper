@@ -23,11 +23,11 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
     /// </summary>
     public sealed class JsonGetterMapRuntimeKeyedProvided : EventPropertyGetterMappedSPI
     {
-        private readonly FieldInfo field;
+        private readonly FieldInfo _field;
 
         public JsonGetterMapRuntimeKeyedProvided(FieldInfo field)
         {
-            this.field = field;
+            this._field = field;
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(
@@ -39,7 +39,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             return StaticMethod(
                 typeof(CollectionUtil),
                 "GetMapValueChecked",
-                ExprDotName(CastUnderlying(field.DeclaringType, beanExpression), field.Name),
+                ExprDotName(CastUnderlying(_field.DeclaringType, beanExpression), _field.Name),
                 key);
         }
 
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             EventBean eventBean,
             string mapKey)
         {
-            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, field, mapKey);
+            return JsonFieldGetterHelperProvided.GetJsonProvidedMappedProp(eventBean.Underlying, _field, mapKey);
         }
     }
 } // end of namespace

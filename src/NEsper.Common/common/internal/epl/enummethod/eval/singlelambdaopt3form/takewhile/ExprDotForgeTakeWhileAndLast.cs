@@ -7,7 +7,6 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.compile.stage3;
 using com.espertech.esper.common.@internal.epl.enummethod.dot;
@@ -15,10 +14,8 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile
-{
-    public class ExprDotForgeTakeWhileAndLast : ExprDotForgeLambdaThreeForm
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.takewhile {
+    public class ExprDotForgeTakeWhileAndLast : ExprDotForgeLambdaThreeForm {
         protected override EPChainableType InitAndNoParamsReturnType(
             EventType inputEventType,
             Type collectionComponentType)

@@ -1491,7 +1491,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         EPAssertionUtil.AssertEqualsExactOrder(expectedWhere, received.Get("c1").Unwrap<object>());
                     }
 
-                    EPAssertionUtil.AssertPropsMap((IDictionary<object, object>)received.Get("c2"), mapKeys, mapValues);
+                    EPAssertionUtil.AssertPropsMap(received.Get("c2").AsStringDictionary(), mapKeys, mapValues);
                 });
         }
 

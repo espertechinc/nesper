@@ -702,7 +702,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var endTime = PerformanceObserver.NanoTime;
                 var delta = (endTime - startTime) / 1000d / 1000d / 1000d;
                 // Console.WriteLine("delta=" + delta);
-                Assert.IsTrue(delta < 1);
+                Assert.Less(delta, 1);
 
                 env.UndeployAll();
             }

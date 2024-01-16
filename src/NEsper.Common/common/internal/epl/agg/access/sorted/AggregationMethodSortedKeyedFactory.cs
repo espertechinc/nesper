@@ -262,7 +262,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
                 return null;
             }
 
-            var @event = AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value);
+            var @event = AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value);
             return @event.Underlying;
         }
 
@@ -282,7 +282,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             return entry == null
                 ? null
-                : AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(entry.Value, underlyingClass);
+                : AggregatorAccessSortedImpl.CheckedPayloadGetUnderlyingArray(entry.Value.Value, underlyingClass);
         }
 
         internal static object EventsArrayUnd(
@@ -308,7 +308,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
         {
             return entry == null
                 ? null
-                : Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value));
+                : Collections.SingletonList(AggregatorAccessSortedImpl.CheckedPayloadMayDeque(entry.Value.Value));
         }
 
         internal static ICollection<EventBean> FirstColl(object value)
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
 
         internal static ICollection<EventBean> EventsColl(KeyValuePair<object, object>? entry)
         {
-            return entry == null ? null : AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(entry.Value);
+            return entry == null ? null : AggregatorAccessSortedImpl.CheckedPayloadGetCollEvents(entry.Value.Value);
         }
 
         internal static ICollection<EventBean> EventsColl(object value)

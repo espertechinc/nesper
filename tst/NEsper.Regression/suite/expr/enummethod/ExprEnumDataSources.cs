@@ -962,9 +962,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 env.UndeployAll();
 
                 // test subselect that delivers events
-                var epl = "@public @buseventtype create schema AEvent (Symbol string);\n" +
-                          "@public @buseventtype create schema BEvent (a AEvent);\n" +
-                          "@name('s0') select (select a from BEvent#keepall).anyOf(v => Symbol = 'GE') as flag from SupportBean;\n";
+                var epl =
+                    "@public @buseventtype create schema AEvent (Symbol string);\n" +
+                    "@public @buseventtype create schema BEvent (a AEvent);\n" +
+                    "@name('s0') select (select a from BEvent#keepall).anyOf(v => Symbol = 'GE') as flag from SupportBean;\n";
                 env.CompileDeploy(epl, new RegressionPath()).AddListener("s0");
 
                 env.SendEventMap(MakeBEvent("XX"), "BEvent");

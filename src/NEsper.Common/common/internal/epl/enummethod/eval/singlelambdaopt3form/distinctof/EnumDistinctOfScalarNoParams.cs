@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,17 +16,14 @@ using com.espertech.esper.common.@internal.epl.enummethod.codegen;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionRelational.
     CodegenRelational; // LE
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.distinctof {
     public class EnumDistinctOfScalarNoParams : EnumForgeBasePlain,
         EnumForge,
-        EnumEval
-    {
+        EnumEval {
         private readonly Type _fieldType;
 
         public EnumDistinctOfScalarNoParams(
@@ -63,7 +59,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         {
             var componentType = args.EnumcollType.GetComponentType();
             var collectionType = typeof(ICollection<>).MakeGenericType(componentType);
-            
+
             var method = codegenMethodScope
                 .MakeChild(collectionType, typeof(EnumDistinctOfScalarNoParams), codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)

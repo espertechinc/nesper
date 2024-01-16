@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -26,16 +27,18 @@ namespace com.espertech.esper.common.@internal.util
 
             public object CoerceBoxed(object value)
             {
-                return value.AsInt64();
+                return value.AsBoxedInt64();
             }
 
-            public Type ReturnType => typeof(long);
+            public Type ReturnType => typeof(long?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType)
             {
-                return CodegenLong(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    : CodegenLong(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
@@ -66,6 +69,10 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
+                if (valueType == null) {
+                    return CodegenExpressionBuilder.ConstantNull();
+                }
+                
                 return valueType != typeof(short) &&
                        valueType != typeof(int) &&
                        valueType != typeof(long) &&

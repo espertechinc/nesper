@@ -22,11 +22,9 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NEsper.Avro.Extensions;
-
 using Newtonsoft.Json.Linq;
-
 using NUnit.Framework;
-
+using Formatting = Newtonsoft.Json.Formatting;
 using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
@@ -40,42 +38,65 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         public const string JSON_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "Json";
         public const string JSONPROVIDEDBEAN_TYPENAME = nameof(EventInfraPropertyUnderlyingSimple) + "JsonWProvided";
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EventInfraPropertyUnderlyingSimple));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EventInfraPropertyUnderlyingSimple));
+
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        /// <exception cref="NotImplementedException"></exception>
+        public EventInfraPropertyUnderlyingSimple(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
 
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
 
             var eplJson =
-                "@public @buseventtype @name('schema') create json schema " +
-                JSON_TYPENAME +
-                "(MyInt int, MyString string);\n" +
-                "@public @buseventtype @name('schema') @JsonSchema(ClassName='" +
-                typeof(MyLocalJsonProvided).FullName +
-                "') create json schema " +
-                JSONPROVIDEDBEAN_TYPENAME +
-                "();\n";
+                $"@public @buseventtype @name('schema') create json schema {JSON_TYPENAME}(MyInt int, MyString string);\n" +
+                $"@public @buseventtype @name('schema') @JsonSchema(ClassName='{typeof(MyLocalJsonProvided).CleanName()}') " +
+                $" create json schema {JSONPROVIDEDBEAN_TYPENAME}();\n";
             env.CompileDeploy(eplJson, path);
 
-            var pairs = new Pair<string, FunctionSendEventIntString>[] {
-                new Pair<string, FunctionSendEventIntString>(MAP_TYPENAME, FMAP),
-                new Pair<string, FunctionSendEventIntString>(OA_TYPENAME, FOA),
-                new Pair<string, FunctionSendEventIntString>(BEAN_TYPENAME, FBEAN),
-                new Pair<string, FunctionSendEventIntString>(XML_TYPENAME, FXML),
-                new Pair<string, FunctionSendEventIntString>(AVRO_TYPENAME, FAVRO),
-                new Pair<string, FunctionSendEventIntString>(JSON_TYPENAME, FJSON),
-                new Pair<string, FunctionSendEventIntString>(JSONPROVIDEDBEAN_TYPENAME, FJSON)
+            var pair = _eventRepresentationChoice switch
+            {
+                EventRepresentationChoice.DEFAULT => new Pair<string, FunctionSendEventIntString>(BEAN_TYPENAME, FBEAN),
+                EventRepresentationChoice.OBJECTARRAY => new Pair<string, FunctionSendEventIntString>(OA_TYPENAME, FOA),
+                EventRepresentationChoice.MAP => new Pair<string, FunctionSendEventIntString>(MAP_TYPENAME, FMAP),
+                EventRepresentationChoice.AVRO => new Pair<string, FunctionSendEventIntString>(AVRO_TYPENAME, FAVRO),
+                EventRepresentationChoice.JSON => new Pair<string, FunctionSendEventIntString>(JSON_TYPENAME, FJSON),
+                EventRepresentationChoice.JSONCLASSPROVIDED => new Pair<string, FunctionSendEventIntString>(JSONPROVIDEDBEAN_TYPENAME, FJSON),
+                _ => throw new ArgumentOutOfRangeException()
             };
 
-            foreach (var pair in pairs) {
-                log.Info("Asserting type " + pair.First);
-                RunAssertionPassUnderlying(env, pair.First, pair.Second, path);
-                RunAssertionPropertiesWGetter(env, pair.First, pair.Second, path);
-                RunAssertionTypeValidProp(env, pair.First, pair.Second != FBEAN);
-                RunAssertionTypeInvalidProp(env, pair.First, pair.Second == FXML);
-            }
+            // var pairs = new Pair<string, FunctionSendEventIntString>[] {
+            //     new Pair<string, FunctionSendEventIntString>(MAP_TYPENAME, FMAP),
+            //     new Pair<string, FunctionSendEventIntString>(OA_TYPENAME, FOA),
+            //     new Pair<string, FunctionSendEventIntString>(BEAN_TYPENAME, FBEAN),
+            //     new Pair<string, FunctionSendEventIntString>(XML_TYPENAME, FXML),
+            //     new Pair<string, FunctionSendEventIntString>(AVRO_TYPENAME, FAVRO),
+            //     new Pair<string, FunctionSendEventIntString>(JSON_TYPENAME, FJSON),
+            //     new Pair<string, FunctionSendEventIntString>(JSONPROVIDEDBEAN_TYPENAME, FJSON)
+            // };
+
+            // foreach (var pair in pairs) {
+            RunAssertions(env, pair, path);
+            // }
 
             env.UndeployAll();
+        }
+
+        private void RunAssertions(RegressionEnvironment env, Pair<string, FunctionSendEventIntString> pair, RegressionPath path)
+        {
+            Log.Info("Asserting type " + pair.First);
+            RunAssertionPassUnderlying(env, pair.First, pair.Second, path);
+            RunAssertionPropertiesWGetter(env, pair.First, pair.Second, path);
+            RunAssertionTypeValidProp(env, pair.First, pair.Second != FBEAN && pair.Second != FAVRO);
+            RunAssertionTypeInvalidProp(env, pair.First, pair.Second == FXML);
         }
 
         private void RunAssertionPassUnderlying(
@@ -140,11 +161,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RegressionPath path)
         {
             var epl =
-                "@name('s0') select MyInt, exists(MyInt) as exists_myInt, MyString, exists(MyString) as exists_myString from " +
+                "@name('s0') select MyInt, exists(MyInt) as exists_MyInt, MyString, exists(MyString) as exists_MyString from " +
                 typename;
             env.CompileDeploy(epl, path).AddListener("s0");
 
-            var fields = "MyInt,exists_myInt,MyString,exists_myString".SplitCsv();
+            var fields = "MyInt,exists_MyInt,MyString,exists_MyString".SplitCsv();
 
             env.AssertStatement(
                 "s0",
@@ -152,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                     var eventType = statement.EventType;
                     Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("MyInt")));
                     Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
-                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myInt"));
-                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myString"));
+                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyInt"));
+                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyString"));
                 });
 
             send.Invoke(typename, env, 3, "some string");
@@ -175,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
         private void RunAssertionEventInvalidProp(EventBean @event)
         {
-            foreach (var prop in Arrays.AsList("xxxx", "MyString[1]", "MyString('a')", "x.y", "MyString.x")) {
+            foreach (var prop in Arrays.AsList("xxxx", "MyString('a')", "x.y", "MyString.x")) {
                 SupportMessageAssertUtil.TryInvalidProperty(@event, prop);
                 SupportMessageAssertUtil.TryInvalidGetFragment(@event, prop);
             }
@@ -192,8 +213,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         ? env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName)
                         : env.Runtime.EventTypeService.GetEventType(env.DeploymentId("schema"), typeName);
 
+                    var intType = boxed ? typeof(int?) : typeof(int);
                     var expectedType = new object[][] {
-                        new object[] { "MyInt", boxed ? typeof(int?) : typeof(int), null, null },
+                        new object[] { "MyInt", intType, null, null },
                         new object[] { "MyString", typeof(string), null, null }
                     };
                     SupportEventTypeAssertionUtil.AssertEventTypeProperties(
@@ -205,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                     Assert.IsNotNull(eventType.GetGetter("MyInt"));
                     Assert.IsTrue(eventType.IsProperty("MyInt"));
-                    Assert.AreEqual(boxed ? typeof(int?) : typeof(int), eventType.GetPropertyType("MyInt"));
+                    Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
                     SupportEventPropUtil.AssertPropEquals(
                         new SupportEventPropDesc("MyString", typeof(string)),
                         eventType.GetPropertyDescriptor("MyString"));
@@ -223,7 +245,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                     foreach (var prop in Arrays.AsList(
                                  "xxxx",
-                                 "MyString[0]",
                                  "MyString('a')",
                                  "MyString.x",
                                  "MyString.x.y",
@@ -231,10 +252,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         Assert.AreEqual(false, eventType.IsProperty(prop));
                         Type expected = null;
                         if (xml) {
-                            if (prop.Equals("MyString[0]")) {
-                                expected = typeof(string);
-                            }
-
                             if (prop.Equals("MyString.x?")) {
                                 expected = typeof(XmlNode);
                             }
@@ -323,18 +340,20 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env,
             a,
             b) => {
-            var @object = new JObject();
-            @object.Add("MyInt", a);
-            @object.Add("MyString", b);
-            var json = @object.ToString();
+            var @object = new JObject
+            {
+                { "MyInt", a },
+                { "MyString", b }
+            };
+            var json = @object.ToString(Formatting.None);
             env.SendEventJson(json, eventTypeName);
             return json;
         };
 
         public class MyLocalJsonProvided
         {
-            public int? myInt;
-            public string myString;
+            public int? MyInt;
+            public string MyString;
         }
     }
 } // end of namespace

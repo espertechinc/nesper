@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             RunAssertion(env, OA_TYPENAME, FOA, oaTop, path);
 
             // XML
-            var xml = "<myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></myevent>";
+            var xml = "<Myevent MyInt=\"1\" MyString=\"abc\"><Nested MyInsideInt=\"10\"/></Myevent>";
             RunAssertion(env, XML_TYPENAME, FXML, xml, path);
 
             // Avro

@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.support.expreval
 	                result = eval.Evaluate(eventsPerStream, true, null);
 	            } catch (Exception ex) {
 	                Log.Error("Failed at expression " + expected.Key + " at event #" + assertionNumber, ex);
-	                Assert.Fail();
+	                Assert.Fail("Failed at expression " + expected.Key + " at event #" + assertionNumber, ex);
 	            }
 	            DoAssert(false, assertionNumber, expected.Key, expected.Value, result);
 	        }

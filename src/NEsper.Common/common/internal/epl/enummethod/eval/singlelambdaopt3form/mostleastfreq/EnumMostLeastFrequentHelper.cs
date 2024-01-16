@@ -8,10 +8,8 @@
 
 using System.Collections.Generic;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq
-{
-    public class EnumMostLeastFrequentHelper
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq {
+    public class EnumMostLeastFrequentHelper {
         /// <summary>
         /// NOTE: Code-generation-invoked method, method name and parameter order matters
         /// </summary>

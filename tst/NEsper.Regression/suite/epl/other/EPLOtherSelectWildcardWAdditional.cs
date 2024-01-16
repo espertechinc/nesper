@@ -358,13 +358,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 listener => {
                     var eventBean = listener.LastNewData[0];
 
-                    Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].mapped('0ma').Value"));
-                    Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].mapped('0mb').Value"));
-                    Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].mapped('1ma').Value"));
-                    Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].mapped('1mb').Value"));
+                    Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
+                    Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
+                    Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
+                    Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
 
-                    Assert.AreEqual("0ma0", eventBean.Get("Array[0].mapped('0ma').Value"));
-                    Assert.AreEqual("1ma1", eventBean.Get("Array[1].mapped('1mb').Value"));
+                    Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
+                    Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
 
                     Assert.AreEqual("0ma00ma1", eventBean.Get("concat"));
                 });

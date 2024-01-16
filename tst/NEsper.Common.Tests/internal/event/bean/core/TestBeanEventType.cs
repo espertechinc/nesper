@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
+using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.compat;
@@ -191,41 +192,39 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             CollectionAssert.Contains(properties, "MyInt");
             CollectionAssert.Contains(properties, "MyString");
 
-            CollectionAssert.Contains(
+            SupportEventPropUtil.AssertPropsEquals(
                 eventTypeSimple.PropertyDescriptors,
-                new SupportEventPropDesc("MyInt", typeof(int)));
-
-            CollectionAssert.Contains(
-                eventTypeSimple.PropertyDescriptors,
+                new SupportEventPropDesc("MyInt", typeof(int)),
                 new SupportEventPropDesc("MyString", typeof(string)));
 
             properties = eventTypeComplex.PropertyNames;
 
-            CollectionAssert.AreEquivalent(SupportBeanComplexProps.PROPERTIES, properties);
-            CollectionAssert.AreEquivalent(
-                new[] {
-                    new SupportEventPropDesc("SimpleProperty", typeof(string)),
-                    new SupportEventPropDesc("MapProperty", typeof(IDictionary<string, string>))
-                        .WithMapped(),
-                    new SupportEventPropDesc("MappedProps", typeof(Properties))
-                        .WithMappedRequiresKey(),
-                    new SupportEventPropDesc("Mapped", typeof(string))
-                        .WithMappedRequiresKey(),
-                    new SupportEventPropDesc("Indexed", typeof(int))
-                        .WithIndexedRequiresIndex(),
-                    new SupportEventPropDesc("IndexedProps", typeof(int[]))
-                        .WithIndexedRequiresIndex(),
-                    new SupportEventPropDesc("Nested", typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested))
-                        .WithFragment(),
-                    new SupportEventPropDesc("ArrayProperty", typeof(int[]))
-                        .WithIndexed(),
-                    new SupportEventPropDesc("ObjectArray", typeof(object[]))
-                        .WithIndexed(),
-                },
-                eventTypeComplex.PropertyDescriptors);
+            EPAssertionUtil.AssertEqualsAnyOrder(SupportBeanComplexProps.PROPERTIES, properties);
+
+            SupportEventPropUtil.AssertPropsEquals(
+                eventTypeComplex.PropertyDescriptors,
+                new SupportEventPropDesc("SimpleProperty", typeof(string)),
+                new SupportEventPropDesc("MapProperty", typeof(IDictionary<string, string>))
+                    .WithMapped(),
+                new SupportEventPropDesc("MappedProps", typeof(Properties))
+                    .WithMappedRequiresKey(),
+                new SupportEventPropDesc("Mapped", typeof(string))
+                    .WithMappedRequiresKey(),
+                new SupportEventPropDesc("Indexed", typeof(int))
+                    .WithIndexedRequiresIndex(),
+                new SupportEventPropDesc("IndexedProps", typeof(int[]))
+                    .WithIndexedRequiresIndex(),
+                new SupportEventPropDesc("Nested", typeof(SupportBeanComplexProps.SupportBeanSpecialGetterNested))
+                    .WithFragment(),
+                new SupportEventPropDesc("ArrayProperty", typeof(int[]))
+                    .WithIndexed(),
+                new SupportEventPropDesc("ObjectArray", typeof(object[]))
+                    .WithIndexed()
+            );
 
             properties = eventTypeNested.PropertyNames;
-            CollectionAssert.AreEquivalent(SupportBeanCombinedProps.PROPERTIES, properties);
+
+            EPAssertionUtil.AssertEqualsAnyOrder(SupportBeanCombinedProps.PROPERTIES, properties);
         }
 
         [Test]

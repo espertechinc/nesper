@@ -40,85 +40,86 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
         private const string JSON_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "Json";
         private const string JSONPROVIDED_TYPENAME = nameof(EventInfraPropertyNestedIndexed) + "JsonProvided";
 
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyNestedIndexed(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+
         public void Run(RegressionEnvironment env)
         {
             var path = new RegressionPath();
 
-            RunAssertion(
-                env,
-                true,
-                BEAN_TYPENAME,
-                FBEAN,
-                typeof(InfraNestedIndexedPropLvl1),
-                typeof(InfraNestedIndexedPropLvl1).FullName,
-                path);
-            RunAssertion(env, true, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>), MAP_TYPENAME + "_1", path);
-            RunAssertion(env, true, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
-            RunAssertion(env, true, XML_TYPENAME, FXML, typeof(XmlNode), XML_TYPENAME + ".L1", path);
-            RunAssertion(env, true, AVRO_TYPENAME, FAVRO, typeof(GenericRecord), AVRO_TYPENAME + "_1", path);
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.OBJECTARRAY:
+                    RunAssertion(env, true, OA_TYPENAME, FOA, typeof(object[]), OA_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.MAP:
+                    RunAssertion(env, true, MAP_TYPENAME, FMAP, typeof(IDictionary<string, object>[]),
+                        MAP_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.AVRO:
+                    RunAssertion(env, true, AVRO_TYPENAME, FAVRO, typeof(GenericRecord[]), AVRO_TYPENAME + "_1", path);
+                    break;
+                case EventRepresentationChoice.JSON:
+                    // Json
+                    var eplJson =
+                        $"create json schema {JSON_TYPENAME}_4(Lvl4 int);\n" +
+                        $" create json schema {JSON_TYPENAME}_3(Lvl3 int, L4 {JSON_TYPENAME}_4[]);\n" +
+                        $" create json schema {JSON_TYPENAME}_2(Lvl2 int, L3 {JSON_TYPENAME}_3[]);\n" +
+                        $" create json schema {JSON_TYPENAME}_1(Lvl1 int, L2 {JSON_TYPENAME}_2[]);\n" +
+                        " @name('types') @public @buseventtype" +
+                        $" create json schema {JSON_TYPENAME}(L1 {JSON_TYPENAME}_1[]);\n";
+                    env.CompileDeploy(eplJson, path);
+                    RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object[]), JSON_TYPENAME + "_1", path);
+                    env.UndeployModuleContaining("types");
+                    break;
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    // Json-Class-Provided
+                    var eplJsonProvided =
+                        $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedLvl4).FullName}')" +
+                        $" create json schema {JSONPROVIDED_TYPENAME}_4();\n" +
+                        $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedLvl3).FullName}')" +
+                        $" create json schema {JSONPROVIDED_TYPENAME}_3(Lvl3 int, L4 {JSONPROVIDED_TYPENAME}_4[]);\n" +
+                        $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedLvl2).FullName}')" +
+                        $" create json schema {JSONPROVIDED_TYPENAME}_2(Lvl2 int, L3 {JSONPROVIDED_TYPENAME}_3[]);\n" +
+                        $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedLvl1).FullName}')" +
+                        $" create json schema {JSONPROVIDED_TYPENAME}_1(Lvl1 int, L2 {JSONPROVIDED_TYPENAME}_2[]);\n" +
+                        $"@JsonSchema(ClassName='{typeof(MyLocalJSONProvidedTop).FullName}')" +
+                        $" @name('types') @public @buseventtype" +
+                        $" create json schema {JSONPROVIDED_TYPENAME}(L1 {JSONPROVIDED_TYPENAME}_1[]);\n";
 
-            // Json
-            var eplJson =
-                "create json schema " + JSON_TYPENAME + "_4(Lvl4 int);\n" +
-                " create json schema " + JSON_TYPENAME + "_3(Lvl3 int, L4 " + JSON_TYPENAME + "_4[]);\n" +
-                " create json schema " + JSON_TYPENAME + "_2(Lvl2 int, L3 " + JSON_TYPENAME + "_3[]);\n" +
-                " create json schema " + JSON_TYPENAME + "_1(Lvl1 int, L2 " + JSON_TYPENAME + "_2[]);\n" +
-                "@name('types') @public @buseventtype" +
-                " create json schema " + JSON_TYPENAME + "(L1 " + JSON_TYPENAME + "_1[]);\n";
-            env.CompileDeploy(eplJson, path);
-            RunAssertion(env, false, JSON_TYPENAME, FJSON, typeof(object[]), JSON_TYPENAME + "_1", path);
-            env.UndeployModuleContaining("types");
+                    env.CompileDeploy(eplJsonProvided, path);
+                    RunAssertion(
+                        env,
+                        false,
+                        JSONPROVIDED_TYPENAME,
+                        FJSON,
+                        typeof(MyLocalJSONProvidedLvl1[]),
+                        "EventInfraPropertyNestedIndexedJsonProvided_1",
+                        path);
+                    break;
+                case EventRepresentationChoice.DEFAULT:
+                    RunAssertion(
+                        env,
+                        true,
+                        BEAN_TYPENAME,
+                        FBEAN,
+                        typeof(InfraNestedIndexedPropLvl1[]),
+                        typeof(InfraNestedIndexedPropLvl1).FullName,
+                        path);
 
-            // Json-Class-Provided
-            var eplJsonProvided =
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJSONProvidedLvl4).FullName +
-                "')" +
-                " create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "_4();\n" +
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJSONProvidedLvl3).FullName +
-                "')" +
-                " create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "_3(Lvl3 int, L4 " +
-                JSONPROVIDED_TYPENAME +
-                "_4[]);\n" +
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJSONProvidedLvl2).FullName +
-                "')" +
-                " create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "_2(Lvl2 int, L3 " +
-                JSONPROVIDED_TYPENAME +
-                "_3[]);\n" +
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJSONProvidedLvl1).FullName +
-                "')" +
-                " create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "_1(Lvl1 int, L2 " +
-                JSONPROVIDED_TYPENAME +
-                "_2[]);\n" +
-                "@JsonSchema(ClassName='" +
-                typeof(MyLocalJSONProvidedTop).FullName +
-                "') @name('types') @public @buseventtype" +
-                " create json schema " +
-                JSONPROVIDED_TYPENAME +
-                "(L1 " +
-                JSONPROVIDED_TYPENAME +
-                "_1[]);\n";
-
-            env.CompileDeploy(eplJsonProvided, path);
-            RunAssertion(
-                env,
-                false,
-                JSONPROVIDED_TYPENAME,
-                FJSON,
-                typeof(MyLocalJSONProvidedLvl1[]),
-                "EventInfraPropertyNestedIndexedJsonProvided_1",
-                path);
+                    RunAssertion(env, true, XML_TYPENAME, FXML, typeof(XmlNode[]), XML_TYPENAME + ".L1", path);
+                    break;
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
 
             env.UndeployAll();
         }

@@ -59,7 +59,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(int?), null, eventType, "myIntBoxed");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
-            AssertPropertyType(null, null, eventType, "myNullValue");
+            AssertPropertyType(typeof(object), null, eventType, "myNullValue");
             AssertPropertyType(typeof(GenericRecord), null, eventType, "lvl1");
             AssertPropertyType(typeof(int), null, eventType, "lvl1.IntPrimitive");
             AssertPropertyType(typeof(string), typeof(char), eventType, "lvl1.lvl2.NestedValue");
@@ -83,11 +83,13 @@ namespace NEsper.Avro.Core
             lvl2Rec.Put("NestedValue", 100);
             lvl2Rec.Put("NestedIndexed", Collections.List(19, 21));
             lvl2Rec.Put("NestedMapped", Collections.SingletonDataMap("Nestedkey", "Nestedvalue"));
+            
             var lvl1Rec = new GenericRecord(lvl1Schema);
             lvl1Rec.Put("lvl2", lvl2Rec);
             lvl1Rec.Put("IntPrimitive", 10);
             lvl1Rec.Put("indexed", Collections.List(1, 2, 3));
             lvl1Rec.Put("mapped", Collections.SingletonDataMap("key", "value"));
+            
             var record = new GenericRecord(schema);
             record.Put("lvl1", lvl1Rec);
             record.Put("myInt", 99);
@@ -105,7 +107,7 @@ namespace NEsper.Avro.Core
             Assert.AreEqual(2, eventBean.Get("lvl1.indexed[1]"));
             Assert.AreEqual("value", eventBean.Get("lvl1.mapped('key')"));
             Assert.AreEqual(null, eventBean.Get("myNullValue"));
-            Assert.AreEqual("Nestedvalue", eventBean.Get("lvl1.lvl2.NestedMapped('nestedkey')"));
+            Assert.AreEqual("Nestedvalue", eventBean.Get("lvl1.lvl2.NestedMapped('Nestedkey')"));
             Assert.AreEqual(21, eventBean.Get("lvl1.lvl2.NestedIndexed[1]"));
         }
 
@@ -132,7 +134,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double), null, eventType, "myDouble");
             AssertPropertyType(typeof(float), null, eventType, "myFloat");
             AssertPropertyType(typeof(long), null, eventType, "myLong");
@@ -533,7 +535,7 @@ namespace NEsper.Avro.Core
             AssertPropertyType(typeof(int?), null, eventType, "myInt");
             AssertPropertyType(typeof(string), typeof(char), eventType, "myString");
             AssertPropertyType(typeof(bool?), null, eventType, "myBoolean");
-            AssertPropertyType(typeof(byte[]), null, eventType, "myBytes");
+            AssertPropertyType(typeof(byte[]), typeof(byte), eventType, "myBytes");
             AssertPropertyType(typeof(double?), null, eventType, "myDouble");
             AssertPropertyType(typeof(float?), null, eventType, "myFloat");
             AssertPropertyType(typeof(long?), null, eventType, "myLong");

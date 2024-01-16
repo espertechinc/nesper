@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.core;
@@ -18,15 +17,12 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof {
     public class EnumFirstOf : EnumForgeBasePlain,
         EnumForge,
-        EnumEval
-    {
+        EnumEval {
         private readonly EPChainableType _resultType;
 
         public EnumFirstOf(
@@ -57,8 +53,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope)
         {
 #if true
-            return StaticMethod(typeof(EnumFirstOf), "FirstValue", args.Expressions); 
-#else            
+            return StaticMethod(typeof(EnumFirstOf), "FirstValue", args.Expressions);
+#else
             var type = _resultType.GetCodegenReturnType();
             var collectionType = typeof(ICollection<>).MakeGenericType(type);
             //var collectionType = typeof(ICollection<EventBean>).MakeGenericType(type);

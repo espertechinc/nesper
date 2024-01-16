@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client.collection;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,14 +16,11 @@ using com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3f
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.@event.arr;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static com.espertech.esper.common.@internal.epl.enummethod.codegen.EnumForgeCodegenNames; // REF_ENUMCOLL
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom
-{
-    public class EnumSelectFromScalar : ThreeFormScalar
-    {
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.selectfrom {
+    public class EnumSelectFromScalar : ThreeFormScalar {
         public EnumSelectFromScalar(
             ExprDotEvalParamLambda lambda,
             ObjectArrayEventType resultEventType,
@@ -35,7 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         public override EnumEval EnumEvaluator {
             get {
                 var inner = InnerExpression.ExprEvaluator;
-                return new ProxyEnumEval() {
+                return new ProxyEnumEval()
+                {
                     ProcEvaluateEnumMethod = (
                         eventsLambda,
                         enumcoll,
@@ -72,13 +69,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod(Type inputCollectionType)
         {
-            return typeof(ICollection<object>);
+            return inputCollectionType;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional()
+        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
         {
+            var componentType = inputCollectionType.GetComponentType();
+            return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
             //return REF_ENUMCOLL;
-            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
@@ -88,20 +86,24 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type inputCollectionType)
         {
-            block.DeclareVar<ArrayDeque<object>>(
-                "result",
-                NewInstance<ArrayDeque<object>>(ExprDotName(REF_ENUMCOLL, "Count")));
+            var itemType = inputCollectionType.GetComponentType();
+            var arrayType = typeof(ArrayDeque<>).MakeGenericType(itemType);
+
+            block.DeclareVar(arrayType, "result", NewInstance(arrayType, ExprDotName(REF_ENUMCOLL, "Count")));
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope)
+            CodegenClassScope codegenClassScope,
+            Type inputCollectionType)
         {
-            block.DeclareVar<object>(
-                    "item",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+            var itemType = inputCollectionType.GetComponentType();
+
+            block
+                .DeclareVar(itemType, "item",
+                    InnerExpression.EvaluateCodegen(itemType, methodNode, scope, codegenClassScope))
                 .IfCondition(NotEqualsNull(Ref("item")))
                 .Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
         }

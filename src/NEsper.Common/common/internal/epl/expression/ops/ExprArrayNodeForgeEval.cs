@@ -190,14 +190,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ExprForgeCodegenSymbol exprSymbol,
             CodegenClassScope codegenClassScope)
         {
+            var componentType = forge.ComponentTypeCollection;
+            
             ExprNode[] children = forge.ForgeRenderableArray.ChildNodes;
             if (children.Length == 0) {
-                return StaticMethod(typeof(Collections), "GetEmptyList");
+                return StaticMethod(typeof(Collections), "GetEmptyList", new [] { componentType });
             }
 
-            var dequeType = typeof(ArrayDeque<>).MakeGenericType(typeof(object));
+            var dequeType = typeof(ArrayDeque<>).MakeGenericType(componentType);
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(ICollection<object>),
+                typeof(ICollection<>).MakeGenericType(componentType),
                 typeof(ExprArrayNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block

@@ -532,12 +532,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             env,
                             "s0",
                             "SupportBean",
-                            new FilterItem[][] {
-                                new FilterItem[] {
+                            new FilterItem[][]
+                            {
+                                new FilterItem[]
+                                {
                                     new FilterItem("TheString", FilterOperator.EQUAL),
                                     new FilterItem("IntPrimitive", FilterOperator.EQUAL)
                                 },
-                                new FilterItem[] {
+                                new FilterItem[]
+                                {
                                     new FilterItem("TheString", FilterOperator.EQUAL),
                                     new FilterItem("LongPrimitive", FilterOperator.EQUAL)
                                 },
@@ -546,8 +549,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                     SendAssertEvents(
                         env,
-                        new SupportBean[] { MakeEvent("A", 1, 0), MakeEvent("A", 0, 10), MakeEvent("A", 1, 10) },
-                        new SupportBean[] { MakeEvent("x", 0, 0), MakeEvent("A", 2, 20), MakeEvent("x", 1, 10) }
+                        new SupportBean[]
+                        {
+                            MakeEvent("a", 1, 0), 
+                            MakeEvent("a", 0, 10), 
+                            MakeEvent("a", 1, 10)
+                        },
+                        new SupportBean[]
+                        {
+                            MakeEvent("x", 0, 0),
+                            MakeEvent("a", 2, 20), 
+                            MakeEvent("x", 1, 10)
+                        }
                     );
                     env.UndeployAll();
                 }

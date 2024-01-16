@@ -62,6 +62,31 @@ namespace com.espertech.esper.common.@internal.@event.property
                 return false;
             }
         }
+        
+        static bool IsNestableType(Type typeX)
+        {
+            // we do not consider numerics, booleans and character classes as nestable
+            if (typeX.IsTypeNumeric() ||
+                typeX.IsTypeBoolean() ||
+                typeX.IsTypeCharacter())
+                return false;
+                
+            // we do not allow maps to be used to further nest as the type cannot be determined
+            if (GenericExtensions.IsGenericStringDictionary(typeX))
+                return false;
+                
+#if PERMISSABLE
+                // arrays are currently allowed although they have a limited number of visible properties
+                if (typeX.IsArray)
+                    return false;
+                
+                // strings are currently allowed
+                if (typeX == typeof(string))
+                    return false;
+#endif
+                
+            return true;
+        }
 
         public EventPropertyGetterSPI GetGetter(
             BeanEventType eventType,
@@ -94,6 +119,11 @@ namespace com.espertech.esper.common.@internal.@event.property
                         return null;
                     }
 
+                    if (!IsNestableType(clazz)) {
+                        return null;
+                    }
+                    
+#if DEPRECATED
                     // Map cannot be used to further nest as the type cannot be determined
                     if (clazz.IsGenericDictionary()) {
                         return null;
@@ -102,6 +132,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     if (clazz.IsArray) {
                         return null;
                     }
+#endif
 
                     eventType = beanEventTypeFactory.GetCreateBeanType(clazz, publicFields);
                 }
@@ -124,6 +155,7 @@ namespace com.espertech.esper.common.@internal.@event.property
             Type result = null;
             var boxed = false;
 
+            
             var properties = Properties;
             var propertiesCount = properties.Count;
             for (var ii = 0; ii < propertiesCount; ii++) {
@@ -137,12 +169,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                 }
 
                 if (ii < propertiesCount - 1) {
-                    // Map cannot be used to further nest as the type cannot be determined
-                    var typeClass = result;
-                    if (typeClass == typeof(IDictionary<string, object>) ||
-                        typeClass.IsArray ||
-                        typeClass.IsPrimitive ||
-                        typeClass.IsBuiltinDataType()) {
+                    if (!IsNestableType(result)) {
                         return null;
                     }
 
@@ -190,7 +217,7 @@ namespace com.espertech.esper.common.@internal.@event.property
                     }
                 }
 
-                if (ii < (propertiesCount - 1)) {
+                if (ii >= (propertiesCount - 1)) {
                     if (nestedType is Type nestedTypeType) {
                         return nestedTypeType;
                     }

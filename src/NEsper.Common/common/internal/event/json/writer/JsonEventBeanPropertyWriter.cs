@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object value,
             object und)
         {
-            if (!_delegate.TrySetProperty(_field.PropertyNumber, und, value)) {
+            if (!_delegate.TrySetProperty(_field.PropertyNumber, value, und)) {
                 log.Warn($"Attempted to write property \"{_field.PropertyNumber}\" failed");
             }
         }

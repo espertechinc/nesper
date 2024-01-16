@@ -19,13 +19,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
             CodegenExpression enumcoll,
             Type enumcollType,
             CodegenExpression isNewData,
-            CodegenExpression exprCtx)
+            CodegenExpression exprCtx,
+            Type desiredReturnType)
         {
             Eps = eps;
             Enumcoll = enumcoll;
             EnumcollType = enumcollType;
             IsNewData = isNewData;
             ExprCtx = exprCtx;
+            DesiredReturnType = desiredReturnType;
         }
 
         public CodegenExpression Eps { get; }
@@ -33,6 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.codegen
         public CodegenExpression Enumcoll { get; }
 
         public Type EnumcollType { get; }
+        
+        public Type DesiredReturnType { get; set; }
 
         public CodegenExpression IsNewData { get; }
 

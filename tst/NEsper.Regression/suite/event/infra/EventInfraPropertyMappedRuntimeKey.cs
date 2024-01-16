@@ -6,10 +6,11 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System;
 using System.Collections.Generic;
 
 using Avro.Generic;
-
+using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -24,55 +25,90 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyMappedRuntimeKey : RegressionExecution
     {
+        private readonly EventRepresentationChoice _eventRepresentationChoice;
+        
+        /// <summary>
+        /// Constructor for test
+        /// </summary>
+        /// <param name="eventRepresentationChoice"></param>
+        public EventInfraPropertyMappedRuntimeKey(EventRepresentationChoice eventRepresentationChoice)
+        {
+            _eventRepresentationChoice = eventRepresentationChoice;
+        }
+        
         public void Run(RegressionEnvironment env)
         {
-            // Bean
-            Consumer<IDictionary<string, string>> bean = entries => { env.SendEventBean(new LocalEvent(entries)); };
-            var beanepl = $"@Public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
-            RunAssertion(env, beanepl, bean);
-
-            // Map
-            Consumer<IDictionary<string, string>> map = entries => {
-                env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
-            };
             var mapType = typeof(IDictionary<string, object>).CleanName();
-            var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
-            RunAssertion(env, mapepl, map);
 
-            // Object-array
-            Consumer<IDictionary<string, string>> oa = entries => {
-                env.SendEventObjectArray(new object[] { entries }, "LocalEvent");
-            };
-			var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
-            RunAssertion(env, oaepl, oa);
-
-            // Json
-            Consumer<IDictionary<string, string>> json = entries => {
+            // Local function to send a json object given a set of entries
+            void SendEventJson(IDictionary<string, string> entries)
+            {
                 var mapValues = new JObject();
-                foreach (var entry in entries) {
+                foreach (var entry in entries)
+                {
                     mapValues.Add(entry.Key, entry.Value);
                 }
 
                 var @event = new JObject(new JProperty("Mapped", mapValues));
                 env.SendEventJson(@event.ToString(), "LocalEvent");
-            };
-			var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
-            RunAssertion(env, jsonepl, json);
+            }
 
-            // Json-Class-Provided
-			var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
-			var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
-            RunAssertion(env, jsonProvidedEpl, json);
+            switch (_eventRepresentationChoice)
+            {
+                case EventRepresentationChoice.OBJECTARRAY:
+                    // Object-array
+                    Consumer<IDictionary<string, string>> oa = entries => {
+                        env.SendEventObjectArray(new object[] { entries }, "LocalEvent");
+                    };
+                    var oaepl = $"@public @buseventtype create objectarray schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, oaepl, oa);
+                    break;
 
-            // Avro
-            Consumer<IDictionary<string, string>> avro = entries => {
-                var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
-                var @event = new GenericRecord(schema.AsRecordSchema());
-                @event.Put("Mapped", entries);
-                env.SendEventAvro(@event, "LocalEvent");
-            };
-			var avroepl = $"@public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
-            RunAssertion(env, avroepl, avro);
+                case EventRepresentationChoice.MAP:
+                    // Map
+                    Consumer<IDictionary<string, string>> map = entries => {
+                        env.SendEventMap(Collections.SingletonDataMap("Mapped", entries), "LocalEvent");
+                    };
+                    var mapepl = $"@public @buseventtype create schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, mapepl, map);
+                    break;
+                
+                case EventRepresentationChoice.AVRO:
+                    // Avro
+                    Consumer<IDictionary<string, string>> avro = entries => {
+                        var schema = env.RuntimeAvroSchemaByDeployment("schema", "LocalEvent");
+                        var @event = new GenericRecord(schema.AsRecordSchema());
+                        @event.Put("Mapped", entries);
+                        env.SendEventAvro(@event, "LocalEvent");
+                    };
+                    var avroepl = $"@name('schema') @public @buseventtype create avro schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, avroepl, avro);
+                    break;
+                
+                case EventRepresentationChoice.JSON:
+                    // Json
+                    var jsonepl = $"@public @buseventtype create json schema LocalEvent(Mapped `{mapType}`);\n";
+                    RunAssertion(env, jsonepl, SendEventJson);
+
+                    break;
+                case EventRepresentationChoice.JSONCLASSPROVIDED:
+                    // Json-Class-Provided
+                    var jsonProvidedType = typeof(MyLocalJsonProvided).MaskTypeName();
+                    var jsonProvidedEpl = $"@JsonSchema(ClassName='{jsonProvidedType}') @public @buseventtype create json schema LocalEvent();\n";
+                    RunAssertion(env, jsonProvidedEpl, SendEventJson);
+                    
+                    break;
+                case EventRepresentationChoice.DEFAULT:
+                    // Bean
+                    Consumer<IDictionary<string, string>> bean = entries => { env.SendEventBean(new LocalEvent(entries)); };
+                    var beanepl = $"@Public @buseventtype create schema LocalEvent as {typeof(LocalEvent).MaskTypeName()};\n";
+                    RunAssertion(env, beanepl, bean);
+
+                    break;
+
+                default:
+                    throw new ArgumentOutOfRangeException();
+            }
         }
 
         public void RunAssertion(

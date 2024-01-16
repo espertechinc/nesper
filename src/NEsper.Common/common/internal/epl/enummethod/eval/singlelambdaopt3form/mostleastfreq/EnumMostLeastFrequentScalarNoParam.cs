@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -17,17 +16,14 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 using static
     com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq.
     EnumMostLeastFrequentHelper; // getEnumMostLeastFrequentResult
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.mostleastfreq {
     public class EnumMostLeastFrequentScalarNoParam : EnumForgeBasePlain,
-        EnumEval
-    {
+        EnumEval {
         private readonly bool _isMostFrequent;
         private readonly Type _returnType;
 

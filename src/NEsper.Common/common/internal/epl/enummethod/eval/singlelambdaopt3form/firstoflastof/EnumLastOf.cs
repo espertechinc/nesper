@@ -8,7 +8,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -18,15 +17,12 @@ using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
-namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof
-{
+namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.firstoflastof {
     public class EnumLastOf : EnumForgeBasePlain,
         EnumForge,
-        EnumEval
-    {
+        EnumEval {
         private readonly EPChainableType _resultType;
 
         public EnumLastOf(
@@ -58,7 +54,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope)
         {
 #if false
-            return StaticMethod(typeof(EnumLastOf), "LastValue", args.Expressions); 
+            return StaticMethod(typeof(EnumLastOf), "LastValue", args.Expressions);
 #else
             var type = _resultType.GetCodegenReturnType().GetBoxedType();
             var method = codegenMethodScope.MakeChild(type, typeof(EnumLastOf), codegenClassScope)
@@ -75,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             return LocalMethod(method, args.Expressions);
 #endif
         }
-        
+
         public static T LastValue<T>(
             EventBean[] eventsPerStream,
             ICollection<T> enumcoll,

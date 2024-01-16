@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -26,16 +27,18 @@ namespace com.espertech.esper.common.@internal.util
 
             public object CoerceBoxed(object value)
             {
-                return value.AsInt32();
+                return value.AsBoxedInt32();
             }
 
-            public Type ReturnType => typeof(int);
+            public Type ReturnType => typeof(int?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType)
             {
-                return CodegenInt(value, valueType);
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    : CodegenInt(value, valueType);
             }
 
             public CodegenExpression CoerceCodegenMayNullBoxed(
@@ -75,24 +78,18 @@ namespace com.espertech.esper.common.@internal.util
             public static CodegenExpression CoerceCodegenMayNull(
                 CodegenExpression value,
                 Type valueType,
-                CodegenMethodScope codegenMethodScope,
-                CodegenClassScope codegenClassScope)
+                CodegenMethodScope codegenMethodScope = null,
+                CodegenClassScope codegenClassScope = null)
             {
+                if (valueType == null) {
+                    return CodegenExpressionBuilder.ConstantNull();
+                }
+
                 return valueType != typeof(short) &&
                        valueType != typeof(int) &&
                        valueType != typeof(int?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt32")
                     : value;
-
-//                return CodegenCoerceMayNull(
-//                    typeof(int),
-//                    typeof(int?),
-//                    "AsInt32",
-//                    param,
-//                    type,
-//                    codegenMethodScope,
-//                    typeof(CoercerInt),
-//                    codegenClassScope);
             }
         }
     }

@@ -70,10 +70,7 @@ namespace com.espertech.esper.common.@internal.support
             Type jsonProvidedClass)
         {
             if (enumValue == EventRepresentationChoice.JSONCLASSPROVIDED) {
-                return "@JsonSchema(ClassName='" +
-                       jsonProvidedClass.FullName +
-                       "') " +
-                       "@EventRepresentation('json')";
+                return $"@JsonSchema(ClassName='{jsonProvidedClass.FullName}') @EventRepresentation('json')";
             }
 
             return GetAnnotationText(enumValue);
@@ -125,14 +122,12 @@ namespace com.espertech.esper.common.@internal.support
         public static EventRepresentationChoice GetEngineDefault(Configuration configuration)
         {
             var configured = configuration.Common.EventMeta.DefaultEventRepresentation;
-            if (configured == EventUnderlyingType.OBJECTARRAY) {
-                return EventRepresentationChoice.OBJECTARRAY;
-            }
-            else if (configured == EventUnderlyingType.AVRO) {
-                return EventRepresentationChoice.AVRO;
-            }
-
-            return EventRepresentationChoice.MAP;
+            return configured switch
+            {
+                EventUnderlyingType.OBJECTARRAY => EventRepresentationChoice.OBJECTARRAY,
+                EventUnderlyingType.AVRO => EventRepresentationChoice.AVRO,
+                _ => EventRepresentationChoice.MAP
+            };
         }
 
         public static bool IsObjectArrayEvent(this EventRepresentationChoice enumValue)

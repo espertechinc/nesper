@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Reflection;
 
 using Antlr4.Runtime.Tree;
-
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.common.@internal.compile.stage1;
 using com.espertech.esper.common.@internal.compile.stage1.spec;
 using com.espertech.esper.common.@internal.compile.stage1.specmapper;
@@ -121,17 +121,17 @@ namespace com.espertech.esper.compiler.@internal.util
 			InlinedClassInspectionOption option,
 			StatementCompileTimeServices compileTimeServices)
 		{
-			Consumer<Object> classFileConsumer = null;
+			Consumer<IArtifact> compileResultConsumer = null;
 			if (option != null) {
-				classFileConsumer = compilerResult => {
+				compileResultConsumer = artifact => {
 					//ClassFile[] files = ((List<ClassFile>) compilerResult).toArray(new ClassFile[0]);
-					//option.Visit(new InlinedClassInspectionContext(files));
+					option.Visit(new InlinedClassInspectionContext(artifact));
 				};
 			}
 			
 			ClassProvidedPrecompileResult classesInlined;
 			try {
-				classesInlined = CompileClassProvided(classes, classFileConsumer, compileTimeServices, null);
+				classesInlined = CompileClassProvided(classes, compileResultConsumer, compileTimeServices, null);
 				// add inlined classes including create-class
 				compileTimeServices.ClassProvidedExtension.Add(classesInlined.Classes);
 			}

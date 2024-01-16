@@ -273,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.IsTrue(delta < 1000);
+                Assert.Less(delta, 1000);
 
                 env.UndeployAll();
             }
@@ -320,7 +320,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 catch (Exception ex) { // we have a handler
                     SupportMessageAssertUtil.AssertMessage(
                         ex,
-                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0,15.0)' already exists");
+                        "Unexpected exception in statement 'win': Unique index violation, index 'Idx' is a unique index and key '(10.0d,15.0d)' already exists");
                 }
 
                 env.UndeployAll();
@@ -362,7 +362,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.IsTrue(delta < 1000);
+                Assert.Less(delta, 1000);
 
                 env.UndeployAll();
             }
