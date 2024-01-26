@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 
 namespace com.espertech.esper.common.@internal.type
@@ -31,6 +31,6 @@ namespace com.espertech.esper.common.@internal.type
             CodegenExpression lhs,
             Type lhsType,
             CodegenExpression rhs,
-            Type rhsType);
+            Type rhsType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope);
     }
 }

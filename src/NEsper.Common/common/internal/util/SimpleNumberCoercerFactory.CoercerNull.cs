@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }

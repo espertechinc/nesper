@@ -103,19 +103,15 @@ namespace com.espertech.esper.common.@internal.epl.index.sorted
 
             keyStart = Coerce(keyStart);
             keyEnd = Coerce(keyEnd);
-            IOrderedDictionary<object, ISet<EventBean>> submap;
-            try {
-                submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
-            }
-            catch (ArgumentException) {
-                if (allowRangeReversal) {
-                    submap = propertyIndex.Between(keyEnd, includeStart, keyStart, includeEnd);
-                }
-                else {
-                    return EmptySet<EventBean>.Instance;
+
+            if (allowRangeReversal) {
+                if (propertyIndex.KeyComparer.Compare(keyStart, keyEnd) > 0) {
+                    // swap via deconstruction (very cool)
+                    (keyEnd, keyStart) = (keyStart, keyEnd);
                 }
             }
 
+            var submap = propertyIndex.Between(keyStart, includeStart, keyEnd, includeEnd);
             return NormalizeCollection(submap);
         }
 

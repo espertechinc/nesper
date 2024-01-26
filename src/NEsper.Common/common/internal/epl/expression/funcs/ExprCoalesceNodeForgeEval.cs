@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                         }
                         else {
                             var coercer = SimpleNumberCoercerFactory.GetCoercer(classtype, evaluationClass);
-                            block.MethodReturn(coercer.CoerceCodegen(Ref(refname), classtype));
+                            block.MethodReturn(coercer.CoerceCodegen(Ref(refname), classtype, codegenMethodScope, codegenClassScope));
                             doneWithReturn = true;
                         }
 

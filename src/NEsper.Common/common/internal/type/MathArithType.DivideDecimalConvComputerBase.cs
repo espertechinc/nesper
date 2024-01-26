@@ -81,10 +81,10 @@ namespace com.espertech.esper.common.@internal.type
                     .Block
                     .DeclareVar<decimal>(
                         "s1",
-                        _convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype))
+                        _convOne.CoerceCodegen(CodegenExpressionBuilder.Ref("d1"), ltype, codegenMethodScope, codegenClassScope))
                     .DeclareVar<decimal>(
                         "s2",
-                        _convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype));
+                        _convTwo.CoerceCodegen(CodegenExpressionBuilder.Ref("d2"), rtype, codegenMethodScope, codegenClassScope));
                 var ifZeroDivisor =
                     block.IfCondition(
                         CodegenExpressionBuilder.EqualsIdentity(

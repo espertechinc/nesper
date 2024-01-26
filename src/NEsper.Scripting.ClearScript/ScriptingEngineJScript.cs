@@ -127,6 +127,7 @@ namespace NEsper.Scripting.ClearScript
                 engine.AddHostObject("__variables", primitives);
                 engine.AddHostObject("host", new XHostFunctions(typeResolver));
                 engine.AddHostObject("debug", new DebugFunctions(this));
+                engine.AddHostObject("epl", args.Context.AllocateAgentInstanceScriptContext);
 
                 var writer = new StringWriter();
                 WritePolyfills(writer);

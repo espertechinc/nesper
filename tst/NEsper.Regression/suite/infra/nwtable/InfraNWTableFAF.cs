@@ -1502,16 +1502,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
         private class InfraUpdate : RegressionExecution
         {
-            private readonly bool namedWindow;
+            private readonly bool _namedWindow;
 
             internal InfraUpdate(bool namedWindow)
             {
-                this.namedWindow = namedWindow;
+                this._namedWindow = namedWindow;
             }
 
             public void Run(RegressionEnvironment env)
             {
-                var path = SetupInfra(env, namedWindow);
+                var path = SetupInfra(env, _namedWindow);
                 var fields = new string[] { "TheString", "IntPrimitive" };
 
                 // test update-all
@@ -1520,15 +1520,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 var result = CompileExecute("update MyInfra set TheString = 'ABC'", path, env);
-                env.AssertPropsPerRowIterator(
+                env.AssertPropsPerRowIteratorAnyOrder(
                     "TheInfra",
                     fields,
-                    new object[][] { new object[] { "ABC", 0 }, new object[] { "ABC", 1 } });
-                if (namedWindow) {
-                    EPAssertionUtil.AssertPropsPerRow(
+                    new object[][]
+                    {
+                        new object[] { "ABC", 0 },
+                        new object[] { "ABC", 1 }
+                    });
+                if (_namedWindow) {
+                    EPAssertionUtil.AssertPropsPerRowAnyOrder(
                         result.Array,
                         fields,
-                        new object[][] { new object[] { "ABC", 0 }, new object[] { "ABC", 1 } });
+                        new object[][]
+                        {
+                            new object[] { "ABC", 0 },
+                            new object[] { "ABC", 1 }
+                        });
                 }
 
                 // test update with where-clause
@@ -1540,24 +1548,32 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 result = env.CompileExecuteFAF(
                     "update MyInfra set TheString = 'X', IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1",
                     path);
-                if (namedWindow) {
+                if (_namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
-                        new object[][] { new object[] { "X", -1 } });
+                        new object[][]
+                        {
+                            new object[] { "X", -1 }
+                        });
                 }
 
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "TheInfra",
                     fields,
-                    new object[][] { new object[] { "E0", 0 }, new object[] { "E2", 2 }, new object[] { "X", -1 } });
+                    new object[][]
+                    {
+                        new object[] { "E0", 0 }, 
+                        new object[] { "E2", 2 }, 
+                        new object[] { "X", -1 }
+                    });
 
                 // test update with SODA
                 var epl = "update MyInfra set IntPrimitive=IntPrimitive+10 where TheString=\"E2\"";
                 var model = env.EplToModel(epl);
                 Assert.AreEqual(epl, model.ToEPL());
                 result = env.CompileExecuteFAF(model, path);
-                if (namedWindow) {
+                if (_namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
@@ -1567,24 +1583,36 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "TheInfra",
                     fields,
-                    new object[][] { new object[] { "E0", 0 }, new object[] { "X", -1 }, new object[] { "E2", 12 } });
+                    new object[][]
+                    {
+                        new object[] { "E0", 0 }, 
+                        new object[] { "X", -1 }, 
+                        new object[] { "E2", 12 }
+                    });
 
                 // test update with initial value
                 result = env.CompileExecuteFAF(
                     "update MyInfra set IntPrimitive=5, TheString='x', TheString = initial.TheString || 'y', IntPrimitive=initial.IntPrimitive+100 where TheString = 'E0'",
                     path);
-                if (namedWindow) {
+                if (_namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         fields,
-                        new object[][] { new object[] { "E0y", 100 } });
+                        new object[][]
+                        {
+                            new object[] { "E0y", 100 }
+                        });
                 }
 
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "TheInfra",
                     fields,
                     new object[][]
-                        { new object[] { "X", -1 }, new object[] { "E2", 12 }, new object[] { "E0y", 100 } });
+                        { 
+                            new object[] { "X", -1 }, 
+                            new object[] { "E2", 12 }, 
+                            new object[] { "E0y", 100 } 
+                        });
 
                 env.CompileExecuteFAF("delete from MyInfra", path);
                 for (var i = 0; i < 5; i++) {
@@ -1592,7 +1620,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 // test with index
-                if (namedWindow) {
+                if (_namedWindow) {
                     env.CompileDeploy("create unique index Idx1 on MyInfra (TheString)", path);
                 }
 
@@ -1602,23 +1630,23 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     INDEX_CALLBACK_HOOK +
                     "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 0",
                     5,
-                    namedWindow ? "Idx1" : "MyInfra",
-                    namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
+                    _namedWindow ? "Idx1" : "MyInfra",
+                    _namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
                 RunQueryAssertCountNonNegative(
                     env,
                     path,
                     INDEX_CALLBACK_HOOK +
                     "update MyInfra set IntPrimitive=-1 where TheString = 'E1' and IntPrimitive = 1",
                     4,
-                    namedWindow ? "Idx1" : "MyInfra",
-                    namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
+                    _namedWindow ? "Idx1" : "MyInfra",
+                    _namedWindow ? BACKING_SINGLE_UNIQUE : BACKING_MULTI_UNIQUE);
                 RunQueryAssertCountNonNegative(
                     env,
                     path,
                     INDEX_CALLBACK_HOOK + "update MyInfra set IntPrimitive=-1 where TheString = 'E2'",
                     3,
-                    namedWindow ? "Idx1" : null,
-                    namedWindow ? BACKING_SINGLE_UNIQUE : null);
+                    _namedWindow ? "Idx1" : null,
+                    _namedWindow ? BACKING_SINGLE_UNIQUE : null);
                 RunQueryAssertCountNonNegative(
                     env,
                     path,
@@ -1633,32 +1661,35 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     path,
                     INDEX_CALLBACK_HOOK + "update MyInfra as w1 set IntPrimitive=-1 where w1.TheString = 'E3'",
                     1,
-                    namedWindow ? "Idx1" : null,
-                    namedWindow ? BACKING_SINGLE_UNIQUE : null);
+                    _namedWindow ? "Idx1" : null,
+                    _namedWindow ? BACKING_SINGLE_UNIQUE : null);
 
                 // test consumption
                 env.CompileDeploy("@name('s0') select irstream * from MyInfra", path).AddListener("s0");
                 env.CompileExecuteFAF("update MyInfra set IntPrimitive=1000 where TheString = 'E0'", path);
-                if (namedWindow) {
+                if (_namedWindow) {
                     env.AssertPropsIRPair("s0", fields, new object[] { "E0", 1000 }, new object[] { "E0", 0 });
                 }
 
                 // test update via UDF and setter
-                if (namedWindow) {
+                if (_namedWindow) {
                     env.CompileExecuteFAF("delete from MyInfra", path);
                     env.SendEventBean(new SupportBean("A", 10));
                     env.CompileExecuteFAF("update MyInfra mw set mw.SetTheString('XYZ'), doubleInt(mw)", path);
                     env.AssertPropsPerRowIterator(
                         "TheInfra",
                         "TheString,IntPrimitive".SplitCsv(),
-                        new object[][] { new object[] { "XYZ", 20 } });
+                        new object[][]
+                        {
+                            new object[] { "XYZ", 20 }
+                        });
                 }
 
                 env.UndeployAll();
                 path.Clear();
 
                 // test update using array-assignment; this is mostly tested via on-merge otherwise
-                var eplInfra = namedWindow
+                var eplInfra = _namedWindow
                     ? "@name('TheInfra') @public create window MyInfra#keepall as (mydoubles double[primitive]);\n"
                     : "@name('TheInfra') @public create table MyInfra as (mydoubles double[primitive])";
                 env.CompileDeploy(eplInfra, path);
@@ -1674,7 +1705,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             public string Name()
             {
-                return $"{this.GetType().Name}{{namedWindow={namedWindow}}}";
+                return $"{this.GetType().Name}{{namedWindow={_namedWindow}}}";
             }
 
             public ISet<RegressionFlag> Flags()

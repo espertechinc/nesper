@@ -236,9 +236,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                var epl = "@Public create window MyPointWindow#keepall as (Id string, Px double, Py double);\n" +
-                          "insert into MyPointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
-                          "create index Idx on MyPointWindow( (Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
+                var epl =
+                    "@public create window MyPointWindow#keepall as (Id string, Px double, Py double);\n" +
+                    "insert into MyPointWindow select Id, Px, Py from SupportSpatialPoint;\n" +
+                    "create index Idx on MyPointWindow( (Px, Py) pointregionquadtree(0, 0, 100, 100));\n";
                 env.CompileDeploy(epl, path);
 
                 var random = new Random();
@@ -395,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy("@Public create table MyTable(Id string primary key, tx double, ty double)", path);
+                env.CompileDeploy("@public create table MyTable(Id string primary key, tx double, ty double)", path);
                 env.CompileDeploy("insert into MyTable select Id, Px as tx, Py as ty from SupportSpatialPoint", path);
                 env.SendEventBean(new SupportSpatialPoint("P1", 50d, 50d));
                 env.SendEventBean(new SupportSpatialPoint("P2", 49d, 49d));

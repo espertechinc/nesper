@@ -32,11 +32,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
     public class HistoricalEventViewableMethodForge : HistoricalEventViewableForgeBase
     {
-        private readonly MethodStreamSpec methodStreamSpec;
-        private readonly MethodPollingViewableMeta metadata;
+        private readonly MethodStreamSpec _methodStreamSpec;
+        private readonly MethodPollingViewableMeta _metadata;
 
-        private MethodTargetStrategyForge target;
-        private MethodConversionStrategyForge conversion;
+        private MethodTargetStrategyForge _target;
+        private MethodConversionStrategyForge _conversion;
 
         public HistoricalEventViewableMethodForge(
             int streamNum,
@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             MethodStreamSpec methodStreamSpec,
             MethodPollingViewableMeta metadata) : base(streamNum, eventType)
         {
-            this.methodStreamSpec = methodStreamSpec;
-            this.metadata = metadata;
+            _methodStreamSpec = methodStreamSpec;
+            _metadata = metadata;
         }
 
         public override IList<StmtClassForgeableFactory> Validate(
@@ -61,7 +61,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             var visitor = new ExprNodeIdentifierAndStreamRefVisitor(true);
             var validatedInputParameters = new List<ExprNode>();
-            foreach (var exprNode in methodStreamSpec.Expressions) {
+            foreach (var exprNode in _methodStreamSpec.Expressions) {
                 var validated = ExprNodeUtilityValidate.GetValidatedSubtree(
                     ExprNodeOrigin.METHODINVJOIN,
                     exprNode,
@@ -77,11 +77,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 
             // class-based evaluation
             MethodInfo targetMethod = null;
-            if (metadata.MethodProviderClass != null) {
+            if (_metadata.MethodProviderClass != null) {
                 // resolve actual method to use
                 ExprNodeUtilResolveExceptionHandler handler = new ProxyExprNodeUtilResolveExceptionHandler() {
                     ProcHandle = (e) => {
-                        if (methodStreamSpec.Expressions.Count == 0) {
+                        if (_methodStreamSpec.Expressions.Count == 0) {
                             return new ExprValidationException(
                                 "Method footprint does not match the number or type of expression parameters, expecting no parameters in method: " +
                                 e.Message);
@@ -96,16 +96,16 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                     }
                 };
                 var desc = ExprNodeUtilityResolve.ResolveMethodAllowWildcardAndStream(
-                    metadata.MethodProviderClass.FullName,
-                    metadata.IsStaticMethod
+                    _metadata.MethodProviderClass.FullName,
+                    _metadata.IsStaticMethod
                         ? null
-                        : metadata.MethodProviderClass,
-                    methodStreamSpec.MethodName,
+                        : _metadata.MethodProviderClass,
+                    _methodStreamSpec.MethodName,
                     validatedInputParameters,
                     false,
                     null,
                     handler,
-                    methodStreamSpec.MethodName,
+                    _methodStreamSpec.MethodName,
                     rawInfo,
                     services);
                 InputParamEvaluators = desc.ChildForges;
@@ -124,9 +124,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
                 services.SerdeResolver);
             MultiKeyClassRef = multiKeyPlan.ClassRef;
 
-            var strategies = PollExecStrategyPlanner.Plan(metadata, targetMethod, EventType);
-            target = strategies.First;
-            conversion = strategies.Second;
+            var strategies = PollExecStrategyPlanner.Plan(_metadata, targetMethod, EventType);
+            _target = strategies.First;
+            _conversion = strategies.Second;
 
             return multiKeyPlan.MultiKeyForgeables;
         }
@@ -142,11 +142,11 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
-            var configName = metadata.GetConfigurationName(methodStreamSpec);
+            var configName = _metadata.GetConfigurationName(_methodStreamSpec);
             method.Block
                 .SetProperty(@ref, "ConfigurationName", Constant(configName))
-                .SetProperty(@ref, "TargetStrategy", target.Make(method, symbols, classScope))
-                .SetProperty(@ref, "ConversionStrategy", conversion.Make(method, symbols, classScope));
+                .SetProperty(@ref, "TargetStrategy", _target.Make(method, symbols, classScope))
+                .SetProperty(@ref, "ConversionStrategy", _conversion.Make(method, symbols, classScope));
         }
     }
 } // end of namespace

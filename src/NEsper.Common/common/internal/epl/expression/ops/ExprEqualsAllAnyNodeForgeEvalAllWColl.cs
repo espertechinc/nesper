@@ -279,25 +279,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         .IfCondition(NotOptional(!isNot, ExprDotMethod(Ref(refname), "CheckedContains", leftWithBoxing)))
                         .BlockReturn(ConstantFalse());
                 }
-                else
-                {
+                else {
+                    var leftCoercedInitializer = refforge.EvaluateCodegen(
+                        forge.CoercionTypeBoxed,
+                        methodNode,
+                        exprSymbol,
+                        codegenClassScope);
+                    
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
                         forge.CoercionTypeBoxed,
                             refname,
                         forge.Coercer == null
-                            ? refforge.EvaluateCodegen(
-                                forge.CoercionTypeBoxed,
-                                methodNode,
-                                exprSymbol,
-                                codegenClassScope)
+                            ? leftCoercedInitializer
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
-                                refforge.EvaluateCodegen(
-                                    forge.CoercionTypeBoxed,
-                                    methodNode,
-                                    exprSymbol,
-                                    codegenClassScope),
-                                reftype,
+                                leftCoercedInitializer,
+                                forge.CoercionTypeBoxed,
                                 methodNode,
                                 codegenClassScope));
                     var ifRightNotNull = block.IfRefNotNull(refname);

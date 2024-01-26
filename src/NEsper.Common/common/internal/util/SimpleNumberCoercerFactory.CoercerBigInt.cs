@@ -29,9 +29,11 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceBoxedBigIntCodegen(
                 CodegenExpression expr,
-                Type type)
+                Type type,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
-                return CoerceCodegen(expr, type);
+                return CoerceCodegen(expr, type, codegenMethodScope, codegenClassScope);
             }
 
             public BigInteger CoerceBoxedBigInt(object numToCoerce)
@@ -48,10 +50,12 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
                 return valueType.CanBeNull() 
-                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
                     : CodegenBigInt(value, valueType);
             }
 
@@ -74,7 +78,7 @@ namespace com.espertech.esper.common.@internal.util
                 }
 
                 var method = codegenMethodScope
-                    .MakeChild(typeof(BigInteger), typeof(CoercerBigInt), codegenClassScope)
+                    .MakeChild(typeof(BigInteger?), typeof(CoercerBigInt), codegenClassScope)
                     .AddParam(valueType, "value")
                     .Block
                     .IfRefNullReturnNull("value")

@@ -8,16 +8,37 @@ namespace com.espertech.esper.common.@internal.util.serde
 {
     public class JsonConverterDictionaryWithTypeInfo : JsonConverter<IDictionary<string, object>>
     {
+        private readonly IDictionary<Type, bool> _typeResultCache;
+
+        public JsonConverterDictionaryWithTypeInfo()
+        {
+            _typeResultCache = new Dictionary<Type, bool>();
+        }
+
         public override bool CanConvert(Type typeToConvert)
         {
             if (typeToConvert == typeof(IDictionary<string, object>)) {
                 return true;
             }
 
+            if (typeToConvert.IsPrimitive || typeToConvert.IsEnum) {
+                return false;
+            }
+
+            if (_typeResultCache.TryGetValue(typeToConvert, out var result)) {
+                return result;
+            }
+
+            result = typeToConvert.GetInterfaces().Any(_ => _ == typeof(IDictionary<string, object>));
+            _typeResultCache[typeToConvert] = result;
+            return result;
+
+#if false
             // Maybe this is an implementation
             return typeToConvert
                 .GetInterfaces()
                 .Any(iface => iface == typeof(IDictionary<string, object>));
+#endif
         }
 
         public override IDictionary<string, object> Read(

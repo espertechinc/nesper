@@ -106,10 +106,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 env.TryInvalidCompile(
                     "select `select` from SupportBean",
-                    "Failed to validate select-clause expression 'select': Property named '`select`' is not valid in any stream [");
+                    "Failed to validate select-clause expression 'select': Property named 'select' is not valid in any stream [");
                 env.TryInvalidCompile(
                     "select `ab cd` from SupportBean",
-                    "Failed to validate select-clause expression 'ab cd': Property named '`ab cd`' is not valid in any stream [");
+                    "Failed to validate select-clause expression 'ab cd': Property named 'ab cd' is not valid in any stream [");
 
                 // test resolution as nested property
                 var path = new RegressionPath();
@@ -200,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
         private static void TryEnumWithKeyword(RegressionEnvironment env)
         {
-            env.CompileDeploy("select * from LocalEventWithEnum(localEventEnum=LocalEventEnum.`NEW`)");
+            env.CompileDeploy("select * from LocalEventWithEnum(LocalEventEnum=LocalEventEnum.`NEW`)");
         }
 
         private static void TryInvalidControlCharacter(EventBean eventBean)

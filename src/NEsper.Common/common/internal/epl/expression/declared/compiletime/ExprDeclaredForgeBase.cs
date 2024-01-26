@@ -258,7 +258,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
                     evaluationType = evaluationType.GetBoxedType();
                 }
                 else {
-                    throw new IllegalStateException("requiredType incompatible with evaluationType");
+                    throw new IllegalStateException($"requiredType \"{requiredType}\" incompatible with evaluationType \"{evaluationType}\"");
                 }
             }
 

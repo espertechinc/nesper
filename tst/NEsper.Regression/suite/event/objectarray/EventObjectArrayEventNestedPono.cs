@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                                 "Map.ObjectOne.Indexed[1] as c1, Map.ObjectOne.Nested.NestedValue as c2," +
                                 "Map.MapOne.SimpleTwo as d1, Map.MapOne.ObjectTwo as d2, Map.MapOne.NodefmapTwo as d3, " +
                                 "Map.MapOne.MapTwo as e1, Map.MapOne.MapTwo.SimpleThree as e2, Map.MapOne.MapTwo.ObjectThree as e3, " +
-                                "Map.MapOne.ObjectTwo.array[1].mapped('1ma').Value as f1, Map.MapOne.MapTwo.ObjectThree.Id as f2" +
+                                "Map.MapOne.ObjectTwo.Array[1].Mapped('1ma').Value as f1, Map.MapOne.MapTwo.ObjectThree.Id as f2" +
                                 " from NestedObjectArr";
             env.CompileDeploy(statementText).AddListener("s0");
 
@@ -95,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
             // nested PONO with generic return type
             env.UndeployModuleContaining("s0");
-            env.CompileDeploy("@name('s0') select * from MyNested(bean.insides.anyOf(i=>Id = 'A'))").AddListener("s0");
+            env.CompileDeploy("@name('s0') select * from MyNested(bean.Insides.anyOf(i=>Id = 'A'))").AddListener("s0");
 
             env.SendEventObjectArray(
                 new object[] {

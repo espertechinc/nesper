@@ -210,10 +210,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             else {
                 block.DeclareVar<object>(
                     "left",
-                    forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsClass));
+                    forge.Coercer.CoerceCodegen(Ref("leftResult"), lhsClass, codegenMethodScope, codegenClassScope));
                 block.DeclareVar<object>(
                     "right",
-                    forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsClass));
+                    forge.Coercer.CoerceCodegen(Ref("rightResult"), rhsClass, codegenMethodScope, codegenClassScope));
                 method = block.MethodReturn(ExprDotMethod(Ref("left"), "Equals", Ref("right")));
             }
 

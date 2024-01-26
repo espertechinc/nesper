@@ -38,11 +38,9 @@ namespace com.espertech.esper.common.@internal.@event.xml
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly long _id = DebugId<SimpleXMLEventType>.NewId(); 
-        
-        private readonly bool isResolvePropertiesAbsolute;
-        private readonly IDictionary<string, EventPropertyGetterSPI> propertyGetterCache;
-        private readonly string defaultNamespacePrefix;
+        private readonly bool _isResolvePropertiesAbsolute;
+        private readonly IDictionary<string, EventPropertyGetterSPI> _propertyGetterCache;
+        private readonly string _defaultNamespacePrefix;
 
         public SimpleXMLEventType(
             EventTypeMetadata eventTypeMetadata,
@@ -56,8 +54,8 @@ namespace com.espertech.esper.common.@internal.@event.xml
             eventTypeResolver,
             xmlEventTypeFactory)
         {
-            isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.IsXPathResolvePropertiesAbsolute;
-            propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
+            _isResolvePropertiesAbsolute = configurationEventTypeXMLDOM.IsXPathResolvePropertiesAbsolute;
+            _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
 
             // Set of namespace context for XPath expressions
             var xPathNamespaceContext = new XPathNamespaceContext();
@@ -70,10 +68,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
                 xPathNamespaceContext.SetDefaultNamespace(defaultNamespace);
 
                 // determine a default namespace prefix to use to construct XPath expressions from pure property names
-                defaultNamespacePrefix = null;
+                _defaultNamespacePrefix = null;
                 foreach (var entry in configurationEventTypeXMLDOM.NamespacePrefixes) {
                     if (entry.Value.Equals(defaultNamespace)) {
-                        defaultNamespacePrefix = entry.Key;
+                        _defaultNamespacePrefix = entry.Key;
                         break;
                     }
                 }
@@ -92,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.xml
 
         protected override EventPropertyGetterSPI DoResolvePropertyGetter(string propertyExpression)
         {
-            var getter = propertyGetterCache.Get(propertyExpression);
+            var getter = _propertyGetterCache.Get(propertyExpression);
             if (getter != null) {
                 return getter;
             }
@@ -100,11 +98,11 @@ namespace com.espertech.esper.common.@internal.@event.xml
             getter = ResolveSimpleXMLPropertyGetter(
                 propertyExpression,
                 this,
-                defaultNamespacePrefix,
-                isResolvePropertiesAbsolute);
+                _defaultNamespacePrefix,
+                _isResolvePropertiesAbsolute);
 
             // no fragment factory, fragments not allowed
-            propertyGetterCache.Put(propertyExpression, getter);
+            _propertyGetterCache.Put(propertyExpression, getter);
             return getter;
         }
 

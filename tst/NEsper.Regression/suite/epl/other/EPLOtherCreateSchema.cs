@@ -406,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     env);
                 var expectedType = new object[][] {
                     new object[] { "c0", typeof(int[]) },
-                    new object[] { "c1", typeof(int[]) }
+                    new object[] { "c1", typeof(int?[]) }
                 };
                 env.AssertStatement(
                     "schema",
@@ -1127,7 +1127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     var innerType = statement.EventType;
                     Assert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
                     Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
-                    Assert.AreEqual(typeof(int[]), innerType.GetPropertyType("inn2"));
+                    Assert.AreEqual(typeof(int?[]), innerType.GetPropertyType("inn2"));
                     Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
                     Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
                 });
@@ -1259,7 +1259,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         public class MyLocalJsonProvidedNestableArray
         {
             public string[] inn1;
-            public int[] inn2;
+            public int?[] inn2;
         }
 
         public class MyLocalJsonProvidedNestableOuter

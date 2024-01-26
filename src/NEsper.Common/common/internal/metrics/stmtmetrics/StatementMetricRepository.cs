@@ -88,7 +88,6 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             foreach (var entry in _specification.StatementGroups) {
                 var patterns = entry.Value.Patterns;
                 var result = StringPatternSetUtil.Evaluate(entry.Value.IsDefaultInclude, patterns, statement.Name);
-
                 if (result) {
                     groupNumber = countGroups;
                     break;

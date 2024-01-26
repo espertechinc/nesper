@@ -122,11 +122,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar(
                 forge.CoercerLHS.ReturnType,
                 "left",
-                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType));
+                forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType, codegenMethodScope, codegenClassScope));
             block.DeclareVar(
                 forge.CoercerRHS.ReturnType,
                 "right",
-                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType));
+                forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType, codegenMethodScope, codegenClassScope));
 
             //var compare = StaticMethod(typeof(DebugExtensions), "DebugEquals", Ref("left"), Ref("right"));
 

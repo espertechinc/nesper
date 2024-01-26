@@ -16,24 +16,20 @@ namespace com.espertech.esper.common.@internal.@event.core
     /// </summary>
     public class PropertySetDescriptorItem
     {
-        private EventPropertyDescriptor propertyDescriptor;
-        private EventPropertyGetterSPI propertyGetter;
-        private FragmentEventType fragmentEventType;
-
         public PropertySetDescriptorItem(
             EventPropertyDescriptor propertyDescriptor,
             EventPropertyGetterSPI propertyGetter,
             FragmentEventType fragmentEventType)
         {
-            this.propertyDescriptor = propertyDescriptor;
-            this.propertyGetter = propertyGetter;
-            this.fragmentEventType = fragmentEventType;
+            PropertyDescriptor = propertyDescriptor;
+            PropertyGetter = propertyGetter;
+            FragmentEventType = fragmentEventType;
         }
 
-        public EventPropertyDescriptor PropertyDescriptor => propertyDescriptor;
+        public EventPropertyDescriptor PropertyDescriptor { get; }
 
-        public EventPropertyGetterSPI PropertyGetter => propertyGetter;
+        public EventPropertyGetterSPI PropertyGetter { get; }
 
-        public FragmentEventType FragmentEventType => fragmentEventType;
+        public FragmentEventType FragmentEventType { get; }
     }
 } // end of namespace

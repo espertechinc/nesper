@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionrun.suite.multithread
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDB.ConnectionCatalog = "test";
+            configDB.ConnectionCatalog = "esper";
             configDB.ConnectionReadOnly = true;
             configDB.ConnectionTransactionIsolation = IsolationLevel.ReadCommitted;
             configDB.ConnectionAutoCommit = true;

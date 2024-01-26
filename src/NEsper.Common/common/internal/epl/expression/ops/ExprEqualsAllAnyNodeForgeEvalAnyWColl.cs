@@ -272,19 +272,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 else {
                     var leftCoercedInitializer = refforge.EvaluateCodegen(
                         forge.CoercionTypeBoxed,
-                                methodNode,
+                        methodNode,
                         exprSymbol,
                         codegenClassScope);
 
                     block.IfRefNullReturnNull("leftCoerced");
                     block.DeclareVar(
-                                forge.CoercionTypeBoxed,
+                        forge.CoercionTypeBoxed,
                         refname,
                         forge.Coercer == null
                             ? leftCoercedInitializer
                             : forge.Coercer.CoerceCodegenMayNullBoxed(
                                 leftCoercedInitializer,
-                                reftype,
+                                //reftype,
+                                forge.CoercionTypeBoxed,
                                 methodNode,
                                 codegenClassScope));
 

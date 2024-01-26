@@ -437,6 +437,7 @@ namespace com.espertech.esper.regressionrun.suite.client
 
             [Test]
             [RunInApplicationDomain]
+            [Ignore("Test is broken due to the need for namespace isolation within an assembly")]
             public void WithCreateInlinedOtherModule() =>
                 RegressionRunner.Run(_session, ClientExtendUDFInlinedClass.WithCreateInlinedOtherModule());
         }

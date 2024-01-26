@@ -6,6 +6,7 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Reflection;
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
@@ -70,7 +71,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             var isNot = forge.ForgeRenderable.IsNotBetween;
 
             var methodNode = codegenMethodScope.MakeChild(
-                typeof(bool?),
+                typeof(bool),
                 typeof(ExprBetweenNodeForgeEval),
                 codegenClassScope);
             var block = methodNode.Block;
@@ -105,14 +106,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<bool>(
                 "result",
                 forge.Computer.CodegenNoNullCheck(
-                    Unbox(Ref("value"), valueType),
-                    value.EvaluationType,
-                    Unbox(Ref("lower"), lowerType),
-                    lower.EvaluationType,
-                    Unbox(Ref("higher"), higherType),
-                    higher.EvaluationType,
+                    Unbox(Ref("value")),
+                    value.EvaluationType.GetUnboxedType(),
+                    Unbox(Ref("lower")),
+                    lower.EvaluationType.GetUnboxedType(),
+                    Unbox(Ref("higher")),
+                    higher.EvaluationType.GetUnboxedType(),
                     methodNode,
                     codegenClassScope));
+
             block.MethodReturn(NotOptional(forge.ForgeRenderable.IsNotBetween, Ref("result")));
             return LocalMethod(methodNode);
         }

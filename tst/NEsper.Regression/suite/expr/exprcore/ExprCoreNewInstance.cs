@@ -341,7 +341,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     stmt => {
                         var @out = stmt.EventType;
                         Assert.AreEqual(typeof(double[]), @out.GetPropertyType("new double[1]"));
-                        Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c1"));
+                        Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c1"));
                         Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c2"));
                         Assert.AreEqual(typeof(double[][]), @out.GetPropertyType("new double[1][2]"));
                         Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c4"));
@@ -351,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Expect(
                         fields,
                         new double[1],
-                        new int[4],
+                        new int?[4],
                         new DateTimeEx[2],
                         new double[1][],
                         new DateTimeEx[2][]);

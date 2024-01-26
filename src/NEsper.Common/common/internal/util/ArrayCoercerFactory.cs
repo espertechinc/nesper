@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }
@@ -145,7 +145,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(typeof(ArrayCoercerFactory), "WidenArray", value);
             }
@@ -176,7 +176,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return StaticMethod(typeof(ArrayCoercerFactory), "NarrowArray", value);
             }

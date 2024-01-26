@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text.Json;
@@ -10,16 +11,24 @@ namespace com.espertech.esper.common.@internal.util.serde
 {
     public class JsonConverterRuntimeType : JsonConverter<System.Type>
     {
-        private TypeResolver _typeResolver;
+        private readonly TypeResolver _typeResolver;
+        private readonly IDictionary<Type, bool> _typeResultCache;
 
         internal JsonConverterRuntimeType(TypeResolver typeResolver)
         {
             _typeResolver = typeResolver;
+            _typeResultCache = new Dictionary<Type, bool>();
         }
 
         public override bool CanConvert(Type typeToConvert)
         {
-            return typeToConvert.GetBaseTypeTree().Any(_ => _ == typeof(Type));
+            if (_typeResultCache.TryGetValue(typeToConvert, out var result)) {
+                return result;
+            }
+            
+            result = typeToConvert.GetBaseTypeTree().Any(_ => _ == typeof(Type));
+            _typeResultCache[typeToConvert] = result;
+            return result;
         }
 
         public override Type Read(

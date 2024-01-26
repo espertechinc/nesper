@@ -735,9 +735,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                     method = block.MethodReturn(ConstantFalse());
                 }
 
-                var valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType);
-                var lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType);
-                var higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType);
+                var valueCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(value, valueType, codegenMethodScope, codegenClassScope);
+                var lowerCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(lower, lowerType, codegenMethodScope, codegenClassScope);
+                var higherCoerced = _numberCoercerValue.CoerceBoxedBigIntCodegen(higher, higherType, codegenMethodScope, codegenClassScope);
                 return LocalMethod(method, valueCoerced, lowerCoerced, higherCoerced);
             }
         }

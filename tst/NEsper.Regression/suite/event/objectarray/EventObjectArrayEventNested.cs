@@ -14,8 +14,12 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
-using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore; // makeMap
+using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore;
+
 using NUnit.Framework;
+
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
     public class EventObjectArrayEventNested
@@ -130,9 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.SendEventMap(theEvent, "MyMappedPropertyMap");
 
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "v1" });
-                env.AssertStatement(
-                    "s0",
-                    statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+                env.AssertStatement("s0", statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a")));
                 env.UndeployAll();
 
                 // test map at the second level of a nested map that is an array of primitive or Class
@@ -158,9 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.SendEventMap(eventOuterTwo, "MyMappedPropertyMapOuterTwo");
 
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "yOne" });
-                env.AssertStatement(
-                    "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a")));
+                env.AssertStatement("s0", statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
 
                 env.UndeployAll();
             }
@@ -171,16 +171,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             public void Run(RegressionEnvironment env)
             {
                 // test named-map at the second level of a nested map
-                env.CompileDeploy(
-                    "@name('s0') select outer.P0.n0 as a, outer.P1[0].n0 as b, outer.P1[1].n0 as c, outer.P0 as d, outer.P1 as e from MyObjectArrayMapOuter");
+                env.CompileDeploy("@name('s0') select outer.p0.n0 as a, outer.p1[0].n0 as b, outer.p1[1].n0 as c, outer.p0 as d, outer.p1 as e from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(new object[][] { new object[] { "n0", 1 } });
                 var n0Bean21 = MakeMap(new object[][] { new object[] { "n0", 2 } });
                 var n0Bean22 = MakeMap(new object[][] { new object[] { "n0", 3 } });
                 var n0Bean2 = new IDictionary<string, object>[] { n0Bean21, n0Bean22 };
-                var theEvent = MakeMap(
-                    new object[][] { new object[] { "P0", n0Bean1 }, new object[] { "P1", n0Bean2 } });
+                var theEvent = MakeMap(new object[][] {
+                        new object[] { "p0", n0Bean1 },
+                        new object[] { "p1", n0Bean2 } }
+                );
                 env.SendEventObjectArray(new object[] { theEvent }, "MyObjectArrayMapOuter");
 
                 env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[] { 1, 2, 3, n0Bean1, n0Bean2 });
@@ -196,8 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     });
 
                 env.UndeployAll();
-                env.CompileDeploy(
-                    "@name('s0') select outer.P0.n0? as a, outer.P1[0].n0? as b, outer.P1[1]?.n0 as c, outer.P0? as d, outer.P1? as e from MyObjectArrayMapOuter");
+                env.CompileDeploy("@name('s0') select outer.p0.n0? as a, outer.p1[0].n0? as b, outer.p1[1]?.n0 as c, outer.p0? as d, outer.p1? as e from MyObjectArrayMapOuter");
                 env.AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { theEvent }, "MyObjectArrayMapOuter");
@@ -215,8 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             public void Run(RegressionEnvironment env)
             {
-                env.CompileDeploy(
-                    "@name('s0') select P0.n0 as a, P1[0].n0 as b, P1[1].n0 as c, P0 as d, P1 as e from MyOAWithAMap");
+                env.CompileDeploy("@name('s0') select p0.n0 as a, p1[0].n0 as b, p1[1].n0 as c, p0 as d, p1 as e from MyOAWithAMap");
                 env.AddListener("s0");
 
                 var n0Bean1 = MakeMap(new object[][] { new object[] { "n0", 1 } });
@@ -267,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                         var theEvent = iterator.Advance();
                         EPAssertionUtil.AssertProps(
                             theEvent,
-                            "rootId,P0.p0id,P0.P1.p1id".SplitCsv(),
+                            "rootId,p0.p0id,p0.p1.p1id".SplitCsv(),
                             new object[] { 10, 100, 1000 });
                     });
 

@@ -6,9 +6,13 @@
 // a copy of which has been included with this distribution in the license.txt file.  /
 ///////////////////////////////////////////////////////////////////////////////////////
 
+using System.Text.Json.Serialization;
+using com.espertech.esper.common.@internal.util.serde;
+
 namespace com.espertech.esper.common.@internal.type
 {
     /// <summary>Implementation match a string against a pattern. </summary>
+    [JsonConverter(typeof(JsonConverterAbstract<StringPatternSet>))]
     public interface StringPatternSet
     {
         /// <summary>Returns true for a match, false for no-match. </summary>

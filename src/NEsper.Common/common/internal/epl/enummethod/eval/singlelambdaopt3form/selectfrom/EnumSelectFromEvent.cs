@@ -58,35 +58,44 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return typeof(ICollection<object>);
+            return desiredReturnType; // ICollection<T>
+            //return typeof(ICollection<object>);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
+            var itemType = desiredReturnType.GetComponentType();
+            return EnumValue(typeof(EmptyList<>).MakeGenericType(itemType), "Instance");
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
-            return EnumValue(typeof(EmptyList<object>), "Instance");
         }
 
         public override void InitBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type desiredReturnType)
+            CodegenClassScope codegenClassScope,
+            Type desiredReturnType)
         {
-            block.DeclareVar<ArrayDeque<object>>(
+            var itemType = desiredReturnType.GetComponentType();
+            var dequeType = typeof(ArrayDeque<>).MakeGenericType(itemType);
+            block.DeclareVar(
+                dequeType,
                 "result",
-                NewInstance<ArrayDeque<object>>(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
+                NewInstance(dequeType, ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count")));
         }
 
         public override void ForEachBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type desiredReturnType)
+            CodegenClassScope codegenClassScope,
+            Type desiredReturnType)
         {
-            block.DeclareVar<object>(
+            var itemType = desiredReturnType.GetComponentType();
+            block.DeclareVar(
+                    itemType,
                     "item",
-                    InnerExpression.EvaluateCodegen(typeof(object), methodNode, scope, codegenClassScope))
+                    InnerExpression.EvaluateCodegen(itemType, methodNode, scope, codegenClassScope))
                 .IfCondition(NotEqualsNull(Ref("item")))
                 .Expression(ExprDotMethod(Ref("result"), "Add", Ref("item")));
         }

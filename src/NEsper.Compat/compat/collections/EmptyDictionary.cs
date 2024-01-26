@@ -12,9 +12,9 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
-    public class EmptyDictionary<K,V> : IDictionary<K,V>
+    public class EmptyDictionary<TK,TV> : IDictionary<TK,TV>
     {
-        public static readonly EmptyDictionary<K, V> Instance = new EmptyDictionary<K, V>();
+        public static readonly EmptyDictionary<TK, TV> Instance = new EmptyDictionary<TK, TV>();
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2"/> contains an element with the specified key.
@@ -26,7 +26,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="key"/> is null.
         /// </exception>
-        public bool ContainsKey(K key)
+        public bool ContainsKey(TK key)
         {
             return false;
         }
@@ -45,7 +45,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         /// </exception>
-        public void Add(K key, V value)
+        public void Add(TK key, TV value)
         {
             throw new NotSupportedException();
         }
@@ -63,7 +63,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.IDictionary`2"/> is read-only.
         /// </exception>
-        public bool Remove(K key)
+        public bool Remove(TK key)
         {
             return false;
         }
@@ -79,9 +79,9 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.ArgumentNullException">
         /// 	<paramref name="key"/> is null.
         /// </exception>
-        public bool TryGetValue(K key, out V value)
+        public bool TryGetValue(TK key, out TV value)
         {
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
@@ -89,7 +89,7 @@ namespace com.espertech.esper.compat.collections
         /// Gets or sets the value for the specified key.
         /// </summary>
         /// <value></value>
-        public V this[K key]
+        public TV this[TK key]
         {
             get => throw new KeyNotFoundException();
             set => throw new NotSupportedException();
@@ -102,7 +102,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<K> Keys => new K[0];
+        public ICollection<TK> Keys => new TK[0];
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2"/>.
@@ -111,7 +111,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1"/> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2"/>.
         /// </returns>
-        public ICollection<V> Values => new V[0];
+        public ICollection<TV> Values => new TV[0];
 
         /// <summary>
         /// Returns an enumerator that iterates through a collection.
@@ -130,9 +130,9 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1"/> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
-            IList<KeyValuePair<K,V>> nullArray = new KeyValuePair<K, V>[0];
+            IList<KeyValuePair<TK,TV>> nullArray = new KeyValuePair<TK, TV>[0];
             return nullArray.GetEnumerator();
         }
 
@@ -143,7 +143,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         /// </exception>
-        public void Add(KeyValuePair<K, V> item)
+        public void Add(KeyValuePair<TK, TV> item)
         {
             throw new NotSupportedException();
         }
@@ -165,7 +165,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if <paramref name="item"/> is found in the <see cref="T:System.Collections.Generic.ICollection`1"/>; otherwise, false.
         /// </returns>
-        public bool Contains(KeyValuePair<K, V> item)
+        public bool Contains(KeyValuePair<TK, TV> item)
         {
             return false;
         }
@@ -175,7 +175,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
         }
 
@@ -189,7 +189,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.NotSupportedException">
         /// The <see cref="T:System.Collections.Generic.ICollection`1"/> is read-only.
         /// </exception>
-        public bool Remove(KeyValuePair<K, V> item)
+        public bool Remove(KeyValuePair<TK, TV> item)
         {
             return false;
         }

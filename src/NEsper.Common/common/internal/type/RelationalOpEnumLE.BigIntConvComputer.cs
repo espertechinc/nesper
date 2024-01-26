@@ -8,7 +8,7 @@
 
 using System;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 
@@ -50,7 +50,9 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
-                Type rhsType)
+                Type rhsType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
                 return RelationalOpEnumExtensions.CodegenBigIntConv(
                     lhs,
@@ -59,7 +61,9 @@ namespace com.espertech.esper.common.@internal.type
                     rhsType,
                     convOne,
                     convTwo,
-                    CodegenExpressionRelational.CodegenRelational.LE);
+                    CodegenExpressionRelational.CodegenRelational.LE,
+                    codegenMethodScope,
+                    codegenClassScope);
             }
         }
     }

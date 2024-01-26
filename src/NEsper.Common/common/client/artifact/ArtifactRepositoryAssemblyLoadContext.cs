@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.client.artifact
         IDisposable
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
+        
         private AssemblyLoadContext _assemblyLoadContext;
         private readonly TypeResolver _typeResolver;
 

@@ -34,10 +34,17 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, 
+                CodegenMethodScope codegenMethodScope, 
+                CodegenClassScope codegenClassScope)
             {
+                if (valueType == typeof(decimal) ||
+                    valueType == typeof(decimal?)) {
+                    return value;
+                }
+                
                 return valueType.CanBeNull() 
-                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
                     : CodegenDecimal(value, valueType);
             }
 
@@ -53,20 +60,20 @@ namespace com.espertech.esper.common.@internal.util
                     return param;
                 }
 
-                return valueType != typeof(decimal) &&
-                       valueType != typeof(decimal?)
-                    ? CodegenExpressionBuilder.ExprDotMethod(param, "AsBoxedDecimal")
-                    : param;
+                // return valueType != typeof(decimal) &&
+                //        valueType != typeof(decimal?)
+                //     ? CodegenExpressionBuilder.ExprDotMethod(param, "AsBoxedDecimal")
+                //     : param;
 
-//                return CodegenCoerceMayNull(
-//                    typeof(decimal),
-//                    typeof(decimal?),
-//                    "AsDecimal",
-//                    param,
-//                    valueTypeMustNumeric,
-//                    codegenMethodScope,
-//                    typeof(CoercerDecimal),
-//                    codegenClassScope);
+                return CodegenCoerceMayNull(
+                    typeof(decimal),
+                    typeof(decimal?),
+                    "AsDecimal",
+                    param,
+                    valueType,
+                    codegenMethodScope,
+                    typeof(CoercerDecimal),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenDecimal(

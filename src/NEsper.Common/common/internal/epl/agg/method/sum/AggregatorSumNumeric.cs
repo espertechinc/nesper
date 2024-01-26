@@ -164,7 +164,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             var coercer = AggregationForgeFactorySum.GetCoercerNonBigInt(valueType);
             var opcode = enter ? "+" : "-";
-            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, valueType)));
+            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, valueType, method, null)));
         }
 
         private void ApplyTable(
@@ -175,7 +175,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
         {
             var coercer = AggregationForgeFactorySum.GetCoercerNonBigInt(sumType);
             var opcode = enter ? "+" : "-";
-            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, typeof(object))));
+            method.Block.AssignRef(sum, Op(sum, opcode, coercer.CoerceCodegen(value, typeof(object), method, classScope)));
         }
     }
 } // end of namespace

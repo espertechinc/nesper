@@ -271,15 +271,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
         {
             public void Run(RegressionEnvironment env)
             {
-                var epl = "@name('s0') expression one {" +
-                          "  x => x.Contained.where(y => P00 = 10)" +
-                          "} " +
-                          "" +
-                          "expression two {" +
-                          "  x => x.Contained.where(y => P00 = 11)" +
-                          "} " +
-                          "" +
-                          "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";
+                var epl =
+                    "@name('s0') expression one {" +
+                    "  x => x.Contained.where(y => P00 = 10)" +
+                    "} " +
+                    "" +
+                    "expression two {" +
+                    "  x => x.Contained.where(y => P00 = 11)" +
+                    "} " +
+                    "" +
+                    "select one(bean).union(two(bean)) as val0 from SupportBean_ST0_Container as bean";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertStmtTypes("s0", "val0".SplitCsv(), new Type[] { typeof(ICollection<SupportBean_ST0>) });

@@ -35,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.AssertListenerNotInvoked("StmtMetrics");
 
             SendTimer(env, 8000);
-            var fields = "statementName,numOutputIStream,numInput".SplitCsv();
+            var fields = "StatementName,OutputIStreamCount,NumInput".SplitCsv();
             env.AssertPropsNew("StmtMetrics", fields, new object[] { "GroupOne", 0L, 0L });
 
             SendTimer(env, 12000);

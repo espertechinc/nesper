@@ -25,7 +25,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class SerializableObjectCopier : IObjectCopier
     {
-        private readonly IContainer container;
+        private readonly IContainer _container;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="SerializableObjectCopier"/> class.
@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.util
         /// <param name="container">The container.</param>
         public SerializableObjectCopier(IContainer container)
         {
-            this.container = container;
+            _container = container;
         }
 
         /// <summary>
@@ -64,15 +64,22 @@ namespace com.espertech.esper.common.@internal.util
 #if NET6_0_OR_GREATER
             TypeResolver typeResolver;
 
-            if (container.Has<TypeResolver>()) {
-                typeResolver = container.Resolve<TypeResolver>();
-            } else if (container.Has<TypeResolverProvider>()) {
-                typeResolver = container.Resolve<TypeResolverProvider>().TypeResolver;
+            if (_container.Has<TypeResolver>()) {
+                typeResolver = _container.Resolve<TypeResolver>();
+            } else if (_container.Has<TypeResolverProvider>()) {
+                typeResolver = _container.Resolve<TypeResolverProvider>().TypeResolver;
             } else {
                 typeResolver = TypeResolverDefault.INSTANCE;
             }
-            
-            var serializer = new ObjectSerializer(typeResolver);
+
+            lock (_container) {
+                if (!_container.Has<ObjectSerializer>()) {
+                    _container.Register<ObjectSerializer>(ic => new ObjectSerializer(typeResolver), Lifespan.Singleton);
+                }
+            }
+
+            var serializer = _container.Resolve<ObjectSerializer>();
+            //var serializer = new ObjectSerializer(typeResolver);
             var serialized = serializer.SerializeAny(orig);
             var deserialized = serializer.DeserializeAny(serialized);
             return (T)deserialized;

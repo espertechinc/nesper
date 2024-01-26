@@ -86,7 +86,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.sum
             CodegenClassScope classScope)
         {
             cnt = membersColumnized.AddMember(col, typeof(long), "cnt");
-            sum = membersColumnized.AddMember(col, sumType.GetPrimitiveType(), "sum");
+            //sum = membersColumnized.AddMember(col, sumType.GetPrimitiveType(), "sum");
+            sum = membersColumnized.AddMember(col, sumType, "sum");
             rowCtor.Block.AssignRef(sum, InitOfSum());
         }
 

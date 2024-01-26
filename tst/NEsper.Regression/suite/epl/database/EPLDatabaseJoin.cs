@@ -201,9 +201,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var stmtText = "@name('s0') select * from SupportBean#lastevent sb, SupportBeanTwo#lastevent sbt, " +
-                               "sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
-                               "  where sb.TheString = sbt.stringTwo and s1.myint = sbt.IntPrimitiveTwo";
+                var stmtText =
+                    "@name('s0') select * from SupportBean#lastevent sb, SupportBeanTwo#lastevent sbt, " +
+                    "sql:MyDBWithRetain ['select myint from mytesttable'] as s1 " +
+                    "  where sb.TheString = sbt.StringTwo and s1.myint = sbt.IntPrimitiveTwo";
                 env.CompileDeploy(stmtText).AddListener("s0");
                 AssertStatelessStmt(env, "s0", false);
 
@@ -214,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBean("T2", -1));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.StringTwo,s1.myint".SplitCsv(),
                     new object[] { "T2", "T2", 30 });
 
                 env.Milestone(0);
@@ -223,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.SendEventBean(new SupportBeanTwo("T3", 40));
                 env.AssertPropsNew(
                     "s0",
-                    "sb.TheString,sbt.stringTwo,s1.myint".SplitCsv(),
+                    "sb.TheString,sbt.StringTwo,s1.myint".SplitCsv(),
                     new object[] { "T3", "T3", 40 });
 
                 env.UndeployAll();
@@ -404,7 +405,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBeanComplexProps as s1";
                 env.TryInvalidCompile(
                     stmtText,
-                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
+                    // PGSQL
+                    "Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: 42601");
+
+                // MYSQL
+                //"Error in statement 'select mychar,, from mytesttable where ', failed to obtain result metadata, consider turning off metadata interrogation via configuration, please check the statement, reason: You have an error in your SQL syntax; check the manual that corresponds to your MySQL server version for the right syntax to use near ' from mytesttable where' at line 1");
             }
         }
 
@@ -455,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                                "SupportBeanComplexProps as s1";
                 env.TryInvalidCompile(
                     stmtText,
-                    "Invalid expression 'myvarchar' resolves to the historical data itself");
+                    "Invalid expression ':arg0' resolves to the historical data itself");
             }
         }
 
@@ -466,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var sql =
                     "sql:MyDBWithRetain ['select myvarchar, mybigint from mytesttable where ${mybigint} = myint']";
                 var stmtText = "@name('s0') select myvarchar as s0Name from " + sql + " as s0";
-                env.TryInvalidCompile(stmtText, "Invalid expression 'mybigint' resolves to the historical data itself");
+                env.TryInvalidCompile(stmtText, "Invalid expression ':arg0' resolves to the historical data itself");
             }
         }
 
@@ -513,7 +518,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
@@ -603,7 +608,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
@@ -656,14 +661,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                         Assert.AreEqual(typeof(string), eventType.GetPropertyType("myvarchar"));
                         Assert.AreEqual(typeof(string), eventType.GetPropertyType("mychar"));
                         Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("mybool"));
-                        Assert.AreEqual(typeof(decimal), eventType.GetPropertyType("mynumeric"));
-                        Assert.AreEqual(typeof(decimal), eventType.GetPropertyType("mydecimal"));
+                        Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mynumeric"));
+                        Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mydecimal"));
                         Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mydouble"));
-                        Assert.AreEqual(typeof(double?), eventType.GetPropertyType("myreal"));
+                        Assert.AreEqual(typeof(float?), eventType.GetPropertyType("myreal"));
                     });
 
                 SendEventS0(env, 1);
-                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3);
+                AssertReceived(env, 1, 10, "A", "Z", true, 5000m, 100m, 1.2, 1.3f);
 
                 env.UndeployAll();
             }
@@ -722,7 +727,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
             env.AssertEventNew(
                 "s0",
@@ -749,7 +754,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
             Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));
@@ -759,8 +764,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             Assert.AreEqual(mynumeric, theEvent.Get("mynumeric"));
             Assert.AreEqual(mydecimal, theEvent.Get("mydecimal"));
             Assert.AreEqual(mydouble, theEvent.Get("mydouble"));
-            var r = theEvent.Get("myreal");
-            Assert.AreEqual(myreal, theEvent.Get("myreal"));
+
+            var myrealRaw = theEvent.Get("myreal");
+            if (myreal.HasValue) {
+                Assert.IsNotNull(myrealRaw);
+                Assert.IsInstanceOf<float>(myrealRaw);
+                Assert.AreEqual(myreal.Value, myrealRaw.AsFloat(), 0.0001);
+            }
+            else {
+                Assert.IsNull(myrealRaw);
+            }
         }
 
         private static void SendEventS0(

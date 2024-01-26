@@ -403,7 +403,7 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.processor
 
                             var indexProperties = entry.Key.AdvancedIndexDesc.IndexExpressions;
                             var expressions = op.Key.Expressions;
-                            if (Equals(indexProperties, expressions)) {
+                            if (Arrays.AreEqual(indexProperties, expressions)) {
                                 values = op.Value;
                                 table = entry.Value.Table;
                                 indexName = metadata.ExplicitIndexNameIfExplicit;

@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DefaultProperties);
 
             configDBWithTxnIso1WithReadOnly.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDBWithTxnIso1WithReadOnly.ConnectionCatalog = "test";
+            configDBWithTxnIso1WithReadOnly.ConnectionCatalog = "esper";
             configDBWithTxnIso1WithReadOnly.ConnectionReadOnly = true;
             configDBWithTxnIso1WithReadOnly.ConnectionTransactionIsolation = IsolationLevel.ReadCommitted;
             configDBWithTxnIso1WithReadOnly.ConnectionAutoCommit = true;
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
             configDBWithExpiryTime.SetDatabaseDriver(
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
-            configDBWithExpiryTime.ConnectionCatalog = "test";
+            configDBWithExpiryTime.ConnectionCatalog = "esper";
             configDBWithExpiryTime.SetExpiryTimeCache(60, 120);
             configuration.Common.AddDatabaseReference("MyDBWithExpiryTime", configDBWithExpiryTime);
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 SupportDatabaseService.DRIVER,
                 SupportDatabaseService.DefaultProperties);
             configDB.ConnectionLifecycleEnum = ConnectionLifecycleEnum.RETAIN;
-            configDB.ConnectionCatalog = "test";
+            configDB.ConnectionCatalog = "esper";
             configDB.ConnectionReadOnly = true;
             configDB.ConnectionAutoCommit = true;
             return configDB;

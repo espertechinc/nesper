@@ -43,8 +43,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             var path = new RegressionPath();
             var schemas =
-                "@public create schema MyUpdateEvent as (key string, intupd int);\n" +
-                "@public create schema MySchema as (TheString string, intval int);\n";
+                "@public @buseventtype create schema MyUpdateEvent as (key string, intupd int);\n" +
+                "@public @buseventtype create schema MySchema as (TheString string, intval int);\n";
             env.CompileDeploy(schemas, path);
 
             env.CompileDeploy("@public @name('window') create window MyWindow#keepall as MySchema", path);

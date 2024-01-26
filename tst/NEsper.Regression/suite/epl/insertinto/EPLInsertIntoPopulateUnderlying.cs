@@ -48,7 +48,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             WithBeanWildcard(execs);
             WithPopulateBeanObjects(execs);
             WithPopulateUnderlyingSimple(execs);
-            WithCharSequenceCompat(execs);
+
+            EventRepresentationChoiceExtensions.Values().For(_ => WithCharSequenceCompat(_, execs));
+            
             WithBeanFactoryMethod(execs);
             WithArrayPONOInsert(execs);
             WithArrayMapInsert(execs);
@@ -93,10 +95,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             return execs;
         }
 
-        public static IList<RegressionExecution> WithCharSequenceCompat(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithCharSequenceCompat(
+            EventRepresentationChoice rep,
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoCharSequenceCompat());
+            execs.Add(new EPLInsertIntoCharSequenceCompat(rep));
             return execs;
         }
 
@@ -719,22 +723,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             }
         }
 
-        private class EPLInsertIntoCharSequenceCompat : RegressionExecution
-        {
+        private class EPLInsertIntoCharSequenceCompat : RegressionExecution {
+            private readonly EventRepresentationChoice _rep;
+
+            public EPLInsertIntoCharSequenceCompat(EventRepresentationChoice rep)
+            {
+                _rep = rep;
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    if (rep.IsJsonEvent() || rep.IsJsonProvidedClassEvent()) {
-                        continue; // Json doesn't allow CharSequence by itself unless registering an adapter
-                    }
-
-                    var path = new RegressionPath();
-                    env.CompileDeploy(
-                        rep.GetAnnotationText() + "create schema ConcreteType as (value System.Span<Char>)",
-                        path);
-                    env.CompileDeploy("insert into ConcreteType select \"Test\" as value from SupportBean", path);
-                    env.UndeployAll();
+                if (_rep.IsAvroOrJsonEvent()) {
+                    return; // Json nor Avro doesn't allow IEnumerable<char> by itself unless registering an adapter
                 }
+                    
+                var path = new RegressionPath();
+                env.CompileDeploy(_rep.GetAnnotationText() + " create schema ConcreteType as (value System.Collections.Generic.IEnumerable<System.Char>)", path);
+                env.CompileDeploy("insert into ConcreteType select \"Test\" as value from SupportBean", path);
+                env.UndeployAll();
             }
         }
 

@@ -66,12 +66,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return typeof(BigInteger?);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             return null;
         }
@@ -81,7 +81,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             block
                 .DeclareVar<BigInteger>("sum", EnumValue(typeof(BigInteger), "Zero"))
@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type inputCollectionType)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             var innerType = InnerExpression.EvaluationType;
             block.DeclareVar(

@@ -92,7 +92,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                         expressions[0],
                         evaluationType,
                         targetTypes?[0],
-                        false);
+                        false, method, classScope);
                 }
 
                 exprMethod.Block.MethodReturn(coerced);
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                         expressions[i],
                         forges[i].EvaluationType,
                         targetTypes?[i],
-                        false);
+                        false, method, classScope);
                     exprMethod.Block.AssignArrayElement("values", Constant(i), coerced);
                 }
 
@@ -439,7 +439,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 expressions[i] = getters[i].UnderlyingGetCodegen(Ref("und"), method, classScope);
                 var mkType = multiKeyClassRef.MKTypes[i];
                 var getterType = getterResultTypes[i];
-                expressions[i] = CodegenCoerce(expressions[i], getterType, mkType, true);
+                expressions[i] = CodegenCoerce(expressions[i], getterType, mkType, true, method, classScope);
             }
 
             var instance = multiKeyClassRef.ClassNameMK.Type != null
@@ -480,7 +480,7 @@ namespace com.espertech.esper.common.@internal.compile.multikey
                 expressions[i] = getters[i].EventBeanGetCodegen(Ref("bean"), method, classScope);
                 var mkType = multiKeyClassRef.MKTypes[i];
                 var getterType = getterResultTypes[i];
-                expressions[i] = CodegenCoerce(expressions[i], getterType, mkType, true);
+                expressions[i] = CodegenCoerce(expressions[i], getterType, mkType, true, method, classScope);
             }
 
             var instance = multiKeyClassRef.ClassNameMK.Type != null

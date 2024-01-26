@@ -69,15 +69,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return inputCollectionType;
+            return desiredReturnType;
             //return typeof(ICollection<object>);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            var componentType = inputCollectionType.GetComponentType();
+            var componentType = desiredReturnType.GetComponentType();
             return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
         }
@@ -87,9 +87,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
-            var itemType = inputCollectionType.GetComponentType();
+            var itemType = desiredReturnType.GetComponentType();
             var arrayType = typeof(ArrayDeque<>).MakeGenericType(itemType);
 
             block.DeclareVar(arrayType, "result", NewInstance(arrayType));
@@ -100,7 +100,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             CodegenLegoBooleanExpression.CodegenContinueIfNotNullAndNotPass(
                 block,

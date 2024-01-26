@@ -18,7 +18,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
-
+using Microsoft.CodeAnalysis.Host;
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                           "@name('s0') select * from SupportEventWithStaticMethod as e, " +
                           "  method:SupportEventWithStaticMethod.ReturnLower() as lower,\n" +
                           "  method:SupportEventWithStaticMethod.ReturnUpper() as upper\n" +
-                          "  where e.value in [lower.value:upper.value]";
+                          "  where e.Value in [lower.Value:upper.Value]";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendAssert(env, 9, false);
@@ -279,14 +279,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 var collections = typeof(Collections);
                 var script =
                     "@name('script') @public create expression EventBean[] @type(ItemEvent) js:myItemProducerScript() [\n" +
-                    "myItemProducerScript();" +
                     "function myItemProducerScript() {" +
-                    "  var EventBeanArray = Java.type(\"com.espertech.esper.common.client.EventBean[]\");\n" +
-                    "  var events = new EventBeanArray(2);\n" +
-                    $"  events[0] = epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"id\", \"id1\"), \"ItemEvent\");\n" +
-                    $"  events[1] = epl.getEventBeanService().adapterForMap({collections}.SingletonDataMap(\"id\", \"id3\"), \"ItemEvent\");\n" +
+                    "  var EventBeanT = host.resolveType(\"com.espertech.esper.common.client.EventBean\");\n" +
+                    "  var events = host.newArr(EventBeanT, 2);\n" +
+                    "  events[0] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"Id\", \"id1\"), \"ItemEvent\");\n" +
+                    "  events[1] = epl.EventBeanService.AdapterForMap(Collections.SingletonDataMap(\"Id\", \"id3\"), \"ItemEvent\");\n" +
                     "  return events;\n" +
-                    "}]";
+                    "}\n" +
+                    "return myItemProducerScript();" +
+                    "]";
                 env.CompileDeploy(script, path);
 
                 TryAssertionUDFAndScriptReturningEvents(env, path, "MyItemProducerUDF");

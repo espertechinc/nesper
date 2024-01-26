@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
@@ -316,10 +316,12 @@ namespace com.espertech.esper.common.@internal.type
             Type rhsType,
             BigIntegerCoercer convLeft,
             BigIntegerCoercer convRight,
-            CodegenExpressionRelational.CodegenRelational rel)
+            CodegenExpressionRelational.CodegenRelational rel,
+            CodegenMethodScope codegenMethodScope,
+            CodegenClassScope codegenClassScope)
         {
-            var leftConv = convLeft.CoerceBoxedBigIntCodegen(lhs, lhsType);
-            var rightConv = convRight.CoerceBoxedBigIntCodegen(rhs, rhsType);
+            var leftConv = convLeft.CoerceBoxedBigIntCodegen(lhs, lhsType, codegenMethodScope, codegenClassScope);
+            var rightConv = convRight.CoerceBoxedBigIntCodegen(rhs, rhsType, codegenMethodScope, codegenClassScope);
             return CodegenExpressionBuilder.Relational(
                 CodegenExpressionBuilder.ExprDotMethod(leftConv, "CompareTo", rightConv),
                 rel,

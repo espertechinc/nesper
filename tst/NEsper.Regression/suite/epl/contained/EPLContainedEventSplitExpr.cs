@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 var collections = typeof(Collections).FullName;
                 var path = new RegressionPath();
                 var script =
-                    "create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
+                    "@public create expression EventBean[] js:mySplitScriptReturnEventBeanArray(value) [\n" +
                     "function mySplitScriptReturnEventBeanArray(value) {" +
                     "  var split = value.split(',');\n" +
                     "  var etype = host.resolveType('com.espertech.esper.common.client.EventBean');\n" +

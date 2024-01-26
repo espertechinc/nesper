@@ -77,7 +77,6 @@ namespace com.espertech.esper.compiler.@internal.util
 			CompilerOptions compilerOptions,
 			IArtifactRepository artifactRepository)
 		{
-
 			var compileTimeServices =
 				new StatementCompileTimeServices(statementNumber, moduleCompileTimeServices);
 			var fabricCharge = compileTimeServices.StateMgmtSettingsProvider.NewCharge();

@@ -1051,14 +1051,24 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "ctx",
                     "NestedContext",
                     new int[] { 0 },
-                    "SegByString,InitCtx".SplitCsv(),
+                    new[] { "SegByString", "InitCtx" },
                     new string[] { "key1", "s0" },
-                    new object[][][] { new object[][] { new object[] { "E1" }, new object[] { s0Bean1 } } });
+                    new object[][][]
+                    {
+                        new object[][]
+                        {
+                            new object[] { "E1" },
+                            new object[] { s0Bean1 }
+                        }
+                    });
 
                 env.Milestone(2);
 
                 env.SendEventBean(new SupportBean("E1", 2));
-                env.AssertPropsPerRowLastNew("s0", fields, new object[][] { new object[] { "S0_1", "E1", 2 } });
+                env.AssertPropsPerRowLastNew("s0", fields, new object[][]
+                {
+                    new object[] { "S0_1", "E1", 2 }
+                });
 
                 env.Milestone(3);
 
@@ -1084,7 +1094,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                     });
 
                 env.SendEventBean(new SupportBean("E2", 4));
-                env.AssertPropsPerRowLastNew("s0", fields, new object[][] { new object[] { "S0_2", "E2", 4 } });
+                env.AssertPropsPerRowLastNew("s0", fields, 
+                    new object[][]
+                {
+                    new object[] { "S0_2", "E2", 4 }
+                });
 
                 env.Milestone(5);
 
@@ -1092,7 +1106,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertPropsPerRowLastNew(
                     "s0",
                     fields,
-                    new object[][] { new object[] { "S0_1", "E1", 8 }, new object[] { "S0_2", "E1", 6 } });
+                    new object[][]
+                    {
+                        new object[] { "S0_1", "E1", 8 }, 
+                        new object[] { "S0_2", "E1", 6 }
+                    });
 
                 env.UndeployAll();
                 env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
@@ -1330,7 +1348,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     new object[][]
                         { new object[] { "S0_2", "S1_3", "S2_5", 10 }, new object[] { "S0_2", "S1_5", "S2_5", 10 } });
 
-                SendTimeEvent(env, "2002-05-1T08:00:60.000"); // terminate S0_2 branch, only the "8to9" is left
+                SendTimeEvent(env, "2002-05-1T08:01:00.000"); // terminate S0_2 branch, only the "8to9" is left
 
                 env.SendEventBean(new SupportBean("E11", 11));
                 env.AssertListenerNotInvoked("s0");

@@ -99,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     .AssignRef("hasNonNullRow", ConstantTrue())
                     .BlockEnd()
                     .IfCondition(And(NotEqualsNull(left), NotEqualsNull(Ref("valueRight"))))
-                    .IfCondition(computer.Codegen(left, symbols.LeftResultType, Ref("valueRight"), valueRightType))
+                    .IfCondition(computer.Codegen(left, symbols.LeftResultType, Ref("valueRight"), valueRightType, parent, classScope))
                     .BlockReturn(ConstantTrue());
             }
 

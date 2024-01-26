@@ -80,13 +80,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return inputCollectionType;
+            return desiredReturnType;
             //return typeof(ICollection<>).MakeGenericType(typeof(object));
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             return null;
         }
@@ -96,10 +96,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             var keyType = KeyType;
-            var valType = inputCollectionType;
+            var valType = desiredReturnType;
             var dictType = typeof(IOrderedDictionary<,>).MakeGenericType(keyType, valType);
             var implType = typeof(OrderedListDictionary<,>).MakeGenericType(keyType, valType);
 
@@ -113,10 +113,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             EnumOrderByHelper.SortingCode(
-                inputCollectionType.GetComponentType(),
+                desiredReturnType.GetComponentType(),
                 block,
                 _innerBoxedType,
                 InnerExpression,

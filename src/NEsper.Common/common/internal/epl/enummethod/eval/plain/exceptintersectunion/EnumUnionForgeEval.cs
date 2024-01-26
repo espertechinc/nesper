@@ -25,16 +25,13 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
     {
         private readonly EnumUnionForge _forge;
         private readonly ExprEnumerationEval _evaluator;
-        internal readonly bool scalar;
 
         public EnumUnionForgeEval(
             EnumUnionForge forge,
-            ExprEnumerationEval evaluator,
-            bool scalar)
+            ExprEnumerationEval evaluator)
         {
             _forge = forge;
             _evaluator = evaluator;
-            this.scalar = scalar;
         }
 
         private object EvaluateEnumMethodInternal<T>(
@@ -107,9 +104,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
 
             block
                 .IfCondition(Or(EqualsNull(Ref("other")), ExprDotMethod(Ref("other"), "IsEmpty")))
-                .BlockReturn(StaticMethod(typeof(Collections), "GetEmptyList", new[] { elementType }));
+                .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL);
             block
-                .DebugStack()
                 .DeclareVar(listType, "result", NewInstance(listType))
                 .Expression(
                     ExprDotMethod(

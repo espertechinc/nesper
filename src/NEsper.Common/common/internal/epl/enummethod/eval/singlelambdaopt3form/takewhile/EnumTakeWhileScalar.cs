@@ -82,14 +82,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return inputCollectionType;
+            return desiredReturnType;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            var componentType = inputCollectionType.GetComponentType();
+            var componentType = desiredReturnType.GetComponentType();
             return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
         }
 
@@ -98,7 +98,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             _innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
             EnumTakeWhileHelper.InitBlockSizeOneScalar(
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 block,
                 _innerValue,
                 InnerExpression.EvaluationType,
-                inputCollectionType.GetComponentType());
+                desiredReturnType.GetComponentType());
         }
 
         public override void ForEachBlock(
@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             CodegenLegoBooleanExpression.CodegenBreakIfNotNullAndNotPass(
                 block,

@@ -75,7 +75,7 @@
     </method-reference>
 
     <database-reference name="mydb1">
-      <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
+      <driver type="PgSQL" connection-string="Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;"/>
       <connection-lifecycle value="pooled"/>
       <lru-cache size="10"/>
       <column-change-case value="lowercase"/>
@@ -83,8 +83,8 @@
     </database-reference>
 
     <database-reference name="mydb2">
-      <driver type="PgSQL" connection-string="Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;"/>
-      <connection-settings auto-commit="false" catalog="test" read-only="true" transaction-isolation="ReadCommitted" />
+      <driver type="PgSQL" connection-string="Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;"/>
+      <connection-settings auto-commit="false" catalog="esper" read-only="true" transaction-isolation="ReadCommitted" />
       <connection-lifecycle value="retain"/>
       <expiry-time-cache max-age-seconds="60.5" purge-interval-seconds="120.1" ref-type="hard"/>
       <column-change-case value="uppercase"/>

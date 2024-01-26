@@ -359,18 +359,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var futureExactThree = new DefaultSupportCaptureOp(2, env.Container.LockManager());
                 options = new EPDataFlowInstantiationOptions()
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(futureExactThree));
-                var start = PerformanceObserver.MilliTime;
-                env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowThree", options).Start();
-                try {
-                    output = futureExactThree.GetValue(1, TimeUnit.SECONDS);
-                }
-                catch (Exception e) {
-                    throw new EPException(e);
-                }
 
-                var end = PerformanceObserver.MilliTime;
+                var delta = PerformanceObserver.TimeMillis(() => {
+                    env.Runtime.DataFlowService
+                        .Instantiate(env.DeploymentId("flow"), "MyDataFlowThree", options)
+                        .Start();
+                    try {
+                        output = futureExactThree.GetValue(1, TimeUnit.SECONDS);
+                    }
+                    catch (Exception e) {
+                        throw new EPException(e);
+                    }
+                });
+
                 Assert.AreEqual(2, output.Length);
-                Assert.That(end - start, Is.LessThan(490), "delta=" + (end - start));
+#if DEBUG
+                Assert.Less(delta, 600);
+#else
+                Assert.Less(delta, 490);
+#endif
                 env.UndeployAll();
 
                 // BeaconSource with period

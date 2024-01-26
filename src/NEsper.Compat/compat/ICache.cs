@@ -9,11 +9,11 @@
 
 namespace com.espertech.esper.compat
 {
-    public interface ICache<K, V> where K : class
+    public interface ICache<TK, TV> where TK : class
     {
-        bool TryGet(K key, out V value);
-        V Get(K key);
-        V Put(K key, V value);
+        bool TryGet(TK key, out TV value);
+        TV Get(TK key);
+        TV Put(TK key, TV value);
         void Invalidate();
     }
 }

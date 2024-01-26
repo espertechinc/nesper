@@ -74,7 +74,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .DeclareVar(rhsType, "rhs", rhsSide)
                 .IfRefNullReturnNull("rhs")
-                .MethodReturn(computer.Codegen(left, symbols.LeftResultType, Ref("rhs"), rhsType));
+                .MethodReturn(computer.Codegen(left, symbols.LeftResultType, Ref("rhs"), rhsType, parent, classScope));
 
             return LocalMethod(method);
         }

@@ -63,15 +63,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 MyRenderer.Contexts.Clear();
                 var jsonOptions = new JSONRenderingOptions();
                 jsonOptions.Renderer = new MyRenderer();
-                var json = env.Runtime.RenderEventService.RenderJSON(
-                    "MyEvent",
-                    env.GetEnumerator("s0").Advance(),
-                    jsonOptions);
+                var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance(), jsonOptions);
                 Assert.AreEqual(4, MyRenderer.Contexts.Count);
                 var contexts = MyRenderer.Contexts;
                 var context = contexts[2];
                 Assert.IsNotNull(context.DefaultRenderer);
-                Assert.AreEqual(1, (int)context.IndexedPropertyIndex);
+                Assert.AreEqual(1, context.IndexedPropertyIndex!.Value);
                 Assert.AreEqual(nameof(MyRendererEvent), context.EventType.Name);
                 Assert.AreEqual("SomeProperties", context.PropertyName);
 

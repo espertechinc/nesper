@@ -169,7 +169,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="fragmentEventType">fragment type</param>
         /// <param name="eventBeanTypedEventFactory">event adapters</param>
         /// <returns>array</returns>
-        public static object ToFragmentArray(
+        public static EventBean[] ToFragmentArray(
             object[] objectArray,
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -277,7 +277,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         /// <param name="fragmentEventType">type</param>
         /// <param name="eventBeanTypedEventFactory">factory for event beans and event types</param>
         /// <returns>fragment</returns>
-        public static object ToFragmentIterable(
+        public static EventBean[] ToFragmentIterable(
             object @object,
             BeanEventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
@@ -315,7 +315,8 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                     typeof(BeanEventType),
                     EventTypeUtility.ResolveTypeCodegen(_fragmentEventType, EPStatementInitServicesConstants.REF)));
 
-            var block = codegenMethodScope.MakeChild(typeof(object), GetType(), codegenClassScope)
+            var block = codegenMethodScope
+                .MakeChild(typeof(object), GetType(), codegenClassScope)
                 .AddParam(TargetType, "underlying")
                 .Block
                 .DeclareVar(
@@ -336,7 +337,12 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
 
             if (_isIterable) {
                 return block.MethodReturn(
-                    StaticMethod(typeof(BaseNativePropertyGetter), "ToFragmentIterable", Ref("@object"), mtype, msvc));
+                    StaticMethod(
+                        typeof(BaseNativePropertyGetter),
+                        "ToFragmentIterable",
+                        Ref("@object"),
+                        mtype,
+                        msvc));
             }
 
             return block.MethodReturn(ExprDotMethod(msvc, "AdapterForTypedObject", Ref("@object"), mtype));

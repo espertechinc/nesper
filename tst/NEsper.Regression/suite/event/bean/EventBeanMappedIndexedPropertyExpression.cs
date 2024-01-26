@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
+using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
+
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
     public class EventBeanMappedIndexedPropertyExpression : RegressionExecution

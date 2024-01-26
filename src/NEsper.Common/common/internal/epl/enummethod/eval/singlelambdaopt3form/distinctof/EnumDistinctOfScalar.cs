@@ -75,12 +75,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return typeof(ICollection<>).MakeGenericType(inputCollectionType.GetComponentType());
+            return typeof(ICollection<>).MakeGenericType(desiredReturnType.GetComponentType());
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             return null;
         }
@@ -90,9 +90,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
-            var elementType = inputCollectionType.GetComponentType();
+            var elementType = desiredReturnType.GetComponentType();
             methodNode.Block
                 .IfCondition(Relational(ExprDotName(EnumForgeCodegenNames.REF_ENUMCOLL, "Count"), LE, Constant(1)))
                 .BlockReturn(EnumForgeCodegenNames.REF_ENUMCOLL)
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type inputCollectionType)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             var eval = _innerType == null
                 ? ConstantNull()

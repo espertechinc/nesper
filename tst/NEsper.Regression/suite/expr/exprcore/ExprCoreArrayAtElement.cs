@@ -389,11 +389,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber,IndexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[IndexNumber,IndexN...(41 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.Lvl1.Lvl2.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber,Ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[IndexNumber,Ind...(44 chars)': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 
                 // double-array
                 env.TryInvalidCompile(
@@ -409,11 +409,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select Lvl1.Lvl2.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.Lvl1.Lvl2.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'me.Lvl1.Lvl2.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 
                 env.UndeployAll();
             }
@@ -557,11 +557,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0",
-                    "Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.Lvl1.Intarr[IndexNumber, IndexNumber] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[IndexNumber,IndexNumber]': Incorrect number of index expressions for array operation, expected a single expression returning an integer value but received 2 expressions for operation on type System.Nullable<System.Int32>[]");
 
                 // double-array
                 env.TryInvalidCompile(
@@ -577,11 +577,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.TryInvalidCompile(
                     path,
                     "select Lvl1.Intarr[Id] from Lvl0",
-                    "Failed to validate select-clause expression 'Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
                 env.TryInvalidCompile(
                     path,
                     "select me.Lvl1.Intarr[Id] from Lvl0 as me",
-                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Int32[]");
+                    "Failed to validate select-clause expression 'me.Lvl1.Intarr[Id]': Incorrect index expression for array operation, expected an expression returning an integer value but the expression 'Id' returns 'System.String' for operation on type System.Nullable<System.Int32>[]");
 
                 env.UndeployAll();
             }

@@ -60,14 +60,21 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         {
             var stream = new MemoryStream();
             var writer = new Utf8JsonWriter(stream, default);
-            writer.WriteStartObject();
-            writer.WriteString("__type", underlying.GetType().FullName);
-            writer.WritePropertyName("__data");
 
-            var options = new JsonSerializerOptions();
-            JsonSerializer.Serialize(writer, underlying, options);
+            if (underlying == null) {
+                writer.WriteNullValue();
+            }
+            else {
+                writer.WriteStartObject();
+                writer.WriteString("__type", underlying.GetType().FullName);
+                writer.WritePropertyName("__data");
 
-            writer.WriteEndObject();
+                var options = new JsonSerializerOptions();
+                JsonSerializer.Serialize(writer, underlying, options);
+
+                writer.WriteEndObject();
+            }
+
             writer.Flush();
             stream.Flush();
 
@@ -85,18 +92,20 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
             var options = new JsonDocumentOptions();
             var document = JsonDocument.Parse(memory, options);
 
-            var typeElement = document.RootElement.GetProperty("__type");
+            var rootElement = document.RootElement;
+            if (rootElement.ValueKind == JsonValueKind.Null) {
+                return null;
+            }
+
+            var typeElement = rootElement.GetProperty("__type");
             var typeName = typeElement.GetString();
             if (string.IsNullOrWhiteSpace(typeName)) {
                 throw new InvalidDataException();
             }
 
             var type = TypeHelper.ResolveType(typeName);
-
             var dataElement = document.RootElement.GetProperty("__data");
-            var dataAsJson = dataElement.ToString();
-
-            return JsonSerializer.Deserialize(dataAsJson, type);
+            return dataElement.Deserialize(type);
         }
 
         /// <summary>

@@ -17,15 +17,15 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
 {
     public class PollExecStrategyMethod : PollExecStrategy
     {
-        private readonly MethodConversionStrategy methodConversionStrategy;
-        private readonly MethodTargetStrategy methodTargetStrategy;
+        private readonly MethodConversionStrategy _methodConversionStrategy;
+        private readonly MethodTargetStrategy _methodTargetStrategy;
 
         public PollExecStrategyMethod(
             MethodTargetStrategy methodTargetStrategy,
             MethodConversionStrategy methodConversionStrategy)
         {
-            this.methodTargetStrategy = methodTargetStrategy;
-            this.methodConversionStrategy = methodConversionStrategy;
+            this._methodTargetStrategy = methodTargetStrategy;
+            this._methodConversionStrategy = methodConversionStrategy;
         }
 
         public void Start()
@@ -37,9 +37,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             object lookupValues,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            var result = methodTargetStrategy.Invoke(lookupValues, exprEvaluatorContext);
+            var result = _methodTargetStrategy.Invoke(lookupValues, exprEvaluatorContext);
             if (result != null) {
-                return methodConversionStrategy.Convert(result, methodTargetStrategy, exprEvaluatorContext);
+                return _methodConversionStrategy.Convert(result, _methodTargetStrategy, exprEvaluatorContext);
             }
 
             return null;

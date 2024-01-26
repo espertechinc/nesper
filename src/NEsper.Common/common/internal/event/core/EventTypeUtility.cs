@@ -364,7 +364,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 getterType.IsTypeNumeric()) {
                 var coercer = SimpleNumberCoercerFactory.GetCoercer(getterType, type.GetBoxedType());
                 get.Block.DeclareVar(getterType, "prop", Cast(getterType, result));
-                result = coercer.CoerceCodegen(Ref("prop"), getterType);
+                result = coercer.CoerceCodegen(Ref("prop"), getterType, method, classScope);
             }
 
             get.Block.BlockReturn(result);
@@ -434,7 +434,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                             var coercer = SimpleNumberCoercerFactory.GetCoercer(
                                 getterType, optionalCoercionType.GetBoxedType());
                             block.DeclareVar(getterType, "prop", Cast(getterType, result));
-                            result = coercer.CoerceCodegen(Ref("prop"), getterType);
+                            result = coercer.CoerceCodegen(Ref("prop"), getterType, method, classScope);
                         }
 
                         if (getterType.IsArray) {
@@ -1322,7 +1322,7 @@ namespace com.espertech.esper.common.@internal.@event.core
 
                     if (type is Type asType) {
                         if (asType.IsGenericStringDictionary()) {
-                            return typeof(object);
+                            return asType.GetDictionaryValueType();
                         }
                     }
 

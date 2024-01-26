@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Text.Json.Serialization;
 using com.espertech.esper.common.client.util;
 
 namespace com.espertech.esper.common.client.configuration.common
@@ -65,8 +65,11 @@ namespace com.espertech.esper.common.client.configuration.common
                 cacheReferenceType);
         }
 
+        [JsonIgnore]
         public int LRUCache {
-            set => DataCacheDesc = new ConfigurationCommonCacheLRU(value);
+            set {
+                DataCacheDesc = new ConfigurationCommonCacheLRU(value);
+            }
         }
     }
 } // end of namespace

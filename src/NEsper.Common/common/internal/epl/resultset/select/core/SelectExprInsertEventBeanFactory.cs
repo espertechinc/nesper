@@ -135,9 +135,9 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                     if (writableProps.IsEmpty()) {
                         throw;
                     }
-
-                    throw ex;
                 }
+
+                throw;
             }
         }
 

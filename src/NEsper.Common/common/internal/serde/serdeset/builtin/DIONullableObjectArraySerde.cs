@@ -44,19 +44,19 @@ namespace com.espertech.esper.common.@internal.serde.serdeset.builtin
         }
 
         private void WriteInternal(
-            object[] @object,
+            object[] values,
             DataOutput output,
             byte[] unitKey,
             EventBeanCollatedWriter writer)
         {
-            if (@object == null) {
+            if (values == null) {
                 output.WriteInt(-1);
                 return;
             }
 
-            output.WriteInt(@object.Length);
-            foreach (var i in @object) {
-                _componentBinding.Write(i, output, unitKey, writer);
+            output.WriteInt(values.Length);
+            foreach (var value in values) {
+                _componentBinding.Write(value, output, unitKey, writer);
             }
         }
 

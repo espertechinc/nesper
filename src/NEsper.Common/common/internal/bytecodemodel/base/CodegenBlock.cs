@@ -512,6 +512,13 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.@base
             return this;
         }
 
+        public CodegenBlock IfRefNullReturnDefault(string @ref)
+        {
+            CheckClosed();
+            _statements.Add(new CodegenStatementIfNullReturnDefault(Ref(@ref)));
+            return this;
+        }
+        
         public CodegenBlock IfRefNullReturnNull(string @ref)
         {
             CheckClosed();

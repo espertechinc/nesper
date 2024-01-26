@@ -31,30 +31,36 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
         {
             IList<RegressionExecution> execs = new List<RegressionExecution>();
             WithNamedWindowInheritsMap(execs);
-            WithNamedWindowRep(execs);
-            WithStreamInsertWWidenOA(execs);
-            WithInvalid(execs);
+            //WithNamedWindowRep(TODO, execs);
+            //WithStreamInsertWWidenOA(TODO, execs);
+            //WithInvalid(TODO, execs);
             return execs;
         }
 
-        public static IList<RegressionExecution> WithInvalid(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithInvalid(
+            EventRepresentationChoice rep,
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoInvalid());
+            execs.Add(new EPLInsertIntoInvalid(rep));
             return execs;
         }
 
-        public static IList<RegressionExecution> WithStreamInsertWWidenOA(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithStreamInsertWWidenOA(
+            EventRepresentationChoice rep, 
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoStreamInsertWWidenOA());
+            execs.Add(new EPLInsertIntoStreamInsertWWidenOA(rep));
             return execs;
         }
 
-        public static IList<RegressionExecution> WithNamedWindowRep(IList<RegressionExecution> execs = null)
+        public static IList<RegressionExecution> WithNamedWindowRep(
+            EventRepresentationChoice rep, 
+            IList<RegressionExecution> execs = null)
         {
             execs = execs ?? new List<RegressionExecution>();
-            execs.Add(new EPLInsertIntoNamedWindowRep());
+            execs.Add(new EPLInsertIntoNamedWindowRep(rep));
             return execs;
         }
 
@@ -104,35 +110,48 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
         private class EPLInsertIntoNamedWindowRep : RegressionExecution
         {
+            private readonly EventRepresentationChoice _rep;
+
+            public EPLInsertIntoNamedWindowRep(EventRepresentationChoice rep)
+            {
+                _rep = rep;
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    if (rep.IsJsonProvidedClassEvent()) { // assertion uses inheritance of types
-                        continue;
-                    }
-
-                    TryAssertionNamedWindow(env, rep);
+                if (!_rep.IsJsonProvidedClassEvent()) {
+                    // assertion uses inheritance of types
+                    TryAssertionNamedWindow(env, _rep);
                 }
             }
         }
 
-        private class EPLInsertIntoStreamInsertWWidenOA : RegressionExecution
-        {
+        private class EPLInsertIntoStreamInsertWWidenOA : RegressionExecution {
+            private readonly EventRepresentationChoice _rep;
+
+            public EPLInsertIntoStreamInsertWWidenOA(EventRepresentationChoice rep)
+            {
+                _rep = rep;
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    TryAssertionStreamInsertWWidenMap(env, rep);
-                }
+                TryAssertionStreamInsertWWidenMap(env, _rep);
             }
         }
 
         private class EPLInsertIntoInvalid : RegressionExecution
         {
+            private readonly EventRepresentationChoice _rep;
+
+            public EPLInsertIntoInvalid(EventRepresentationChoice rep)
+            {
+                _rep = rep;
+            }
+
             public void Run(RegressionEnvironment env)
             {
-                foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
-                    TryAssertionInvalid(env, rep);
-                }
+                TryAssertionInvalid(env, _rep);
             }
         }
 

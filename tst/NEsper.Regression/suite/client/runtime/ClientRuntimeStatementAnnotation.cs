@@ -247,11 +247,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArrayAttribute' requires a non-null value for array elements for attribute 'StringArray' [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={null},Value={}) select * from Bean]");
 
+#if WORKS_IN_DOTNET // In dotnet, we find a caster for int to string, in java they do not
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean",
                     false,
                     "Failed to process statement annotations: Annotation 'MyAnnotationValueArray' requires a String-typed value for array elements for attribute 'StringArray' but received a Integer-typed value [@MyAnnotationValueArray(IntArray={},DoubleArray={},StringArray={1},Value={}) select * from Bean]");
+#endif
 
                 TryInvalidAnnotation(
                     env,
@@ -286,9 +288,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     env,
                     "@MyAnnotationValue(5) select * from Bean",
                     false,
-                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'value' but received a Integer-typed value [@MyAnnotationValue(5) select * from Bean]");
+                    "Failed to process statement annotations: Annotation 'MyAnnotationValue' requires a String-typed value for attribute 'Value' but received a Int32-typed value [@MyAnnotationValue(5) select * from Bean]");
 #endif
-                
+
                 TryInvalidAnnotation(
                     env,
                     "@MyAnnotationValueArray(Value=\"ABC\", IntArray={}, DoubleArray={}, StringArray={}) select * from Bean",

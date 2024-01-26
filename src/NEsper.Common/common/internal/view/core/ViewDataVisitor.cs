@@ -23,14 +23,14 @@ namespace com.espertech.esper.common.@internal.view.core
             EventBean[] events,
             string viewName);
 
-        void VisitPrimary<K>(
-            ICollection<K> primary,
+        void VisitPrimary<TK>(
+            ICollection<TK> primary,
             bool countsEvents,
             string viewName,
             int? count);
 
-        void VisitPrimary<K, V>(
-            IDictionary<K, V> currentBatch,
+        void VisitPrimary<TK, TV>(
+            IDictionary<TK, TV> currentBatch,
             bool countsEvents,
             string viewName,
             int? count,

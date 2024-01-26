@@ -127,9 +127,9 @@ namespace com.espertech.esper.compat.collections
         /// Returns an empty IDictionary for type K,V
         /// </summary>
         /// <returns></returns>
-        public static IDictionary<K,V> GetEmptyMap<K,V>()
+        public static IDictionary<TK,TV> GetEmptyMap<TK,TV>()
         {
-            return EmptyDictionary<K, V>.Instance;
+            return EmptyDictionary<TK, TV>.Instance;
         }
 
         /// <summary>

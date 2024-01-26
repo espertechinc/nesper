@@ -456,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var expectedAggType = new object[][] {
                 new object[] { "c0", typeof(string) },
                 new object[] { "c1", typeof(int?) },
-                new object[] { "c2", typeof(int[]) },
+                new object[] { "c2", typeof(int?[]) },
                 new object[] { "c3", typeof(int?) }
             };
             env.AssertStatement(

@@ -212,14 +212,14 @@ namespace com.espertech.esper.compat.collections
         /// the specified key.  Returns the value that was found at that
         /// location and removed or the defaultValue.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">Search key into the dictionary</param>
         /// <param name="value">The value removed from the dictionary (if found).</param>
         /// <returns></returns>
 
-        public static bool TryRemove<K, V>(this IDictionary<K, V> dictionary, K key, out V value)
+        public static bool TryRemove<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, out TV value)
         {
             if (dictionary.TryGetValue(key, out value)) {
                 return dictionary.Remove(key);
@@ -233,17 +233,17 @@ namespace com.espertech.esper.compat.collections
         /// the specified key.  The item if found is returned; if not,
         /// default(V) is returned.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         /// <returns></returns>
 
-        public static V Delete<K, V>(this IDictionary<K, V> dictionary, K key)
+        public static TV Delete<TK, TV>(this IDictionary<TK, TV> dictionary, TK key)
         {
             return dictionary.TryRemove(key, out var tempItem)
                     ? tempItem
-                    : default(V);
+                    : default(TV);
         }
 
         /// <summary>
@@ -251,14 +251,14 @@ namespace com.espertech.esper.compat.collections
         /// If no value can be found, then the defaultValue is
         /// returned.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         /// <param name="defaultValue">The default value.</param>
         /// <returns></returns>
 
-        public static V Get<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
+        public static TV Get<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV defaultValue = default(TV))
         {
             if (!dictionary.TryGetValue(key, out var returnValue))
             {
@@ -268,8 +268,8 @@ namespace com.espertech.esper.compat.collections
             return returnValue;
         }
 
-        public static V? GetBoxed<K, V>(this IDictionary<K, V> dictionary, K key)
-            where V : struct
+        public static TV? GetBoxed<TK, TV>(this IDictionary<TK, TV> dictionary, TK key)
+            where TV : struct
         {
             if (!dictionary.TryGetValue(key, out var returnValue)) {
                 return null;
@@ -278,7 +278,7 @@ namespace com.espertech.esper.compat.collections
             return returnValue;
         }
         
-        public static V DebugGet<K, V>(this IDictionary<K, V> dictionary, K key, V defaultValue = default(V))
+        public static TV DebugGet<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV defaultValue = default(TV))
         {
             Debug.WriteLine("Dictionary.Get: Key = " + key);
             
@@ -294,13 +294,13 @@ namespace com.espertech.esper.compat.collections
         /// Sets the given key in the dictionary.  If the key
         /// already exists, then it is remapped to thenew value.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
 
-        public static void Put<K, V>(this IDictionary<K, V> dictionary, K key, V value = default(V))
+        public static void Put<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value = default(TV))
         {
             dictionary[key] = value;
         }
@@ -310,35 +310,35 @@ namespace com.espertech.esper.compat.collections
         /// already exists, then it is remapped to the new value.
         /// If a value was previously mapped it is returned.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="key">The key.</param>
         /// <param name="value">The value.</param>
         /// <returns></returns>
 
-        public static V Push<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        public static TV Push<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value)
         {
             dictionary.TryGetValue(key, out var temp);
             dictionary[key] = value;
             return temp;
         }
 
-        public static bool TryPush<K, V>(this IDictionary<K, V> dictionary, K key, V value, out V outPreviousValue)
+        public static bool TryPush<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value, out TV outPreviousValue)
         {
             var rvalue = dictionary.TryGetValue(key, out outPreviousValue);
             dictionary[key] = value;
             return rvalue;
         }
 
-        public static bool TryPush<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        public static bool TryPush<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value)
         {
             var rvalue = dictionary.TryGetValue(key, out var discarded);
             dictionary[key] = value;
             return rvalue;
         }
         
-        public static V PutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value)
+        public static TV PutIfAbsent<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value)
         {
             if (!dictionary.TryGetValue(key, out var temp)) {
                 dictionary[key] = value;
@@ -346,7 +346,7 @@ namespace com.espertech.esper.compat.collections
             return temp;
         }
 
-        public static bool TryPutIfAbsent<K, V>(this IDictionary<K, V> dictionary, K key, V value, out V outValue)
+        public static bool TryPutIfAbsent<TK, TV>(this IDictionary<TK, TV> dictionary, TK key, TV value, out TV outValue)
         {
             if (!dictionary.TryGetValue(key, out outValue))
             {
@@ -361,12 +361,12 @@ namespace com.espertech.esper.compat.collections
         /// Puts all values from the source dictionary into
         /// this dictionary.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="source">The source.</param>
 
-        public static void PutAll<K, V>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, V>> source)
+        public static void PutAll<TK, TV>(this IDictionary<TK, TV> dictionary, IEnumerable<KeyValuePair<TK, TV>> source)
         {
             foreach (var kvPair in source)
             {
@@ -378,14 +378,14 @@ namespace com.espertech.esper.compat.collections
         /// Puts all values from the source dictionary into this dictionary.  This variation
         /// of the method allows the values to be transformed from one type to another.
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <typeparam name="T"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <param name="source">The source.</param>
         /// <param name="transformer">The transformer.</param>
 
-        public static void PutAll<K, V, T>(this IDictionary<K, V> dictionary, IEnumerable<KeyValuePair<K, T>> source, Transformer<T, V> transformer)
+        public static void PutAll<TK, TV, T>(this IDictionary<TK, TV> dictionary, IEnumerable<KeyValuePair<TK, T>> source, Transformer<T, TV> transformer)
         {
             foreach (var kvPair in source)
             {
@@ -396,12 +396,12 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Returns the first value in the enumeration of values
         /// </summary>
-        /// <typeparam name="K"></typeparam>
-        /// <typeparam name="V"></typeparam>
+        /// <typeparam name="TK"></typeparam>
+        /// <typeparam name="TV"></typeparam>
         /// <param name="dictionary">The dictionary.</param>
         /// <returns></returns>
 
-        public static V FirstValue<K, V>(this IDictionary<K, V> dictionary)
+        public static TV FirstValue<TK, TV>(this IDictionary<TK, TV> dictionary)
         {
             var kvPairEnum = dictionary.GetEnumerator();
             kvPairEnum.MoveNext();
@@ -416,15 +416,15 @@ namespace com.espertech.esper.compat.collections
             return new SortedDictionary<TK, TV>(dictionary, inverted);
         }
 
-        public static IDictionary<K, V> AsBasicDictionary<K, V>(this object anyEntity)
+        public static IDictionary<TK, TV> AsBasicDictionary<TK, TV>(this object anyEntity)
         {
-            var asRawDictionary = anyEntity as Dictionary<K, V>;
+            var asRawDictionary = anyEntity as Dictionary<TK, TV>;
             if (asRawDictionary != null)
                 return asRawDictionary;
 
-            var asFuzzyDictionary = anyEntity as IDictionary<K, V>;
+            var asFuzzyDictionary = anyEntity as IDictionary<TK, TV>;
             if (asFuzzyDictionary != null)
-                return new Dictionary<K, V>(asFuzzyDictionary);
+                return new Dictionary<TK, TV>(asFuzzyDictionary);
 
             throw new ArgumentException("unable to translate dictionary", "anyEntity");
         }

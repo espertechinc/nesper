@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 else {
                     var evalType = forges[i].EvaluationType;
                     if (evalType.CanNotBeNull()) {
-                        assignment = optionalCoercers[i].CoerceCodegen(expression, evalType);
+                        assignment = optionalCoercers[i].CoerceCodegen(expression, evalType, codegenMethodScope, codegenClassScope);
                     }
                     else {
                         assignment = optionalCoercers[i]

@@ -9,7 +9,7 @@
 
 namespace com.espertech.esper.compat
 {
-    public sealed class Cache<K, V> : ICache<K, V> where K : class
+    public sealed class Cache<TK, TV> : ICache<TK, TV> where TK : class
     {
         private Entry _entry;
 
@@ -19,7 +19,7 @@ namespace com.espertech.esper.compat
         }
 
 
-        public bool TryGet(K key, out V value)
+        public bool TryGet(TK key, out TV value)
         {
             Entry e = _entry;
             if (key == e.Key)
@@ -28,17 +28,17 @@ namespace com.espertech.esper.compat
                 return true;
             }
 
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
-        public V Get(K key)
+        public TV Get(TK key)
         {
             var e = _entry;
-            return e.Key == key ? e.Value : default(V);
+            return e.Key == key ? e.Value : default(TV);
         }
 
-        public V Put(K key, V value)
+        public TV Put(TK key, TV value)
         {
             _entry = new Entry(key, value);
             return value;
@@ -46,15 +46,15 @@ namespace com.espertech.esper.compat
 
         public void Invalidate()
         {
-            _entry = new Entry(null, default(V));
+            _entry = new Entry(null, default(TV));
         }
 
         class Entry
         {
-            public readonly K Key;
-            public readonly V Value;
+            public readonly TK Key;
+            public readonly TV Value;
 
-            public Entry(K key, V value)
+            public Entry(TK key, TV value)
             {
                 Key = key;
                 Value = value;

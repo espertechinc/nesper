@@ -96,12 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
             return _resultTypeBoxed;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             return ConstantNull();
         }
@@ -111,7 +111,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
             block.DeclareVar(_innerTypeBoxed, "minKey", ConstantNull())
                 .DeclareVar(_resultTypeBoxed, "result", ConstantNull());
@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type inputCollectionType)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             block
                 .DeclareVar(

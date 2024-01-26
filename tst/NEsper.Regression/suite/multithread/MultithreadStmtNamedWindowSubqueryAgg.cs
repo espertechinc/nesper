@@ -46,8 +46,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // setup statements
             var path = new RegressionPath();
             var schemas =
-                "@public create schema UpdateEvent as (uekey string, ueint int);\n" +
-                "@public create schema WindowSchema as (wskey string, wsint int);\n";
+                "@public @buseventtype create schema UpdateEvent as (uekey string, ueint int);\n" +
+                "@public @buseventtype create schema WindowSchema as (wskey string, wsint int);\n";
             env.CompileDeploy(schemas, path);
 
             var createEpl = "@public @Name('namedWindow') create window MyWindow#keepall as WindowSchema";

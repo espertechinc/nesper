@@ -18,14 +18,19 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public class TypeWidenerBoxedNumeric : TypeWidenerSPI
     {
+        private readonly Type _fromType;
         private readonly Coercer _coercer;
 
         /// <summary>
         /// Ctor.
         /// </summary>
+        /// <param name="fromType"></param>
         /// <param name="coercer">the coercer</param>
-        public TypeWidenerBoxedNumeric(Coercer coercer)
+        public TypeWidenerBoxedNumeric(
+            Type fromType,
+            Coercer coercer)
         {
+            _fromType = fromType;
             _coercer = coercer;
         }
 
@@ -41,7 +46,7 @@ namespace com.espertech.esper.common.@internal.util
             CodegenMethodScope codegenMethodScope,
             CodegenClassScope codegenClassScope)
         {
-            return _coercer.CoerceCodegen(expression, typeof(object));
+            return _coercer.CoerceCodegen(expression, _fromType, codegenMethodScope, codegenClassScope);
         }
     }
 } // end of namespace

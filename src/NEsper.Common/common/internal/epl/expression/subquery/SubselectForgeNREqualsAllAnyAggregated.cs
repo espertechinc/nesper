@@ -88,10 +88,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             else {
                 method.Block.DeclareVar<object>(
                         "left",
-                        coercer.CoerceCodegen(left, symbols.LeftResultType))
+                        coercer.CoerceCodegen(left, symbols.LeftResultType, parent, classScope))
                     .DeclareVar<object>(
                         "right",
-                        coercer.CoerceCodegen(Ref("rhs"), rightEvalType))
+                        coercer.CoerceCodegen(Ref("rhs"), rightEvalType, parent, classScope))
                     .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                 if (isNot) {
                     method.Block.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());

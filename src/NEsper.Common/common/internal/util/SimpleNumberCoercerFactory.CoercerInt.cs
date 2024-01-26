@@ -34,24 +34,32 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
-            {
-                return valueType.CanBeNull() 
-                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
-                    : CodegenInt(value, valueType);
-            }
-
-            public CodegenExpression CoerceCodegenMayNullBoxed(
-                CodegenExpression param,
                 Type valueType,
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
+                return valueType.CanBeNull() 
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
+                    : CodegenInt(value, valueType);
+            }
+
+            public CodegenExpression CoerceCodegenMayNullBoxed(
+                CodegenExpression value,
+                Type valueType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
+            {
+                if (valueType == typeof(short) ||
+                    valueType == typeof(int) ||
+                    valueType == typeof(int?)) {
+                    return value;
+                }
+                
                 return CodegenCoerceMayNull(
                     typeof(int),
                     typeof(int?),
                     "AsInt32",
-                    param,
+                    value,
                     valueType,
                     codegenMethodScope,
                     typeof(CoercerInt),

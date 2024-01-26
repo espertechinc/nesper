@@ -23,14 +23,14 @@ namespace com.espertech.esper.compiler.@internal.util
 {
 	class CompilerPool
 	{
-		private readonly ModuleCompileTimeServices compileTimeServices;
-		private readonly IList<EPCompiled> path;
-		private readonly CompilerAbstraction compilerAbstraction;
-		private readonly CompilerAbstractionArtifactCollection compilationState;
+		private readonly ModuleCompileTimeServices _compileTimeServices;
+		private readonly IList<EPCompiled> _path;
+		private readonly CompilerAbstraction _compilerAbstraction;
+		private readonly CompilerAbstractionArtifactCollection _compilationState;
 
-		private IExecutorService compilerThreadPool;
-		private IFuture<CompilableItemResult>[] futures;
-		private SemaphoreSlim semaphore;
+		private readonly IExecutorService _compilerThreadPool;
+		private readonly IFuture<CompilableItemResult>[] _futures;
+		private readonly SemaphoreSlim _semaphore;
 
 		internal CompilerPool(
 			int size,
@@ -39,10 +39,10 @@ namespace com.espertech.esper.compiler.@internal.util
 			CompilerAbstraction compilerAbstraction,
 			CompilerAbstractionArtifactCollection compilationState)
 		{
-			this.compileTimeServices = compileTimeServices;
-			this.path = path;
-			this.compilerAbstraction = compilerAbstraction;
-			this.compilationState = compilationState;
+			_compileTimeServices = compileTimeServices;
+			_path = path;
+			_compilerAbstraction = compilerAbstraction;
+			_compilationState = compilationState;
 
 			ThreadFactory threadFactory = _ => new Thread(_) {
 				IsBackground = true,
@@ -52,10 +52,10 @@ namespace com.espertech.esper.compiler.@internal.util
 			var config = compileTimeServices.Configuration.Compiler.ByteCode;
 			var numThreads = config.ThreadPoolCompilerNumThreads;
 			if (numThreads > 0 && size > 1) {
-				compilerThreadPool = Executors.NewFixedThreadPool(numThreads, threadFactory);
-				futures = new IFuture<CompilableItemResult>[size];
+				_compilerThreadPool = Executors.NewFixedThreadPool(numThreads, threadFactory);
+				_futures = new IFuture<CompilableItemResult>[size];
 				var capacity = config.ThreadPoolCompilerCapacity ?? int.MaxValue;
-				semaphore = new SemaphoreSlim(Math.Max(1, capacity));
+				_semaphore = new SemaphoreSlim(Math.Max(1, capacity));
 			}
 		}
 
@@ -65,17 +65,17 @@ namespace com.espertech.esper.compiler.@internal.util
 		{
 			// We are adding all class-provided classes to the output.
 			// Later we remove the create-class classes.
-			compilationState.Add(item.ArtifactsProvided.OfType<ICompileArtifact>());
+			_compilationState.Add(item.ArtifactsProvided.OfType<ICompileArtifact>());
 
 			// no thread pool, compile right there
-			if (compilerThreadPool == null) {
+			if (_compilerThreadPool == null) {
 				try {
-					var context =
-						new CompilerAbstractionCompilationContext(compileTimeServices, path);
-					compilerAbstraction.CompileClasses(item.Classes, context, compilationState);
+					var context = new CompilerAbstractionCompilationContext(_compileTimeServices, _path);
+					var artifact = _compilerAbstraction.CompileClasses(item.Classes, context, _compilationState);
+					_compilationState.Artifacts.Add(artifact);
 				}
 				finally {
-					item.PostCompileLatch.Completed(compilationState.Artifacts);
+					item.PostCompileLatch.Completed(_compilationState.Artifacts);
 				}
 
 				return;
@@ -83,32 +83,32 @@ namespace com.espertech.esper.compiler.@internal.util
 
 			var callable = new CompileCallable(
 				item,
-				compileTimeServices,
-				path,
-				semaphore,
-				compilerAbstraction,
-				compilationState);
+				_compileTimeServices,
+				_path,
+				_semaphore,
+				_compilerAbstraction,
+				_compilationState);
 
-			semaphore.Wait();
+			_semaphore.Wait();
 			//semaphore.Acquire();
-			futures[statementNumber] = compilerThreadPool.Submit(callable);
+			_futures[statementNumber] = _compilerThreadPool.Submit(callable);
 		}
 
 		public void ShutdownCollectResults()
 		{
-			if (compilerThreadPool == null) {
+			if (_compilerThreadPool == null) {
 				return;
 			}
 
-			compilerThreadPool.Shutdown();
+			_compilerThreadPool.Shutdown();
 			try {
-				compilerThreadPool.AwaitTermination(TimeSpan.FromSeconds(300)); // TimeSpan.FromSeconds(double.MaxValue)
+				_compilerThreadPool.AwaitTermination(TimeSpan.FromSeconds(300)); // TimeSpan.FromSeconds(double.MaxValue)
 			}
 			catch (ThreadInterruptedException e) {
 				throw new EPRuntimeException(e);
 			}
 
-			foreach (var future in futures) {
+			foreach (var future in _futures) {
 				if (future == null) {
 					continue;
 				}
@@ -132,7 +132,7 @@ namespace com.espertech.esper.compiler.@internal.util
 
 		public void Shutdown()
 		{
-			compilerThreadPool?.Shutdown();
+			_compilerThreadPool?.Shutdown();
 		}
 	}
 } // end of namespace

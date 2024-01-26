@@ -162,8 +162,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     MakePair("varargsOnlyString({'a', 'b'})", "\"a\",\"b\""),
                     MakePair("varargsOnlyObject({'a', 'b'})", "\"a\",\"b\""),
                     MakePair("varargsOnlyObject({})", ""),
-                    MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,a"),
-                    MakePair("varargsW1ParamObjectsWCtx(1, new object[] {'a', 1})", "CTX+,1,a,1")
+                    MakePair("varargsObjectsWCtx({1, 'a'})", "CTX+1,\"a\""),
+                    MakePair("varargsW1ParamObjectsWCtx(1, new object[] {'a', 1})", "CTX+,1,\"a\",1")
                 );
 
                 // try Arrays.asList
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 RunVarargAssertion(
                     env,
                     milestone,
-                    MakePair("varargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0,2.0,null,3.0"));
+                    MakePair("varargsOnlyBoxedFloat(cast(1, byte), cast(2, short), null, 3)", "1.0f,2.0f,null,3.0f"));
                 RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedShort(null, cast(1, byte))", "null,1"));
                 RunVarargAssertion(env, milestone, MakePair("varargsOnlyBoxedByte(null, cast(1, byte))", "null,1"));
 
@@ -185,8 +185,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     env,
                     milestone,
                     MakePair("varargOverload()", "many"),
-                    MakePair("varargOverload(1)", "p1"),
-                    MakePair("varargOverload(1, 2)", "p2"),
+                    MakePair("varargOverload(1)", "P1"),
+                    MakePair("varargOverload(1, 2)", "P2"),
                     MakePair("varargOverload(1, 2, 3)", "p3"),
                     MakePair("varargOverload(1, 2, 3, 4)", "many")
                 );

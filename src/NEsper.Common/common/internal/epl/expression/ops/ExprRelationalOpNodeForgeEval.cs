@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 }
             }
 
-            block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType));
+            block.MethodReturn(forge.Computer.Codegen(lhsRef, lhsType, rhsRef, rhsType, methodNode, codegenClassScope));
             return LocalMethod(methodNode);
         }
     }

@@ -13,9 +13,9 @@ using System.Collections.Generic;
 
 namespace com.espertech.esper.compat.collections
 {
-    public class FixedDictionary<K,V> : IDictionary<K,V>
+    public class FixedDictionary<TK,TV> : IDictionary<TK,TV>
     {
-        private readonly FixedDictionarySchema<K> _dictionarySchema;
+        private readonly FixedDictionarySchema<TK> _dictionarySchema;
         private readonly Entry[] _dataList;
         private int _dataCount;
 
@@ -23,7 +23,7 @@ namespace com.espertech.esper.compat.collections
         /// Initializes a new instance of the <see cref="FixedDictionary{K,V}"/> class.
         /// </summary>
         /// <param name="dictionarySchema">The schema.</param>
-        public FixedDictionary(FixedDictionarySchema<K> dictionarySchema)
+        public FixedDictionary(FixedDictionarySchema<TK> dictionarySchema)
         {
             _dictionarySchema = dictionarySchema;
             _dataList = new Entry[_dictionarySchema.Count];
@@ -46,7 +46,7 @@ namespace com.espertech.esper.compat.collections
 
         #endregion
 
-        #region Implementation of IEnumerable<KeyValuePair<K,V>>
+        #region Implementation of IEnumerable<KeyValuePair<TK, TV>>
 
         /// <summary>
         /// Returns an enumerator that iterates through the collection.
@@ -55,23 +55,23 @@ namespace com.espertech.esper.compat.collections
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
         /// <filterpriority>1</filterpriority>
-        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
             foreach( var key in _dictionarySchema.Keys ) {
-                yield return new KeyValuePair<K, V>(key, this[key]);
+                yield return new KeyValuePair<TK, TV>(key, this[key]);
             }
         }
 
         #endregion
 
-        #region Implementation of ICollection<KeyValuePair<K,V>>
+        #region Implementation of ICollection<KeyValuePair<TK, TV>>
 
         /// <summary>
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-        public void Add(KeyValuePair<K, V> item)
+        public void Add(KeyValuePair<TK, TV> item)
         {
             int index;
             if (_dictionarySchema.TryGetIndex(item.Key, out index) && _dataList[index].HasValue) {
@@ -102,7 +102,7 @@ namespace com.espertech.esper.compat.collections
         /// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
         /// </returns>
         /// <param name="item">The object to locate in the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-        public bool Contains(KeyValuePair<K, V> item)
+        public bool Contains(KeyValuePair<TK, TV> item)
         {
             int index;
             if ( _dictionarySchema.TryGetIndex( item.Key, out index ) ) {
@@ -118,7 +118,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="array">The one-dimensional <see cref="T:System.Array" /> that is the destination of the elements copied from <see cref="T:System.Collections.Generic.ICollection`1" />. The <see cref="T:System.Array" /> must have zero-based indexing.</param>
         /// <param name="arrayIndex">The zero-based index in <paramref name="array" /> at which copying begins.</param>
-        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
             var indexEnum = _dictionarySchema.GetEnumerator();
             for( var ii = arrayIndex ; ii < array.Length ; ii++ ) {
@@ -127,7 +127,7 @@ namespace com.espertech.esper.compat.collections
                 var index = indexEnum.Current;
                 var entry = _dataList[index.Value];
                 if ( entry.HasValue ) {
-                    array[ii] = new KeyValuePair<K, V>(index.Key, entry.Value);
+                    array[ii] = new KeyValuePair<TK, TV>(index.Key, entry.Value);
                 }
             }
         }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         /// <param name="item">The object to remove from the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.ICollection`1" /> is read-only.</exception>
-        public bool Remove(KeyValuePair<K, V> item)
+        public bool Remove(KeyValuePair<TK, TV> item)
         {
             int index;
             var isRemoved = _dictionarySchema.TryGetIndex(item.Key, out index) && _dataList[index].Clear();
@@ -166,7 +166,7 @@ namespace com.espertech.esper.compat.collections
 
         #endregion
 
-        #region Implementation of IDictionary<K,V>
+        #region Implementation of IDictionary<TK, TV>
 
         /// <summary>
         /// Determines whether the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key.
@@ -176,7 +176,7 @@ namespace com.espertech.esper.compat.collections
         /// </returns>
         /// <param name="key">The key to locate in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
-        public bool ContainsKey(K key)
+        public bool ContainsKey(TK key)
         {
             int index;
             return _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].HasValue;
@@ -190,7 +190,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.ArgumentException">An element with the same key already exists in the <see cref="T:System.Collections.Generic.IDictionary`2" />.</exception>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
-        public void Add(K key, V value)
+        public void Add(TK key, TV value)
         {
             int index;
             if (!_dictionarySchema.TryGetIndex(key, out index)) {
@@ -215,7 +215,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">The key of the element to remove.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.NotSupportedException">The <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
-        public bool Remove(K key)
+        public bool Remove(TK key)
         {
             int index;
             var isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear();
@@ -232,7 +232,7 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">The key whose value to get.</param>
         /// <param name="value">When this method returns, the value associated with the specified key, if the key is found; otherwise, the default value for the type of the <paramref name="value" /> parameter. This parameter is passed uninitialized.</param>
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
-        public bool TryGetValue(K key, out V value)
+        public bool TryGetValue(TK key, out TV value)
         {
             int index;
             if (_dictionarySchema.TryGetIndex(key, out index) && _dataList[index].HasValue) {
@@ -240,7 +240,7 @@ namespace com.espertech.esper.compat.collections
                 return true;
             }
 
-            value = default(V);
+            value = default(TV);
             return false;
         }
 
@@ -254,7 +254,7 @@ namespace com.espertech.esper.compat.collections
         /// <exception cref="T:System.ArgumentNullException"><paramref name="key" /> is null.</exception>
         /// <exception cref="T:System.Collections.Generic.KeyNotFoundException">The property is retrieved and <paramref name="key" /> is not found.</exception>
         /// <exception cref="T:System.NotSupportedException">The property is set and the <see cref="T:System.Collections.Generic.IDictionary`2" /> is read-only.</exception>
-        public V this[K key]
+        public TV this[TK key]
         {
             get
             {
@@ -278,7 +278,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="keyIndex">MapIndex of the key.</param>
         /// <param name="value">The value.</param>
-        public void AssignIndex(int keyIndex, V value)
+        public void AssignIndex(int keyIndex, TV value)
         {
             if (!_dataList[keyIndex].Set(value))
                 _dataCount++;
@@ -290,11 +290,11 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<K> Keys
+        public ICollection<TK> Keys
         {
             get
             {
-                ICollection<K> keyList = new List<K>();
+                ICollection<TK> keyList = new List<TK>();
                 foreach( var indexEntry in _dictionarySchema ) {
                     var entry = _dataList[indexEntry.Value];
                     if (entry.HasValue) {
@@ -312,11 +312,11 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// An <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the object that : <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public ICollection<V> Values
+        public ICollection<TV> Values
         {
             get
             {
-                ICollection<V> valueList = new List<V>();
+                ICollection<TV> valueList = new List<TV>();
                 foreach (var entry in _dataList) {
                     if (entry.HasValue) {
                         valueList.Add(entry.Value);
@@ -329,7 +329,7 @@ namespace com.espertech.esper.compat.collections
 
         #endregion
 
-        #region Implementation of IDictionary<K,V>
+        #region Implementation of IDictionary<TK, TV>
 
         /// <summary>
         /// Fetches the value associated with the specified key.
@@ -339,9 +339,9 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key"></param>
         /// <param name="defaultValue"></param>
         /// <returns></returns>
-        public V Get(K key, V defaultValue)
+        public TV Get(TK key, TV defaultValue)
         {
-            V returnValue;
+            TV returnValue;
             if (!TryGetValue(key, out returnValue)) {
                 returnValue = defaultValue;
             }
@@ -355,16 +355,16 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public V Get(K key)
+        public TV Get(TK key)
         {
-            return Get(key, default(V));
+            return Get(key, default(TV));
         }
 
         /// <summary>
         /// Sets the given key in the dictionary.  If the key
         /// already exists, then it is remapped to the new value.
         /// </summary>
-        public void Put(K key, V value)
+        public void Put(TK key, TV value)
         {
             this[key] = value;
         }
@@ -374,9 +374,9 @@ namespace com.espertech.esper.compat.collections
         /// already exists, then it is remapped to the new value.
         /// If a value was previously mapped it is returned.
         /// </summary>
-        public V Push(K key, V value)
+        public TV Push(TK key, TV value)
         {
-            V temp;
+            TV temp;
             TryGetValue(key, out temp);
             this[key] = value;
             return temp;
@@ -387,7 +387,7 @@ namespace com.espertech.esper.compat.collections
         /// this dictionary.
         /// </summary>
         /// <param name="source"></param>
-        public void PutAll(IDictionary<K, V> source)
+        public void PutAll(IDictionary<TK, TV> source)
         {
             foreach( var sourceEntry in source ) {
                 this[sourceEntry.Key] = sourceEntry.Value;
@@ -398,7 +398,7 @@ namespace com.espertech.esper.compat.collections
         /// Returns the first value in the enumeration of values
         /// </summary>
         /// <returns></returns>
-        public V FirstValue
+        public TV FirstValue
         {
             get
             {
@@ -419,10 +419,10 @@ namespace com.espertech.esper.compat.collections
         /// <param name="key">Search key into the dictionary</param>
         /// <param name="value">The value removed from the dictionary (if found).</param>
         /// <returns></returns>
-        public bool Remove(K key, out V value)
+        public bool Remove(TK key, out TV value)
         {
             int index;
-            value = default(V);
+            value = default(TV);
             var isRemoved = _dictionarySchema.TryGetIndex(key, out index) && _dataList[index].Clear(out value);
             if (isRemoved) _dataCount--;
             return isRemoved;
@@ -435,10 +435,10 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="key"></param>
         /// <returns></returns>
-        public V RemoveAndReturn(K key)
+        public TV RemoveAndReturn(TK key)
         {
             int index;
-            var value = default(V);
+            var value = default(TV);
             if (_dictionarySchema.TryGetIndex(key, out index)) {
                 if (_dataList[index].Clear(out value)) {
                     _dataCount--;
@@ -453,9 +453,9 @@ namespace com.espertech.esper.compat.collections
         internal struct Entry
         {
             internal bool HasValue;
-            internal V Value;
+            internal TV Value;
 
-            internal bool Set(V value)
+            internal bool Set(TV value)
             {
                 var hadValue = HasValue;
                 HasValue = true;
@@ -467,16 +467,16 @@ namespace com.espertech.esper.compat.collections
             {
                 var hadValue = HasValue;
                 HasValue = false;
-                Value = default(V);
+                Value = default(TV);
                 return hadValue;
             }
 
-            internal bool Clear(out V prevValue)
+            internal bool Clear(out TV prevValue)
             {
                 prevValue = Value;
                 var hadValue = HasValue;
                 HasValue = false;
-                Value = default(V);
+                Value = default(TV);
                 return hadValue;
             }
         }

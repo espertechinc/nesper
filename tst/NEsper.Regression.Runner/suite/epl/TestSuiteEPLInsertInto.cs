@@ -339,6 +339,14 @@ namespace com.espertech.esper.regressionrun.suite.epl
             public TestEPLInsertIntoPopulateCreateStreamAvro() : base(Configure)
             {
             }
+
+            [Test, RunInApplicationDomain]
+            public void WithCompatExisting() =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateCreateStreamAvro.WithCompatExisting());
+
+            [Test, RunInApplicationDomain]
+            public void WithNewSchema() =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateCreateStreamAvro.WithNewSchema());
         }
 
         /// <summary>
@@ -459,8 +467,8 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 EPLInsertIntoPopulateUnderlying.WithPopulateUnderlyingSimple());
 
             [Test, RunInApplicationDomain]
-            public void WithCharSequenceCompat() =>
-                RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithCharSequenceCompat());
+            public void WithCharSequenceCompat([Values] EventRepresentationChoice rep) =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateUnderlying.WithCharSequenceCompat(rep));
 
             [Test, RunInApplicationDomain]
             public void WithBeanFactoryMethod() =>
@@ -499,16 +507,16 @@ namespace com.espertech.esper.regressionrun.suite.epl
                 EPLInsertIntoPopulateUndStreamSelect.WithNamedWindowInheritsMap());
 
             [Test, RunInApplicationDomain]
-            public void WithNamedWindowRep() =>
-                RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithNamedWindowRep());
+            public void WithNamedWindowRep([Values] EventRepresentationChoice rep) =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithNamedWindowRep(rep));
 
             [Test, RunInApplicationDomain]
-            public void WithStreamInsertWWidenOA() => RegressionRunner.Run(_session,
-                EPLInsertIntoPopulateUndStreamSelect.WithStreamInsertWWidenOA());
+            public void WithStreamInsertWWidenOA([Values] EventRepresentationChoice rep) => RegressionRunner
+                .Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithStreamInsertWWidenOA(rep));
 
             [Test, RunInApplicationDomain]
-            public void WithInvalid() =>
-                RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithInvalid());
+            public void WithInvalid([Values] EventRepresentationChoice rep) =>
+                RegressionRunner.Run(_session, EPLInsertIntoPopulateUndStreamSelect.WithInvalid(rep));
         }
 
         /// <summary>

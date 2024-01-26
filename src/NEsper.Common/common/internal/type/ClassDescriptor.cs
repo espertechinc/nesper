@@ -114,7 +114,7 @@ namespace com.espertech.esper.common.@internal.type
                 return false;
             }
 
-            return TypeParameters.Equals(that.TypeParameters);
+            return CompatExtensions.DeepEquals(TypeParameters, that.TypeParameters);
         }
 
 

@@ -8,7 +8,7 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Text.Json.Serialization;
 using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.client.configuration.runtime
         ///     Returns a map of statement group and metrics configuration for the statement group.
         /// </summary>
         /// <value>map of statement group and metrics configuration</value>
-        public IDictionary<string, StmtGroupMetrics> StatementGroups { get; }
+        public IDictionary<string, StmtGroupMetrics> StatementGroups { get; set; }
 
 
         public ConfigurationRuntimeMetricsReporting WithMetricsReporting(bool value)
@@ -151,6 +151,21 @@ namespace com.espertech.esper.common.client.configuration.runtime
                 Patterns = new List<Pair<StringPatternSet, bool>>();
                 Interval = 10000;
                 NumStatements = 100;
+            }
+
+            [JsonConstructor]
+            public StmtGroupMetrics(
+                long interval,
+                int numStatements,
+                bool isReportInactive,
+                bool isDefaultInclude,
+                IList<Pair<StringPatternSet, bool>> patterns)
+            {
+                Patterns = patterns;
+                Interval = interval;
+                NumStatements = numStatements;
+                IsReportInactive = isReportInactive;
+                IsDefaultInclude = isDefaultInclude;
             }
 
             /// <summary>

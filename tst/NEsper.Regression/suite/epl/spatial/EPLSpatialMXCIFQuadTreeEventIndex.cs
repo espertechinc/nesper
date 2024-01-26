@@ -234,13 +234,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var path = new RegressionPath();
-                env.CompileDeploy(
-                    "@public create table MyTable(Id string primary key, tx double, ty double, tw double, th double)",
-                    path);
+                env.CompileDeploy("@public create table MyTable(id string primary key, tx double, ty double, tw double, th double)", path);
                 env.CompileExecuteFAF("insert into MyTable values ('R1', 10, 20, 5, 6)", path);
-                env.CompileDeploy(
-                    "create index MyIdxCIFQuadTree on MyTable( (tx, ty, tw, th) mxcifquadtree(0, 0, 100, 100))",
-                    path);
+                env.CompileDeploy("create index MyIdxCIFQuadTree on MyTable( (tx, ty, tw, th) mxcifquadtree(0, 0, 100, 100))", path);
 
                 RunAssertionFAF(env, path, 10, 20, 0, 0, true);
                 RunAssertionFAF(env, path, 9, 19, 1, 1, true);
@@ -269,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             bool expected)
         {
             var result = env.CompileExecuteFAF(
-                $"{IndexBackingTableInfo.INDEX_CALLBACK_HOOK}select Id as c0 from MyTable where rectangle(tx, ty, tw, th).intersects(rectangle({x}, {y}, {width}, {height}))",
+                $"{IndexBackingTableInfo.INDEX_CALLBACK_HOOK} select id as c0 from MyTable where rectangle(tx, ty, tw, th).intersects(rectangle({x}, {y}, {width}, {height}))",
                 path);
             SupportQueryPlanIndexHook.AssertFAFAndReset("MyIdxCIFQuadTree", "EventTableQuadTreeMXCIF");
             if (expected) {
@@ -293,10 +289,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    "create window MyRectangleWindow#keepall as (Id string, rx double, ry double, rw double, rh double);\n" +
-                    "insert into MyRectangleWindow select Id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
+                    "create window MyRectangleWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
+                    "insert into MyRectangleWindow select Id as id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
                     "create index Idx on MyRectangleWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" +
-                    "@name('s0') on SupportSpatialAABB select mpw.Id as c0 from MyRectangleWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(X, Y, Width, Height));\n";
+                    "@name('s0') on SupportSpatialAABB select mpw.id as c0 from MyRectangleWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(X, Y, Width, Height));\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 SendSpatialEventRectangles(env, 100, 50);
@@ -324,10 +320,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             public void Run(RegressionEnvironment env)
             {
                 var epl =
-                    $"@name('win') create window MyRectWindow#keepall as (Id string, rx double, ry double, rw double, rh double);\n" +
-                    $"@name('insert') insert into MyRectWindow select Id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
+                    $"@name('win') create window MyRectWindow#keepall as (id string, rx double, ry double, rw double, rh double);\n" +
+                    $"@name('insert') insert into MyRectWindow select Id as id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
                     $"@name('idx') create unique index Idx on MyRectWindow( (rx, ry, rw, rh) mxcifquadtree(0, 0, 100, 100));\n" + 
-                    $"{IndexBackingTableInfo.INDEX_CALLBACK_HOOK}@name('s0') on SupportSpatialAABB select mpw.Id as c0 from MyRectWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(X, Y, Width, Height));\n";
+                    $"{IndexBackingTableInfo.INDEX_CALLBACK_HOOK}@name('s0') on SupportSpatialAABB select mpw.id as c0 from MyRectWindow as mpw where rectangle(rx, ry, rw, rh).intersects(rectangle(X, Y, Width, Height));\n";
                 env.CompileDeploy(epl).AddListener("s0");
 
                 env.AssertThat(
@@ -482,10 +478,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             {
                 var path = new RegressionPath();
                 var epl =
-                    "@public create table RectangleTable(Id string primary key, rx double, ry double, rw double, rh double);\n" +
+                    "@public create table RectangleTable(id string primary key, rx double, ry double, rw double, rh double);\n" +
                     "create index MyIndex on RectangleTable((rx,ry,rw,rh) mxcifquadtree(0,0,100,100,4,20));\n" +
-                    "insert into RectangleTable select Id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
-                    "@name('s0') on SupportSpatialAABB as aabb select pt.Id as c0 from RectangleTable as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(X, Y, Width, Height));\n";
+                    "insert into RectangleTable select Id as id, X as rx, Y as ry, Width as rw, Height as rh from SupportSpatialEventRectangle;\n" +
+                    "@name('s0') on SupportSpatialAABB as aabb select pt.id as c0 from RectangleTable as pt where rectangle(rx,ry,rw,rh).intersects(rectangle(X, Y, Width, Height));\n";
                 env.CompileDeploy(epl, path).AddListener("s0");
 
                 SendEventRectangle(env, "P1", 80, 80, 1, 1);
@@ -498,7 +494,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.Milestone(0);
 
                 AssertRectanglesManyRow(env, BOXES, null, null, "P5", "P1,P2,P3,P4", "P5");
-                env.CompileExecuteFAFNoResult("delete from RectangleTable where Id = 'P4'", path);
+                env.CompileExecuteFAFNoResult("delete from RectangleTable where id = 'P4'", path);
                 AssertRectanglesManyRow(env, BOXES, null, null, "P5", "P1,P2,P3", "P5");
 
                 env.Milestone(1);

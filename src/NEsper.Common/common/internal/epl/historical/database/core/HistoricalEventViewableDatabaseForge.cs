@@ -29,10 +29,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
 {
     public class HistoricalEventViewableDatabaseForge : HistoricalEventViewableForgeBase
     {
-        private readonly string databaseName;
-        private readonly string[] inputParameters;
-        private readonly string preparedStatementText;
-        private readonly IDictionary<string, DBOutputTypeDesc> outputTypes;
+        private readonly string _databaseName;
+        private readonly string[] _inputParameters;
+        private readonly string _preparedStatementText;
+        private readonly IDictionary<string, DBOutputTypeDesc> _outputTypes;
 
         public HistoricalEventViewableDatabaseForge(
             int streamNum,
@@ -42,10 +42,10 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             string preparedStatementText,
             IDictionary<string, DBOutputTypeDesc> outputTypes) : base(streamNum, eventType)
         {
-            this.databaseName = databaseName;
-            this.inputParameters = inputParameters;
-            this.preparedStatementText = preparedStatementText;
-            this.outputTypes = outputTypes;
+            _databaseName = databaseName;
+            _inputParameters = inputParameters;
+            _preparedStatementText = preparedStatementText;
+            _outputTypes = outputTypes;
         }
 
         public override IList<StmtClassForgeableFactory> Validate(
@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             var validationContext = new ExprValidationContextBuilder(typeService, rawInfo, services)
                 .WithAllowBindingConsumption(true)
                 .Build();
-            var inputParamNodes = new ExprNode[inputParameters.Length];
-            foreach (var inputParam in inputParameters) {
+            var inputParamNodes = new ExprNode[_inputParameters.Length];
+            foreach (var inputParam in _inputParameters) {
                 var raw = FindSQLExpressionNode(StreamNum, count, sqlParameters);
                 if (raw == null) {
                     throw new ExprValidationException(
@@ -112,9 +112,9 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
             CodegenClassScope classScope)
         {
             method.Block
-                .SetProperty(@ref, "DatabaseName", Constant(databaseName))
-                .SetProperty(@ref, "InputParameters", Constant(inputParameters))
-                .SetProperty(@ref, "PreparedStatementText", Constant(preparedStatementText))
+                .SetProperty(@ref, "DatabaseName", Constant(_databaseName))
+                .SetProperty(@ref, "InputParameters", Constant(_inputParameters))
+                .SetProperty(@ref, "PreparedStatementText", Constant(_preparedStatementText))
                 .SetProperty(@ref, "OutputTypes", MakeOutputTypes(method, symbols, classScope));
         }
 
@@ -128,8 +128,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.core
                 "types",
                 NewInstance(
                     typeof(Dictionary<string, DBOutputTypeDesc>),
-                    Constant(CollectionUtil.CapacityHashMap(outputTypes.Count))));
-            foreach (var entry in outputTypes) {
+                    Constant(CollectionUtil.CapacityHashMap(_outputTypes.Count))));
+            foreach (var entry in _outputTypes) {
                 method.Block.ExprDotMethod(Ref("types"), "Put", Constant(entry.Key), entry.Value.Make());
             }
 

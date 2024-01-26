@@ -155,11 +155,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             public void Run(RegressionEnvironment env)
             {
                 var eplCreateInlined =
-                    "@Name('clazz') @public create inlined_class \"\"\"\n" +
+                    "@name('clazz') @public create inlined_class \"\"\"\n" +
                     " namespace %NAMESPACE% {\n" +
-                    "   [" +
-                    typeof(ExtensionSingleRowFunctionAttribute).FullName +
-                    "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
+                    "   [" + typeof(ExtensionSingleRowFunctionAttribute).FullName + "(Name=\"multiply\", MethodName=\"Multiply\")]\n" +
                     "   public class MultiplyHelper {\n" +
                     "     public static int Multiply(int a, int b) {\n" +
                     "        %BEHAVIOR%\n" +

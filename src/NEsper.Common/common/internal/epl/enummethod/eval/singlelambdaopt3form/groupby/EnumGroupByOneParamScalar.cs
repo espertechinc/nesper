@@ -73,14 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public Type KeyType => InnerExpression.EvaluationType ?? typeof(object);
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return typeof(IDictionary<,>).MakeGenericType(KeyType, inputCollectionType);
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, desiredReturnType);
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, inputCollectionType), "Instance");
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, desiredReturnType), "Instance");
         }
 
         public override void InitBlock(
@@ -88,9 +88,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
-            var valType = inputCollectionType;
+            var valType = desiredReturnType;
             var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
             var mapType = typeof(LinkedHashMap<,>).MakeGenericType(KeyType, valType);
 
@@ -102,9 +102,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
-            var valType = inputCollectionType;
+            var valType = desiredReturnType;
             var componentType = valType.GetComponentType();
             var listType = typeof(List<>).MakeGenericType(componentType);
 

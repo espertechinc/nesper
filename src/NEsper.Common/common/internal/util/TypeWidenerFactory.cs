@@ -84,6 +84,17 @@ namespace com.espertech.esper.common.@internal.util
             TypeWidenerCustomizer customizer,
             string statementName)
         {
+            // if the columnType can be assigned directly to the writable property type
+            // then we do not need to do any widening.
+            if ((columnType != null) &&
+                (columnType.IsAssignmentCompatible(writeablePropertyType))) {
+                if (writeablePropertyType.IsTypeNumeric()) {
+                    return new TypeWidenerBoxedNumeric(
+                        columnType,
+                        SimpleNumberCoercerFactory.GetCoercer(columnType, writeablePropertyType));
+                }
+            }
+            
             var columnTypeBoxed = columnType.GetBoxedType();
             var targetTypeBoxed = writeablePropertyType.GetBoxedType();
 
@@ -174,6 +185,7 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (writeablePropertyType.IsTypeNumeric()) {
                     return new TypeWidenerBoxedNumeric(
+                        columnTypeBoxed,
                         SimpleNumberCoercerFactory.GetCoercer(columnTypeBoxed, targetTypeBoxed));
                 }
             }

@@ -32,27 +32,27 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
     /// </summary>
     public class StatementMetricArray
     {
-        private readonly string runtimeURI;
+        private readonly string _runtimeUri;
 
         // Lock
         //  Read lock applies to each current transaction on a StatementMetric instance
         //  Write lock applies to flush and to add a new statement
-        private readonly ManagedReadWriteLock rwLock;
-        private readonly string name;
+        private readonly ManagedReadWriteLock _rwLock;
+        private readonly string _name;
 
-        private readonly bool isReportInactive;
+        private readonly bool _isReportInactive;
 
         // Active statements
-        private DeploymentIdNamePair[] statementNames;
+        private DeploymentIdNamePair[] _statementNames;
 
         // Count of active statements
-        private int currentLastElement;
+        private int _currentLastElement;
 
         // Flushed metric per statement
-        private volatile StatementMetric[] metrics;
+        private volatile StatementMetric[] _metrics;
 
         // Statements ids to remove with the next flush
-        private ISet<DeploymentIdNamePair> removedStatementNames;
+        private ISet<DeploymentIdNamePair> _removedStatementNames;
 
         /// <summary>
         /// Ctor.
@@ -68,15 +68,15 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             bool isReportInactive,
             IReaderWriterLockManager rwLockManager)
         {
-            this.runtimeURI = runtimeURI;
-            this.isReportInactive = isReportInactive;
-            this.name = name;
-            metrics = new StatementMetric[initialSize];
-            statementNames = new DeploymentIdNamePair[initialSize];
-            currentLastElement = -1;
+            _runtimeUri = runtimeURI;
+            _isReportInactive = isReportInactive;
+            _name = name;
+            _metrics = new StatementMetric[initialSize];
+            _statementNames = new DeploymentIdNamePair[initialSize];
+            _currentLastElement = -1;
             // rwLock = rwLockManager.CreateLock(GetType());
-            rwLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
-            removedStatementNames = new HashSet<DeploymentIdNamePair>();
+            _rwLock = new ManagedReadWriteLock("StatementMetricArray-" + name, true);
+            _removedStatementNames = new HashSet<DeploymentIdNamePair>();
         }
 
         /// <summary>
@@ -86,21 +86,21 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <param name = "statement">to remove</param>
         public void RemoveStatement(DeploymentIdNamePair statement)
         {
-            rwLock.AcquireWriteLock();
+            _rwLock.AcquireWriteLock();
             try {
-                removedStatementNames.Add(statement);
-                if (removedStatementNames.Count > 1000) {
-                    for (var i = 0; i <= currentLastElement; i++) {
-                        if (removedStatementNames.Contains(statementNames[i])) {
-                            statementNames[i] = null;
+                _removedStatementNames.Add(statement);
+                if (_removedStatementNames.Count > 1000) {
+                    for (var i = 0; i <= _currentLastElement; i++) {
+                        if (_removedStatementNames.Contains(_statementNames[i])) {
+                            _statementNames[i] = null;
                         }
                     }
 
-                    removedStatementNames.Clear();
+                    _removedStatementNames.Clear();
                 }
             }
             finally {
-                rwLock.ReleaseWriteLock();
+                _rwLock.ReleaseWriteLock();
             }
         }
 
@@ -112,21 +112,21 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>index added to</returns>
         public int AddStatementGetIndex(DeploymentIdNamePair statement)
         {
-            rwLock.AcquireWriteLock();
+            _rwLock.AcquireWriteLock();
             try {
                 // see if there is room
-                if (currentLastElement + 1 < metrics.Length) {
-                    currentLastElement++;
-                    statementNames[currentLastElement] = statement;
-                    return currentLastElement;
+                if (_currentLastElement + 1 < _metrics.Length) {
+                    _currentLastElement++;
+                    _statementNames[_currentLastElement] = statement;
+                    return _currentLastElement;
                 }
 
                 // no room, try to use an existing slot of a removed statement
-                for (var i = 0; i < statementNames.Length; i++) {
-                    if (statementNames[i] == null) {
-                        statementNames[i] = statement;
-                        if (i + 1 > currentLastElement) {
-                            currentLastElement = i;
+                for (var i = 0; i < _statementNames.Length; i++) {
+                    if (_statementNames[i] == null) {
+                        _statementNames[i] = statement;
+                        if (i + 1 > _currentLastElement) {
+                            _currentLastElement = i;
                         }
 
                         return i;
@@ -134,19 +134,19 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
                 }
 
                 // still no room, expand storage by 50%
-                var newSize = (int)(metrics.Length * 1.5);
+                var newSize = (int)(_metrics.Length * 1.5);
                 var newStatementNames = new DeploymentIdNamePair[newSize];
                 var newMetrics = new StatementMetric[newSize];
-                Array.Copy(statementNames, 0, newStatementNames, 0, statementNames.Length);
-                Array.Copy(metrics, 0, newMetrics, 0, metrics.Length);
-                statementNames = newStatementNames;
-                metrics = newMetrics;
-                currentLastElement++;
-                statementNames[currentLastElement] = statement;
-                return currentLastElement;
+                Array.Copy(_statementNames, 0, newStatementNames, 0, _statementNames.Length);
+                Array.Copy(_metrics, 0, newMetrics, 0, _metrics.Length);
+                _statementNames = newStatementNames;
+                _metrics = newMetrics;
+                _currentLastElement++;
+                _statementNames[_currentLastElement] = statement;
+                return _currentLastElement;
             }
             finally {
-                rwLock.ReleaseWriteLock();
+                _rwLock.ReleaseWriteLock();
             }
         }
 
@@ -158,22 +158,22 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metrics</returns>
         public StatementMetric[] FlushMetrics()
         {
-            rwLock.AcquireWriteLock();
+            _rwLock.AcquireWriteLock();
             try {
-                var isEmpty = currentLastElement == -1;
+                var isEmpty = _currentLastElement == -1;
                 Housekeeping();
                 if (isEmpty) {
                     return null; // no copies made if empty collection
                 }
 
                 // perform flush
-                var newMetrics = new StatementMetric[metrics.Length];
-                var oldMetrics = metrics;
-                metrics = newMetrics;
+                var newMetrics = new StatementMetric[_metrics.Length];
+                var oldMetrics = _metrics;
+                _metrics = newMetrics;
                 return oldMetrics;
             }
             finally {
-                rwLock.ReleaseWriteLock();
+                _rwLock.ReleaseWriteLock();
             }
         }
 
@@ -184,13 +184,13 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>metric to modify under read lock</returns>
         public StatementMetric GetAddMetric(int index)
         {
-            var metric = metrics[index];
+            var metric = _metrics[index];
             if (metric == null) {
                 metric = new StatementMetric(
-                    runtimeURI,
-                    statementNames[index].DeploymentId,
-                    statementNames[index].Name);
-                metrics[index] = metric;
+                    _runtimeUri,
+                    _statementNames[index].DeploymentId,
+                    _statementNames[index].Name);
+                _metrics[index] = metric;
             }
 
             return metric;
@@ -203,58 +203,58 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         /// <returns>known maximum size</returns>
         public int SizeLastElement()
         {
-            return currentLastElement + 1;
+            return _currentLastElement + 1;
         }
 
         public void Enumerate(Consumer<EPMetricsStatement> consumer)
         {
-            rwLock.AcquireReadLock();
+            _rwLock.AcquireReadLock();
             try {
                 Housekeeping();
-                foreach (var metric in metrics) {
+                foreach (var metric in _metrics) {
                     if (metric != null) {
                         consumer.Invoke(new EPMetricsStatement(metric));
                     }
                 }
             }
             finally {
-                rwLock.ReleaseReadLock();
+                _rwLock.ReleaseReadLock();
             }
         }
 
         private void Housekeeping()
         {
             // first fill in the blanks if there are no reports and we report inactive statements
-            if (isReportInactive) {
-                for (var i = 0; i <= currentLastElement; i++) {
-                    if (statementNames[i] != null) {
-                        metrics[i] = new StatementMetric(
-                            runtimeURI,
-                            statementNames[i].DeploymentId,
-                            statementNames[i].Name);
+            if (_isReportInactive) {
+                for (var i = 0; i <= _currentLastElement; i++) {
+                    if (_statementNames[i] != null) {
+                        _metrics[i] = new StatementMetric(
+                            _runtimeUri,
+                            _statementNames[i].DeploymentId,
+                            _statementNames[i].Name);
                     }
                 }
             }
 
             // remove statement ids that disappeared during the interval
-            if (currentLastElement > -1 && !removedStatementNames.IsEmpty()) {
-                for (var i = 0; i <= currentLastElement; i++) {
-                    if (removedStatementNames.Contains(statementNames[i])) {
-                        statementNames[i] = null;
+            if (_currentLastElement > -1 && !_removedStatementNames.IsEmpty()) {
+                for (var i = 0; i <= _currentLastElement; i++) {
+                    if (_removedStatementNames.Contains(_statementNames[i])) {
+                        _statementNames[i] = null;
                     }
                 }
             }
 
             // adjust last used element
-            while (currentLastElement != -1 && statementNames[currentLastElement] == null) {
-                currentLastElement--;
+            while (_currentLastElement != -1 && _statementNames[_currentLastElement] == null) {
+                _currentLastElement--;
             }
         }
 
-        public bool IsReportInactive => isReportInactive;
+        public bool IsReportInactive => _isReportInactive;
 
-        public ManagedReadWriteLock RWLock => rwLock;
+        public ManagedReadWriteLock RWLock => _rwLock;
 
-        public string Name => name;
+        public string Name => _name;
     }
 } // end of namespace

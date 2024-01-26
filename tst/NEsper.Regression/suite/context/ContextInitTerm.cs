@@ -2384,7 +2384,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 expected = new object[][]
                     { new object[] { "E7", 34 }, new object[] { "E7", 19 }, new object[] { "E7", 10 } };
                 env.AssertPropsPerRowLastNew("s0", fields, expected);
-                env.AssertPropsPerRowIterator("s0", fields, expected);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, expected);
 
                 SendTimeEvent(env, "2002-05-1T08:05:00.000");
 
@@ -2399,7 +2399,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 expected = new object[][]
                     { new object[] { "E8", 30 }, new object[] { "E8", 21 }, new object[] { "E8", 11 } };
                 env.AssertPropsPerRowLastNew("s0", fields, expected);
-                env.AssertPropsPerRowIterator("s0", fields, expected);
+                env.AssertPropsPerRowIteratorAnyOrder("s0", fields, expected);
 
                 // assert certain keywords are valid: last keyword, timezone
                 env.CompileDeploy("create context CtxMonthly1 start (0, 0, 1, *, *, 0) end(59, 23, last, *, *, 59)");

@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
             var config = new ConfigurationCommonDBRef();
             config.SetDatabaseDriver(SupportDatabaseService.GetInstance(container).DriverConnectionFactoryNative);
             config.ConnectionAutoCommit = true;
-            config.ConnectionCatalog = "test";
+            config.ConnectionCatalog = "esper";
             config.ConnectionTransactionIsolation = IsolationLevel.Serializable;
             config.ConnectionReadOnly = true;
 
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
                 () => {
                     var properties = supportDatabaseService.DefaultProperties;
                     var config = supportDatabaseService.CreateDefaultConfig(properties);
-                    config.ConnectionCatalog = "test";
+                    config.ConnectionCatalog = "esper";
                     config.ConnectionAutoCommit = false; // not supported yet
                     config.ConnectionTransactionIsolation = IsolationLevel.Unspecified;
                     return new DatabaseDriverConnFactory(

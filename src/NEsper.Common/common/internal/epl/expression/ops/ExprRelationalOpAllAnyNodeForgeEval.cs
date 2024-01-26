@@ -14,7 +14,6 @@ using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
-using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
@@ -323,7 +322,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                     Ref("valueLeft"),
                                                     valueLeftType,
                                                     Ref("item"),
-                                                    typeof(object))))
+                                                    typeof(object),
+                                                    methodNode,
+                                                    codegenClassScope)))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }
                             }
@@ -356,7 +357,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                     Ref("valueLeft"),
                                                     valueLeftType,
                                                     Ref("item"),
-                                                    typeof(object))))
+                                                    typeof(object),
+                                                    methodNode,
+                                                    codegenClassScope)))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }
                             }
@@ -386,7 +389,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                     Ref("valueLeft"),
                                                     valueLeftType,
                                                     Cast(typeof(object), Ref("item")),
-                                                    typeof(object))))
+                                                    typeof(object),
+                                                    methodNode, 
+                                                    codegenClassScope                                                    
+                                                    )))
                                         .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                                 }
                             }
@@ -411,7 +417,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                         block.IfCondition(
                                 NotOptional(
                                     isAll,
-                                    forge.Computer.Codegen(Ref("valueLeft"), valueLeftType, Ref(refname), reftype)))
+                                    forge.Computer.Codegen(Ref("valueLeft"), valueLeftType, Ref(refname), reftype, methodNode, codegenClassScope)))
                             .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                     }
                     else {
@@ -430,7 +436,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                             Ref("valueLeft"),
                                             valueLeftType,
                                             Ref(refname),
-                                            typeof(object))))
+                                            typeof(object),
+                                            methodNode, 
+                                            codegenClassScope)))
                                 .BlockReturn(isAll ? ConstantFalse() : ConstantTrue());
                         }
                     }

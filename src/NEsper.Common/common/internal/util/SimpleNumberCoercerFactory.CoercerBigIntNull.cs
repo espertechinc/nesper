@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceBoxedBigIntCodegen(
                 CodegenExpression expr,
-                Type type)
+                Type type, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return expr;
             }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, CodegenMethodScope codegenMethodScope, CodegenClassScope codegenClassScope)
             {
                 return value;
             }

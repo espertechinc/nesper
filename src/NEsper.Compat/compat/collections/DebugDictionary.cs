@@ -6,16 +6,16 @@ using System.Threading;
 
 namespace com.espertech.esper.compat.collections
 {
-    public class DebugDictionary<K,V> : IDictionary<K,V>
+    public class DebugDictionary<TK,TV> : IDictionary<TK,TV>
     {
         private readonly Guid _id;
-        private readonly IDictionary<K, V> _subDictionary;
+        private readonly IDictionary<TK, TV> _subDictionary;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="DebugDictionary{K, V}"/> class.
+        /// Initializes a new instance of the <see cref="DebugDictionary{TK, TV}"/> class.
         /// </summary>
         /// <param name="subDictionary">The sub dictionary.</param>
-        public DebugDictionary(IDictionary<K, V> subDictionary)
+        public DebugDictionary(IDictionary<TK, TV> subDictionary)
         {
             _id = Guid.NewGuid();
             _subDictionary = subDictionary;
@@ -38,7 +38,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// A <see cref="T:System.Collections.Generic.IEnumerator`1" /> that can be used to iterate through the collection.
         /// </returns>
-        public IEnumerator<KeyValuePair<K, V>> GetEnumerator()
+        public IEnumerator<KeyValuePair<TK, TV>> GetEnumerator()
         {
             return _subDictionary.GetEnumerator();
         }
@@ -47,7 +47,7 @@ namespace com.espertech.esper.compat.collections
         /// Adds an item to the <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </summary>
         /// <param name="item">The object to add to the <see cref="T:System.Collections.Generic.ICollection`1" />.</param>
-        public void Add(KeyValuePair<K, V> item)
+        public void Add(KeyValuePair<TK, TV> item)
         {
             Debug.WriteLine(" ~~> A1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
             _subDictionary.Add(item);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if <paramref name="item" /> is found in the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false.
         /// </returns>
-        public bool Contains(KeyValuePair<K, V> item)
+        public bool Contains(KeyValuePair<TK, TV> item)
         {
             return _subDictionary.Contains(item);
         }
@@ -79,7 +79,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="array">The array.</param>
         /// <param name="arrayIndex">Index of the array.</param>
-        public void CopyTo(KeyValuePair<K, V>[] array, int arrayIndex)
+        public void CopyTo(KeyValuePair<TK, TV>[] array, int arrayIndex)
         {
             _subDictionary.CopyTo(array, arrayIndex);
         }
@@ -91,7 +91,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if <paramref name="item" /> was successfully removed from the <see cref="T:System.Collections.Generic.ICollection`1" />; otherwise, false. This method also returns false if <paramref name="item" /> is not found in the original <see cref="T:System.Collections.Generic.ICollection`1" />.
         /// </returns>
-        public bool Remove(KeyValuePair<K, V> item)
+        public bool Remove(KeyValuePair<TK, TV> item)
         {
             Debug.WriteLine(" ~~> R1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, item.Key.GetHashCode());
             return _subDictionary.Remove(item);
@@ -114,7 +114,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the key; otherwise, false.
         /// </returns>
-        public bool ContainsKey(K key)
+        public bool ContainsKey(TK key)
         {
             return _subDictionary.ContainsKey(key);
         }
@@ -124,7 +124,7 @@ namespace com.espertech.esper.compat.collections
         /// </summary>
         /// <param name="key">The object to use as the key of the element to add.</param>
         /// <param name="value">The object to use as the value of the element to add.</param>
-        public void Add(K key, V value)
+        public void Add(TK key, TV value)
         {
             Debug.WriteLine(" ~~> A2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             _subDictionary.Add(key, value);
@@ -137,7 +137,7 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the element is successfully removed; otherwise, false.  This method also returns false if <paramref name="key" /> was not found in the original <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </returns>
-        public bool Remove(K key)
+        public bool Remove(TK key)
         {
             Debug.WriteLine(" ~~> R2: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             return _subDictionary.Remove(key);
@@ -151,13 +151,13 @@ namespace com.espertech.esper.compat.collections
         /// <returns>
         /// true if the object that : <see cref="T:System.Collections.Generic.IDictionary`2" /> contains an element with the specified key; otherwise, false.
         /// </returns>
-        public bool TryGetValue(K key, out V value)
+        public bool TryGetValue(TK key, out TV value)
         {
             Debug.WriteLine(" ~~> G1: {0} | {1} | {2}", _id, Thread.CurrentThread.ManagedThreadId, key.GetHashCode());
             return _subDictionary.TryGetValue(key, out value);
         }
 
-        public V this[K key]
+        public TV this[TK key]
         {
             get
             {
@@ -174,11 +174,11 @@ namespace com.espertech.esper.compat.collections
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the values in the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<V> Values => _subDictionary.Values;
+        public ICollection<TV> Values => _subDictionary.Values;
 
         /// <summary>
         /// Gets an <see cref="T:System.Collections.Generic.ICollection`1" /> containing the keys of the <see cref="T:System.Collections.Generic.IDictionary`2" />.
         /// </summary>
-        public ICollection<K> Keys => _subDictionary.Keys;
+        public ICollection<TK> Keys => _subDictionary.Keys;
     }
 }

@@ -628,13 +628,13 @@ namespace com.espertech.esper.common.@internal.util
             return false;
         }
 
-        public static IDictionary<K, V> TwoEntryMap<K, V>(
-            K k1,
-            V v1,
-            K k2,
-            V v2)
+        public static IDictionary<TK, TV> TwoEntryMap<TK, TV>(
+            TK k1,
+            TV v1,
+            TK k2,
+            TV v2)
         {
-            IDictionary<K, V> map = new LinkedHashMap<K, V>();
+            IDictionary<TK, TV> map = new LinkedHashMap<TK, TV>();
             map.Put(k1, v1);
             map.Put(k2, v2);
             return map;

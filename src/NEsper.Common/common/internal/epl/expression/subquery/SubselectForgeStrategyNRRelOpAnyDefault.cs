@@ -89,7 +89,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                             symbols.GetAddLeftResult(method),
                             symbols.LeftResultType,
                             Ref("valueRight"),
-                            valueRightType))
+                            valueRightType,
+                            method,
+                            classScope))
                     .BlockReturn(ConstantTrue());
             }
 

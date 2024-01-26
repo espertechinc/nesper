@@ -22,12 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.plugin
 {
     public class AggregationForgeFactoryAccessPlugin : AggregationForgeFactoryAccessBase
     {
-        private readonly long _id = DebugId<AggregationForgeFactoryAccessPlugin>.NewId();
         private readonly ExprPlugInMultiFunctionAggNode _parent;
         private readonly AggregationMultiFunctionHandler _handler;
         private EPChainableType _returnType;
-
-        public long Id => _id;
 
         public AggregationForgeFactoryAccessPlugin(
             ExprPlugInMultiFunctionAggNode parent,

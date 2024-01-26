@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
     /// </summary>
     public class SubselectForgeNREqualsAllAnyWGroupBy : SubselectForgeNREqualsBase
     {
-        private readonly ExprForge havingEval;
-        private readonly bool isAll;
+        private readonly ExprForge _havingEval;
+        private readonly bool _isAll;
 
         public SubselectForgeNREqualsAllAnyWGroupBy(
             ExprSubselectNode subselect,
@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge havingEval,
             bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
-            this.havingEval = havingEval;
-            this.isAll = isAll;
+            this._havingEval = havingEval;
+            this._isAll = isAll;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(
@@ -82,11 +82,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         Ref("cpid"),
                         ConstantNull());
 
-                if (havingEval != null) {
+                if (_havingEval != null) {
                     CodegenLegoBooleanExpression.CodegenContinueIfNullOrNotPass(
                         forEach,
-                        havingEval.EvaluationType,
-                        havingEval.EvaluateCodegen(havingEval.EvaluationType, method, symbols, classScope));
+                        _havingEval.EvaluationType,
+                        _havingEval.EvaluateCodegen(_havingEval.EvaluationType, method, symbols, classScope));
                 }
 
                 Type valueRightType;
@@ -115,15 +115,15 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                     else {
                         ifRightNotNull.DeclareVar<object>(
                                 "left",
-                                coercer.CoerceCodegen(left, symbols.LeftResultType))
+                                coercer.CoerceCodegen(left, symbols.LeftResultType, method, classScope))
                             .DeclareVar<object>(
                                 "right",
-                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType))
+                                coercer.CoerceCodegen(Ref("valueRight"), valueRightType, method, classScope))
                             .DeclareVar<bool>("eq", ExprDotMethod(Ref("left"), "Equals", Ref("right")));
                     }
 
                     if (isNot) {
-                        if (isAll) {
+                        if (_isAll) {
                             ifRightNotNull.IfCondition(Ref("eq")).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -131,7 +131,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
                         }
                     }
                     else {
-                        if (isAll) {
+                        if (_isAll) {
                             ifRightNotNull.IfCondition(Not(Ref("eq"))).BlockReturn(ConstantFalse());
                         }
                         else {
@@ -144,7 +144,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             method.Block
                 .IfCondition(Ref("hasNullRow"))
                 .BlockReturn(ConstantNull())
-                .MethodReturn(isAll ? ConstantTrue() : ConstantFalse());
+                .MethodReturn(_isAll ? ConstantTrue() : ConstantFalse());
 
             return LocalMethod(method);
         }

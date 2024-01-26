@@ -26,13 +26,11 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLFromClauseMethodCacheExpiry()
         {
             using RegressionSession session = RegressionRunner.Session(Container);
-
-            ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
+            var methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.SetExpiryTimeCache(1, 10);
             session.Configuration.Common.AddMethodRef(typeof(SupportStaticMethodInvocations), methodConfig);
             session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
-
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheExpiry());
         }
 
@@ -40,70 +38,148 @@ namespace com.espertech.esper.regressionrun.suite.epl
         public void TestEPLFromClauseMethodCacheLRU()
         {
             using RegressionSession session = RegressionRunner.Session(Container);
-
-            ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
+            var methodConfig = new ConfigurationCommonMethodRef();
             methodConfig.LRUCache = (3);
             session.Configuration.Common.AddMethodRef(typeof(SupportStaticMethodInvocations), methodConfig);
             session.Configuration.Common.AddImportNamespace(typeof(SupportStaticMethodInvocations));
             session.Configuration.Common.AddEventType(typeof(SupportBean));
-
             RegressionRunner.Run(session, new EPLFromClauseMethodCacheLRU());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLFromClauseMethodJoinPerformance()
-        {
-            using RegressionSession session = RegressionRunner.Session(Container);
+        /// <summary>
+        /// Auto-test(s): EPLFromClauseMethodJoinPerformance
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLFromClauseMethodJoinPerformance.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEPLFromClauseMethodJoinPerformance : AbstractTestBase {
+            public TestEPLFromClauseMethodJoinPerformance() : base(Configure)
+            {
+            }
 
-            ConfigurationCommonMethodRef configMethod = new ConfigurationCommonMethodRef();
-            configMethod.LRUCache = (10);
-            session.Configuration.Common.AddMethodRef(typeof(SupportJoinMethods), configMethod);
-            session.Configuration.Common.AddEventType(typeof(SupportBeanInt));
-            session.Configuration.Common.AddImportType(typeof(SupportJoinMethods));
+            static void Configure(Configuration configuration)
+            {
+                var configMethod = new ConfigurationCommonMethodRef();
+                configMethod.LRUCache = (10);
+                configuration.Common.AddMethodRef(typeof(SupportJoinMethods), configMethod);
+                configuration.Common.AddEventType(typeof(SupportBeanInt));
+                configuration.Common.AddImportType(typeof(SupportJoinMethods));
+            }
 
-            RegressionRunner.Run(session, EPLFromClauseMethodJoinPerformance.Executions());
+            [Test, RunInApplicationDomain]
+            public void With1Stream2HistInnerJoinPerformance() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodJoinPerformance.With1Stream2HistInnerJoinPerformance());
+
+            [Test, RunInApplicationDomain]
+            public void With1Stream2HistOuterJoinPerformance() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodJoinPerformance.With1Stream2HistOuterJoinPerformance());
+
+            [Test, RunInApplicationDomain]
+            public void With2Stream1HistTwoSidedEntryIdenticalIndex() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodJoinPerformance.With2Stream1HistTwoSidedEntryIdenticalIndex());
+
+            [Test, RunInApplicationDomain]
+            public void With2Stream1HistTwoSidedEntryMixedIndex() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodJoinPerformance.With2Stream1HistTwoSidedEntryMixedIndex());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLFromClauseMethodVariable()
-        {
-            using RegressionSession session = RegressionRunner.Session(Container);
+        /// <summary>
+        /// Auto-test(s): EPLFromClauseMethodVariable
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLFromClauseMethodVariable.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEPLFromClauseMethodVariable : AbstractTestBase {
+            public TestEPLFromClauseMethodVariable() : base(Configure)
+            {
+            }
 
-            Configuration configuration = session.Configuration;
-            configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodVariable.MyStaticService), new ConfigurationCommonMethodRef());
+            static void Configure(Configuration configuration)
+            {
+                configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodVariable.MyStaticService),
+                    new ConfigurationCommonMethodRef());
+                configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyStaticService));
+                configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariableFactory));
+                configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariable));
+                ConfigurationCommon common = configuration.Common;
+                common.AddVariable("MyConstantServiceVariable",
+                    typeof(EPLFromClauseMethodVariable.MyConstantServiceVariable),
+                    new EPLFromClauseMethodVariable.MyConstantServiceVariable());
+                common.AddVariable("MyNonConstantServiceVariable",
+                    typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariable),
+                    new EPLFromClauseMethodVariable.MyNonConstantServiceVariable("postfix"));
+                common.AddVariable("MyNullMap", typeof(EPLFromClauseMethodVariable.MyMethodHandlerMap), null);
+                common.AddVariable("MyMethodHandlerMap", typeof(EPLFromClauseMethodVariable.MyMethodHandlerMap),
+                    new EPLFromClauseMethodVariable.MyMethodHandlerMap("a", "b"));
+                common.AddVariable("MyMethodHandlerOA", typeof(EPLFromClauseMethodVariable.MyMethodHandlerOA),
+                    new EPLFromClauseMethodVariable.MyMethodHandlerOA("a", "b"));
+                configuration.Common.Logging.IsEnableQueryPlan = true;
+                configuration.Common.AddEventType(typeof(SupportBean));
+                configuration.Common.AddEventType(typeof(SupportBean_S0));
+                configuration.Common.AddEventType(typeof(SupportBean_S1));
+                configuration.Common.AddEventType(typeof(SupportBean_S2));
+            }
 
-            configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyStaticService));
-            configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariableFactory));
-            configuration.Common.AddImportType(typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariable));
+            [Test, RunInApplicationDomain]
+            public void WithConstantVariable() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodVariable.WithConstantVariable());
 
-            ConfigurationCommon common = configuration.Common;
-            common.AddVariable("MyConstantServiceVariable", typeof(EPLFromClauseMethodVariable.MyConstantServiceVariable), new EPLFromClauseMethodVariable.MyConstantServiceVariable());
-            common.AddVariable("MyNonConstantServiceVariable", typeof(EPLFromClauseMethodVariable.MyNonConstantServiceVariable), new EPLFromClauseMethodVariable.MyNonConstantServiceVariable("postfix"));
-            common.AddVariable("MyNullMap", typeof(EPLFromClauseMethodVariable.MyMethodHandlerMap), null);
-            common.AddVariable("MyMethodHandlerMap", typeof(EPLFromClauseMethodVariable.MyMethodHandlerMap), new EPLFromClauseMethodVariable.MyMethodHandlerMap("a", "b"));
-            common.AddVariable("MyMethodHandlerOA", typeof(EPLFromClauseMethodVariable.MyMethodHandlerOA), new EPLFromClauseMethodVariable.MyMethodHandlerOA("a", "b"));
+            [Test, RunInApplicationDomain]
+            public void WithNonConstantVariable() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodVariable.WithNonConstantVariable());
 
-            configuration.Common.Logging.IsEnableQueryPlan = true;
-            configuration.Common.AddEventType(typeof(SupportBean));
-            configuration.Common.AddEventType(typeof(SupportBean_S0));
-            configuration.Common.AddEventType(typeof(SupportBean_S1));
-            configuration.Common.AddEventType(typeof(SupportBean_S2));
+            [Test, RunInApplicationDomain]
+            public void WithContextVariable() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodVariable.WithContextVariable());
 
-            RegressionRunner.Run(session, EPLFromClauseMethodVariable.Executions());
+            [Test, RunInApplicationDomain]
+            public void WithVariableMapAndOA() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodVariable.WithVariableMapAndOA());
+
+            [Test, RunInApplicationDomain]
+            public void WithVariableInvalid() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodVariable.WithVariableInvalid());
         }
 
-        [Test, RunInApplicationDomain]
-        public void TestEPLFromClauseMethodMultikeyWArray()
-        {
-            using RegressionSession session = RegressionRunner.Session(Container);
+        /// <summary>
+        /// Auto-test(s): EPLFromClauseMethodMultikeyWArray
+        /// <code>
+        /// RegressionRunner.Run(_session, EPLFromClauseMethodMultikeyWArray.Executions());
+        /// </code>
+        /// </summary>
+        public class TestEPLFromClauseMethodMultikeyWArray : AbstractTestBase {
+            public TestEPLFromClauseMethodMultikeyWArray() : base(Configure)
+            {
+            }
 
-            ConfigurationCommonMethodRef methodConfig = new ConfigurationCommonMethodRef();
-            methodConfig.SetExpiryTimeCache(1, 10);
-            session.Configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodMultikeyWArray.SupportJoinResultIsArray), methodConfig);
-            session.Configuration.Common.AddEventType<SupportEventWithManyArray>();
-            session.Configuration.Common.Logging.IsEnableQueryPlan = true;
+            static void Configure(Configuration configuration)
+            {
+                var methodConfig = new ConfigurationCommonMethodRef();
+                methodConfig.SetExpiryTimeCache(1, 10);
+                configuration.Common.AddMethodRef(typeof(EPLFromClauseMethodMultikeyWArray.SupportJoinResultIsArray), methodConfig);
+                configuration.Common.AddEventType<SupportEventWithManyArray>();
+                configuration.Common.Logging.IsEnableQueryPlan = true;
+            }
 
-            RegressionRunner.Run(session, EPLFromClauseMethodMultikeyWArray.Executions());
+            [Test, RunInApplicationDomain]
+            public void WithJoinArray() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodMultikeyWArray.WithJoinArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinTwoField() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodMultikeyWArray.WithJoinTwoField());
+
+            [Test, RunInApplicationDomain]
+            public void WithJoinComposite() =>
+                RegressionRunner.Run(_session, EPLFromClauseMethodMultikeyWArray.WithJoinComposite());
+
+            [Test, RunInApplicationDomain]
+            public void WithParameterizedByArray() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodMultikeyWArray.WithParameterizedByArray());
+
+            [Test, RunInApplicationDomain]
+            public void WithParameterizedByTwoField() => RegressionRunner.Run(_session,
+                EPLFromClauseMethodMultikeyWArray.WithParameterizedByTwoField());
         }
     }
 } // end of namespace

@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.util.serde;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -53,12 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.virtualdw
             string namedWindowName,
             object customConfigs)
         {
-            if (!clazz.IsImplementsInterface(typeof(VirtualDataWindowForge))) {
+            if (!TypeHelper.IsImplementsInterface(clazz, typeof(VirtualDataWindowForge))) {
                 throw new ViewProcessingException(
                     "Virtual data window forge class " +
-                    clazz.Name +
+                    clazz.CleanName() +
                     " does not implement the interface " +
-                    nameof(VirtualDataWindowForge));
+                    typeof(VirtualDataWindowForge).CleanName());
             }
 
             _forge = TypeHelper.Instantiate<VirtualDataWindowForge>(clazz);

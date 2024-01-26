@@ -921,7 +921,8 @@ namespace com.espertech.esper.regressionlib.framework
 			string fieldName,
 			object expected)
 		{
-			Assert.AreEqual(expected, Listener(statementName).AssertOneGetNewAndReset().Get(fieldName));
+			var eventBean = Listener(statementName).AssertOneGetNewAndReset();
+			Assert.AreEqual(expected, eventBean.Get(fieldName));
 		}
 
 		public void AssertEqualsOld(

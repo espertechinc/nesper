@@ -77,7 +77,8 @@ namespace com.espertech.esper.common.@internal.epl.script.core
                 return result;
             }
             catch (Exception e) {
-                var message = "Unexpected exception executing script '" + ScriptName + "': " + e.Message;
+                var context = scriptArgs.Context;
+                var message = $"Unexpected exception executing script '{ScriptName}' for statement '{context.StatementName}' : {e.Message}";
                 Log.Error(message, e);
                 throw new EPException(message, e);
             }

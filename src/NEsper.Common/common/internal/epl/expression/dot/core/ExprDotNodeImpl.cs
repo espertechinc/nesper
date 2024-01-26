@@ -985,6 +985,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                     throw new ExprValidationException(
                         "Mapped property named '" + propertyName + "' failed to obtain getter-object");
                 }
+                
+                if (propertyDesc.PropertyComponentType != null) {
+                    propertyType = propertyDesc.PropertyComponentType.GetBoxedType();
+                }
             }
             else {
                 if (!parameterForge.EvaluationType.IsTypeInteger()) {
@@ -1005,9 +1009,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
             
+#if WHY_IS_THIS
             if (propertyDesc.PropertyComponentType != null) {
                 propertyType = propertyDesc.PropertyComponentType.GetBoxedType();
             }
+#endif
 
             return new ExprDotNodeForgePropertyExpr(
                 this,

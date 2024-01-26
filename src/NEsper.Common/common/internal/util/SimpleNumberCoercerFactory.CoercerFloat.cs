@@ -34,10 +34,12 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
                 return valueType.CanBeNull() 
-                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
                     : CodegenFloat(value, valueType);
             }
 
@@ -47,20 +49,25 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return valueType != typeof(float) &&
-                       valueType != typeof(float?)
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
-                    : value;
+                // return valueType != typeof(float) &&
+                //        valueType != typeof(float?)
+                //     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedFloat")
+                //     : value;
 
-//                return CodegenCoerceMayNull(
-//                    typeof(float),
-//                    typeof(float?),
-//                    "AsFloat",
-//                    value,
-//                    valueTypeMustNumeric,
-//                    codegenMethodScope,
-//                    typeof(CoercerFloat),
-//                    codegenClassScope);
+                if (valueType == typeof(float) ||
+                    valueType == typeof(float?)) {
+                    return value;
+                }
+
+                return CodegenCoerceMayNull(
+                    typeof(float),
+                    typeof(float?),
+                    "AsFloat",
+                    value,
+                    valueType,
+                    codegenMethodScope,
+                    typeof(CoercerFloat),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenFloat(

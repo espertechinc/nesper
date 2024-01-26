@@ -305,7 +305,7 @@ namespace com.espertech.esper.common.client.configuration
             var dbDriver = DbDriverConnectionHelper.ResolveDriver(container, dbDef);
 
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dbDriver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
+            Assert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dbDriver.ConnectionString);
             Assert.AreEqual(ConnectionLifecycleEnum.POOLED, configDBRef.ConnectionLifecycleEnum);
             Assert.IsNull(configDBRef.ConnectionSettings.AutoCommit);
             Assert.IsNull(configDBRef.ConnectionSettings.Catalog);
@@ -325,11 +325,11 @@ namespace com.espertech.esper.common.client.configuration
             var dmDef = (DriverConnectionFactoryDesc) configDBRef.ConnectionFactoryDesc;
             var dmDriver = DbDriverConnectionHelper.ResolveDriver(container, dmDef);
             Assert.AreEqual("com.espertech.esper.epl.db.drivers.DbDriverPgSQL", dmDriver.GetType().FullName);
-            Assert.AreEqual("Host=nesper-pgsql-integ.local;Database=test;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
+            Assert.AreEqual("Host=localhost;Database=esper;Username=esper;Password=3sp3rP@ssw0rd;", dmDriver.ConnectionString);
 
             Assert.AreEqual(ConnectionLifecycleEnum.RETAIN, configDBRef.ConnectionLifecycleEnum);
             Assert.AreEqual(false, configDBRef.ConnectionSettings.AutoCommit);
-            Assert.AreEqual("test", configDBRef.ConnectionSettings.Catalog);
+            Assert.AreEqual("esper", configDBRef.ConnectionSettings.Catalog);
             Assert.AreEqual(IsolationLevel.ReadCommitted, configDBRef.ConnectionSettings.TransactionIsolation);
             var expCache = (ConfigurationCommonCacheExpiryTime) configDBRef.DataCacheDesc;
 

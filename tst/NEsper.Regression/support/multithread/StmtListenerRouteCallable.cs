@@ -25,11 +25,12 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtListenerRouteCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly RegressionEnvironment env;
-        private readonly int numRepeats;
-        private readonly int numThread;
-        private readonly EPStatement statement;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly RegressionEnvironment _env;
+        private readonly int _numRepeats;
+        private readonly int _numThread;
+        private readonly EPStatement _statement;
 
         public StmtListenerRouteCallable(
             int numThread,
@@ -37,33 +38,33 @@ namespace com.espertech.esper.regressionlib.support.multithread
             EPStatement statement,
             int numRepeats)
         {
-            this.numThread = numThread;
-            this.env = env;
-            this.numRepeats = numRepeats;
-            this.statement = statement;
+            this._numThread = numThread;
+            this._env = env;
+            this._numRepeats = numRepeats;
+            this._statement = statement;
         }
 
         public object Call()
         {
             try {
-                for (var loop = 0; loop < numRepeats; loop++) {
-                    var listener = new MyUpdateListener(env, numThread);
-                    statement.AddListener(listener);
-                    env.SendEventBean(new SupportBean(), "SupportBean");
-                    statement.RemoveListener(listener);
+                for (var loop = 0; loop < _numRepeats; loop++) {
+                    var listener = new MyUpdateListener(_env, _numThread);
+                    _statement.AddListener(listener);
+                    _env.SendEventBean(new SupportBean(), "SupportBean");
+                    _statement.RemoveListener(listener);
                     listener.AssertCalled();
                 }
             }
             catch (AssertionException ex) {
                 Console.Error.WriteLine("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 Console.Error.WriteLine(ex.StackTrace);
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
                 Console.Error.WriteLine("Error in thread " + Thread.CurrentThread.ManagedThreadId);
                 Console.Error.WriteLine(ex.StackTrace);
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

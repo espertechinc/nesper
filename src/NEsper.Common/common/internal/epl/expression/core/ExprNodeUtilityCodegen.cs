@@ -38,14 +38,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             }
 
             var expr = forge.EvaluateCodegen(forge.EvaluationType, exprMethod, exprSymbol, classScope);
-            return CodegenCoerce(expr, forge.EvaluationType, targetType, false);
+            return CodegenCoerce(expr, forge.EvaluationType, targetType, false, exprMethod, classScope);
         }
 
         public static CodegenExpression CodegenCoerce(
             CodegenExpression expression,
             Type exprType,
             Type targetType,
-            bool alwaysCast)
+            bool alwaysCast,
+            CodegenMethodScope codegenMethodScope, 
+            CodegenClassScope codegenClassScope)
         {
             if (targetType == null || exprType == null) {
                 return expression;
@@ -64,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 expression = Cast(exprClassBoxed, expression);
             }
 
-            return coercer.CoerceCodegen(expression, exprClass);
+            return coercer.CoerceCodegen(expression, exprClass, codegenMethodScope, codegenClassScope);
         }
 
         public static CodegenExpression CodegenEvaluator(
@@ -189,7 +191,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                     if (boxed != optCoercionType.GetBoxedType()) {
                         var coercer = SimpleNumberCoercerFactory.GetCoercer(boxed, optCoercionType.GetBoxedType());
                         evaluate.Block.DeclareVar(boxed, "result", result);
-                        result = coercer.CoerceCodegen(Ref("result"), boxed);
+                        result = coercer.CoerceCodegen(Ref("result"), boxed, method, classScope);
                     }
                 }
             }

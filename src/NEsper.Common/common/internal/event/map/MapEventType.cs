@@ -27,8 +27,8 @@ namespace com.espertech.esper.common.@internal.@event.map
     {
         private static readonly EventTypeNestableGetterFactory GETTER_FACTORY = new EventTypeNestableGetterFactoryMap();
         
-        private IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> propertyWriters;
-        private EventPropertyDescriptor[] writablePropertyDescriptors;
+        private IDictionary<string, Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>> _propertyWriters;
+        private EventPropertyDescriptor[] _writablePropertyDescriptors;
 
         public MapEventType(
             EventTypeMetadata metadata,
@@ -75,11 +75,11 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyWriterSPI GetWriter(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.Second;
             }
@@ -106,11 +106,11 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyDescriptor GetWritableProperty(string propertyName)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
-            var pair = propertyWriters.Get(propertyName);
+            var pair = _propertyWriters.Get(propertyName);
             if (pair != null) {
                 return pair.First;
             }
@@ -153,24 +153,24 @@ namespace com.espertech.esper.common.@internal.@event.map
 
         public override EventPropertyDescriptor[] WriteableProperties {
             get {
-                if (writablePropertyDescriptors == null) {
+                if (_writablePropertyDescriptors == null) {
                     InitializeWriters();
                 }
 
-                return writablePropertyDescriptors;
+                return _writablePropertyDescriptors;
             }
         }
 
         public override EventBeanWriter GetWriter(string[] properties)
         {
-            if (writablePropertyDescriptors == null) {
+            if (_writablePropertyDescriptors == null) {
                 InitializeWriters();
             }
 
             var allSimpleProps = true;
             var writers = new MapEventBeanPropertyWriter[properties.Length];
             for (var i = 0; i < properties.Length; i++) {
-                var writerPair = propertyWriters.Get(properties[i]);
+                var writerPair = _propertyWriters.Get(properties[i]);
                 if (writerPair != null) {
                     writers[i] = writerPair.Second;
                 }
@@ -205,8 +205,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                     new Pair<EventPropertyDescriptor, MapEventBeanPropertyWriter>(prop, eventPropertyWriter));
             }
 
-            propertyWriters = propertWritersMap;
-            writablePropertyDescriptors = writeableProps.ToArray();
+            _propertyWriters = propertWritersMap;
+            _writablePropertyDescriptors = writeableProps.ToArray();
         }
 
         public override Type UnderlyingType => typeof(IDictionary<string, object>);

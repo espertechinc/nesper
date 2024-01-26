@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.context.controller.hash
             method.Block.DeclareVar<int>(
                     "value",
                     SimpleNumberCoercerFactory.GetCoercer(returnTypeMethod, typeof(int?))
-                        .CoerceCodegen(Ref("result"), returnTypeMethod))
+                        .CoerceCodegen(Ref("result"), returnTypeMethod, method, classScope))
                 .IfCondition(Relational(Ref("value"), CodegenExpressionRelational.CodegenRelational.GE, Constant(0)))
                 .BlockReturn(Op(Ref("value"), "%", Constant(granularity)))
                 .MethodReturn(Op(Op(Ref("value"), "%", Constant(granularity)), "*", Constant(-1)));

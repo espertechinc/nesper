@@ -55,8 +55,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftValue = _convOne.CoerceCodegen(left, ltype);
-                var rightValue = _convTwo.CoerceCodegen(right, rtype);
+                var leftValue = _convOne.CoerceCodegen(left, ltype, codegenMethodScope, codegenClassScope);
+                var rightValue = _convTwo.CoerceCodegen(right, rtype, codegenMethodScope, codegenClassScope);
                 return CodegenExpressionBuilder.Op(leftValue, "+", rightValue);
             }
         }

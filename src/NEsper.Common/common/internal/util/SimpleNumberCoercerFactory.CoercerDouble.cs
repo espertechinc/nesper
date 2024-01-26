@@ -34,10 +34,12 @@ namespace com.espertech.esper.common.@internal.util
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
-                Type valueType)
+                Type valueType, 
+                CodegenMethodScope codegenMethodScope, 
+                CodegenClassScope codegenClassScope)
             {
                 return valueType.CanBeNull() 
-                    ? CoerceCodegenMayNullBoxed(value, valueType, null, null)
+                    ? CoerceCodegenMayNullBoxed(value, valueType, codegenMethodScope, codegenClassScope)
                     : CodegenDouble(value, valueType);
             }
 
@@ -47,11 +49,27 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                return valueType != typeof(float) &&
-                       valueType != typeof(double) &&
-                       valueType != typeof(double?)
-                    ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
-                    : value;
+                // return valueType != typeof(float) &&
+                //        valueType != typeof(double) &&
+                //        valueType != typeof(double?)
+                //     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
+                //     : value;
+
+                if (valueType == typeof(float) ||
+                    valueType == typeof(double) ||
+                    valueType == typeof(double?)) {
+                    return value;
+                }
+                
+                return CodegenCoerceMayNull(
+                    typeof(double),
+                    typeof(double?),
+                    "AsDouble",
+                    value,
+                    valueType,
+                    codegenMethodScope,
+                    typeof(CoercerDouble),
+                    codegenClassScope);
             }
 
             public static CodegenExpression CodegenDouble(

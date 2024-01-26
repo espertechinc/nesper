@@ -58,8 +58,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public override Type EvaluationType { get; }
 
-        public Type Type => EvaluationType;
-
         public int StreamNum { get; }
 
         public EventPropertyGetterIndexedSPI IndexedGetter { get; }

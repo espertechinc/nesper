@@ -234,7 +234,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                                 CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                                     Ref("leftCoerced"),
                                                     leftTypeCoerced,
-                                                    forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType()),
+                                                    forge.Coercer.CoerceCodegen(Ref("item"), reftype.GetElementType(), codegenMethodScope, codegenClassScope),
                                                     forge.CoercionType))
                                             .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                                     }
@@ -293,7 +293,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                     CodegenLegoCompareEquals.CodegenEqualsNonNullNoCoerce(
                                         Ref("leftCoerced"),
                                         leftTypeCoerced,
-                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype),
+                                        forge.Coercer.CoerceCodegen(Ref(refname), reftype, codegenMethodScope, codegenClassScope),
                                         forge.CoercionType))
                                 .BlockReturn(!isNot ? ConstantTrue() : ConstantFalse());
                         }

@@ -33,8 +33,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
 
         public virtual EnumEval EnumEvaluator => new EnumUnionForgeEval(
             this,
-            evaluatorForge.ExprEvaluatorEnumeration,
-            scalar);
+            evaluatorForge.ExprEvaluatorEnumeration);
 
         public virtual CodegenExpression Codegen(
             EnumForgeCodegenParams premade,

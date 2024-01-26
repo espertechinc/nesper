@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 // invalid dialect
                 env.TryInvalidCompile(
                     "expression dummy:abc() [10] select * from SupportBean",
-                    "Failed to obtain script runtime for dialect 'dummy' for script 'abc' [expression dummy:abc() [10] select * from SupportBean]");
+                    "Failed to obtain script engine for dialect 'dummy' for script 'abc' [expression dummy:abc() [10] select * from SupportBean]");
 
                 // not found
                 env.TryInvalidCompile(
@@ -349,12 +349,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 TryInvalidContains(
                     env,
                     "expression js:abc[dummy abc = 1;] select * from SupportBean",
-                    "Expected ; but found");
+                    "SyntaxError: Unexpected identifier 'abc'");
 
                 TryInvalidContains(
                     env,
                     "expression js:abc(aa) [return aa..bb(1);] select abc(1) from SupportBean",
-                    "Invalid return statement");
+                    "SyntaxError: Unexpected token '.' ");
 
                 env.TryInvalidCompile(
                     "expression js:abc[] select * from SupportBean",
@@ -364,9 +364,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 env.CompileDeploy("expression js:abc[\n] select * from SupportBean");
 
                 // execution problem
+                var myException = typeof(UnsupportedOperationException).FullName;
                 env.UndeployAll();
                 env.CompileDeploy(
-                    "expression js:abc() [throw new Error(\"Some error\");] select * from SupportBean#keepall where abc() = 1");
+                    $"expression js:abc() [ host.throwException(\"{myException}\", \"Some error\"); ] select * from SupportBean#keepall where abc() = 1");
                 try {
                     env.SendEventBean(new SupportBean());
                     Assert.Fail();
@@ -389,16 +390,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 // execution problem
                 env.UndeployAll();
                 env.CompileDeploy(
-                        "@name('ABC') expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); myarr; ] select callIt().countOf(v => v < 6) from SupportBean")
+                        "@name('ABC') expression int[] js:callIt() [ var myarr = new Array(2, 8, 5, 9); return myarr; ] select callIt().countOf(v => v < 6) from SupportBean")
                     .AddListener("ABC");
                 try {
                     env.SendEventBean(new SupportBean());
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(
-                        ex.Message.Contains("Unexpected exception in statement 'ABC': "),
-                        "Message is: " + ex.Message);
+                    StringAssert.Contains("Unexpected exception in statement 'ABC': ", ex.Message);
                 }
 
                 env.UndeployAll();
@@ -529,13 +528,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 }
 
                 // test import
+                var className = typeof(MyImportedClass).FullName;
                 TryImports(
                     env,
                     "expression MyImportedClass js:callOne() [ " +
-                    "var MyJavaClass = Java.type('" +
-                    typeof(MyImportedClass).FullName +
-                    "');" +
-                    "new MyJavaClass() ] ");
+                    $"var myClass = host.resolveType('{className}');" +
+                    "return new myClass() ] ");
 
                 if (TEST_MVEL) {
                     TryImports(
@@ -708,7 +706,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy("@name('type') @public create schema ItemEvent(Id string)", path);
 
             var script =
-                "@name('script') create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
+                "@name('script') @public create expression EventBean[] @type(ItemEvent) js:myScriptReturnsEvents() [\n" +
                 "function myScriptReturnsEvents() {" +
                 "  var eventBean = host.resolveType(\"com.espertech.esper.common.client.EventBean\");\n" +
                 "  var events = host.newArr(eventBean, 3);\n" +
@@ -868,13 +866,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("val0")));
 
             env.SendEventBean(new SupportBean());
-            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { 9, 5 });
+            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { 9, 4 });
 
             env.UndeployAll();
 
             env.EplToModelCompileDeploy(epl).AddListener("s0");
             env.SendEventBean(new SupportBean());
-            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { 9, 5 });
+            env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { 9, 4 });
 
             env.UndeployAll();
         }
@@ -1044,13 +1042,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
         {
             var path = new RegressionPath();
             env.CompileDeploy("@public create expression change(open, close) [ return (open - close) / close; ]", path);
-            env.CompileDeploy(
-                    "@name('s0') select change(first(IntPrimitive), last(IntPrimitive)) as ch from SupportBean#time(1 day)",
-                    path)
+            env.CompileDeploy("@name('s0') select change(first(IntPrimitive), last(IntPrimitive)) as ch from SupportBean#time(1 day)", path)
                 .AddListener("s0");
 
             env.SendEventBean(new SupportBean("E1", 1));
-            env.AssertPropsNew("s0", "ch".SplitCsv(), new object[] { 0d });
+            env.AssertPropsNew("s0", "ch".SplitCsv(), new object[] { 0 });
 
             env.SendEventBean(new SupportBean("E2", 10));
             env.AssertPropsNew("s0", "ch".SplitCsv(), new object[] { -0.9d });
@@ -1100,12 +1096,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
         private static void TryCreateExpressionWArrayAllocate(RegressionEnvironment env)
         {
             var path = new RegressionPath();
-            var epl = "@name('first') @public create expression double js:test(bar) [\n" +
-                      "test(bar);\n" +
-                      "function test(bar) {\n" +
-                      "  var test=[];\n" +
-                      "  return -1.0;\n" +
-                      "}]\n";
+            var epl =
+                "@name('first') @public create expression double js:test(bar) [\n" +
+                "function test(bar) {\n" +
+                "  var test=[];\n" +
+                "  return -1.0;\n" +
+                "}\n" +
+                "return test(bar);\n" +
+                "]\n";
+
             env.CompileDeploy(epl, path);
 
             env.CompileDeploy("@name('s0') select test('a') as c0 from SupportBean_S0", path).AddListener("s0");

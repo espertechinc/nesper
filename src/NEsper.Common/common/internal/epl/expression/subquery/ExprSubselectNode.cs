@@ -395,6 +395,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             var future = classScope.NamespaceScope.AddOrGetDefaultFieldWellKnown(
                 new CodegenFieldNameSubqueryResult(subselectNode.SubselectNumber),
                 typeof(SubordTableLookupStrategy));
+
             var evalMatching = ExprDotMethod(future, "Lookup", eps, evalCtx);
             method.Block.DeclareVar<ICollection<EventBean>>(NAME_MATCHINGEVENTS, evalMatching);
 

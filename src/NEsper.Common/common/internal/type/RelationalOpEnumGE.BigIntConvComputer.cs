@@ -8,19 +8,16 @@
 
 using System;
 using System.Numerics;
-
+using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.util;
 
-namespace com.espertech.esper.common.@internal.type
-{
-    public partial class RelationalOpEnumGE
-    {
+namespace com.espertech.esper.common.@internal.type {
+    public partial class RelationalOpEnumGE {
         /// <summary>
         /// Computer for relational op compare.
         /// </summary>
-        public class BigIntConvComputer : RelationalOpEnumComputer
-        {
+        public class BigIntConvComputer : RelationalOpEnumComputer {
             private readonly BigIntegerCoercer convOne;
             private readonly BigIntegerCoercer convTwo;
 
@@ -50,7 +47,9 @@ namespace com.espertech.esper.common.@internal.type
                 CodegenExpression lhs,
                 Type lhsType,
                 CodegenExpression rhs,
-                Type rhsType)
+                Type rhsType,
+                CodegenMethodScope codegenMethodScope,
+                CodegenClassScope codegenClassScope)
             {
                 return RelationalOpEnumExtensions.CodegenBigIntConv(
                     lhs,
@@ -59,7 +58,9 @@ namespace com.espertech.esper.common.@internal.type
                     rhsType,
                     convOne,
                     convTwo,
-                    CodegenExpressionRelational.CodegenRelational.GE);
+                    CodegenExpressionRelational.CodegenRelational.GE,
+                    codegenMethodScope,
+                    codegenClassScope);
             }
         }
     }

@@ -117,7 +117,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                 .AssignArrayElement(
                                 "array",
                                 Constant(i),
-                                forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass));
+                                forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass, codegenMethodScope, codegenClassScope));
                         }
                     }
                     else {
@@ -133,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                                     "array",
                                     Constant(i),
                                     Unbox(
-                                        forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass),
+                                        forge.Coercer.CoerceCodegen(Ref(refname), childTypeClass, codegenMethodScope, codegenClassScope),
                                         childTypeClass));
                         }
 
@@ -227,7 +227,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 var blockIfNotNull = block.IfCondition(nonNullTest);
                 CodegenExpression added = Ref(refname);
                 if (forge.IsMustCoerce) {
-                    added = forge.Coercer.CoerceCodegen(Ref(refname), childForge.EvaluationType);
+                    added = forge.Coercer.CoerceCodegen(Ref(refname), childForge.EvaluationType, codegenMethodScope, codegenClassScope);
                 }
 
                 blockIfNotNull.Expression(ExprDotMethod(Ref("resultList"), "Add", added));

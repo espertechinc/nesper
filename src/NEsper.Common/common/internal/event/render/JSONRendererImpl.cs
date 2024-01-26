@@ -117,6 +117,15 @@ namespace com.espertech.esper.common.@internal.@event.render
 
             var renderActions = new SortedList<string, Action>();
 
+            void RenderAll()
+            {
+                foreach (var entry in renderActions) {
+                    entry.Value.Invoke();
+                }
+
+                renderActions.Clear();
+            }
+
             // simple properties
             var simpleProps = meta.SimpleProperties;
             if (rendererOptions.Renderer == null) {
@@ -131,6 +140,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                             delimiter = COMMA_DELIMITER_NEWLINE;
                         });
                 }
+
+                RenderAll();
             }
             else {
                 var context = rendererOptions.RendererContext;
@@ -149,6 +160,8 @@ namespace com.espertech.esper.common.@internal.@event.render
                             delimiter = COMMA_DELIMITER_NEWLINE;
                         });
                 }
+                
+                RenderAll();
             }
 
             var indexProps = meta.IndexProperties;
@@ -216,6 +229,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
+
+                RenderAll();
             }
 
             var mappedProps = meta.MappedProperties;
@@ -296,6 +311,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
+                
+                RenderAll();
             }
 
             var nestedProps = meta.NestedProperties;
@@ -370,10 +387,8 @@ namespace com.espertech.esper.common.@internal.@event.render
 
                         delimiter = COMMA_DELIMITER_NEWLINE;
                     });
-            }
-
-            foreach (var entry in renderActions) {
-                entry.Value.Invoke();
+                
+                RenderAll();
             }
 
             buf.Append(NEWLINE);

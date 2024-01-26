@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.type
                     .AddParam(ltype, "d1")
                     .AddParam(rtype, "d2")
                     .Block
-                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(Ref("d1"), ltype))
-                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(Ref("d2"), rtype))
+                    .DeclareVar<decimal?>("s1", convOne.CoerceCodegen(Ref("d1"), ltype, codegenMethodScope, codegenClassScope))
+                    .DeclareVar<decimal?>("s2", convTwo.CoerceCodegen(Ref("d2"), rtype, codegenMethodScope, codegenClassScope))
                     .MethodReturn(
                         Op(
                             ExprDotName(Ref("s1"), "Value"),

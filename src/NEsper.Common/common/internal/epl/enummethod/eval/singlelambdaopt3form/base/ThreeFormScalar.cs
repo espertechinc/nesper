@@ -24,15 +24,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
         protected readonly ObjectArrayEventType fieldEventType;
         protected readonly int numParameters;
 
-        public abstract Type ReturnTypeOfMethod(Type inputCollectionType);
-        public abstract CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType);
+        public abstract Type ReturnTypeOfMethod(Type desiredReturnType);
+        public abstract CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType);
 
         public abstract void InitBlock(
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType);
+            Type desiredReturnType);
 
         public virtual bool HasForEachLoop()
         {
@@ -44,7 +44,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType);
+            Type desiredReturnType);
 
         public abstract void ReturnResult(CodegenBlock block);
 
@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     EventTypeUtility.ResolveTypeCodegen(fieldEventType, EPStatementInitServicesConstants.REF)));
             var scope = new ExprForgeCodegenSymbol(false, null);
             var methodNode = codegenMethodScope
-                .MakeChildWithScope(ReturnTypeOfMethod(premade.EnumcollType), GetType(), scope, codegenClassScope)
+                .MakeChildWithScope(ReturnTypeOfMethod(premade.DesiredReturnType), GetType(), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
                 .AddParam(premade.EnumcollType, REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             var block = methodNode.Block;
             var hasIndex = numParameters >= 2;
             var hasSize = numParameters >= 3;
-            var returnEmpty = ReturnIfEmptyOptional(premade.EnumcollType);
+            var returnEmpty = ReturnIfEmptyOptional(premade.DesiredReturnType);
             if (returnEmpty != null) {
                 block
                     .IfCondition(ExprDotMethod(REF_ENUMCOLL, "IsEmpty"))
@@ -103,7 +103,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 block.AssignArrayElement(Ref("props"), Constant(2), ExprDotName(REF_ENUMCOLL, "Count"));
             }
 
-            InitBlock(block, methodNode, scope, codegenClassScope, premade.EnumcollType);
+            InitBlock(block, methodNode, scope, codegenClassScope, premade.DesiredReturnType);
             if (HasForEachLoop()) {
                 var forEach = block
                     .ForEachVar("next", REF_ENUMCOLL)
@@ -112,7 +112,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                     forEach.IncrementRef("count").AssignArrayElement("props", Constant(1), Ref("count"));
                 }
 
-                ForEachBlock(forEach, methodNode, scope, codegenClassScope, premade.EnumcollType);
+                ForEachBlock(forEach, methodNode, scope, codegenClassScope, premade.DesiredReturnType);
             }
 
             ReturnResult(block);

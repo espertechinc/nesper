@@ -3,6 +3,7 @@ using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Nodes;
 using System.Text.Json.Serialization;
 using System.Text.Json.Serialization.Metadata;
 
@@ -34,7 +35,8 @@ namespace com.espertech.esper.common.@internal.util.serde
         {
             _typeResolver = typeResolver;
             _options = new JsonSerializerOptions() {
-                
+                PropertyNameCaseInsensitive = false,
+                IgnoreReadOnlyFields = true,
                 TypeInfoResolver = new DefaultJsonTypeInfoResolver(),
                 UnknownTypeHandling = JsonUnknownTypeHandling.JsonElement,
                 Converters = {
@@ -73,7 +75,10 @@ namespace com.espertech.esper.common.@internal.util.serde
                 return stream.ToArray();
             }
 
-            var typeName = obj.GetType().AssemblyQualifiedName;
+            var type = obj.GetType();
+            var typeName = type.Assembly.IsDynamic
+                ? type.AssemblyQualifiedName
+                : type.FullName;
             
             //Console.WriteLine("ObjectDefaultConverter: " + typeName);
             
@@ -102,22 +107,23 @@ namespace com.espertech.esper.common.@internal.util.serde
                 case JsonTokenType.Null:
                     return null;
                 case JsonTokenType.StartObject:
-                    var document = JsonDocument.ParseValue(ref reader);
-                    var rootElement = document.RootElement;
-                    if (rootElement.TryGetProperty("__type", out JsonElement typeElement) &&
-                        rootElement.TryGetProperty("__data", out JsonElement dataElement)) {
+                    if (JsonDocument.TryParseValue(ref reader, out var document)) {
+                        var rootElement = document.RootElement;
+                        if (rootElement.TryGetProperty("__type", out JsonElement typeElement) &&
+                            rootElement.TryGetProperty("__data", out JsonElement dataElement)) {
 
-                        // Validate that the typeElement is a string
-                        if (typeElement.ValueKind == JsonValueKind.String) {
-                            var typeName = typeElement.GetString();
-                            var type = _typeResolver.ResolveType(typeName);
-                            var data = dataElement.GetRawText();
-                            return JsonSerializer.Deserialize(data, type, _options);
+                            // Validate that the typeElement is a string
+                            if (typeElement.ValueKind == JsonValueKind.String) {
+                                var typeName = typeElement.GetString();
+                                var type = _typeResolver.ResolveType(typeName);
+                                var data = dataElement.GetRawText();
+                                return JsonSerializer.Deserialize(data, type, _options);
+                            }
+
+                            throw new SerializationException("invalid type representation");
                         }
-
-                        throw new SerializationException("invalid type representation");
                     }
-                    
+
                     throw new SerializationException("malformed data representation");
                 default:
                     throw new SerializationException("invalid data representation");

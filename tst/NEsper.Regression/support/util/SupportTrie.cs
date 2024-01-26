@@ -10,16 +10,16 @@ using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
-	public interface SupportTrie<K, V>
+	public interface SupportTrie<TK, TV>
 	{
-		V Get(K key);
+		TV Get(TK key);
 
 		void Put(
-			K key,
-			V value);
+			TK key,
+			TV value);
 
-		void Remove(K key);
+		void Remove(TK key);
 		void Clear();
-		IOrderedDictionary<string, V> PrefixMap(K key);
+		IOrderedDictionary<string, TV> PrefixMap(TK key);
 	}
 } // end of namespace

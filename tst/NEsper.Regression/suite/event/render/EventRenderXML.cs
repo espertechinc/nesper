@@ -109,7 +109,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                             "    <IntPrimitive>1</IntPrimitive>\n" +
                                             "    <LongPrimitive>0</LongPrimitive>\n" +
                                             "    <ShortPrimitive>0</ShortPrimitive>\n" +
-                                            "  <TheString>a\\u000ac</TheString>\n" +
+                                            "    <TheString>a\\u000ac</TheString>\n" +
+                                            "  </This>\n" +
                                             "</supportBean>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
@@ -122,7 +123,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             new XMLRenderingOptions().SetIsDefaultAsAttribute(true));
                         // Console.WriteLine(result);
                         var expected =
-                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/>";
+                            "<?xml version=\"1.0\" encoding=\"UTF-8\"?> " +
+                            "<supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DecimalPrimitive=\"0.0\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"> " +
+                            "<This BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DecimalPrimitive=\"0.0\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/> " +
+                            "</supportBean>";
                         Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 

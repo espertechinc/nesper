@@ -163,6 +163,7 @@ namespace com.espertech.esper.compiler.@internal.util
 							compileTimeServices,
 							compilerOptions,
 							artifactRepository);
+						
 						className = compilableItem.ProviderClassName;
 
 						if (targetHA) {

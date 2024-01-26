@@ -8,6 +8,7 @@
 
 using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace com.espertech.esper.compat.collections
 {
@@ -22,13 +23,22 @@ namespace com.espertech.esper.compat.collections
         /// Gets or sets the first value within pair.
         /// </summary>
         /// <value>The first.</value>
-        public TFirst First;
+        public TFirst First { get; set; }
 
         /// <summary>
         /// Gets or sets the second value within pair.
         /// </summary>
         /// <value>The second.</value>
-        public TSecond Second;
+        public TSecond Second { get; set; }
+
+        /// <summary>
+        /// Constructor for JSON deserialization.
+        /// </summary>
+        public Pair()
+        {
+            First = default;
+            Second = default;
+        }
 
         /// <summary>
         /// Construct pair of values.

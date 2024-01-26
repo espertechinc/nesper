@@ -91,15 +91,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             }
         }
 
-        public override Type ReturnTypeOfMethod(Type inputCollectionType)
+        public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return inputCollectionType;
+            return desiredReturnType;
         }
 
-        public override CodegenExpression ReturnIfEmptyOptional(Type inputCollectionType)
+        public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
             //return EnumForgeCodegenNames.REF_ENUMCOLL;
-            var componentType = inputCollectionType.GetComponentType();
+            var componentType = desiredReturnType.GetComponentType();
             return EnumValue(typeof(EmptyList<>).MakeGenericType(componentType), "Instance");
         }
 
@@ -108,9 +108,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
             CodegenClassScope codegenClassScope,
-            Type inputCollectionType)
+            Type desiredReturnType)
         {
-            var itemType = inputCollectionType.GetComponentType();
+            var itemType = desiredReturnType.GetComponentType();
 
             innerValue = InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope);
 
@@ -119,7 +119,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 block,
                 innerValue,
                 InnerExpression.EvaluationType,
-                inputCollectionType.GetComponentType());
+                desiredReturnType.GetComponentType());
 
             block.DeclareVar(
                 itemType.MakeArrayType(1),
@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenBlock block,
             CodegenMethod methodNode,
             ExprForgeCodegenSymbol scope,
-            CodegenClassScope codegenClassScope, Type inputCollectionType)
+            CodegenClassScope codegenClassScope, Type desiredReturnType)
         {
             throw new IllegalStateException();
         }

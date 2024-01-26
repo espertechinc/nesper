@@ -54,8 +54,8 @@ namespace com.espertech.esper.common.@internal.type
                 Type ltype,
                 Type rtype)
             {
-                var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype);
-                var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype);
+                var leftAsBig = _convOne.CoerceBoxedBigIntCodegen(left, ltype, codegenMethodScope, codegenClassScope);
+                var rightAsBig = _convTwo.CoerceBoxedBigIntCodegen(right, rtype, codegenMethodScope, codegenClassScope);
                 return CodegenExpressionBuilder.Op(leftAsBig, "+", rightAsBig);
             }
         }

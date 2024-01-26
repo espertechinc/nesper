@@ -183,7 +183,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var path = new RegressionPath();
                 env.CompileDeploy(
-                    "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n",
+                    "@public create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n",
                     path);
 
                 env.TryInvalidCompile(
@@ -605,7 +605,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
+                    "@public create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
                     "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 
@@ -728,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             {
                 var path = new RegressionPath();
                 var epl =
-                    "create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
+                    "@public create table MyTable(sortcol sorted(IntPrimitive) @type('SupportBean'));\n" +
                     "into table MyTable select sorted(*) as sortcol from SupportBean;\n";
                 env.CompileDeploy(epl, path);
 

@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             var epl =
                 "@buseventtype @public create schema N1N1 (n1n1 string);\n" +
                 "@buseventtype @public create schema N1 (n1 string, n2 N1N1);\n" +
-                "@buseventtype @public create schema NestedMapWithSimpleProps (nested N1);\n";
+                "@buseventtype @public create schema NestedMapWithSimpleProps (Nested N1);\n";
             env.CompileDeploy(epl, path);
 
             RunAssertion(env, path);

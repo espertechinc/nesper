@@ -187,10 +187,10 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
 		internal class JsonInsertProcessorExpressions : SelectExprProcessorForge
 		{
-			private readonly int underlyingStreamNumber;
-			private readonly Item[] items;
-			private readonly JsonEventType sourceType;
-			private readonly JsonEventType resultType;
+			private readonly int _underlyingStreamNumber;
+			private readonly Item[] _items;
+			private readonly JsonEventType _sourceType;
+			private readonly JsonEventType _resultType;
 
 			internal JsonInsertProcessorExpressions(
 				int underlyingStreamNumber,
@@ -198,13 +198,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 				JsonEventType sourceType,
 				JsonEventType resultType)
 			{
-				this.underlyingStreamNumber = underlyingStreamNumber;
-				this.items = items;
-				this.sourceType = sourceType;
-				this.resultType = resultType;
+				_underlyingStreamNumber = underlyingStreamNumber;
+				_items = items;
+				_sourceType = sourceType;
+				_resultType = resultType;
 			}
 
-			public EventType ResultEventType => resultType;
+			public EventType ResultEventType => _resultType;
 
 			public CodegenMethod ProcessCodegen(
 				CodegenExpression resultEventType,
@@ -221,13 +221,13 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 				var refEPS = exprSymbol.GetAddEps(methodNode);
 				var block = methodNode.Block
 					.DeclareVar(
-						sourceType.UnderlyingType,
+						_sourceType.UnderlyingType,
 						"src",
 						CastUnderlying(
-							sourceType.UnderlyingType,
-							ArrayAtIndex(refEPS, Constant(underlyingStreamNumber))))
-					.DeclareVar(resultType.UnderlyingType, "und", NewInstance(resultType.UnderlyingType));
-				foreach (var item in items) {
+							_sourceType.UnderlyingType,
+							ArrayAtIndex(refEPS, Constant(_underlyingStreamNumber))))
+					.DeclareVar(_resultType.UnderlyingType, "und", NewInstance(_resultType.UnderlyingType));
+				foreach (var item in _items) {
 					if (item.OptionalFromField != null) {
 						block.AssignRef(
 							"und." + item.ToField.FieldName,
@@ -263,12 +263,12 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 
 		internal class Item
 		{
-			private readonly JsonUnderlyingField toField;
-			private readonly JsonUnderlyingField optionalFromField;
-			private readonly ExprForge forge;
-			private readonly TypeWidenerSPI optionalWidener;
+			private readonly JsonUnderlyingField _toField;
+			private readonly JsonUnderlyingField _optionalFromField;
+			private readonly ExprForge _forge;
+			private readonly TypeWidenerSPI _optionalWidener;
 
-			private ExprEvaluator evaluatorAssigned;
+			private ExprEvaluator _evaluatorAssigned;
 
 			internal Item(
 				JsonUnderlyingField toField,
@@ -280,23 +280,23 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.eval
 					throw new ArgumentException("Null to-field");
 				}
 
-				this.toField = toField;
-				this.optionalFromField = optionalFromField;
-				this.forge = forge;
-				this.optionalWidener = optionalWidener;
+				_toField = toField;
+				_optionalFromField = optionalFromField;
+				_forge = forge;
+				_optionalWidener = optionalWidener;
 			}
 
-			public JsonUnderlyingField ToField => toField;
+			public JsonUnderlyingField ToField => _toField;
 
-			public JsonUnderlyingField OptionalFromField => optionalFromField;
+			public JsonUnderlyingField OptionalFromField => _optionalFromField;
 
-			public ExprForge Forge => forge;
+			public ExprForge Forge => _forge;
 
-			public TypeWidenerSPI OptionalWidener => optionalWidener;
+			public TypeWidenerSPI OptionalWidener => _optionalWidener;
 
 			public ExprEvaluator EvaluatorAssigned {
-				get => evaluatorAssigned;
-				set => evaluatorAssigned = value;
+				get => _evaluatorAssigned;
+				set => _evaluatorAssigned = value;
 			}
 		}
 	}

@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Text.Json.Serialization;
 using com.espertech.esper.common.@internal.util;
 
 namespace com.espertech.esper.common.@internal.type
@@ -17,10 +17,13 @@ namespace com.espertech.esper.common.@internal.type
         private readonly string _likeString;
         private readonly LikeUtil _likeUtil;
 
+        public string LikeString => _likeString;
+
         /// <summary>
         /// Ctor.
         /// </summary>
         /// <param name="likeString">pattern to match</param>
+        [JsonConstructor]
         public StringPatternSetLike(string likeString)
         {
             _likeString = likeString;

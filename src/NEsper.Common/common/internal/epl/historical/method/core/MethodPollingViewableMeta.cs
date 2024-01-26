@@ -66,7 +66,7 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
         public string GetConfigurationName(MethodStreamSpec methodStreamSpec)
         {
             return MethodProviderClass != null
-                ? MethodProviderClass.Name
+                ? MethodProviderClass.FullName
                 : methodStreamSpec.MethodName;
         }
     }
