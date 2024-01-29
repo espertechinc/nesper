@@ -986,7 +986,20 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                         "Mapped property named '" + propertyName + "' failed to obtain getter-object");
                 }
                 
-                if (propertyDesc.PropertyComponentType != null) {
+                // this is the case where the property being returned is a "map-type" and not a "map-method"
+                // but we cannot accurately determine which.  The problem being that the map-method will give
+                // us the component type as the property type and the map-type will return the dictionary as
+                // the property type... this bit of code exists to extract the component type when the return
+                // value is a map-type but it fails when it's a map-method.  For example, a map-method could
+                // return a 'string' - the property type will be "string" and the propertyDesc will say that
+                // the property is mapped.  Because string is indexable, it will indicate that it has a
+                // component type.
+                //
+                // there needs to be some consistency either in the return data or an indicator in the property
+                // descriptor that the property type is the actual component type or needs to be mapped.
+                
+                if ((propertyDesc.IsRequiresMapkey == false) &&
+                    (propertyDesc.PropertyComponentType != null)) {
                     propertyType = propertyDesc.PropertyComponentType.GetBoxedType();
                 }
             }

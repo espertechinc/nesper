@@ -12,7 +12,7 @@ using System.Linq;
 using System.Text;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
-
+using com.espertech.esper.compat.collections;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -125,6 +125,37 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.core
             builder.Append(")");
 
             builder.Append("{\n");
+            
+#if DEBUG
+#if DISABLED
+            indent.Indent(builder, 2 + additionalIndent);
+            builder
+                .Append("using var __trace = ")
+                .Append(typeof(CompatExtensions).FullName)
+                .Append('.')
+                .Append("Trace(")
+                .Append(Modifiers.IsStatic() ? "null" : "GetType().FullName")
+                .Append(",")
+                .Append("\"")
+                .Append(Name)
+                .Append("\"");
+                
+            foreach (var param in Footprint.Params) {
+                builder.Append(",");
+                if (param.HasOutputModifier) {
+                    builder.Append($"\"{{{param.Name}}} as output\"");
+                }
+                else {
+                    builder.Append(param.Name);
+                }
+            }
+
+            builder
+                .Append(");")
+                .Append("\n");
+#endif
+#endif
+            
             Block.Render(builder, isInnerClass, 2 + additionalIndent, indent);
             indent.Indent(builder, 1 + additionalIndent);
             builder.Append("}\n");

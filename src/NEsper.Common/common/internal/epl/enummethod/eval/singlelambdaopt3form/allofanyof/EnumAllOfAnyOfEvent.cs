@@ -20,13 +20,13 @@ using static com.espertech.esper.common.@internal.bytecodemodel.model.expression
 
 namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdaopt3form.allofanyof {
     public class EnumAllOfAnyOfEvent : ThreeFormEventPlain {
-        private readonly bool all;
+        private readonly bool _all;
 
         public EnumAllOfAnyOfEvent(
             ExprDotEvalParamLambda lambda,
             bool all) : base(lambda)
         {
-            this.all = all;
+            this._all = all;
         }
 
         public override EnumEval EnumEvaluator {
@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                         isNewData,
                         context) => {
                         if (enumcoll.IsEmpty()) {
-                            return all;
+                            return _all;
                         }
 
                         var beans = (ICollection<EventBean>)enumcoll;
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             eventsLambda[StreamNumLambda] = next;
 
                             var pass = inner.Evaluate(eventsLambda, isNewData, context);
-                            if (all) {
+                            if (_all) {
                                 if (pass == null || false.Equals(pass)) {
                                     return false;
                                 }
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                             }
                         }
 
-                        return all;
+                        return _all;
                     }
                 };
             }
@@ -73,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            return Constant(all);
+            return Constant(_all);
         }
 
         public override void InitBlock(
@@ -94,15 +94,15 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
                 block,
                 InnerExpression.EvaluationType,
                 InnerExpression.EvaluateCodegen(typeof(bool?), methodNode, scope, codegenClassScope),
-                all,
-                all ? false : (bool?)null,
-                !all,
-                !all);
+                _all,
+                _all ? false : (bool?)null,
+                !_all,
+                !_all);
         }
 
         public override void ReturnResult(CodegenBlock block)
         {
-            block.MethodReturn(Constant(all));
+            block.MethodReturn(Constant(_all));
         }
     }
 } // end of namespace

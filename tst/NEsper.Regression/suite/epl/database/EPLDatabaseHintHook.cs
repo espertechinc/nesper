@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                         var type = SupportSQLOutputRowConversion.TypeContexts[0];
                         Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
                         Assert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
-                        Assert.AreEqual(typeof(int?), type.Fields.Get("myint"));
+                        Assert.AreEqual(typeof(int), type.Fields.Get("myint"));
 
                         var val = SupportSQLOutputRowConversion.ValueContexts[0];
                         Assert.AreEqual(10, val.Values.Get("myint"));

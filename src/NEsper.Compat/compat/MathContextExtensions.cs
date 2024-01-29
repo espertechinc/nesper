@@ -19,9 +19,13 @@ namespace com.espertech.esper.compat
         
         public static decimal? GetValueDivide(
             this MathContext optionalMathContext,
-            decimal numerator,
+            decimal? numerator,
             long denominator)
         {
+            if (numerator == null) {
+                return null;
+            }
+            
             if (denominator == 0) {
                 return null;
             }
@@ -31,7 +35,7 @@ namespace com.espertech.esper.compat
                     return numerator / denominator;
                 }
 
-                return optionalMathContext.Apply(decimal.Divide(numerator, denominator));
+                return optionalMathContext.Apply(decimal.Divide(numerator.Value, denominator));
             }
             catch (ArithmeticException ex) {
                 Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
@@ -41,9 +45,13 @@ namespace com.espertech.esper.compat
         
         public static decimal? GetValueDivide(
             this MathContext optionalMathContext,
-            decimal numerator,
+            decimal? numerator,
             decimal denominator)
         {
+            if (numerator == null) {
+                return null;
+            }
+            
             if (denominator == 0) {
                 return null;
             }
@@ -53,7 +61,7 @@ namespace com.espertech.esper.compat
                     return numerator / denominator;
                 }
 
-                return optionalMathContext.Apply(decimal.Divide(numerator, denominator));
+                return optionalMathContext.Apply(decimal.Divide(numerator.Value, denominator));
             }
             catch (ArithmeticException ex) {
                 Log.Error("Error computing avg aggregation result: " + ex.Message, ex);
@@ -63,9 +71,13 @@ namespace com.espertech.esper.compat
 
         public static double? GetValueDivide(
             this MathContext optionalMathContext,
-            double numerator,
+            double? numerator,
             long denominator)
         {
+            if (numerator == null) {
+                return null;
+            }
+
             if (denominator == 0) {
                 return null;
             }
@@ -85,9 +97,13 @@ namespace com.espertech.esper.compat
         
         public static double? GetValueDivide(
             this MathContext optionalMathContext,
-            double numerator,
+            double? numerator,
             double denominator)
         {
+            if (numerator == null) {
+                return null;
+            }
+
             if (denominator == 0) {
                 return null;
             }

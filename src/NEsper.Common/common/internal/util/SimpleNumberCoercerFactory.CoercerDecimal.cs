@@ -7,7 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-
+using System.Collections.Generic;
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.compat;
@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedDecimal();
             }
 
-            public Type ReturnType => typeof(decimal?);
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(decimal?) : typeof(decimal);
+            }
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
@@ -78,13 +81,13 @@ namespace com.espertech.esper.common.@internal.util
 
             public static CodegenExpression CodegenDecimal(
                 CodegenExpression param,
-                Type type)
+                Type valueType)
             {
-                return type != typeof(decimal)
+                return valueType != typeof(decimal)
                     ? CodegenExpressionBuilder.ExprDotMethod(param, "AsDecimal")
                     : param;
 
-//                return CodegenCoerceNonNull(typeof(decimal), typeof(decimal?), "AsDecimal", param, type);
+                // return CodegenCoerceNonNull(typeof(decimal), typeof(decimal?), "AsDecimal", param, type);
             }
         }
     }

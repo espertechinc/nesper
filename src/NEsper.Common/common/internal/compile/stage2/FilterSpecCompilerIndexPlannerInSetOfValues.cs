@@ -105,7 +105,8 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                             lookupable.Expression);
                     }
 
-                    var finalReturnType = coercer != null ? coercer.ReturnType : returnType;
+                    var finalReturnType = coercer != null ? coercer.GetReturnType(typeof(object)) : returnType;
+                    
                     listofValues.Add(
                         new FilterForEvalContextPropForge(
                             contextPropertyNode.PropertyName,

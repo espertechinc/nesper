@@ -4,7 +4,7 @@ using System.Linq;
 
 using Avro;
 using Avro.Generic;
-
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.magic;
 
@@ -184,16 +184,16 @@ namespace NEsper.Avro.IO
                         : new JValue(false);
 
                 case Schema.Type.Int:
-                    return new JValue((int) value);
+                    return new JValue(value.AsInt32());
 
                 case Schema.Type.Long:
-                    return new JValue((long) value);
+                    return new JValue(value.AsInt64());
 
                 case Schema.Type.Float:
-                    return new JValue((float) value);
+                    return new JValue(value.AsFloat());
 
                 case Schema.Type.Double:
-                    return new JValue((double) value);
+                    return new JValue(value.AsDouble());
 
                 case Schema.Type.String:
                     return new JValue((string) value);

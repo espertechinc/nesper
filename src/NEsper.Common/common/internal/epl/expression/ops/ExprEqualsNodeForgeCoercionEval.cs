@@ -120,11 +120,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             }
 
             block.DeclareVar(
-                forge.CoercerLHS.ReturnType,
+                forge.CoercerLHS.GetReturnType(lhsType),
                 "left",
                 forge.CoercerLHS.CoerceCodegen(Ref("l"), lhsType, codegenMethodScope, codegenClassScope));
             block.DeclareVar(
-                forge.CoercerRHS.ReturnType,
+                forge.CoercerRHS.GetReturnType(rhsType),
                 "right",
                 forge.CoercerRHS.CoerceCodegen(Ref("r"), rhsType, codegenMethodScope, codegenClassScope));
 

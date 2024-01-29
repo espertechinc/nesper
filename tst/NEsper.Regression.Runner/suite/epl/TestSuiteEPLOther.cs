@@ -710,7 +710,6 @@ namespace com.espertech.esper.regressionrun.suite.epl
         /// </code>
         /// </summary>
 
-        [Parallelizable(ParallelScope.None)]
         public class TestEPLOtherPlanExcludeHint : AbstractTestBase
         {
             public TestEPLOtherPlanExcludeHint() : base(Configure)

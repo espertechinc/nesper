@@ -31,8 +31,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotNodeForgePropertyExpr forge,
             ExprEvaluator exprEvaluator)
         {
-            this._forge = forge;
-            this._exprEvaluator = exprEvaluator;
+            _forge = forge;
+            _exprEvaluator = exprEvaluator;
         }
 
         public object Evaluate(
@@ -72,8 +72,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 .DeclareVar<string>(
                     "result",
                     forge.ExprForge.EvaluateCodegen(typeof(string), methodNode, exprSymbol, codegenClassScope))
-                .IfRefNullReturnNull("result")
-                .DebugStack();
+                .IfRefNullReturnNull("result");
 
             methodNode.Block
                 .MethodReturn(

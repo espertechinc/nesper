@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type desiredReturnType)
         {
-            block.DeclareVar(desiredReturnType.GetComponentType().GetBoxedType(), "result", ConstantNull());
+            block.DeclareVar(desiredReturnType, "result", ConstantNull());
         }
 
         public override void ForEachBlock(

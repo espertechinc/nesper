@@ -31,11 +31,5 @@ namespace com.espertech.esper.runtime.client.util
         {
             return new VoidDisposable();
         }
-
-#if false
-        public void Release(IReaderWriterLock runtimeWideLock)
-        {
-        }
-#endif
     }
 } // end of namespace

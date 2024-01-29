@@ -8,15 +8,13 @@
 
 using System;
 using System.Collections.Generic;
-
+using System.Globalization;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
-// assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
@@ -40,22 +38,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            Try100Events(env, dbname);
-            var endTime = PerformanceObserver.MilliTime;
+            var delta = PerformanceObserver.TimeMillis(() => Try100Events(env, dbname));
             // log.info(".test100EventsRetained delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 5000);
+            Assert.That(delta, Is.LessThan(5000));
         }
 
         private static void RunAssertion100EventsPooled(
             RegressionEnvironment env,
             string dbname)
         {
-            var startTime = PerformanceObserver.MilliTime;
-            Try100Events(env, dbname);
-            var endTime = PerformanceObserver.MilliTime;
+            var delta = PerformanceObserver.TimeMillis(() => Try100Events(env, dbname));
             // log.info(".test100EventsPooled delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 10000);
+            Assert.That(delta, Is.LessThan(10000));
         }
 
         private static void RunAssertionSelectRStream(
@@ -126,16 +120,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             RegressionEnvironment env,
             string dbname)
         {
-            var stmtText = "@name('s0') select Id, mycol3, mycol2 from " +
-                           "SupportBean_S0#keepall as s0," +
-                           " sql:" +
-                           dbname +
-                           "['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
+            var stmtText =
+                "@name('s0') select Id, mycol3, mycol2 from " +
+                "SupportBean_S0#keepall as s0," +
+                " sql:" + dbname + "['select mycol3, mycol2 from mytesttable_large'] as s1 where s0.Id = s1.mycol3";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             for (var i = 0; i < 20; i++) {
                 var num = i + 1;
-                var col2 = Convert.ToString(Math.Round((float)num / 10));
+                var col2 = Convert.ToString(Math.Round(num / 10.0, MidpointRounding.AwayFromZero), CultureInfo.InvariantCulture);
                 var bean = new SupportBean_S0(num);
                 env.SendEventBean(bean);
                 env.AssertPropsNew("s0", new string[] { "Id", "mycol3", "mycol2" }, new object[] { num, num, col2 });

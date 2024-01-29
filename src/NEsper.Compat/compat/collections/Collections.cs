@@ -380,20 +380,6 @@ namespace com.espertech.esper.compat.collections
             return enumerable.Aggregate(0, (current, temp) => current ^ (temp != null ? temp.GetHashCode() : 0));
         }
 
-#if false
-        public static int GetHashCode( Array a )
-        {
-            int hashCode = 0;
-            for( int ii = a.Length - 1 ; ii >= 0 ; ii-- ) {
-                Object temp = a.GetValue(ii);
-                int tempHash = temp != null ? temp.GetHashCode() : 0;
-                hashCode = 31*hashCode + tempHash;
-            }
-
-            return hashCode;
-        }
-#endif
-
         public static IDictionary<string, object> SingletonDataMap(string key, object value)
         {
             return SingletonMap(key, value);

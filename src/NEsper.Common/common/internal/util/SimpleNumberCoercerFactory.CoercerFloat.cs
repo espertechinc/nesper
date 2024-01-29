@@ -30,8 +30,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedFloat();
             }
 
-            public Type ReturnType => typeof(float?);
-
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(float?) : typeof(float);
+            }
+            
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType,

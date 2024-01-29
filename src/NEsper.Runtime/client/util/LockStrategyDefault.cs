@@ -30,12 +30,5 @@ namespace com.espertech.esper.runtime.client.util
         {
             return runtimeWideLock.AcquireWriteLock();
         }
-
-#if false
-        public void Release(IReaderWriterLock runtimeWideLock)
-        {
-            runtimeWideLock.ReleaseWriteLock();
-        }
-#endif
     }
 } // end of namespace

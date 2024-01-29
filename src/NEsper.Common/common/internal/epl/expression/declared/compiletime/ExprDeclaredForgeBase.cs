@@ -21,6 +21,7 @@ using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.expression.declared.runtime;
 using com.espertech.esper.common.@internal.metrics.instrumentation;
+using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat;
 
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
@@ -232,7 +233,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
 
             var evaluationType = requiredType == typeof(object) ? typeof(object) : inner;
             var methodNode = codegenMethodScope.MakeChild(
-                evaluationType,
+                requiredType,
                 typeof(ExprDeclaredForgeBase),
                 codegenClassScope);
             var refIsNewData = exprSymbol.GetAddIsNewData(methodNode);
@@ -250,19 +251,43 @@ namespace com.espertech.esper.common.@internal.epl.expression.declared.compileti
             return LocalMethod(methodNode);
         }
 
-        private Type DetermineEvaluationType(Type requiredType)
+        private static Type DetermineEvaluationType(
+            Type requiredType,
+            Type evaluationType)
         {
-            var evaluationType = requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType;
             if (evaluationType != requiredType) {
+                if (evaluationType.IsAssignmentCompatible(requiredType)) {
+                    return requiredType;
+                }
+                
                 if (evaluationType.GetBoxedType() == requiredType) {
                     evaluationType = evaluationType.GetBoxedType();
                 }
                 else {
+                    if (evaluationType.IsBoxedType() && requiredType.IsBoxedType()) {
+                        // null comparisons should occur
+                        var evaluationTypeUnboxed = evaluationType.GetUnboxedType();
+                        if (evaluationTypeUnboxed != evaluationType) {
+                            var requiredTypeUnboxed = requiredType.GetUnboxedType();
+                            if (requiredTypeUnboxed != requiredType) {
+                                return DetermineEvaluationType(requiredTypeUnboxed, evaluationTypeUnboxed)
+                                    .GetBoxedType();
+                            }
+                        }
+                    }
+
                     throw new IllegalStateException($"requiredType \"{requiredType}\" incompatible with evaluationType \"{evaluationType}\"");
                 }
             }
 
             return evaluationType;
+        }
+
+        private Type DetermineEvaluationType(Type requiredType)
+        {
+            return DetermineEvaluationType(
+                requiredType, 
+                requiredType == typeof(object) ? typeof(object) : InnerForge.EvaluationType);
         }
         
         private CodegenMethod EvaluateCodegenRewritten(

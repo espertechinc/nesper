@@ -84,6 +84,8 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.avg
         public override Type ResultType => resultType;
 
         public override ExprAggregateNodeBase AggregationExpression => parent;
+        
+        public override MathContext OptionalMathContext => optionalMathContext;
 
         public override AggregationPortableValidation AggregationPortableValidation => new AggregationPortableValidationAvg(
             parent.IsDistinct,

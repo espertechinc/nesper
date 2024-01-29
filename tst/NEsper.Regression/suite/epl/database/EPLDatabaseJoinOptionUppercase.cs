@@ -34,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AssertEqualsNew("s0", "MYINT", 10);
 
             SendSupportBeanEvent(env, "H");
-            env.AssertEqualsNew("s0", "MYINT", 10);
+            env.AssertEqualsNew("s0", "MYINT", 80);
 
             env.UndeployAll();
         }

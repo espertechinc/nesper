@@ -18,7 +18,7 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public interface Coercer
     {
-        Type ReturnType { get; }
+        Type GetReturnType(Type valueType);
 
         /// <summary>
         /// Coerce the given value to a pre-determined type.

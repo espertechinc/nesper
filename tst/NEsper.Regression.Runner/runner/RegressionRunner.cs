@@ -9,7 +9,7 @@
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-
+using com.espertech.esper.common.client.artifact;
 using com.espertech.esper.compat;
 
 using com.espertech.esper.compat.logging;
@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NEsper.Avro.Core;
+using NUnit.Framework;
 
 namespace com.espertech.esper.regressionrun.runner
 {

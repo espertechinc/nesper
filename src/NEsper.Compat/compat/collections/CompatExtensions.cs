@@ -1672,5 +1672,23 @@ namespace com.espertech.esper.compat.collections
 
             Console.WriteLine(stringResult);
         }
+
+        public static IDisposable Trace(
+            string className,
+            string methodName,
+            params object[] arguments)
+        {
+            Console.WriteLine("Enter: ClassName={0}, Method={1}, Args={2}",
+                className,
+                methodName,
+                RenderAny(arguments));
+
+            return new TrackedDisposable(() => {
+                Console.WriteLine("Exit: ClassName={0}, Method={1}, Args={2}",
+                    className,
+                    methodName,
+                    RenderAny(arguments));
+            });
+        }
     }
 }

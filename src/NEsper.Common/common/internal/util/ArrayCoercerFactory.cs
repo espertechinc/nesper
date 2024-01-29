@@ -100,9 +100,11 @@ namespace com.espertech.esper.common.@internal.util
 
         private class CoercerNull : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerNull(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -110,7 +112,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
@@ -131,9 +133,11 @@ namespace com.espertech.esper.common.@internal.util
 
         private class CoercerWiden : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerWiden(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -141,7 +145,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
@@ -162,9 +166,11 @@ namespace com.espertech.esper.common.@internal.util
 
         private class CoercerNarrow : Coercer
         {
+            private readonly Type _returnType;
+
             public CoercerNarrow(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -172,7 +178,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

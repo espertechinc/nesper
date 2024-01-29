@@ -44,13 +44,14 @@ namespace com.espertech.esper.common.client.configuration.common
             ConnectionSettings connectionSettings,
             ConnectionLifecycleEnum connectionLifecycleEnum,
             MetadataOriginEnum metadataRetrievalEnum,
-            ColumnChangeCaseEnum columnChangeCase)
+            ColumnChangeCaseEnum columnChangeCase,
+            IDictionary<Type, Type> dataTypesMapping)
         {
             ConnectionSettings = connectionSettings;
             ConnectionLifecycleEnum = connectionLifecycleEnum;
             MetadataRetrievalEnum = metadataRetrievalEnum;
             ColumnChangeCase = columnChangeCase;
-            DataTypesMapping = new Dictionary<Type, Type>();
+            DataTypesMapping = dataTypesMapping;
         }
 
         /// <summary>
@@ -139,8 +140,9 @@ namespace com.espertech.esper.common.client.configuration.common
         ///     Returns the mapping of types that the runtime must perform
         ///     when receiving output columns of that sql types.
         /// </summary>
-        [JsonIgnore]
-        public IDictionary<Type, Type> DataTypesMapping { get; } // TODO - fix serialization
+
+        [JsonConverter(typeof(JsonConverterTypeTypeDictionary))]
+        public IDictionary<Type, Type> DataTypesMapping { get; }
 
         /// <summary>
         ///     Sets and indicator how the runtime should retrieve metadata about the columns

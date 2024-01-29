@@ -16,7 +16,7 @@ using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
 using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.rettype;
-
+using com.espertech.esper.common.@internal.util;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.common.@internal.epl.expression.dot.core
@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             var index = _indexExpression.Evaluate(eventsPerStream, isNewData, exprEvaluatorContext);
             if (index is int indexNum) {
-                return CollectionElementAt(target, indexNum);
+                return CollectionElementAt(target.AsObjectCollection(), indexNum);
             }
 
             return null;
@@ -57,16 +57,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
         /// </summary>
         /// <param name="target">collection</param>
         /// <returns>frequence params</returns>
-        public static object CollectionElementAt(
-            object target,
+        public static T CollectionElementAt<T>(
+            ICollection<T> target,
             int indexNum)
         {
-            var collection = (ICollection<object>)target;
+            var collection = target;
             if (collection.Count <= indexNum) {
-                return null;
+                return default;
             }
 
-            if (collection is IList<object> list) {
+            if (collection is IList<T> list) {
                 return list[indexNum];
             }
 

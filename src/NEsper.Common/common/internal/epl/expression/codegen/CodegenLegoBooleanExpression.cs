@@ -51,7 +51,6 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             block
                 .CommentFullLine(MethodBase.GetCurrentMethod()!.DeclaringType!.FullName + "." + MethodBase.GetCurrentMethod()!.Name)
                 .DeclareVar(evaluationType, PASS_NAME, expression);
-            //block.Debug("Pass = {0}", Ref(PASS_NAME));
 
             var passCheck = NotOptional(!checkFor, unboxPass);
 

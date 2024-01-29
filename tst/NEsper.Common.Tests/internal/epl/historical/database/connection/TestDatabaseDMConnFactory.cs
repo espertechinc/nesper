@@ -26,12 +26,6 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
     [Category("IntegrationTest")]
     public class TestDatabaseDmConnFactory : AbstractCommonTest
     {
-#if false
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryOne;
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryTwo;
-        private readonly DriverConnectionFactoryDesc _databaseDmConnConnectionFactoryThree;
-#endif
-
         [SetUp]
         public void SetUp()
         {

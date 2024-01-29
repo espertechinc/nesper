@@ -18,10 +18,11 @@ namespace com.espertech.esper.common.@internal.util
         private class CoercerNull : Coercer
         {
             public static readonly CoercerNull INSTANCE = new CoercerNull(typeof(object));
+            private readonly Type _returnType;
 
             public CoercerNull(Type returnType)
             {
-                ReturnType = returnType;
+                _returnType = returnType;
             }
 
             public object CoerceBoxed(object value)
@@ -29,7 +30,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType { get; }
+            public Type GetReturnType(Type valueType) => _returnType;
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

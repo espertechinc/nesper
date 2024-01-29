@@ -75,12 +75,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
 
         public override Type ReturnTypeOfMethod(Type desiredReturnType)
         {
-            return typeof(IDictionary<,>).MakeGenericType(KeyType, desiredReturnType);
+            var valType = desiredReturnType.GetDictionaryValueType();
+            return typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
         }
 
         public override CodegenExpression ReturnIfEmptyOptional(Type desiredReturnType)
         {
-            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, desiredReturnType), "Instance");
+            var valType = desiredReturnType.GetDictionaryValueType();
+            return EnumValue(typeof(EmptyDictionary<,>).MakeGenericType(KeyType, valType), "Instance");
         }
 
         public override void InitBlock(
@@ -90,7 +92,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type desiredReturnType)
         {
-            var valType = desiredReturnType;
+            var valType = desiredReturnType.GetDictionaryValueType();
             var dictType = typeof(IDictionary<,>).MakeGenericType(KeyType, valType);
             var mapType = typeof(LinkedHashMap<,>).MakeGenericType(KeyType, valType);
 
@@ -104,13 +106,12 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             CodegenClassScope codegenClassScope,
             Type desiredReturnType)
         {
-            var valType = desiredReturnType;
-            var componentType = valType.GetComponentType();
-            var listType = typeof(List<>).MakeGenericType(componentType);
+            var valType = desiredReturnType.GetDictionaryValueType();
+            var itemType = GenericExtensions.GetComponentType(valType);
+            var listType = typeof(List<>).MakeGenericType(itemType);
 
             block
-                .DeclareVar(KeyType, "key",
-                    InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
+                .DeclareVar(KeyType, "key", InnerExpression.EvaluateCodegen(KeyType, methodNode, scope, codegenClassScope))
                 .DeclareVar(valType, "value", ExprDotMethod(Ref("result"), "Get", Ref("key")))
                 .IfRefNull("value")
                 .AssignRef("value", NewInstance(listType))

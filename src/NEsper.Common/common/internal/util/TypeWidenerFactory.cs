@@ -11,6 +11,7 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.@internal.bytecodemodel.@base;
 using com.espertech.esper.common.@internal.bytecodemodel.model.expression;
+using com.espertech.esper.common.@internal.epl.expression.codegen;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
@@ -241,7 +242,8 @@ namespace com.espertech.esper.common.@internal.util
             //    .AddParam(typeof(object), "input");
             //anonymousClass.AddMethod("widen", widen);
 
-            var widenResult = widener.WidenCodegen(Ref("input"), method, classScope);
+            var inputAsType = CodegenLegoCast.CastSafeFromObjectType(widener.WidenInputType, Ref("input"));
+            var widenResult = widener.WidenCodegen(inputAsType, method, classScope);
             widen.Block.BlockReturn(widenResult);
             return anonymousClass;
         }

@@ -41,13 +41,5 @@ namespace com.espertech.esper.runtime.client.util
                 throw new LockStrategyException("Failed to obtain write lock of runtime-wide processing read-write lock");
             }
         }
-
-#if false
-        public void Release(IReaderWriterLock runtimeWideLock)
-        {
-            _lockDisposable?.Dispose();
-            //runtimeWideLock.Lock.WriteLock.Release();
-        }
-#endif
     }
 } // end of namespace

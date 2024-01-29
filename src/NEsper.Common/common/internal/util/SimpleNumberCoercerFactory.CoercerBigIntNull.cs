@@ -43,7 +43,7 @@ namespace com.espertech.esper.common.@internal.util
                 return value;
             }
 
-            public Type ReturnType => typeof(BigInteger?);
+            public Type GetReturnType(Type valueType) => typeof(BigInteger?);
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

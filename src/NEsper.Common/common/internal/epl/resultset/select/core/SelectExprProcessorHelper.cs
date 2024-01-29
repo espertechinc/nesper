@@ -649,15 +649,27 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 .AddParam<object[]>("row")
                 .Block;
             for (var i = 0; i < wideners.Length; i++) {
-                if (wideners[i] != null) {
+                var typeWidenerSpi = wideners[i];
+                if (typeWidenerSpi != null) {
+                    // get the input for this widening conversion
+                    var input = ArrayAtIndex(Ref("row"), Constant(i));
+                    // However, the widening conversion expects an input type that matches what it
+                    // was told it would receive.  We create methods that actually match the signatures
+                    // for the anticipated input type.  So, perform a cursory "cast" from <object> to
+                    // the anticipated input type.  This loss only occurs because we wrap it in an
+                    // object.
+                    var inputType = typeWidenerSpi.WidenInputType;
+                    if (inputType != null && inputType != typeof(object)) {
+                        input = Cast(inputType, input);
+                    }
+                    
                     block.AssignArrayElement(
                         "row",
                         Constant(i),
-                        wideners[i]
-                            .WidenCodegen(
-                                ArrayAtIndex(Ref("row"), Constant(i)),
-                                codegenMethodScope,
-                                codegenClassScope));
+                        typeWidenerSpi.WidenCodegen(
+                            input,
+                            codegenMethodScope,
+                            codegenClassScope));
                 }
             }
 

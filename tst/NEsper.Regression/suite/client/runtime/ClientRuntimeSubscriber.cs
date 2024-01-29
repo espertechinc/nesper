@@ -1058,14 +1058,13 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var numLoop = 100000;
                 env.CompileDeploy("select TheString, IntPrimitive from SupportBean(IntPrimitive > 10)");
 
-                var start = PerformanceObserver.MilliTime;
-                for (var i = 0; i < numLoop; i++) {
-                    env.SendEventBean(new SupportBean("E1", 1000 + i));
-                }
+                var delta = PerformanceObserver.TimeMillis(() => {
+                    for (var i = 0; i < numLoop; i++) {
+                        env.SendEventBean(new SupportBean("E1", 1000 + i));
+                    }
+                });
 
-                var end = PerformanceObserver.MilliTime;
-
-                Assert.That(end - start, Is.LessThan(1000));
+                Assert.That(delta, Is.LessThan(1000));
                 env.UndeployAll();
             }
         }

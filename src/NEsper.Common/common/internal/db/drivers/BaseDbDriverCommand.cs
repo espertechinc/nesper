@@ -17,6 +17,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.epl.expression.core;
 using com.espertech.esper.common.@internal.epl.historical.database.core;
 using com.espertech.esper.common.@internal.util;
+using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.db.drivers
@@ -445,14 +446,16 @@ namespace com.espertech.esper.common.@internal.db.drivers
                 // converting the resultant type from the dataType that has been
                 // provided to us into a different type.
 
-                //if (columnSettings.SqlTypeBinding != null)
-                //{
-                //    String typeBinding = columnSettings.SqlTypeBinding.Get(columnType);
-                //    if (typeBinding != null)
-                //    {
-                //        binding = DatabaseTypeEnum.GetEnum(typeBinding).Binding;
-                //    }
-                //}
+                if (columnSettings.DataTypesMapping != null)
+                {
+                    var typeBinding = columnSettings.DataTypesMapping.Get(columnType);
+                    if (typeBinding != null)
+                    {
+                        binding = DatabaseTypeEnumExtensions
+                            .GetEnum(typeBinding.Name)
+                            .GetBinding();
+                    }
+                }
 
                 var outputDesc = new DBOutputTypeDesc(sqlTypeName, columnType, binding);
                 outputProperties[columnName] = outputDesc;

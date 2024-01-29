@@ -169,7 +169,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// referenced table.  The table allows us to reuse connections to
         /// database that are continually accessed on the same thread.
         /// </summary>
-        [JsonIgnore]
         [NonSerialized]
         private static readonly Dictionary<DbConnection, long>
             sdbConnectionTable = new Dictionary<DbConnection, long>();
@@ -178,7 +177,6 @@ namespace com.espertech.esper.common.@internal.db.drivers
         /// Periodically removes unused connections from the sdbConnectionTable
         /// and allows them to be reclaimed.
         /// </summary>
-        [JsonIgnore]
         [NonSerialized]
         private static Timer releaseTimer = null;
 

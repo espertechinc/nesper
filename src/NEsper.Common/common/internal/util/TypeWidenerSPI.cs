@@ -18,6 +18,8 @@ namespace com.espertech.esper.common.@internal.util
     /// </summary>
     public interface TypeWidenerSPI : TypeWidener
     {
+        Type WidenInputType => typeof(object);
+
         Type WidenResultType { get; }
 
         CodegenExpression WidenCodegen(

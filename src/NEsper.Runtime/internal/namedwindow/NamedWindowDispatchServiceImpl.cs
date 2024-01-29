@@ -186,21 +186,6 @@ namespace com.espertech.esper.runtime.@internal.namedwindow
                     },
                     work.Add);
 
-#if false
-                var enumerator = dispatches.GetEnumerator();
-                while (enumerator.MoveNext()) {
-                    var next = enumerator.Current;
-                    var earlier = next.Earlier;
-                    if (earlier == null || work.Contains(earlier)) {
-                        work.Add(next);
-                        enumerator.Remove();
-                    }
-                    else {
-                        break;
-                    }
-                }
-#endif
-
                 ProcessDispatches(work, dispatchesPerStmt);
             }
         }

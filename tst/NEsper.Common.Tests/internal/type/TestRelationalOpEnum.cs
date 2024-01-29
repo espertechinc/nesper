@@ -20,15 +20,6 @@ namespace com.espertech.esper.common.@internal.type
     [TestFixture]
     public class TestRelationalOpEnum : AbstractCommonTest
     {
-#if FALSE
-        private readonly bool[][] expected = {
-            new[] {false, false, true}, //GT
-            new[] {false, true, true}, // GE
-            new[] {true, false, false}, // LT
-            new[] {true, true, false} // LE
-        };
-#endif
-
         private readonly IDictionary<RelationalOpEnum, bool[]> expected =
             new Dictionary<RelationalOpEnum, bool[]>();
 

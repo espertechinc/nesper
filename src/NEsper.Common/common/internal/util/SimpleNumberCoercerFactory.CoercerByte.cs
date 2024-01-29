@@ -30,7 +30,10 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedByte();
             }
 
-            public Type ReturnType => typeof(byte?);
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(byte?) : typeof(byte);
+            }
 
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,

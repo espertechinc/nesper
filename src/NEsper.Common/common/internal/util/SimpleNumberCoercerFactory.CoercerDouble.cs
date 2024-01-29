@@ -30,8 +30,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedDouble();
             }
 
-            public Type ReturnType => typeof(double?);
-
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(double?) : typeof(double);
+            }
+            
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType, 
@@ -55,8 +58,7 @@ namespace com.espertech.esper.common.@internal.util
                 //     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedDouble")
                 //     : value;
 
-                if (valueType == typeof(float) ||
-                    valueType == typeof(double) ||
+                if (valueType == typeof(double) ||
                     valueType == typeof(double?)) {
                     return value;
                 }
@@ -76,8 +78,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                return valueType != typeof(float) &&
-                       valueType != typeof(double)
+                return valueType != typeof(double)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsDouble")
                     : value;
             }

@@ -34,7 +34,9 @@ namespace com.espertech.esper.common.@internal.util
             _coercer = coercer;
         }
 
-        public Type WidenResultType => _coercer.ReturnType;
+        public Type WidenInputType => _fromType;
+
+        public Type WidenResultType => _coercer.GetReturnType(_fromType);
 
         public object Widen(object input)
         {

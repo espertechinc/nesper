@@ -49,7 +49,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 throw new ArgumentException("Invalid application type " + metadata.ApplicationType);
             }
 
-            IDictionary<string, object> verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
+            var verified = ResolvePropertyTypes(propertyTypes, eventTypeCompileTimeResolver);
             return new MapEventType(
                 metadata,
                 verified,
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 beanEventTypeFactory);
         }
 
-        public static LinkedHashMap<string, object> ResolvePropertyTypes(
+        public static IDictionary<string, object> ResolvePropertyTypes(
             IDictionary<string, object> propertyTypes,
             EventTypeNameResolver eventTypeNameResolver)
         {
@@ -243,12 +243,8 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
-            if (!(value is IDictionary<string, object> subEvent)) {
-                if (value is EventBean eventBean) {
-                    return eventBean;
-                }
-
-                return null;
+            if (!TryGetUnderlyingMap(value, out var subEvent)) {
+                return value as EventBean;
             }
 
             return eventBeanTypedEventFactory.AdapterForTypedMap(subEvent, fragmentEventType);
@@ -328,7 +324,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             MapEventPropertyGetter getter)
         {
             var valueMap = GetBNArrayValueAtIndex(value, index);
-            if (valueMap is IDictionary<string, object> valueMapDictionary) {
+            if (TryGetUnderlyingMap(valueMap, out var valueMapDictionary)) {
                 return getter.GetMap(valueMapDictionary);
             }
 
@@ -368,14 +364,14 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType fragmentType)
         {
             var valueMap = GetBNArrayValueAtIndex(value, index);
-            if (!(valueMap is IDictionary<string, object> valueMapAsDictionary)) {
+            if (!TryGetUnderlyingMap(valueMap, out var valueMapAsDictionary)) {
                 if (value is EventBean bean) {
                     return getter.GetFragment(bean);
                 }
 
                 return null;
             }
-
+            
             // If the map does not contain the key, this is allowed and represented as null
             EventBean eventBean = eventBeanTypedEventFactory.AdapterForTypedMap(
                 valueMapAsDictionary,
@@ -411,7 +407,7 @@ namespace com.espertech.esper.common.@internal.@event.core
             MapEventPropertyGetter getter)
         {
             var valueMap = GetBNArrayValueAtIndex(value, index);
-            if (!(valueMap is IDictionary<string, object>)) {
+            if (!TryGetUnderlyingMap(valueMap, out var valueMapDictionary)) {
                 if (valueMap is EventBean map) {
                     return getter.IsExistsProperty(map);
                 }
@@ -419,7 +415,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 return false;
             }
 
-            return getter.IsMapExistsProperty((IDictionary<string, object>)valueMap);
+            return getter.IsMapExistsProperty(valueMapDictionary);
         }
 
         public static CodegenExpression HandleNestedValueArrayWithMapExistsCode(
@@ -558,6 +554,28 @@ namespace com.espertech.esper.common.@internal.@event.core
                 StaticMethod(typeof(BaseNestableEventUtil), "GetBNArrayValueAtIndex", @ref, Constant(index)));
         }
 
+        public static bool TryGetUnderlyingMap(object value, out IDictionary<string, object> valueAsMap)
+        {
+            if (value == null) {
+                valueAsMap = default;
+                return false;
+            }
+
+            if (value is IDictionary<string, object> valueMap) {
+                valueAsMap = valueMap;
+                return true;
+            }
+            
+            var valueType = value.GetType();
+            if (valueType.IsGenericStringDictionary()) {
+                valueAsMap = MagicMarker.SingletonInstance.GetStringDictionaryFactory(valueType).Invoke(value);
+                return (valueAsMap != null) ;
+            }
+
+            valueAsMap = default;
+            return false;
+        }
+        
         public static IDictionary<string, object> GetUnderlyingMap(object value)
         {
             if (value == null) {
@@ -671,6 +689,10 @@ namespace com.espertech.esper.common.@internal.@event.core
             EventType fragmentEventType,
             EventBeanTypedEventFactory eventBeanTypedEventFactory)
         {
+            if (value == null) {
+                return null;
+            }
+
             if (value is IDictionary<string, object>[] mapTypedSubEvents) {
                 var countNull = 0;
                 foreach (var map in mapTypedSubEvents) {

@@ -30,8 +30,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedInt16();
             }
 
-            public Type ReturnType => typeof(short?);
-
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(short?) : typeof(short);
+            }
+            
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType,

@@ -40,11 +40,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.codegen
             CodegenMethod parent,
             CodegenClassScope classScope)
         {
-            var evaluationType = forge.EvaluationType;
-
             var methodReturnType = typeof(object);
-            if (evaluationType is Type type) {
-                methodReturnType = type;
+            var evaluationType = forge.EvaluationType;
+            if (evaluationType  != null) {
+                methodReturnType = evaluationType.GetBoxedType();
             }
 
             var exprSymbol = new ExprForgeCodegenSymbol(true, null);

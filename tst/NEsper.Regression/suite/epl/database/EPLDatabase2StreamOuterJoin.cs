@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "s0",
                     received => {
                         Assert.AreEqual(2, received.Get("MyInt"));
-                        AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+                        AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 2, 20 } });
 
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "s0",
                     received => {
                         Assert.AreEqual(2, received.Get("MyInt"));
-                        AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+                        AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 2, 20 } });
 
@@ -293,12 +293,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
         {
             public void Run(RegressionEnvironment env)
             {
-                var fields = "MyInt,MyVarChar".SplitCsv();
-                var stmtText = "@name('s0') select s0.IntPrimitive as MyInt, MyVarChar from " +
-                               "SupportBean#keepall as s0 " +
-                               " right outer join " +
-                               " sql:MyDBWithRetain ['select myvarchar MyVarChar from mytesttable'] as s1 " +
-                               "on TheString = MyVarChar";
+                var fields = "MyInt,myvarchar".SplitCsv();
+                var stmtText =
+                    "@name('s0') select s0.IntPrimitive as MyInt, myvarchar from " +
+                    "SupportBean#keepall as s0 " +
+                    " right outer join " +
+                    // Case sensitivity in column names is problematic.  For example, PGSQL will
+                    // return this query with a case-insensitive schema.
+                    " sql:MyDBWithRetain ['select myvarchar from mytesttable'] as s1 " +
+                    //" sql:MyDBWithRetain ['select myvarchar as MyVarChar from mytesttable'] as s1 " +
+                    "on TheString = myvarchar";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, null);
@@ -313,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "s0",
                     received => {
                         Assert.AreEqual(-1, received.Get("MyInt"));
-                        Assert.AreEqual("A", received.Get("MyVarChar"));
+                        Assert.AreEqual("A", received.Get("myvarchar"));
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { -1, "A" } });
 
@@ -332,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 "s0",
                 received => {
                     Assert.AreEqual(2, received.Get("MyInt"));
-                    AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3d);
+                    AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                 });
 
             SendEvent(env, 11);
@@ -352,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 "s0",
                 received => {
                     Assert.AreEqual(1, received.Get("MyInt"));
-                    AssertReceived(received, 1L, 10, "A", "Z", true, 5000m, 100m, 1.2d, 1.3d);
+                    AssertReceived(received, 1L, 10, "A", "Z", true, 5000m, 100m, 1.2d, 1.3f);
                 });
 
             SendEvent(env, 11);
@@ -376,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             decimal? mynumeric,
             decimal? mydecimal,
             double? mydouble,
-            double? myreal)
+            float? myreal)
         {
             Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
             Assert.AreEqual(myint, theEvent.Get("myint"));

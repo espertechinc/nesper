@@ -30,8 +30,11 @@ namespace com.espertech.esper.common.@internal.util
                 return value.AsBoxedInt64();
             }
 
-            public Type ReturnType => typeof(long?);
-
+            public Type GetReturnType(Type valueType)
+            {
+                return valueType.CanBeNull() ? typeof(long?) : typeof(long);
+            }
+            
             public CodegenExpression CoerceCodegen(
                 CodegenExpression value,
                 Type valueType,
@@ -49,9 +52,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenMethodScope codegenMethodScope,
                 CodegenClassScope codegenClassScope)
             {
-                if (valueType == typeof(short) ||
-                    valueType == typeof(int) ||
-                    valueType == typeof(long) ||
+                if (valueType == typeof(long) ||
                     valueType == typeof(long?)) {
                     return value;
                 }
@@ -71,9 +72,7 @@ namespace com.espertech.esper.common.@internal.util
                 CodegenExpression value,
                 Type valueType)
             {
-                return valueType != typeof(short) &&
-                       valueType != typeof(int) &&
-                       valueType != typeof(long)
+                return valueType != typeof(long)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsInt64")
                     : value;
 
@@ -90,9 +89,7 @@ namespace com.espertech.esper.common.@internal.util
                     return CodegenExpressionBuilder.ConstantNull();
                 }
                 
-                return valueType != typeof(short) &&
-                       valueType != typeof(int) &&
-                       valueType != typeof(long) &&
+                return valueType != typeof(long) &&
                        valueType != typeof(long?)
                     ? CodegenExpressionBuilder.ExprDotMethod(value, "AsBoxedInt64")
                     : value;

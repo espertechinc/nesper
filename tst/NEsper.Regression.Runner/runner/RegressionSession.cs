@@ -9,6 +9,7 @@
 using System;
 using System.IO;
 using System.Linq;
+using com.espertech.esper.common.client.artifact;
 
 #if NETCOREAPP3_0_OR_GREATER
 using System.Runtime;
@@ -21,8 +22,9 @@ using com.espertech.esper.runtime.client;
 
 namespace com.espertech.esper.regressionrun.runner
 {
-    public class RegressionSession : IDisposable
-    {
+    public class RegressionSession : IDisposable {
+        private MetadataReferenceResolverCaching _metadataResolver;
+       
         public RegressionSession(Configuration configuration, bool useDefaultRuntime)
         {
             Id = Guid.NewGuid();
@@ -32,6 +34,12 @@ namespace com.espertech.esper.regressionrun.runner
             RuntimeProvider = new EPRuntimeProvider();
             Configuration = configuration;
             UseDefaultRuntime = useDefaultRuntime;
+
+            _metadataResolver = new MetadataReferenceResolverCaching(MetadataReferenceResolverExtensions.GetMetadataReference);
+            if (!Configuration.Container.RegisterMetadataReferenceResolver(_metadataResolver.Resolve)) {
+                _metadataResolver = null;
+            }
+
             CleanDirectory(configuration);
         }
 
@@ -73,6 +81,7 @@ namespace com.espertech.esper.regressionrun.runner
         {
             Runtime?.Destroy();
             Runtime = null;
+            _metadataResolver = null;
         }
         
 #if NETCOREAPP3_0_OR_GREATER

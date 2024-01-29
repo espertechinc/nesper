@@ -25,13 +25,5 @@ namespace com.espertech.esper.runtime.client.util
         /// <throws>LockStrategyException to indicate lock attempt failed</throws>
         /// <throws>InterruptedException  when lock-taking is interrupted</throws>
         IDisposable Acquire(IReaderWriterLock runtimeWideLock);
-
-#if false
-        /// <summary>
-        /// Release should release the write lock of the provided read-write lock and should never fail.
-        /// </summary>
-        /// <param name="runtimeWideLock">the runtime-wide event processing read-write lock</param>
-        void Release(IReaderWriterLock runtimeWideLock);
-#endif
     }
 } // end of namespace

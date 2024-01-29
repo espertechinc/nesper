@@ -106,12 +106,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             block.DeclareVar<bool>(
                 "result",
                 forge.Computer.CodegenNoNullCheck(
-                    Unbox(Ref("value")),
-                    value.EvaluationType.GetUnboxedType(),
-                    Unbox(Ref("lower")),
-                    lower.EvaluationType.GetUnboxedType(),
-                    Unbox(Ref("higher")),
-                    higher.EvaluationType.GetUnboxedType(),
+                    Unbox(Ref("value"), valueType),
+                    valueType.GetUnboxedType(),
+                    Unbox(Ref("lower"), lowerType),
+                    lowerType.GetUnboxedType(),
+                    Unbox(Ref("higher"), higherType),
+                    higherType.GetUnboxedType(),
                     methodNode,
                     codegenClassScope));
 

@@ -451,14 +451,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.SendEventMap(lvl0, "Lvl0");
                 env.AssertPropsNew("s0", fields, new object[] { "b", "b" });
 
-                #if false
+#if false
                 // Invalid tests
                 // array value but no array provided
                 env.TryInvalidCompile(
                     path,
                     "select Lvl1.Id from Lvl0",
                     "Failed to validate select-clause expression 'Lvl1.Id': Failed to resolve property 'Lvl1.Id' (property 'Lvl1' is an indexed property and requires an index or enumeration method to access values)");
-                #endif
+#endif
                 
                 env.TryInvalidCompile(
                     path,

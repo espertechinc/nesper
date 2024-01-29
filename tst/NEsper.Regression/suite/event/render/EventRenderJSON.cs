@@ -173,6 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             env.GetEnumerator("s0").Advance());
                         var expected = "{\n" +
                                        "  \"outerMap\": {\n" +
+                                       "    \"intarr\": [1, 2],\n" +
                                        "    \"innerarray\": [{\n" +
                                        "        \"prop1\": \"\",\n" +
                                        "        \"stringarr\": [\"a\", \"b\"]\n" +
@@ -185,7 +186,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "      \"prop1\": \"\",\n" +
                                        "      \"stringarr\": [\"a\", \"b\"]\n" +
                                        "    },\n" +
-                                       "    \"intarr\": [1, 2],\n" +
                                        "    \"prop0\": {\n" +
                                        "      \"Id\": \"A1\"\n" +
                                        "    }\n" +

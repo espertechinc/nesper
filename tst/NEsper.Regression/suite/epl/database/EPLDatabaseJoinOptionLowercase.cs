@@ -17,18 +17,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
     {
         public void Run(RegressionEnvironment env)
         {
-            var sql = "select myint from mytesttable where ${IntPrimitive} = myint'" +
-                      "metadatasql 'select myint from mytesttable'";
-            var stmtText = "@name('s0') select myint from " +
-                           " sql:MyDBLowerCase ['" +
-                           sql +
-                           "] as S0," +
-                           "SupportBean#length(100) as S1";
+            var sql =
+                "select myint from mytesttable where ${IntPrimitive} = myint' " +
+                "metadatasql 'select myint from mytesttable'";
+            var stmtText =
+                $"@name('s0') select myint from  sql:MyDBLowerCase ['{sql}] as S0,SupportBean#length(100) as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("myint")));
+                statement => {
+                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("myint"));
+                });
 
             SendSupportBeanEvent(env, 10);
             env.AssertEqualsNew("s0", "myint", "10");

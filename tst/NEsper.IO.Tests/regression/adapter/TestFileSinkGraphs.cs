@@ -38,6 +38,7 @@ namespace com.espertech.esperio.regression.adapter
 			configuration.Common.AddImportNamespace(typeof(FileSinkFactory));
 			configuration.Common.AddImportNamespace(typeof(DefaultSupportSourceOpForge));
 			configuration.Common.EventMeta.IsEnableXmlXsd = true;
+			
 			DefaultSupportGraphEventUtil.AddTypeConfiguration(configuration);
 			_runtimeProvider = new EPRuntimeProvider();
 			_runtime = _runtimeProvider.GetDefaultRuntimeInstance(configuration);

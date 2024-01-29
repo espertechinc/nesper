@@ -114,35 +114,16 @@ namespace com.espertech.esper.common.@internal.support
 
         public override bool Equals(object o)
         {
-            if (this == o) {
-                return true;
-            }
-
-            if (o == null || GetType() != o.GetType()) {
-                return false;
-            }
+            if (this == o) return true;
+            if (o == null || GetType() != o.GetType()) return false;
 
             var that = (SupportBean_S0)o;
 
-            if (Id != that.Id) {
-                return false;
-            }
-
-            if (!P00?.Equals(that.P00) ?? that.P00 != null) {
-                return false;
-            }
-
-            if (!P01?.Equals(that.P01) ?? that.P01 != null) {
-                return false;
-            }
-
-            if (!P02?.Equals(that.P02) ?? that.P02 != null) {
-                return false;
-            }
-
-            if (!P03?.Equals(that.P03) ?? that.P03 != null) {
-                return false;
-            }
+            if (Id != that.Id) return false;
+            if (!P00?.Equals(that.P00) ?? that.P00 != null) return false;
+            if (!P01?.Equals(that.P01) ?? that.P01 != null) return false;
+            if (!P02?.Equals(that.P02) ?? that.P02 != null) return false;
+            if (!P03?.Equals(that.P03) ?? that.P03 != null) return false;
 
             return true;
         }

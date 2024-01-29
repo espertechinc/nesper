@@ -293,15 +293,6 @@ namespace com.espertech.esper.compat.threading.threadlocal
             }
         }
 
-        #region ISerializable Members
-#if false
-        public void GetObjectData(SerializationInfo INFO, StreamingContext context)
-        {
-            INFO.AddValue("m_dataFactory", m_dataFactory, typeof(Func<T>));
-        }
-#endif
-        #endregion
-
         /// <summary>
         /// Releases unmanaged resources and performs other cleanup operations before the
         /// <see cref="FastThreadLocal&lt;T&gt;"/> is reclaimed by garbage collection.
