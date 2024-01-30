@@ -25,9 +25,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 	/// </summary>
 	public class ExprArrayNode : ExprNodeBase
 	{
-
-		[NonSerialized] [JsonIgnore] private ExprArrayNodeForge forge;
-		private Type optionalRequiredType;
+		[NonSerialized]
+		private ExprArrayNodeForge _forge;
+		private Type _optionalRequiredType;
 
 		/// <summary>
 		/// Ctor.
@@ -38,29 +38,29 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
 		public ExprEvaluator ExprEvaluator {
 			get {
-				CheckValidated(forge);
-				return forge.ExprEvaluator;
+				CheckValidated(_forge);
+				return _forge.ExprEvaluator;
 			}
 		}
 
 		public bool IsConstantResult {
 			get {
-				CheckValidated(forge);
-				return forge.ConstantResult != null;
+				CheckValidated(_forge);
+				return _forge.ConstantResult != null;
 			}
 		}
 
 		public override ExprForge Forge {
 			get {
-				CheckValidated(forge);
-				return forge;
+				CheckValidated(_forge);
+				return _forge;
 			}
 		}
 
 		public Type ComponentTypeCollection {
 			get {
-				CheckValidated(forge);
-				return forge.ArrayReturnType;
+				CheckValidated(_forge);
+				return _forge.ArrayReturnType;
 			}
 		}
 
@@ -70,14 +70,14 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
 			// Can be an empty array with no content
 			if (this.ChildNodes.Length == 0) {
-				if (optionalRequiredType == null) {
-					forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
+				if (_optionalRequiredType == null) {
+					_forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
 				}
 				else {
-					forge = new ExprArrayNodeForge(
+					_forge = new ExprArrayNodeForge(
 						this,
-						optionalRequiredType,
-						Arrays.CreateInstanceChecked(optionalRequiredType, 0));
+						_optionalRequiredType,
+						Arrays.CreateInstanceChecked(_optionalRequiredType, 0));
 				}
 
 				return null;
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 			var mustCoerce = false;
 			Coercer coercer = null;
 			try {
-				if (optionalRequiredType == null) {
+				if (_optionalRequiredType == null) {
 					var coercionType = TypeHelper.GetCommonCoercionType(comparedTypes.ToArray());
 					arrayReturnType = coercionType;
 
@@ -113,8 +113,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 					}
 				}
 				else {
-					arrayReturnType = optionalRequiredType;
-					var arrayBoxedType = optionalRequiredType.GetBoxedType();
+					arrayReturnType = _optionalRequiredType;
+					var arrayBoxedType = _optionalRequiredType.GetBoxedType();
 					foreach (var comparedType in comparedTypes) {
 						if (!comparedType.GetBoxedType().IsAssignmentCompatible(arrayBoxedType)) {
 							throw new ExprValidationException(
@@ -184,7 +184,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 				}
 			}
 
-			forge = new ExprArrayNodeForge(this, arrayReturnType, mustCoerce, coercer, constantResult);
+			_forge = new ExprArrayNodeForge(this, arrayReturnType, mustCoerce, coercer, constantResult);
 			return null;
 		}
 
@@ -217,8 +217,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 		}
 
 		public Type OptionalRequiredType {
-			get => optionalRequiredType;
-			set => this.optionalRequiredType = value;
+			get => _optionalRequiredType;
+			set => _optionalRequiredType = value;
 		}
 	}
 } // end of namespace

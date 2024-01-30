@@ -719,6 +719,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             EventType eventType,
             object[][] expectedType)
         {
+            // reorder the inputs so that they are ordered by the expected name
+            expectedType = expectedType.OrderBy(_ => (string)_[0]).ToArray();
+            
             SupportEventTypeAssertionUtil.AssertEventTypeProperties(
                 expectedType,
                 eventType,

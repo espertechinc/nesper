@@ -181,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var path = new RegressionPath();
 
                 var stmtTextCreate = namedWindow
-                    ? "@name('create') @public create window MyInfraPC#keepall as (Id string, array int[], value int)"
-                    : "@name('create') @public create table MyInfraPC(Id string primary key, array int[], value int)";
+                    ? "@name('create') @public create window MyInfraPC#keepall as (Id string, array int[primitive], value int)"
+                    : "@name('create') @public create table MyInfraPC(Id string primary key, array int[primitive], value int)";
                 env.CompileDeploy(stmtTextCreate, path);
 
                 var stmtTextSelect =
