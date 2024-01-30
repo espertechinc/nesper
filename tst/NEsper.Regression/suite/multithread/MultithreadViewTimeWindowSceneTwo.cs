@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadViewTimeWindowSceneTwo : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private ResultUpdateListener[] listeners;
         private Thread[] threads;
 
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var numTimeWindowAdvancements = (endTime - startTime) / 1000 / timeWindowSize;
 
-            log.Info(
+            Log.Info(
                 "Completed, expected=" +
                 numEventsPerThread * numThreads +
                 " numTimeWindowAdvancements=" +
@@ -214,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Unexpected exception querying results", ex);
+                    Log.Error("Unexpected exception querying results", ex);
                     IsCaughtException = true;
                     throw;
                 }

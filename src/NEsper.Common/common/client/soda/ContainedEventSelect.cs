@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="splitExpression">the property expression or other expression for splitting the event</param>
         public ContainedEventSelect(Expression splitExpression)
         {
-            this._splitExpression = splitExpression;
+            _splitExpression = splitExpression;
         }
 
         /// <summary>

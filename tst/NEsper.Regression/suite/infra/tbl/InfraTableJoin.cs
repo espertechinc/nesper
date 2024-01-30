@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
     /// </summary>
     public class InfraTableJoin : IndexBackingTableInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(InfraTableJoin));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InfraTableJoin));
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -573,7 +573,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             var count = -1;
             foreach (var assertion in assertions) {
                 count++;
-                log.Info("======= Testing #" + count++);
+                Log.Info("======= Testing #" + count++);
                 var epl = INDEX_CALLBACK_HOOK + (assertion.Hint == null ? "" : assertion.Hint) + eplQuery;
                 epl += ", varagg as va";
                 if (multistream) {

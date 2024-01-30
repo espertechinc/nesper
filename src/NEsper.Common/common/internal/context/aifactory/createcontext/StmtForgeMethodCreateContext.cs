@@ -54,7 +54,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createcontext
 
         public StmtForgeMethodCreateContext(StatementBaseInfo @base)
         {
-            this._base = @base;
+            _base = @base;
         }
 
         public StmtForgeMethodResult Make(

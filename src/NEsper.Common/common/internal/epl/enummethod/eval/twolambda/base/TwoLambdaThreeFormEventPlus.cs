@@ -79,7 +79,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.@ba
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(ReturnType(), GetType(), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
-                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(premade.EnumcollType, REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
                 .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
             var hasSize = _numParameters >= 3;

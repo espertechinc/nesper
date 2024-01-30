@@ -38,8 +38,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
     {
         private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private static int _hitCounter = 0;
-        
         private readonly RowRecogNFAViewFactory _factory;
         private readonly AgentInstanceContext _agentInstanceContext;
         private readonly RowRecogNFAViewScheduler _scheduler; // for interval-handling
@@ -257,7 +255,6 @@ namespace com.espertech.esper.common.@internal.epl.rowrecog.core
             // perform inter-ranking and elimination of duplicate matches
             if (!desc.IsAllMatches) {
                 endStates = RankEndStatesMultiPartition(endStates);
-                _hitCounter++;
             }
 
             // handle interval for the set of matches

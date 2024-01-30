@@ -17,14 +17,14 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 
-using static com.espertech.esper.runtime.client.EPRuntimeProvider; // DEFAULT_RUNTIME_URI
+// DEFAULT_RUNTIME_URI
 using NUnit.Framework;
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
     public class ClientInstrumentAudit
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ClientInstrumentAudit));
-        private static readonly ILog AUDITLOG = LogManager.GetLogger(AuditPath.AUDIT_LOG);
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ClientInstrumentAudit));
+        private static readonly ILog Auditlog = LogManager.GetLogger(AuditPath.AUDIT_LOG);
 
         public static IList<RegressionExecution> Executions()
         {
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 // stream, and test audit callback
                 var callback = new SupportAuditCallback();
                 AuditPath.AuditCallback = callback.Audit;
-                AUDITLOG.Info("*** Stream: ");
+                Auditlog.Info("*** Stream: ");
                 env.CompileDeploy("@name('ABC') @Audit('stream') select * from SupportBean(TheString = 'E1')");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertThat(
@@ -100,12 +100,12 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 AuditPath.AuditCallback = null;
                 env.UndeployAll();
 
-                AUDITLOG.Info("*** Insert-Into: ");
+                Auditlog.Info("*** Insert-Into: ");
                 env.CompileDeploy("@name('insert') @Audit insert into ABC select * from SupportBean");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.UndeployAll();
 
-                AUDITLOG.Info("*** Named Window And Insert-Into: ");
+                Auditlog.Info("*** Named Window And Insert-Into: ");
                 env.CompileDeploy("@name('create') @Audit @public create window WinOne#keepall as SupportBean", path);
                 env.CompileDeploy("@name('insert') @Audit insert into WinOne select * from SupportBean", path);
                 env.CompileDeploy("@name('select') @Audit select * from WinOne", path);
@@ -113,19 +113,19 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
                 path.Clear();
 
-                AUDITLOG.Info("*** Schedule: ");
+                Auditlog.Info("*** Schedule: ");
                 env.AdvanceTime(0);
                 env.CompileDeploy("@name('ABC') @Audit('schedule') select irstream * from SupportBean#time(1 sec)")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.ListenerReset("ABC");
-                log.Info("Sending time");
+                Log.Info("Sending time");
                 env.AdvanceTime(2000);
                 env.AssertListenerInvoked("ABC");
                 env.UndeployAll();
 
                 // property
-                AUDITLOG.Info("*** Property: ");
+                Auditlog.Info("*** Property: ");
                 env.CompileDeploy("@name('ABC') @Audit('property') select IntPrimitive from SupportBean")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // view
-                AUDITLOG.Info("*** View: ");
+                Auditlog.Info("*** View: ");
                 env.CompileDeploy("@name('ABC') @Audit('view') select IntPrimitive from SupportBean#lastevent")
                     .AddListener("ABC");
                 env.SendEventBean(new SupportBean("E1", 50));
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // expression
-                AUDITLOG.Info("*** Expression: ");
+                Auditlog.Info("*** Expression: ");
                 env.CompileDeploy(
                         "@name('ABC') @Audit('expression') select IntPrimitive*100 as val0, sum(IntPrimitive) as val1 from SupportBean")
                     .AddListener("ABC");
@@ -166,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // expression-detail
-                AUDITLOG.Info("*** Expression-Nested: ");
+                Auditlog.Info("*** Expression-Nested: ");
                 env.CompileDeploy(
                         "@name('ABC') @Audit('expression-nested') select ('A'||TheString)||'X' as val0 from SupportBean")
                     .AddListener("ABC");
@@ -175,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // pattern
-                AUDITLOG.Info("*** Pattern: ");
+                Auditlog.Info("*** Pattern: ");
                 env.CompileDeploy(
                         "@name('ABC') @Audit('pattern') select a.IntPrimitive as val0 from pattern [a=SupportBean -> b=SupportBean_ST0]")
                     .AddListener("ABC");
@@ -185,21 +185,21 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // pattern-instances
-                AUDITLOG.Info("*** Pattern-Lifecycle: ");
+                Auditlog.Info("*** Pattern-Lifecycle: ");
                 env.CompileDeploy(
                         "@name('ABC') @Audit('pattern-instances') select a.IntPrimitive as val0 from pattern [every a=SupportBean -> (b=SupportBean_ST0 and not SupportBean_ST1)]")
                     .AddListener("ABC");
-                log.Info("Sending E1");
+                Log.Info("Sending E1");
                 env.SendEventBean(new SupportBean("E1", 1));
-                log.Info("Sending E2");
+                Log.Info("Sending E2");
                 env.SendEventBean(new SupportBean("E2", 2));
-                log.Info("Sending E3");
+                Log.Info("Sending E3");
                 env.SendEventBean(new SupportBean_ST1("E3", 3));
-                log.Info("Destroy");
+                Log.Info("Destroy");
                 env.UndeployAll();
 
                 // exprdef-instances
-                AUDITLOG.Info("*** Expression-Def: ");
+                Auditlog.Info("*** Expression-Def: ");
                 env.CompileDeploy(
                         "@name('ABC') @Audit('exprdef') " +
                         "expression DEF { 1 } " +
@@ -236,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.UndeployAll();
 
                 // table
-                AUDITLOG.Info("*** Table And Insert-Into and Into-table: ");
+                Auditlog.Info("*** Table And Insert-Into and Into-table: ");
                 env.CompileDeploy(
                     "@name('create-table') @Audit @public create table TableOne(c0 string primary key, cnt count(*))",
                     path);

@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             int streamCountIncoming,
             ExprForge secondExpression) : base(innerExpression, streamCountIncoming)
         {
-            this._secondExpression = secondExpression;
+            _secondExpression = secondExpression;
         }
 
         public override EnumEval EnumEvaluator {

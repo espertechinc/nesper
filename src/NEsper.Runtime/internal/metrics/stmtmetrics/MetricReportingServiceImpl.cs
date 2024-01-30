@@ -36,42 +36,43 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
         MetricEventRouter,
         DeploymentStateListener
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(MetricReportingServiceImpl));
-        private readonly MetricsExecutor metricsExecutor;
-        private readonly string runtimeURI;
-        private readonly MetricScheduleService schedule;
+        private static readonly ILog Log = LogManager.GetLogger(typeof(MetricReportingServiceImpl));
+        
+        private readonly MetricsExecutor _metricsExecutor;
+        private readonly string _runtimeUri;
+        private readonly MetricScheduleService _schedule;
 
-        private readonly ConfigurationRuntimeMetricsReporting specification;
+        private readonly ConfigurationRuntimeMetricsReporting _specification;
 
-        private readonly IDictionary<DeploymentIdNamePair, StatementMetricHandle> statementMetricHandles;
-        private readonly StatementMetricRepository stmtMetricRepository;
+        private readonly IDictionary<DeploymentIdNamePair, StatementMetricHandle> _statementMetricHandles;
+        private readonly StatementMetricRepository _stmtMetricRepository;
 
-        private volatile MetricExecutionContext executionContext;
+        private volatile MetricExecutionContext _executionContext;
 
-        private bool isScheduled;
+        private bool _isScheduled;
 
-        private MetricExecEngine metricExecEngine;
-        private MetricExecStatement metricExecStmtGroupDefault;
-        private readonly IDictionary<string, MetricExecStatement> statementGroupExecutions;
+        private MetricExecEngine _metricExecEngine;
+        private MetricExecStatement _metricExecStmtGroupDefault;
+        private readonly IDictionary<string, MetricExecStatement> _statementGroupExecutions;
 
         /// <summary>
         ///     Ctor.
         /// </summary>
         /// <param name="specification">configuration</param>
-        /// <param name="runtimeURI">runtime URI</param>
+        /// <param name="runtimeUri">runtime URI</param>
         /// <param name="rwLockManager">the read-write lock manager</param>
         public MetricReportingServiceImpl(
             ConfigurationRuntimeMetricsReporting specification,
-            string runtimeURI,
+            string runtimeUri,
             IReaderWriterLockManager rwLockManager)
         {
-            this.specification = specification;
-            this.runtimeURI = runtimeURI;
+            this._specification = specification;
+            this._runtimeUri = runtimeUri;
             if (!specification.IsEnableMetricsReporting) {
-                schedule = null;
-                stmtMetricRepository = null;
-                statementMetricHandles = null;
-                metricsExecutor = null;
+                _schedule = null;
+                _stmtMetricRepository = null;
+                _statementMetricHandles = null;
+                _metricsExecutor = null;
                 return;
             }
 
@@ -79,18 +80,18 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
                 //MetricUtil.Initialize();
             }
 
-            schedule = new MetricScheduleService();
+            _schedule = new MetricScheduleService();
 
-            stmtMetricRepository = new StatementMetricRepository(runtimeURI, specification, rwLockManager);
-            statementGroupExecutions = new LinkedHashMap<string, MetricExecStatement>();
-            statementMetricHandles = new Dictionary<DeploymentIdNamePair, StatementMetricHandle>();
+            _stmtMetricRepository = new StatementMetricRepository(runtimeUri, specification, rwLockManager);
+            _statementGroupExecutions = new LinkedHashMap<string, MetricExecStatement>();
+            _statementMetricHandles = new Dictionary<DeploymentIdNamePair, StatementMetricHandle>();
             StatementOutputHooks = new CopyOnWriteArraySet<MetricsStatementResultListener>();
 
             if (specification.IsThreading) {
-                metricsExecutor = new MetricsExecutorThreaded(runtimeURI);
+                _metricsExecutor = new MetricsExecutorThreaded(runtimeUri);
             }
             else {
-                metricsExecutor = new MetricsExecutorUnthreaded();
+                _metricsExecutor = new MetricsExecutorUnthreaded();
             }
         }
 
@@ -102,23 +103,23 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void OnUndeployment(DeploymentStateEventUndeployed @event)
         {
-            if (!specification.IsEnableMetricsReporting) {
+            if (!_specification.IsEnableMetricsReporting) {
                 return;
             }
 
             foreach (EPStatement stmt in @event.Statements) {
                 var pair = new DeploymentIdNamePair(stmt.DeploymentId, stmt.Name);
-                stmtMetricRepository.RemoveStatement(pair);
-                statementMetricHandles.Remove(pair);
+                _stmtMetricRepository.RemoveStatement(pair);
+                _statementMetricHandles.Remove(pair);
             }
         }
 
         public void Route(MetricEvent metricEvent)
         {
-            executionContext.EPRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
+            _executionContext.EPRuntimeSendEvent.SendEventBean(metricEvent, metricEvent.GetType().FullName);
         }
 
-        public bool IsMetricsReportingEnabled => specification.IsEnableMetricsReporting;
+        public bool IsMetricsReportingEnabled => _specification.IsEnableMetricsReporting;
 
         public void AddStatementResultListener(MetricsStatementResultListener listener)
         {
@@ -136,35 +137,35 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             EventServiceSendEventCommon eventServiceSendEventInternal)
         {
             var metricsExecutionContext = new MetricExecutionContext(
-                filterService, schedulingService, eventServiceSendEventInternal, stmtMetricRepository);
+                filterService, schedulingService, eventServiceSendEventInternal, _stmtMetricRepository);
 
             // create all runtime and statement executions
-            metricExecEngine = new MetricExecEngine(this, runtimeURI, schedule, specification.RuntimeInterval);
-            metricExecStmtGroupDefault = new MetricExecStatement(this, schedule, specification.StatementInterval, 0);
+            _metricExecEngine = new MetricExecEngine(this, _runtimeUri, _schedule, _specification.RuntimeInterval);
+            _metricExecStmtGroupDefault = new MetricExecStatement(this, _schedule, _specification.StatementInterval, 0);
 
             var countGroups = 1;
-            foreach (var entry in specification.StatementGroups) {
+            foreach (var entry in _specification.StatementGroups) {
                 var config = entry.Value;
-                var metricsExecution = new MetricExecStatement(this, schedule, config.Interval, countGroups);
-                statementGroupExecutions.Put(entry.Key, metricsExecution);
+                var metricsExecution = new MetricExecStatement(this, _schedule, config.Interval, countGroups);
+                _statementGroupExecutions.Put(entry.Key, metricsExecution);
                 countGroups++;
             }
 
             // last assign this volatile variable so the time event processing may schedule callbacks
-            executionContext = metricsExecutionContext;
+            _executionContext = metricsExecutionContext;
         }
 
         public void ProcessTimeEvent(long timeEventTime)
         {
-            if (!specification.IsEnableMetricsReporting) {
+            if (!_specification.IsEnableMetricsReporting) {
                 return;
             }
 
-            schedule.CurrentTime = timeEventTime;
-            if (!isScheduled) {
-                if (executionContext != null) {
+            _schedule.CurrentTime = timeEventTime;
+            if (!_isScheduled) {
+                if (_executionContext != null) {
                     ScheduleExecutions();
-                    isScheduled = true;
+                    _isScheduled = true;
                 }
                 else {
                     return; // not initialized yet, race condition and must wait till initialized
@@ -172,26 +173,26 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             }
 
             // fast evaluation against nearest scheduled time
-            var nearestTime = schedule.NearestTime;
+            var nearestTime = _schedule.NearestTime;
             if (nearestTime == null || nearestTime > timeEventTime) {
                 return;
             }
 
             // get executions
             IList<MetricExec> executions = new List<MetricExec>(2);
-            schedule.Evaluate(executions);
+            _schedule.Evaluate(executions);
             if (executions.IsEmpty()) {
                 return;
             }
 
             // execute
-            if (executionContext == null) {
-                log.Debug(".processTimeEvent No execution context");
+            if (_executionContext == null) {
+                Log.Debug(".processTimeEvent No execution context");
                 return;
             }
 
             foreach (var execution in executions) {
-                metricsExecutor.Execute(execution, executionContext);
+                _metricsExecutor.Execute(execution, _executionContext);
             }
         }
 
@@ -200,7 +201,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             PerformanceMetrics performanceMetrics,
             int numInputEvents)
         {
-            stmtMetricRepository.AccountTimes(metricsHandle, performanceMetrics, numInputEvents);
+            _stmtMetricRepository.AccountTimes(metricsHandle, performanceMetrics, numInputEvents);
         }
 
         public void AccountOutput(
@@ -210,7 +211,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             object epStatement,
             object runtime)
         {
-            stmtMetricRepository.AccountOutput(handle, numIStream, numRStream);
+            _stmtMetricRepository.AccountOutput(handle, numIStream, numRStream);
             if (!StatementOutputHooks.IsEmpty()) {
                 var statement = (EPStatement) epStatement;
                 var service = (EPRuntime) runtime;
@@ -225,13 +226,13 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             string deploymentId,
             string statementName)
         {
-            if (!specification.IsEnableMetricsReporting) {
+            if (!_specification.IsEnableMetricsReporting) {
                 return new StatementMetricHandle(false);
             }
 
             var statement = new DeploymentIdNamePair(deploymentId, statementName);
-            var handle = stmtMetricRepository.AddStatement(statement);
-            statementMetricHandles.Put(statement, handle);
+            var handle = _stmtMetricRepository.AddStatement(statement);
+            _statementMetricHandles.Put(statement, handle);
             return handle;
         }
 
@@ -240,11 +241,11 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             long newInterval)
         {
             if (stmtGroupName == null) {
-                metricExecStmtGroupDefault.Interval = newInterval;
+                _metricExecStmtGroupDefault.Interval = newInterval;
                 return;
             }
 
-            var exec = statementGroupExecutions.Get(stmtGroupName);
+            var exec = _statementGroupExecutions.Get(stmtGroupName);
             if (exec == null) {
                 throw new ArgumentException("Statement group by name '" + stmtGroupName + "' could not be found");
             }
@@ -256,7 +257,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             string deploymentId,
             string statementName)
         {
-            var handle = statementMetricHandles.Get(new DeploymentIdNamePair(deploymentId, statementName));
+            var handle = _statementMetricHandles.Get(new DeploymentIdNamePair(deploymentId, statementName));
             if (handle == null) {
                 throw new ConfigurationException("Statement by name '" + statementName + "' not found in metrics collection");
             }
@@ -268,7 +269,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
             string deploymentId,
             string statementName)
         {
-            var handle = statementMetricHandles.Get(new DeploymentIdNamePair(deploymentId, statementName));
+            var handle = _statementMetricHandles.Get(new DeploymentIdNamePair(deploymentId, statementName));
             if (handle == null) {
                 throw new ConfigurationException("Statement by name '" + statementName + "' not found in metrics collection");
             }
@@ -278,7 +279,7 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void SetMetricsReportingEnabled()
         {
-            if (!specification.IsEnableMetricsReporting) {
+            if (!_specification.IsEnableMetricsReporting) {
                 throw new ConfigurationException("Metrics reporting must be enabled through initialization-time configuration");
             }
 
@@ -287,22 +288,22 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         public void SetMetricsReportingDisabled()
         {
-            schedule.Clear();
+            _schedule.Clear();
         }
 
         public void EnumerateMetrics(Consumer<EPMetricsStatementGroup> consumer)
         {
-            if (stmtMetricRepository == null) {
+            if (_stmtMetricRepository == null) {
                 throw new IllegalStateException("Metric reporting is not enabled");
             }
 
-            stmtMetricRepository.EnumerateMetrics(consumer);
+            _stmtMetricRepository.EnumerateMetrics(consumer);
         }
 
         public void Dispose()
         {
-            schedule?.Clear();
-            metricsExecutor?.Dispose();
+            _schedule?.Clear();
+            _metricsExecutor?.Dispose();
         }
 
         private bool IsConsiderSchedule(long value)
@@ -316,22 +317,22 @@ namespace com.espertech.esper.runtime.@internal.metrics.stmtmetrics
 
         private void ScheduleExecutions()
         {
-            if (!specification.IsEnableMetricsReporting) {
+            if (!_specification.IsEnableMetricsReporting) {
                 return;
             }
 
-            if (IsConsiderSchedule(metricExecEngine.Interval)) {
-                schedule.Add(metricExecEngine.Interval, metricExecEngine);
+            if (IsConsiderSchedule(_metricExecEngine.Interval)) {
+                _schedule.Add(_metricExecEngine.Interval, _metricExecEngine);
             }
 
             // schedule each statement group, count the "default" group as the first group
-            if (IsConsiderSchedule(metricExecStmtGroupDefault.Interval)) {
-                schedule.Add(metricExecStmtGroupDefault.Interval, metricExecStmtGroupDefault);
+            if (IsConsiderSchedule(_metricExecStmtGroupDefault.Interval)) {
+                _schedule.Add(_metricExecStmtGroupDefault.Interval, _metricExecStmtGroupDefault);
             }
 
-            foreach (MetricExecStatement metricsExecution in statementGroupExecutions.Values) {
+            foreach (MetricExecStatement metricsExecution in _statementGroupExecutions.Values) {
                 if (IsConsiderSchedule(metricsExecution.Interval)) {
-                    schedule.Add(metricsExecution.Interval, metricsExecution);
+                    _schedule.Add(metricsExecution.Interval, metricsExecution);
                 }
             }
         }

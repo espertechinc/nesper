@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprTypeofNode parent,
             int streamNum)
         {
-            this._parent = parent;
-            this._streamNum = streamNum;
+            _parent = parent;
+            _streamNum = streamNum;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

@@ -150,7 +150,7 @@ namespace com.espertech.esper.common.@internal.view.expression
             var evalClass = MakeExpiryEval(classScope);
             classScope.AddInnerClass(evalClass);
             method.Block
-                .DeclareVar(evalClass.ClassName, "eval", CodegenExpressionBuilder.NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
+                .DeclareVar(evalClass.ClassName, "eval", NewInstanceInner(evalClass.ClassName, Ref("statementFields")))
                 .SetProperty(
                     factory,
                     "BuiltinMapType",

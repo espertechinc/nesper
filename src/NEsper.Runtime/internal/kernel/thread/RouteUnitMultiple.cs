@@ -20,13 +20,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class RouteUnitMultiple : RouteUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly EPEventServiceImpl epRuntime;
-        private readonly EventBean theEvent;
-        private readonly object callbackList;
-        private readonly EPStatementAgentInstanceHandle handle;
-        private readonly long filterVersion;
+        private readonly EPEventServiceImpl _epRuntime;
+        private readonly EventBean _theEvent;
+        private readonly object _callbackList;
+        private readonly EPStatementAgentInstanceHandle _handle;
+        private readonly long _filterVersion;
 
         /// <summary>
         /// Ctor.
@@ -38,26 +38,26 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
         /// <param name="filterVersion">version of filter</param>
         public RouteUnitMultiple(EPEventServiceImpl epRuntime, object callbackList, EventBean theEvent, EPStatementAgentInstanceHandle handle, long filterVersion)
         {
-            this.epRuntime = epRuntime;
-            this.callbackList = callbackList;
-            this.theEvent = theEvent;
-            this.handle = handle;
-            this.filterVersion = filterVersion;
+            this._epRuntime = epRuntime;
+            this._callbackList = callbackList;
+            this._theEvent = theEvent;
+            this._handle = handle;
+            this._filterVersion = filterVersion;
         }
 
         public void Run()
         {
             try
             {
-                epRuntime.ProcessStatementFilterMultiple(handle, callbackList, theEvent, filterVersion, 0);
+                _epRuntime.ProcessStatementFilterMultiple(_handle, _callbackList, _theEvent, _filterVersion, 0);
 
-                epRuntime.Dispatch();
+                _epRuntime.Dispatch();
 
-                epRuntime.ProcessThreadWorkQueue();
+                _epRuntime.ProcessThreadWorkQueue();
             }
             catch (Exception e)
             {
-                log.Error("Unexpected error processing multiple route execution: " + e.Message, e);
+                Log.Error("Unexpected error processing multiple route execution: " + e.Message, e);
             }
         }
     }

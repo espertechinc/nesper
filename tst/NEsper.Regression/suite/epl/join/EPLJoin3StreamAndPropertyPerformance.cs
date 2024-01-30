@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin3StreamAndPropertyPerformance
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
@@ -64,7 +64,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeployAddListenerMileZero(epl, "s0");
 
             // Send events for each stream
-            log.Info($"{methodName} Preloading events");
+            Log.Info($"{methodName} Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 100; i++) {
                 SendEvent(env, new SupportBean_A($"CSCO_{i}"));
@@ -72,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, new SupportBean_C($"GE_{i}"));
             }
 
-            log.Info($"{methodName} Done preloading");
+            Log.Info($"{methodName} Done preloading");
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info($"{methodName} delta={(endTime - startTime)}");
+            Log.Info($"{methodName} delta={(endTime - startTime)}");
 
             // Stay below 500, no index would be 4 sec plus
             Assert.IsTrue(endTime - startTime < 500);
@@ -151,17 +151,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, new SupportBean_C("GE_0"));
 
                 // Send events for each stream
-                log.Info($"{methodName} Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     SendEvent(env, new SupportBean_A($"CSCO_{i}"));
                     SendEvent(env, new SupportBean_B($"IBM_{i}"));
                 }
 
-                log.Info($"{methodName} Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"{methodName} delta={(endTime - startTime)}");
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 500, no index would be 4 sec plus
                 Assert.IsTrue(endTime - startTime < 500);

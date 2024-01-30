@@ -106,8 +106,8 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             currentReferencePoint = delta.LastReference;
             currentScheduledTime = deltaTime;
 
-            if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
-                log.Debug(
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                Log.Debug(
                     ".scheduleCallback Scheduled new callback for " +
                     " afterMsec=" +
                     deltaTime +
@@ -152,6 +152,6 @@ namespace com.espertech.esper.common.@internal.epl.output.condition
             }
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionTime));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionTime));
     }
 } // end of namespace

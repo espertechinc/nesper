@@ -18,7 +18,6 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
-using Microsoft.CodeAnalysis.Host;
 using NUnit.Framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;

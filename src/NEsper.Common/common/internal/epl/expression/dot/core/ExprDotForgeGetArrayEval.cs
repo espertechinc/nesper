@@ -30,8 +30,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotForgeGetArray forge,
             ExprEvaluator indexExpression)
         {
-            this._forge = forge;
-            this._indexExpression = indexExpression;
+            _forge = forge;
+            _indexExpression = indexExpression;
         }
 
         public EPChainableType TypeInfo => _forge.TypeInfo;

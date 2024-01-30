@@ -109,13 +109,13 @@ namespace com.espertech.esper.common.@internal.support
 
         public SupportEventPropDesc WithComponentType(Type componentType)
         {
-            this._componentType = componentType;
+            _componentType = componentType;
             return this;
         }
 
         public SupportEventPropDesc WithComponentType<T>()
         {
-            this._componentType = typeof(T);
+            _componentType = typeof(T);
             return this;
         }
 

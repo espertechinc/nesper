@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowQueryCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly RegressionEnvironment env;
         private readonly int numRepeats;
         private readonly RegressionPath path;
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

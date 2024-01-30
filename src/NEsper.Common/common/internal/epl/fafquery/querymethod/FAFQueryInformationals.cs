@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             Type[] substitutionParamsTypes,
             IDictionary<string, int> substitutionParamsNames)
         {
-            this._substitutionParamsTypes = substitutionParamsTypes;
-            this._substitutionParamsNames = substitutionParamsNames;
+            _substitutionParamsTypes = substitutionParamsTypes;
+            _substitutionParamsNames = substitutionParamsNames;
         }
 
         public static FAFQueryInformationals From(

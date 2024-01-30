@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
         private FilterSpecParamComparator comparator;
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestCompareAll()
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 "[EQUAL, IS, IN_LIST_OF_VALUES, ADVANCED_INDEX, RANGE_OPEN, RANGE_HALF_OPEN, RANGE_HALF_CLOSED, RANGE_CLOSED, LESS, LESS_OR_EQUAL, GREATER_OR_EQUAL, GREATER, REBOOL, NOT_RANGE_CLOSED, NOT_RANGE_HALF_CLOSED, NOT_RANGE_HALF_OPEN, NOT_RANGE_OPEN, NOT_IN_LIST_OF_VALUES, NOT_EQUAL, IS_NOT, BOOLEAN_EXPRESSION]",
                 sorted.RenderAny());
 
-            log.Debug(".testCompareAll " + sorted.RenderAny());
+            Log.Debug(".testCompareAll " + sorted.RenderAny());
         }
 
         [Test]

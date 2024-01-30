@@ -31,17 +31,17 @@ namespace com.espertech.esper.common.@internal.epl.agg.access.sorted
             ExprForge optionalFilter,
             EventType streamEventType)
         {
-            this.IsMax = max;
-            this.ImportService = importService;
-            this.Criteria = criteria;
-            this.CriteriaTypes = criteriaTypes;
-            this.CriteriaSerdes = criteriaSerdes;
-            this.SortDescending = sortDescending;
-            this.IsEver = ever;
-            this.StreamNum = streamNum;
-            this.Parent = parent;
-            this.OptionalFilter = optionalFilter;
-            this.StreamEventType = streamEventType;
+            IsMax = max;
+            ImportService = importService;
+            Criteria = criteria;
+            CriteriaTypes = criteriaTypes;
+            CriteriaSerdes = criteriaSerdes;
+            SortDescending = sortDescending;
+            IsEver = ever;
+            StreamNum = streamNum;
+            Parent = parent;
+            OptionalFilter = optionalFilter;
+            StreamEventType = streamEventType;
         }
 
         public bool IsEver { get; }

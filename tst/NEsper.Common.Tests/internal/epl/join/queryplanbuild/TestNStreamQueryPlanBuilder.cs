@@ -69,7 +69,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 null,
                 SerdeCompileTimeResolverNonHA.INSTANCE);
 
-            log.Debug(".testBuild plan=" + plan);
+            Log.Debug(".testBuild plan=" + plan);
         }
 
         [Test]
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             QueryPlanIndexForge[] indexes = QueryPlanIndexBuilder.BuildIndexSpec(queryGraph, typesPerStream, new string[queryGraph.NumStreams][][]);
             for (int i = 0; i < indexes.Length; i++)
             {
-                log.Debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
+                Log.Debug(".testCreateStreamPlan index " + i + " = " + indexes[i]);
             }
 
             var plan = NStreamQueryPlanBuilder.CreateStreamPlan(
@@ -94,7 +94,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 null,
                 SerdeCompileTimeResolverNonHA.INSTANCE);
 
-            log.Debug(".testCreateStreamPlan plan=" + plan);
+            Log.Debug(".testCreateStreamPlan plan=" + plan);
 
             Assert.IsTrue(plan.Forge is NestedIterationNodeForge);
             NestedIterationNodeForge nested = (NestedIterationNodeForge) plan.Forge;
@@ -128,7 +128,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             // try a stream that is not connected in any way
             queryGraph = new QueryGraphForge(6, null, false);
             bestChain = NStreamQueryPlanBuilder.ComputeBestPath(5, queryGraph, dependencyGraph);
-            log.Debug(".testComputeBestPath bestChain=" + bestChain);
+            Log.Debug(".testComputeBestPath bestChain=" + bestChain);
             Assert.AreEqual(0, bestChain.Depth);
             Assert.IsTrue(Arrays.AreEqual(bestChain.Chain, new int[] { 0, 1, 2, 3, 4 }));
         }
@@ -199,6 +199,6 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
             return new ExprIdentNodeImpl(typesPerStream[stream], p, stream);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

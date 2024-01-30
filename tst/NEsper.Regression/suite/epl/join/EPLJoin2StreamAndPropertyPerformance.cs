@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin2StreamAndPropertyPerformance
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
@@ -133,17 +133,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send events for each stream
-                log.Info($"{methodName} Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     SendEvent(env, MakeMarketEvent($"IBM_{i}", 1));
                     SendEvent(env, MakeSupportEvent($"CSCO_{i}", 2));
                 }
 
-                log.Info($"{methodName} Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"{methodName} delta={(endTime - startTime)}");
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay at 250, belwo 500ms
                 Assert.IsTrue(endTime - startTime < 500);
@@ -169,18 +169,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 // Send events for each stream
-                log.Info("{0} Preloading events", methodName);
+                Log.Info("{0} Preloading events", methodName);
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     SendEvent(env, MakeMarketEvent($"IBM_{i}", 1));
                     SendEvent(env, MakeSupportEvent($"CSCO_{i}", 2));
                 }
 
-                log.Info("{0} Done preloading", methodName);
+                Log.Info("{0} Done preloading", methodName);
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
-                log.Info("{0} delta={1}", methodName, delta);
+                Log.Info("{0} delta={1}", methodName, delta);
 
                 // Stay at 250, below 500ms
                 Assert.That(endTime - startTime, Is.LessThan(500));

@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin3StreamRangePerformance
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPLJoin3StreamRangePerformance));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLJoin3StreamRangePerformance));
 
         public static IList<RegressionExecution> Executions()
         {
@@ -72,13 +72,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
-                log.Info("Preloading events");
+                Log.Info("Preloading events");
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(new SupportBean_ST0("ST0", "G", i));
                     env.SendEventBean(new SupportBean_ST1("ST1", "G", i));
                 }
 
-                log.Info("Done preloading");
+                Log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') @Hint('PREFER_MERGE_JOIN') select * from SupportBeanRange#lastevent a " +
                                "inner join ST0 st0 on st0.Key0 = a.Key " +
@@ -117,29 +117,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
-                log.Info("Preloading events");
+                Log.Info("Preloading events");
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(new SupportBean_ST0("ST0", "ST0", i));
                     env.SendEventBean(new SupportBean_ST1("ST1", "ST1", i));
                 }
 
-                log.Info("Done preloading");
+                Log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') select * from SupportBeanRange#lastevent a, ST0 st0, ST1 st1 " +
                                "where st0.P00 between RangeStart and RangeEnd and st1.P10 between RangeStart and RangeEnd";
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
-                log.Info("Querying");
+                Log.Info("Querying");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBeanRange("R", "R", 100, 101));
                     env.AssertListener("s0", listener => Assert.AreEqual(4, listener.GetAndResetLastNewData().Length));
                 }
 
-                log.Info("Done Querying");
+                Log.Info("Done Querying");
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"delta={(endTime - startTime)}");
+                Log.Info($"delta={(endTime - startTime)}");
 
                 Assert.IsTrue((endTime - startTime) < 1000);
                 env.UndeployAll();
@@ -166,13 +166,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(epl, path).Milestone(0);
 
                 // Preload
-                log.Info("Preloading events");
+                Log.Info("Preloading events");
                 env.SendEventBean(new SupportBeanRange("ST1", "G", 4000, 4004));
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(new SupportBean_ST1("ST1", "G", i));
                 }
 
-                log.Info("Done preloading");
+                Log.Info("Done preloading");
 
                 var eplQuery = "@name('s0') select * from SupportBean_ST0 st0 unidirectional, SBR a, ST1 st1 " +
                                "where st0.Key0 = a.Key and st1.Key1 = a.Key and " +
@@ -180,16 +180,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeploy(eplQuery, path).AddListener("s0").Milestone(1);
 
                 // Repeat
-                log.Info("Querying");
+                Log.Info("Querying");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 500; i++) {
                     env.SendEventBean(new SupportBean_ST0("ST0", "G", -1));
                     env.AssertListener("s0", listener => Assert.AreEqual(5, listener.GetAndResetLastNewData().Length));
                 }
 
-                log.Info("Done Querying");
+                Log.Info("Done Querying");
                 var delta = PerformanceObserver.MilliTime - startTime;
-                log.Info($"delta={delta}");
+                Log.Info($"delta={delta}");
 
                 // This works best with a nested iteration join (and not a cardinal join)
                 Assert.That(delta, Is.LessThan(500), "delta=" + delta);
@@ -205,16 +205,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeploy(epl, path).AddListener("s0");
 
             // Repeat
-            log.Info("Querying");
+            Log.Info("Querying");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
                 env.SendEventBean(new SupportBeanRange("R", "G", 100, 101));
                 env.AssertListener("s0", listener => Assert.AreEqual(4, listener.GetAndResetLastNewData().Length));
             }
 
-            log.Info("Done Querying");
+            Log.Info("Done Querying");
             var endTime = PerformanceObserver.MilliTime;
-            log.Info($"delta={(endTime - startTime)}");
+            Log.Info($"delta={(endTime - startTime)}");
 
             Assert.IsTrue((endTime - startTime) < 500);
             env.UndeployModuleContaining("s0");

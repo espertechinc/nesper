@@ -254,13 +254,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             }
             catch (EPCompileException ex) {
                 exceptionText = ex.Message;
-                log.Debug(".getSyntaxExceptionEPL epl=" + expression, ex);
+                Log.Debug(".getSyntaxExceptionEPL epl=" + expression, ex);
                 // Expected exception
             }
 
             return exceptionText;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPLOtherInvalid));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLOtherInvalid));
     }
 } // end of namespace

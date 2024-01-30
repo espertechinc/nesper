@@ -28,7 +28,7 @@ namespace com.espertech.esper.common.@internal.serde.compiletime.resolve
         private static readonly IDictionary<Type, DataInputOutputSerde> BOXED =
             new Dictionary<Type, DataInputOutputSerde>();
 
-        private static IDictionary<string, DataInputOutputSerde> BY_PRETTY_NAME =
+        private static readonly IDictionary<string, DataInputOutputSerde> BY_PRETTY_NAME =
             new Dictionary<string, DataInputOutputSerde>();
 
         static VMBasicBuiltinSerdeFactory()

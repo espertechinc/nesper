@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
             // Send events for each stream
             var theEvent = SupportBeanCombinedProps.MakeDefaultBean();
-            log.Info(methodName + " Sending events");
+            Log.Info(methodName + " Sending events");
 
             var delta = PerformanceObserver.TimeMillis(
                 () => {
@@ -44,10 +44,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                         SendEvent(env, theEvent);
                     }
 
-                    log.Info(methodName + " Done sending events");
+                    Log.Info(methodName + " Done sending events");
                 });
 
-            log.Info(methodName + " delta=" + delta);
+            Log.Info(methodName + " delta=" + delta);
 
             // Stays at 250, below 500ms
             Assert.That(delta, Is.LessThan(1000));
@@ -62,6 +62,6 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.SendEventBean(theEvent);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EventBeanPropertyAccessPerformance));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EventBeanPropertyAccessPerformance));
     }
 } // end of namespace

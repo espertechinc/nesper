@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
         {
             this.className = className;
             this.tableName = tableName;
-            this._plan = plan;
+            _plan = plan;
             this.isTargetHA = isTargetHA;
         }
 
@@ -92,11 +92,11 @@ namespace com.espertech.esper.common.@internal.context.aifactory.createtable
                 .SetProperty(
                     Ref("saiff"),
                     "AggregationRowFactory",
-                    CodegenExpressionBuilder.NewInstanceInner(aggregationClassNames.RowFactoryTop, Ref("this")))
+                    NewInstanceInner(aggregationClassNames.RowFactoryTop, Ref("this")))
                 .SetProperty(
                     Ref("saiff"),
                     "AggregationSerde",
-                    CodegenExpressionBuilder.NewInstanceInner(aggregationClassNames.RowSerdeTop, Ref("this")))
+                    NewInstanceInner(aggregationClassNames.RowSerdeTop, Ref("this")))
                 .SetProperty(Ref("saiff"), "PrimaryKeyGetter", primaryKeyGetter)
                 .SetProperty(
                     Ref("saiff"),

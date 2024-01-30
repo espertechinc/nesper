@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 
         public InnerDotArrObjectToCollEval(ExprEvaluator rootEvaluator)
         {
-            this._rootEvaluator = rootEvaluator;
+            _rootEvaluator = rootEvaluator;
         }
 
         public object Evaluate(

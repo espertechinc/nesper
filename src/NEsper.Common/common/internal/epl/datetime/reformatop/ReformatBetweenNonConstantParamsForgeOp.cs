@@ -38,11 +38,11 @@ namespace com.espertech.esper.common.@internal.epl.datetime.reformatop
             ExprEvaluator evalIncludeLow,
             ExprEvaluator evalIncludeHigh)
         {
-            this._forge = forge;
-            this._startEval = startEval;
-            this._endEval = endEval;
-            this._evalIncludeLow = evalIncludeLow;
-            this._evalIncludeHigh = evalIncludeHigh;
+            _forge = forge;
+            _startEval = startEval;
+            _endEval = endEval;
+            _evalIncludeLow = evalIncludeLow;
+            _evalIncludeHigh = evalIncludeHigh;
         }
 
         public object Evaluate(

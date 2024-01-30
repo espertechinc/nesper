@@ -456,6 +456,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(ResultSetAggregateMaxMinGroupBy));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResultSetAggregateMaxMinGroupBy));
     }
 } // end of namespace

@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class SendEventWaitCallable : ICallable<object>
     {
-        private static readonly ILog log =
+        private static readonly ILog Log =
             LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IEnumerator<object> events;

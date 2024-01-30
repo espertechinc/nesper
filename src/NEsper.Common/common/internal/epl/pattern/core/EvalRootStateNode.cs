@@ -10,7 +10,6 @@ using System.Collections.Generic;
 
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.filterspec;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.epl.pattern.core
 {
@@ -22,8 +21,6 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
         Evaluator,
         EvalRootState
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(EvalRootStateNode));
-
         internal readonly EvalRootNode rootNode;
         private PatternMatchCallback callback;
         internal EvalNode rootSingleChildNode;

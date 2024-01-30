@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
 
         public JsonGetterMapRuntimeKeyedProvided(FieldInfo field)
         {
-            this._field = field;
+            _field = field;
         }
 
         public CodegenExpression EventBeanGetMappedCodegen(

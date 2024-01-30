@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprAggMultiFunctionNode agg)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this._agg = agg;
+            _agg = agg;
         }
 
         protected override string TableName => null;

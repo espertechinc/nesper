@@ -67,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryGetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(int), "index"))
 				.AddParam(new CodegenNamedParam(typeof(object), "underlying"))
 				.AddParam(new CodegenNamedParam(typeof(object), "value").WithOutputModifier());
@@ -78,7 +78,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var trySetPropertyMethod = CodegenMethod
-				.MakeParentNode(typeof(bool), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(bool), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(int), "index"))
 				.AddParam(new CodegenNamedParam(typeof(object), "value"))
 				.AddParam(new CodegenNamedParam(typeof(object), "underlying"));
@@ -90,7 +90,7 @@ namespace com.espertech.esper.common.@internal.@event.json.compiletime
 			// --------------------------------------------------------------------------------
 
 			var tryCopyMethod = CodegenMethod
-				.MakeParentNode(typeof(object), this.GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
+				.MakeParentNode(typeof(object), GetType(), CodegenSymbolProviderEmpty.INSTANCE, classScope)
 				.AddParam(new CodegenNamedParam(typeof(object), "source"));
 			tryCopyMethod = MakeTryCopy(tryCopyMethod, classScope);
 

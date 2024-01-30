@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
         DataFlowOperatorFactory,
         DataFlowOperator
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [DataFlowContext] private EPDataFlowEmitter graphContext;
 
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             var wordCount = tokens.Length;
             var charCount = tokens.Sum(token => token.Length);
 
-            log.Debug("Submitting stat words[" + wordCount + "] chars[" + charCount + "] for line '" + line + "'");
+            Log.Debug("Submitting stat words[" + wordCount + "] chars[" + charCount + "] for line '" + line + "'");
             graphContext.Submit(new object[] {1, wordCount, charCount});
         }
     }

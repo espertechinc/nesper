@@ -41,14 +41,14 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
                 StatementRawInfo raw,
                 StatementCompileTimeServices services)
             {
-                this._mode = mode;
-                this._enumMethodUsedName = enumMethodUsedName;
-                this._footprint = footprint;
-                this._parameters = parameters;
-                this._inputEventType = inputEventType;
-                this._collectionComponentType = collectionComponentType;
-                this._raw = raw;
-                this._services = services;
+                _mode = mode;
+                _enumMethodUsedName = enumMethodUsedName;
+                _footprint = footprint;
+                _parameters = parameters;
+                _inputEventType = inputEventType;
+                _collectionComponentType = collectionComponentType;
+                _raw = raw;
+                _services = services;
             }
 
             public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)

@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 TimeZoneInfo timeZone)
                 : base(dateFormatForge)
             {
-                this._timeZone = timeZone;
+                _timeZone = timeZone;
             }
 
             public override CasterParserComputer EvaluatorComputer =>

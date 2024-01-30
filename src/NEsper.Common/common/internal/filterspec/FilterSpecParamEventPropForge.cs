@@ -61,12 +61,12 @@ namespace com.espertech.esper.common.@internal.filterspec
             Coercer numberCoercer,
             Type coercionType) : base(lookupable, filterOperator)
         {
-            this._resultEventAsName = resultEventAsName;
-            this._resultEventProperty = resultEventProperty;
-            this._exprIdentNodeEvaluator = exprIdentNodeEvaluator;
-            this._isMustCoerce = isMustCoerce;
-            this._numberCoercer = numberCoercer;
-            this._coercionType = coercionType;
+            _resultEventAsName = resultEventAsName;
+            _resultEventProperty = resultEventProperty;
+            _exprIdentNodeEvaluator = exprIdentNodeEvaluator;
+            _isMustCoerce = isMustCoerce;
+            _numberCoercer = numberCoercer;
+            _coercionType = coercionType;
             if (filterOperator.IsRangeOperator()) {
                 throw new ArgumentException(
                     "Illegal filter operator " + filterOperator + " supplied to " + "event property filter parameter");

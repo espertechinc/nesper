@@ -20,9 +20,6 @@ namespace com.espertech.esper.common.@internal.view.core
     /// </summary>
     public class ZeroDepthStreamNoIterate : EventStream
     {
-        private static int _gid = 0;
-        private int _uid = ++_gid;
-
         /// <summary>
         ///     Ctor.
         /// </summary>

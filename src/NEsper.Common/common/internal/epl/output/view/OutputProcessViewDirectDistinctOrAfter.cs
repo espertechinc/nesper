@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.output.view
     /// </summary>
     public class OutputProcessViewDirectDistinctOrAfter : OutputProcessViewBaseWAfter
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputProcessViewDirectDistinctOrAfter));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputProcessViewDirectDistinctOrAfter));
 
         private readonly OutputProcessViewDirectDistinctOrAfterFactory _parent;
 
@@ -114,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             ISet<MultiKeyArrayOfKeys<EventBean>> oldEvents,
             ExprEvaluatorContext exprEvaluatorContext)
         {
-            if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
-                log.Debug(
+            if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                Log.Debug(
                     ".process Received update, " +
                     "  newData.length==" +
                     (newEvents?.Count ?? 0) +

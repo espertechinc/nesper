@@ -26,8 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeThreadedConfigTimer : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log =
-            LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public bool EnableHATest => false;
         public bool HAWithCOnly => false;
@@ -51,7 +50,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
         {
             SendTimer(0, env);
 
-            log.Debug("Creating statements");
+            Log.Debug("Creating statements");
             var countStatements = 100;
             var listener = new SupportListenerTimerHRes();
             var compiled = env.Compile(
@@ -62,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement(stmtName).AddListener(listener);
             }
 
-            log.Info("Sending trigger event");
+            Log.Info("Sending trigger event");
             env.SendEventMap(new Dictionary<string, object>(), "MyMap");
 
             var start = PerformanceObserver.NanoTime;
@@ -78,7 +77,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     break;
                 }
 
-                log.Info("Delivered " + countDelivered + ", waiting for more");
+                Log.Info("Delivered " + countDelivered + ", waiting for more");
                 try {
                     Thread.Sleep(200);
                 }

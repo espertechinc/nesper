@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.excepti
                 EPChainableType type,
                 ExprDotEnumerationSourceForge enumSrc)
             {
-                this._enumMethod = enumMethod;
-                this._type = type;
-                this._enumSrc = enumSrc;
+                _enumMethod = enumMethod;
+                _type = type;
+                _enumSrc = enumSrc;
             }
 
             public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)

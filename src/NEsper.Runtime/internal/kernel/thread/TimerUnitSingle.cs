@@ -18,11 +18,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class TimerUnitSingle : TimerUnit
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TimerUnitSingle));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TimerUnitSingle));
 
-        private readonly EPStatementHandleCallbackSchedule handleCallback;
-        private readonly EPEventServiceImpl runtime;
-        private readonly EPServicesContext services;
+        private readonly EPStatementHandleCallbackSchedule _handleCallback;
+        private readonly EPEventServiceImpl _runtime;
+        private readonly EPServicesContext _services;
 
         /// <summary>
         ///     Ctor.
@@ -35,22 +35,22 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EPEventServiceImpl runtime,
             EPStatementHandleCallbackSchedule handleCallback)
         {
-            this.services = services;
-            this.runtime = runtime;
-            this.handleCallback = handleCallback;
+            this._services = services;
+            this._runtime = runtime;
+            this._handleCallback = handleCallback;
         }
 
         public void Run()
         {
             try {
-                EPEventServiceHelper.ProcessStatementScheduleSingle(handleCallback, services);
+                EPEventServiceHelper.ProcessStatementScheduleSingle(_handleCallback, _services);
 
-                runtime.Dispatch();
+                _runtime.Dispatch();
 
-                runtime.ProcessThreadWorkQueue();
+                _runtime.ProcessThreadWorkQueue();
             }
             catch (Exception e) {
-                log.Error("Unexpected error processing timer execution: " + e.Message, e);
+                Log.Error("Unexpected error processing timer execution: " + e.Message, e);
             }
         }
     }

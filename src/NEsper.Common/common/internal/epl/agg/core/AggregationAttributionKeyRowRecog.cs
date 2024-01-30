@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     {
         public AggregationAttributionKeyRowRecog(int aggregationNumber)
         {
-            this.AggregationNumber = aggregationNumber;
+            AggregationNumber = aggregationNumber;
         }
 
         public int AggregationNumber { get; }

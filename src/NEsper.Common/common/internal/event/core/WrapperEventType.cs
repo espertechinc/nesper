@@ -79,13 +79,13 @@ namespace com.espertech.esper.common.@internal.@event.core
         {
             CheckForRepeatedPropertyNames(underlyingEventType, properties);
 
-            this._metadata = metadata;
-            this._underlyingEventType = underlyingEventType;
+            _metadata = metadata;
+            _underlyingEventType = underlyingEventType;
             var innerName = EventTypeNameUtil.GetWrapperInnerTypeName(metadata.Name);
             var ids = ComputeIdFromWrapped(metadata.AccessModifier, innerName, metadata);
             var metadataMapType = new EventTypeMetadata(
                 innerName,
-                this._metadata.ModuleName,
+                _metadata.ModuleName,
                 metadata.TypeClass,
                 metadata.ApplicationType,
                 metadata.AccessModifier,
@@ -101,7 +101,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                 null,
                 beanEventTypeFactory);
             _isNoMapProperties = properties.IsEmpty();
-            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
             _propertyGetterCache = new Dictionary<string, EventPropertyGetterSPI>();
 
             UpdatePropertySet();

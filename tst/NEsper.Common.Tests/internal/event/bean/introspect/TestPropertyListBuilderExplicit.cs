@@ -89,7 +89,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             catch (ConfigurationException ex)
             {
                 // expected
-                log.Debug(ex.Message);
+                Log.Debug(ex.Message);
             }
         }
 
@@ -106,10 +106,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
             catch (ConfigurationException ex)
             {
                 // expected
-                log.Debug(ex.Message);
+                Log.Debug(ex.Message);
             }
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

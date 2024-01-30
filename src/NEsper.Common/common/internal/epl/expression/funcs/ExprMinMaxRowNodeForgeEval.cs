@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprEvaluator[] evaluators,
             ExprForge[] forges)
         {
-            this._forge = forge;
+            _forge = forge;
             if (forge.EvaluationType == typeof(BigInteger)) {
                 var convertors = new BigIntegerCoercer[evaluators.Length];
                 for (var i = 0; i < evaluators.Length; i++) {

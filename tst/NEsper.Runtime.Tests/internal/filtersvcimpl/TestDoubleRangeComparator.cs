@@ -19,7 +19,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     [TestFixture]
     public class TestDoubleRangeComparator : AbstractRuntimeTest
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test, RunInApplicationDomain]
         public void TestComparator()
@@ -54,7 +54,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 var indexExpected = EXPECTED_INDEX[count];
                 var expected = ranges[indexExpected];
 
-                log.Debug(
+                Log.Debug(
                     ".testComparator count=" +
                     count +
                     " range=" +

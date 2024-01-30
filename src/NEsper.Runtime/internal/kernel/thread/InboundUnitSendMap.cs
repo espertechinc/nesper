@@ -22,12 +22,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 	/// </summary>
 	public class InboundUnitSendMap : InboundUnitRunnable
 	{
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-		private readonly IDictionary<string, object> map;
-		private readonly string eventTypeName;
-		private readonly EPRuntimeEventProcessWrapped runtime;
-		private readonly EPServicesEvaluation services;
+		private readonly IDictionary<string, object> _map;
+		private readonly string _eventTypeName;
+		private readonly EPRuntimeEventProcessWrapped _runtime;
+		private readonly EPServicesEvaluation _services;
 
 		public InboundUnitSendMap(
 			IDictionary<string, object> map,
@@ -35,21 +35,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 			EPRuntimeEventProcessWrapped runtime,
 			EPServicesEvaluation services)
 		{
-			this.map = map;
-			this.eventTypeName = eventTypeName;
-			this.runtime = runtime;
-			this.services = services;
+			this._map = map;
+			this._eventTypeName = eventTypeName;
+			this._runtime = runtime;
+			this._services = services;
 		}
 
 		public void Run()
 		{
 			try {
-				EventBean eventBean = services.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
-				runtime.ProcessWrappedEvent(eventBean);
+				EventBean eventBean = _services.EventTypeResolvingBeanFactory.AdapterForMap(_map, _eventTypeName);
+				_runtime.ProcessWrappedEvent(eventBean);
 			}
 			catch (Exception e) {
-				services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, map);
-				log.Error("Unexpected error processing Map event: " + e.Message, e);
+				_services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, e, _map);
+				Log.Error("Unexpected error processing Map event: " + e.Message, e);
 			}
 		}
 	}

@@ -80,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
         public class MyTimeAdvancingRunnable : IRunnable
         {
-            private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
             private readonly RegressionEnvironment env;
             private readonly AtomicBoolean latch;
             private readonly long maxNumAdvances;
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Unexpected exception", ex);
+                    Log.Error("Unexpected exception", ex);
                 }
             }
         }

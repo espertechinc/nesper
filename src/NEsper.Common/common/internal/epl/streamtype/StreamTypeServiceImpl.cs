@@ -579,8 +579,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 EventType[] eventTypes,
                 string propertyName)
             {
-                this._eventTypes = eventTypes;
-                this._propertyName = propertyName;
+                _eventTypes = eventTypes;
+                _propertyName = propertyName;
             }
 
             public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(_eventTypes, _propertyName);
@@ -595,8 +595,8 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 EventType eventType,
                 string propertyName)
             {
-                this._eventType = eventType;
-                this._propertyName = propertyName;
+                _eventType = eventType;
+                _propertyName = propertyName;
             }
 
             public Pair<int, string> Suggestion => StreamTypeServiceUtil.FindLevMatch(_propertyName, _eventType);
@@ -613,9 +613,9 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
                 string[] streamNames,
                 string streamName)
             {
-                this._eventTypes = eventTypes;
-                this._streamNames = streamNames;
-                this._streamName = streamName;
+                _eventTypes = eventTypes;
+                _streamNames = streamNames;
+                _streamName = streamName;
             }
 
             public Pair<int, string> Suggestion {

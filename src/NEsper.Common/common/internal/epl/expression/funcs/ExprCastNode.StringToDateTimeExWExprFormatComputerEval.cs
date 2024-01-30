@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 TimeZoneInfo timeZone)
                 : base(dateFormatEval)
             {
-                this._timeZone = timeZone;
+                _timeZone = timeZone;
             }
 
             public override object Compute(

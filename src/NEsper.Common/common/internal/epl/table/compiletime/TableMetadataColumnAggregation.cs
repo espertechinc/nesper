@@ -39,11 +39,11 @@ namespace com.espertech.esper.common.@internal.epl.table.compiletime
             bool methodAgg,
             EPChainableType optionalEnumerationType) : base(columnName, key)
         {
-            this._column = column;
-            this._aggregationPortableValidation = aggregationPortableValidation;
-            this._aggregationExpression = aggregationExpression;
-            this._methodAgg = methodAgg;
-            this._optionalEnumerationType = optionalEnumerationType;
+            _column = column;
+            _aggregationPortableValidation = aggregationPortableValidation;
+            _aggregationExpression = aggregationExpression;
+            _methodAgg = methodAgg;
+            _optionalEnumerationType = optionalEnumerationType;
         }
 
         protected override CodegenExpression Make(

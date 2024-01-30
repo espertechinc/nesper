@@ -42,7 +42,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.minmax
             bool hasFilter,
             ExprNode optionalFilter) : base(optionalDistinctValueType, optionalDistinctSerde, hasFilter, optionalFilter)
         {
-            this._factory = factory;
+            _factory = factory;
         }
 
         public override void InitForgeFiltered(

@@ -18,9 +18,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 ExprNode optionalCompareExprNode,
                 ExprNode optionalElseExprNode)
             {
-                this._whenThenNodeList = whenThenNodeList;
-                this._optionalCompareExprNode = optionalCompareExprNode;
-                this._optionalElseExprNode = optionalElseExprNode;
+                _whenThenNodeList = whenThenNodeList;
+                _optionalCompareExprNode = optionalCompareExprNode;
+                _optionalElseExprNode = optionalElseExprNode;
             }
 
             public IList<UniformPair<ExprNode>> WhenThenNodeList => _whenThenNodeList;

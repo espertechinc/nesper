@@ -178,7 +178,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergroup
             CodegenClassScope classScope,
             CodegenInstanceAux instance)
         {
-            var shortcutEvalGivenKey = ResultSetProcessorRowPerGroupImpl.ShortcutEvalGivenKeyCodegen(
+            var shortcutEvalGivenKey = ShortcutEvalGivenKeyCodegen(
                 forge.OptionalHavingNode,
                 classScope,
                 instance);

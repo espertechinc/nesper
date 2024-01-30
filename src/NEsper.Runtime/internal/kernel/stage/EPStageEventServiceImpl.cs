@@ -51,22 +51,22 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		EPRuntimeEventProcessWrapped,
 		EPEventServiceQueueProcessor
 	{
-		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		public StageSpecificServices specificServices;
-		private StageRuntimeServices runtimeServices;
-		private readonly string stageUri;
+		private StageRuntimeServices _runtimeServices;
+		private readonly string _stageUri;
 
-		private bool inboundThreading;
-		private bool routeThreading;
-		private bool timerThreading;
-		private bool isUsingExternalClocking;
-		private bool isPrioritized;
-		private volatile UnmatchedListener unmatchedListener;
-		private AtomicLong routedInternal;
-		private AtomicLong routedExternal;
-		private InternalEventRouter internalEventRouter;
-		private IThreadLocal<EPEventServiceThreadLocalEntry> threadLocals;
+		private bool _inboundThreading;
+		private bool _routeThreading;
+		private bool _timerThreading;
+		private bool _isUsingExternalClocking;
+		private bool _isPrioritized;
+		private volatile UnmatchedListener _unmatchedListener;
+		private AtomicLong _routedInternal;
+		private AtomicLong _routedExternal;
+		private InternalEventRouter _internalEventRouter;
+		private IThreadLocal<EPEventServiceThreadLocalEntry> _threadLocals;
 
 		public EPStageEventServiceImpl(
 			StageSpecificServices specificServices,
@@ -74,15 +74,15 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			string stageUri)
 		{
 			this.specificServices = specificServices;
-			this.runtimeServices = runtimeServices;
-			this.stageUri = stageUri;
-			this.inboundThreading = specificServices.ThreadingService.IsInboundThreading;
-			this.routeThreading = specificServices.ThreadingService.IsRouteThreading;
-			this.timerThreading = specificServices.ThreadingService.IsTimerThreading;
-			isUsingExternalClocking = true;
-			isPrioritized = runtimeServices.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
-			routedInternal = new AtomicLong();
-			routedExternal = new AtomicLong();
+			this._runtimeServices = runtimeServices;
+			this._stageUri = stageUri;
+			this._inboundThreading = specificServices.ThreadingService.IsInboundThreading;
+			this._routeThreading = specificServices.ThreadingService.IsRouteThreading;
+			this._timerThreading = specificServices.ThreadingService.IsTimerThreading;
+			_isUsingExternalClocking = true;
+			_isPrioritized = runtimeServices.RuntimeSettingsService.ConfigurationRuntime.Execution.IsPrioritized;
+			_routedInternal = new AtomicLong();
+			_routedExternal = new AtomicLong();
 
 			InitThreadLocals();
 
@@ -96,13 +96,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		/// </summary>
 		/// <value>router</value>
 		public InternalEventRouter InternalEventRouter {
-			get => this.internalEventRouter;
-			set => this.internalEventRouter = value;
+			get => this._internalEventRouter;
+			set => this._internalEventRouter = value;
 		}
 
-		public long RoutedInternal => routedInternal.Get();
+		public long RoutedInternal => _routedInternal.Get();
 
-		public long RoutedExternal => routedExternal.Get();
+		public long RoutedExternal => _routedExternal.Get();
 
 		public void SendEventAvro(
 			object avroGenericDataDotRecord,
@@ -112,11 +112,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-				log.Debug(".sendMap Processing event " + avroGenericDataDotRecord.ToString());
+			if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+				Log.Debug(".sendMap Processing event " + avroGenericDataDotRecord.ToString());
 			}
 
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendAvro(
 						avroGenericDataDotRecord,
@@ -138,11 +138,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-				log.Debug(".sendEventJson Processing event " + json);
+			if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+				Log.Debug(".sendEventJson Processing event " + json);
 			}
 
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendJson(json, jsonEventTypeName, this, specificServices));
 			}
@@ -157,20 +157,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			string eventTypeName)
 		{
 			if (theEvent == null) {
-				log.Error(".sendEvent Null object supplied");
+				Log.Error(".sendEvent Null object supplied");
 				return;
 			}
 
-			if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-				log.Debug(".sendEvent Processing event " + theEvent);
+			if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+				Log.Debug(".sendEvent Processing event " + theEvent);
 			}
 
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendEvent(theEvent, eventTypeName, this, specificServices));
 			}
 			else {
-				var eventBean = runtimeServices.EventTypeResolvingBeanFactory.AdapterForBean(theEvent, eventTypeName);
+				var eventBean = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForBean(theEvent, eventTypeName);
 				ProcessWrappedEvent(eventBean);
 			}
 		}
@@ -178,7 +178,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		public void AdvanceTime(long time)
 		{
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QStimulantTime(specificServices.SchedulingService.Time, time, time, false, null, stageUri);
+				InstrumentationHelper.Get().QStimulantTime(specificServices.SchedulingService.Time, time, time, false, null, _stageUri);
 			}
 
 			specificServices.SchedulingService.Time = time;
@@ -239,7 +239,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 				if (InstrumentationHelper.ENABLED) {
 					InstrumentationHelper.Get()
-						.QStimulantTime(specificServices.SchedulingService.Time, currentTime, targetTime, true, optionalResolution, stageUri);
+						.QStimulantTime(specificServices.SchedulingService.Time, currentTime, targetTime, true, optionalResolution, _stageUri);
 				}
 
 				specificServices.SchedulingService.Time = currentTime;
@@ -267,12 +267,12 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			string eventTypeName)
 		{
 			if (node == null) {
-				log.Error(".sendEvent Null object supplied");
+				Log.Error(".sendEvent Null object supplied");
 				return;
 			}
 
 			// Process event
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendDOM(node, eventTypeName, this, specificServices));
 			}
@@ -290,11 +290,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-				log.Debug(".sendEventObjectArray Processing event " + propertyValues.RenderAny());
+			if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+				Log.Debug(".sendEventObjectArray Processing event " + propertyValues.RenderAny());
 			}
 
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendObjectArray(propertyValues, eventTypeName, this, specificServices));
 			}
@@ -312,11 +312,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			if ((ExecutionPathDebugLog.IsDebugEnabled) && (log.IsDebugEnabled)) {
-				log.Debug(".sendMap Processing event " + map);
+			if ((ExecutionPathDebugLog.IsDebugEnabled) && (Log.IsDebugEnabled)) {
+				Log.Debug(".sendMap Processing event " + map);
 			}
 
-			if (inboundThreading) {
+			if (_inboundThreading) {
 				specificServices.ThreadingService.SubmitInbound(
 					new InboundUnitSendMap(map, mapEventTypeName, this, specificServices));
 			}
@@ -328,7 +328,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 		public void RouteEventBean(EventBean theEvent)
 		{
-			threadLocals.GetOrCreate().WorkQueue.Add(theEvent);
+			_threadLocals.GetOrCreate().WorkQueue.Add(theEvent);
 		}
 
 		// Internal route of events via insert-into, holds a statement lock
@@ -346,20 +346,20 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				theEvent = ((NaturalEventBean) theEvent).OptionalSynthetic;
 			}
 
-			routedInternal.IncrementAndGet();
-			var threadWorkQueue = threadLocals.GetOrCreate().WorkQueue;
+			_routedInternal.IncrementAndGet();
+			var threadWorkQueue = _threadLocals.GetOrCreate().WorkQueue;
 			threadWorkQueue.Add(theEvent, epStatementHandle, addToFront, precedence);
 		}
 
 		public void ProcessWrappedEvent(EventBean eventBean)
 		{
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QStimulantEvent(eventBean, stageUri);
+				InstrumentationHelper.Get().QStimulantEvent(eventBean, _stageUri);
 			}
 
-			var tlEntry = threadLocals.GetOrCreate();
-			if (internalEventRouter.HasPreprocessing) {
-				eventBean = internalEventRouter.Preprocess(eventBean, tlEntry.ExprEvaluatorContext, InstrumentationHelper.Get());
+			var tlEntry = _threadLocals.GetOrCreate();
+			if (_internalEventRouter.HasPreprocessing) {
+				eventBean = _internalEventRouter.Preprocess(eventBean, tlEntry.ExprEvaluatorContext, InstrumentationHelper.Get());
 				if (eventBean == null) {
 					return;
 				}
@@ -367,7 +367,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 			// Acquire main processing lock which locks out statement management
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QEvent(eventBean, stageUri, true);
+				InstrumentationHelper.Get().QEvent(eventBean, _stageUri, true);
 			}
 
 			using (specificServices.EventProcessingRWLock.AcquireReadLock()) {
@@ -402,10 +402,10 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		/// </summary>
 		public void ProcessThreadWorkQueue()
 		{
-			var queues = threadLocals.GetOrCreate().WorkQueue;
+			var queues = _threadLocals.GetOrCreate().WorkQueue;
 
 			if (queues.IsFrontEmpty) {
-				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
+				var haveDispatched = _runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					// Dispatch results to listeners
 					Dispatch();
@@ -420,7 +420,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 
 			while (queues.ProcessBack(this)) {
-				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
+				var haveDispatched = _runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					Dispatch();
 				}
@@ -434,7 +434,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		private void ProcessThreadWorkQueueFront(WorkQueue queues)
 		{
 			while (queues.ProcessFront(this)) {
-				var haveDispatched = runtimeServices.NamedWindowDispatchService.Dispatch();
+				var haveDispatched = _runtimeServices.NamedWindowDispatchService.Dispatch();
 				if (haveDispatched) {
 					Dispatch();
 				}
@@ -447,7 +447,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			var eventBean = insertIntoLatch.Await();
 
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QEvent(eventBean, stageUri, false);
+				InstrumentationHelper.Get().QEvent(eventBean, _stageUri, false);
 			}
 
 			using (specificServices.EventProcessingRWLock.AcquireReadLock()) {
@@ -455,7 +455,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					ProcessMatches(eventBean);
 				}
 				catch (Exception) {
-					threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
+					_threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
 					throw;
 				}
 				finally {
@@ -475,7 +475,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			var eventBean = insertIntoLatch.Await();
 
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QEvent(eventBean, stageUri, false);
+				InstrumentationHelper.Get().QEvent(eventBean, _stageUri, false);
 			}
 
 			using (specificServices.EventProcessingRWLock.AcquireReadLock()) {
@@ -483,7 +483,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					ProcessMatches(eventBean);
 				}
 				catch (Exception) {
-					threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
+					_threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
 					throw;
 				}
 				finally {
@@ -508,7 +508,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QEvent(eventBean, stageUri, false);
+				InstrumentationHelper.Get().QEvent(eventBean, _stageUri, false);
 			}
 
 			using (specificServices.EventProcessingRWLock.AcquireReadLock()) {
@@ -516,7 +516,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					ProcessMatches(eventBean);
 				}
 				catch (Exception) {
-					threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
+					_threadLocals.GetOrCreate().MatchesArrayThreadLocal.Clear();
 					throw;
 				}
 				finally {
@@ -532,7 +532,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		protected void ProcessMatches(EventBean theEvent)
 		{
 			// get matching filters
-			var tlEntry = threadLocals.GetOrCreate();
+			var tlEntry = _threadLocals.GetOrCreate();
 			var matches = tlEntry.MatchesArrayThreadLocal;
 			var version = specificServices.FilterService.Evaluate(theEvent, matches, tlEntry.ExprEvaluatorContext);
 
@@ -541,13 +541,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 
 			if (matches.Count == 0) {
-				if (unmatchedListener != null) {
+				if (_unmatchedListener != null) {
 					specificServices.EventProcessingRWLock.ReadLock.Release(); // Allow listener to create new statements
 					try {
-						unmatchedListener.Invoke(theEvent);
+						_unmatchedListener.Invoke(theEvent);
 					}
 					catch (Exception ex) {
-						log.Error("Exception thrown by unmatched listener: " + ex.Message, ex);
+						Log.Error("Exception thrown by unmatched listener: " + ex.Message, ex);
 					}
 					finally {
 						// acquire read lock for release by caller
@@ -568,7 +568,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 				// Self-joins require that the internal dispatch happens after all streams are evaluated.
 				// Priority or preemptive settings also require special ordering.
-				if (handle.IsCanSelfJoin || isPrioritized) {
+				if (handle.IsCanSelfJoin || _isPrioritized) {
 					var callbacks = stmtCallbacks.Get(handle);
 					if (callbacks == null) {
 						stmtCallbacks.Put(handle, handleCallback.FilterCallback);
@@ -593,7 +593,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					specificServices.MetricReportingService.AccountTime(handle.StatementHandle.MetricsHandle, metrics, 1);
 				}
 				else {
-					if (routeThreading) {
+					if (_routeThreading) {
 						specificServices.ThreadingService.SubmitRoute(
 							new RouteUnitSingleStaged(this, handleCallback, theEvent, version));
 					}
@@ -624,7 +624,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					specificServices.MetricReportingService.AccountTime(handle.StatementHandle.MetricsHandle, metrics, size);
 				}
 				else {
-					if (routeThreading) {
+					if (_routeThreading) {
 						specificServices.ThreadingService.SubmitRoute(
 							new RouteUnitMultipleStaged(this, callbackList, theEvent, handle, version));
 					}
@@ -633,7 +633,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					}
 				}
 
-				if (isPrioritized && handle.IsPreemptive) {
+				if (_isPrioritized && handle.IsPreemptive) {
 					break;
 				}
 			}
@@ -663,7 +663,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			handle.StatementAgentInstanceLock.AcquireWriteLock();
 			try {
 				if (handle.HasVariables) {
-					runtimeServices.VariableManagementService.SetLocalVersion();
+					_runtimeServices.VariableManagementService.SetLocalVersion();
 				}
 
 				if (!handle.IsCurrentFilter(version)) {
@@ -691,11 +691,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				}
 			}
 			catch (Exception ex) {
-				runtimeServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
+				_runtimeServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
 			}
 			finally {
 				if (handle.HasTableAccess) {
-					runtimeServices.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+					_runtimeServices.TableExprEvaluatorContext.ReleaseAcquiredLocks();
 				}
 
 				handle.StatementAgentInstanceLock.ReleaseWriteLock();
@@ -727,7 +727,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			handle.StatementAgentInstanceLock.AcquireWriteLock();
 			try {
 				if (handle.HasVariables) {
-					runtimeServices.VariableManagementService.SetLocalVersion();
+					_runtimeServices.VariableManagementService.SetLocalVersion();
 				}
 
 				if (!handle.IsCurrentFilter(version)) {
@@ -748,11 +748,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				handle.InternalDispatch();
 			}
 			catch (Exception ex) {
-				runtimeServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
+				_runtimeServices.ExceptionHandlingService.HandleException(ex, handle, ExceptionHandlerExceptionType.PROCESS, theEvent);
 			}
 			finally {
 				if (handle.HasTableAccess) {
-					runtimeServices.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+					_runtimeServices.TableExprEvaluatorContext.ReleaseAcquiredLocks();
 				}
 
 				handleCallback.AgentInstanceHandle.StatementAgentInstanceLock.ReleaseWriteLock();
@@ -772,7 +772,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				theEvent,
 				callbacksForStatement,
 				faultingHandle.StatementId,
-				threadLocals.GetOrCreate().ExprEvaluatorContext);
+				_threadLocals.GetOrCreate().ExprEvaluatorContext);
 
 			if (callbacksForStatement.Count == 1) {
 				var handleCallback = (EPStatementHandleCallbackFilter) callbacksForStatement.First;
@@ -785,7 +785,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 
 			IDictionary<EPStatementAgentInstanceHandle, object> stmtCallbacks;
-			if (isPrioritized) {
+			if (_isPrioritized) {
 				stmtCallbacks = new SortedDictionary<EPStatementAgentInstanceHandle, object>(
 					EPStatementAgentInstanceHandleComparer.INSTANCE);
 			}
@@ -797,7 +797,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				var handleCallback = (EPStatementHandleCallbackFilter) filterHandle;
 				var handle = handleCallback.AgentInstanceHandle;
 
-				if (handle.IsCanSelfJoin || isPrioritized) {
+				if (handle.IsCanSelfJoin || _isPrioritized) {
 					var callbacks = stmtCallbacks.Get(handle);
 					if (callbacks == null) {
 						stmtCallbacks.Put(handle, handleCallback.FilterCallback);
@@ -829,7 +829,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 				ProcessStatementFilterMultiple(handle, callbackList, theEvent, version, filterFaultCount + 1);
 
-				if (isPrioritized && handle.IsPreemptive) {
+				if (_isPrioritized && handle.IsPreemptive) {
 					break;
 				}
 			}
@@ -841,7 +841,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		public void Dispatch()
 		{
 			try {
-				runtimeServices.DispatchService.Dispatch();
+				_runtimeServices.DispatchService.Dispatch();
 			}
 			catch (EPException) {
 				throw;
@@ -851,17 +851,17 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			}
 		}
 
-		public bool IsExternalClockingEnabled => isUsingExternalClocking;
+		public bool IsExternalClockingEnabled => _isUsingExternalClocking;
 
 		/// <summary>
 		/// Destroy for destroying an runtime instance: sets references to null and clears thread-locals
 		/// </summary>
 		public void Destroy()
 		{
-			runtimeServices = null;
+			_runtimeServices = null;
 			specificServices = null;
 			RemoveFromThreadLocals();
-			threadLocals = null;
+			_threadLocals = null;
 		}
 
 		public void Initialize()
@@ -875,43 +875,43 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		}
 
 		public UnmatchedListener UnmatchedListener {
-			get => this.unmatchedListener;
-			set => this.unmatchedListener = value;
+			get => this._unmatchedListener;
+			set => this._unmatchedListener = value;
 		}
 
 		public long CurrentTime => specificServices.SchedulingService.Time;
 
-		public string RuntimeURI => stageUri;
+		public string RuntimeURI => _stageUri;
 
 		private void RemoveFromThreadLocals()
 		{
-			threadLocals?.Remove();
+			_threadLocals?.Remove();
 		}
 
 		private void InitThreadLocals()
 		{
 			RemoveFromThreadLocals();
 
-			threadLocals = AllocateThreadLocals(
-				runtimeServices.Container,
-				isPrioritized,
-				runtimeServices.RuntimeURI,
-				runtimeServices.ConfigSnapshot,
-				runtimeServices.EventBeanService,
-				runtimeServices.ExceptionHandlingService,
+			_threadLocals = AllocateThreadLocals(
+				_runtimeServices.Container,
+				_isPrioritized,
+				_runtimeServices.RuntimeURI,
+				_runtimeServices.ConfigSnapshot,
+				_runtimeServices.EventBeanService,
+				_runtimeServices.ExceptionHandlingService,
 				specificServices.SchedulingService,
-				runtimeServices.ImportServiceRuntime.TimeZone,
-				runtimeServices.ImportServiceRuntime.TimeAbacus,
-				runtimeServices.VariableManagementService);
+				_runtimeServices.ImportServiceRuntime.TimeZone,
+				_runtimeServices.ImportServiceRuntime.TimeAbacus,
+				_runtimeServices.VariableManagementService);
 		}
 
 		private void ProcessSchedule(long time)
 		{
 			if (InstrumentationHelper.ENABLED) {
-				InstrumentationHelper.Get().QTime(time, stageUri);
+				InstrumentationHelper.Get().QTime(time, _stageUri);
 			}
 
-			var handles = threadLocals.GetOrCreate().ScheduleArrayThreadLocal;
+			var handles = _threadLocals.GetOrCreate().ScheduleArrayThreadLocal;
 
 			// Evaluation of schedules is protected by an optional scheduling service lock and then the runtime lock
 			// We want to stay in this order for allowing the runtime lock as a second-order lock to the
@@ -960,7 +960,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					specificServices.MetricReportingService.AccountTime(handle.AgentInstanceHandle.StatementHandle.MetricsHandle, metrics, 1);
 				}
 				else {
-					if (timerThreading) {
+					if (_timerThreading) {
 						specificServices.ThreadingService.SubmitTimerWork(
 							new TimerUnitSingleStaged(specificServices, this, handle));
 					}
@@ -977,7 +977,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			var entryCount = handles.Count;
 
 			// sort multiple matches for the event into statements
-			var stmtCallbacks = threadLocals.GetOrCreate().SchedulePerStmtThreadLocal;
+			var stmtCallbacks = _threadLocals.GetOrCreate().SchedulePerStmtThreadLocal;
 			stmtCallbacks.Clear();
 			for (var i = 0; i < entryCount; i++) {
 				var handleCallback = (EPStatementHandleCallbackSchedule) matchArray[i];
@@ -1019,7 +1019,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					specificServices.MetricReportingService.AccountTime(handle.StatementHandle.MetricsHandle, metrics, numInput);
 				}
 				else {
-					if (timerThreading) {
+					if (_timerThreading) {
 						specificServices.ThreadingService.SubmitTimerWork(
 							new TimerUnitMultipleStaged(specificServices, this, handle, callbackObject));
 					}
@@ -1028,7 +1028,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 					}
 				}
 
-				if (isPrioritized && handle.IsPreemptive) {
+				if (_isPrioritized && handle.IsPreemptive) {
 					break;
 				}
 			}
@@ -1038,35 +1038,35 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			IDictionary<string, object> map,
 			string eventTypeName)
 		{
-			return runtimeServices.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
+			return _runtimeServices.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
 		}
 
 		private EventBean WrapEventObjectArray(
 			object[] objectArray,
 			string eventTypeName)
 		{
-			return runtimeServices.EventTypeResolvingBeanFactory.AdapterForObjectArray(objectArray, eventTypeName);
+			return _runtimeServices.EventTypeResolvingBeanFactory.AdapterForObjectArray(objectArray, eventTypeName);
 		}
 
 		private EventBean WrapEventBeanXMLDOM(
 			XmlNode node,
 			string eventTypeName)
 		{
-			return runtimeServices.EventTypeResolvingBeanFactory.AdapterForXMLDOM(node, eventTypeName);
+			return _runtimeServices.EventTypeResolvingBeanFactory.AdapterForXMLDOM(node, eventTypeName);
 		}
 
 		private EventBean WrapEventAvro(
 			object avroGenericDataDotRecord,
 			string eventTypeName)
 		{
-			return runtimeServices.EventTypeResolvingBeanFactory.AdapterForAvro(avroGenericDataDotRecord, eventTypeName);
+			return _runtimeServices.EventTypeResolvingBeanFactory.AdapterForAvro(avroGenericDataDotRecord, eventTypeName);
 		}
 
 		private EventBean WrapEventJson(
 			string json,
 			string eventTypeName)
 		{
-			return runtimeServices.EventTypeResolvingBeanFactory.AdapterForJson(json, eventTypeName);
+			return _runtimeServices.EventTypeResolvingBeanFactory.AdapterForJson(json, eventTypeName);
 		}
 
 		public void RouteEventMap(
@@ -1077,7 +1077,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForMap(map, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
@@ -1089,7 +1089,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForBean(@event, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForBean(@event, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
@@ -1101,7 +1101,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForObjectArray(@event, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForObjectArray(@event, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
@@ -1113,7 +1113,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForXMLDOM(@event, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForXMLDOM(@event, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
@@ -1125,7 +1125,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForAvro(avroGenericDataDotRecord, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForAvro(avroGenericDataDotRecord, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
@@ -1137,13 +1137,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 				throw new ArgumentException("Invalid null event object");
 			}
 
-			var theEvent = runtimeServices.EventTypeResolvingBeanFactory.AdapterForJson(json, eventTypeName);
+			var theEvent = _runtimeServices.EventTypeResolvingBeanFactory.AdapterForJson(json, eventTypeName);
 			RouteEventInternal(theEvent);
 		}
 
 		public EventSender GetEventSender(string eventTypeName)
 		{
-			var eventType = runtimeServices.EventTypeRepositoryBus.GetTypeByName(eventTypeName);
+			var eventType = _runtimeServices.EventTypeRepositoryBus.GetTypeByName(eventTypeName);
 			if (eventType == null) {
 				throw new EventTypeException("Event type named '" + eventTypeName + "' could not be found");
 			}
@@ -1151,27 +1151,27 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 			// handle built-in types
 			var threadingService = specificServices.ThreadingService;
 			if (eventType is BeanEventType) {
-				return new EventSenderBean(this, (BeanEventType) eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderBean(this, (BeanEventType) eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			if (eventType is MapEventType) {
-				return new EventSenderMap(this, (MapEventType) eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderMap(this, (MapEventType) eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			if (eventType is ObjectArrayEventType) {
-				return new EventSenderObjectArray(this, (ObjectArrayEventType) eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderObjectArray(this, (ObjectArrayEventType) eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			if (eventType is BaseXMLEventType) {
-				return new EventSenderXMLDOM(this, (BaseXMLEventType) eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderXMLDOM(this, (BaseXMLEventType) eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			if (eventType is AvroSchemaEventType) {
-				return new EventSenderAvro(this, eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderAvro(this, eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			if (eventType is JsonEventType) {
-				return new EventSenderJsonImpl(this, (JsonEventType) eventType, runtimeServices.EventBeanTypedEventFactory, threadingService);
+				return new EventSenderJsonImpl(this, (JsonEventType) eventType, _runtimeServices.EventBeanTypedEventFactory, threadingService);
 			}
 
 			throw new EventTypeException("An event sender for event type named '" + eventTypeName + "' could not be created as the type is not known");
@@ -1180,7 +1180,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		public IDictionary<DeploymentIdNamePair, long> StatementNearestSchedules =>
 			GetStatementNearestSchedulesInternal(
 				specificServices.SchedulingServiceSPI,
-				runtimeServices.StatementLifecycleService);
+				_runtimeServices.StatementLifecycleService);
 
 		public void ClockInternal()
 		{
@@ -1197,11 +1197,11 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 		public void ResetStats()
 		{
 			specificServices.FilterService.ResetStats();
-			routedInternal.Set(0);
-			routedExternal.Set(0);
+			_routedInternal.Set(0);
+			_routedExternal.Set(0);
 		}
 
-		public string URI => stageUri;
+		public string URI => _stageUri;
 
 		private static IDictionary<DeploymentIdNamePair, long> GetStatementNearestSchedulesInternal(
 			SchedulingServiceSPI schedulingService,
@@ -1232,9 +1232,9 @@ namespace com.espertech.esper.runtime.@internal.kernel.stage
 
 		private void RouteEventInternal(EventBean theEvent)
 		{
-			var tlEntry = threadLocals.GetOrCreate();
-			if (internalEventRouter.HasPreprocessing) {
-				theEvent = internalEventRouter.Preprocess(theEvent, tlEntry.ExprEvaluatorContext, InstrumentationHelper.Get());
+			var tlEntry = _threadLocals.GetOrCreate();
+			if (_internalEventRouter.HasPreprocessing) {
+				theEvent = _internalEventRouter.Preprocess(theEvent, tlEntry.ExprEvaluatorContext, InstrumentationHelper.Get());
 				if (theEvent == null) {
 					return;
 				}

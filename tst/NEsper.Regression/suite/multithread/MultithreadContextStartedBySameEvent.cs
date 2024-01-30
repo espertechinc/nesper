@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextStartedBySameEvent : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -102,7 +102,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     Console.Out.WriteLine("sent " + numEvents + " events");
                 }
                 catch (Exception ex) {
-                    log.Error("Error while processing", ex);
+                    Log.Error("Error while processing", ex);
                     exception = ex;
                 }
             }

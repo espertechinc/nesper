@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator)
         {
             IsAll = all;
-            this._operator = @operator;
+            _operator = @operator;
         }
 
         /// <summary>

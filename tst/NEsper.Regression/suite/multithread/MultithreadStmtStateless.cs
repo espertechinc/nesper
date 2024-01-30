@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtStateless : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             var delta = PerformanceObserver.MilliTime - start;
-            log.Info("Delta=" + delta + " for " + numThreads * numRepeats + " events");
+            Log.Info("Delta=" + delta + " for " + numThreads * numRepeats + " events");
 
             foreach (var r in runnables) {
                 Assert.IsNull(r.Exception);
@@ -103,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                             "SentenceEvent");
 
                         if (i % 10000 == 0) {
-                            log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + i);
+                            Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + i);
                         }
                     }
                 }

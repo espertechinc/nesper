@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
 
         protected SubselectForgeStrategyRowBase(ExprSubselectRowNode subselect)
         {
-            this._subselect = subselect;
+            _subselect = subselect;
         }
 
         protected ExprSubselectRowNode Subselect {

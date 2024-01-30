@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.@select.eval
 
             public ExprEvaluator EvaluatorAssigned {
                 get => evaluatorAssigned;
-                set => this.evaluatorAssigned = value;
+                set => evaluatorAssigned = value;
             }
         }
     }

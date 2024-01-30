@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 var loopCount = 0;
 
                 while (true) {
-                    log.Info("Sending batch " + loopCount);
+                    Log.Info("Sending batch " + loopCount);
 
                     // send events
                     var startTime = PerformanceObserver.MilliTime;
@@ -208,6 +208,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.SendEventBean(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(ResultSetAggregateMinMax));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResultSetAggregateMinMax));
     }
 } // end of namespace

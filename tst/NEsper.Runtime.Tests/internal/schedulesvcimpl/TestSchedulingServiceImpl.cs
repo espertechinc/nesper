@@ -84,7 +84,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         {
             private static int orderAllCallbacks;
 
-            private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+            private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
             private int orderTriggered;
 
@@ -94,7 +94,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
 
             public void ScheduledTrigger()
             {
-                log.Debug(".scheduledTrigger");
+                Log.Debug(".scheduledTrigger");
                 orderAllCallbacks++;
                 orderTriggered = orderAllCallbacks;
             }

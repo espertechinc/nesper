@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.introspect
 
         private PropertyListBuilderNative builder;
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestBuildPropList()

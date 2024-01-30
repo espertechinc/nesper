@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 : base(
                     dateFormatString)
             {
-                this._timeZone = timeZone;
+                _timeZone = timeZone;
             }
 
             public override object Compute(

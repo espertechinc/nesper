@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             if (left is ExprFilterOptimizableNode filterOptimizableNode) {
                 lookupable = filterOptimizableNode.FilterLookupable;
             }
-            else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+            else if (HasLevelOrHint(
                          FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE,
                          raw,
                          services) &&
@@ -130,7 +130,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             }
 
             // or limited expression
-            if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+            if (HasLevelOrHint(
                     FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE,
                     raw,
                     services) &&

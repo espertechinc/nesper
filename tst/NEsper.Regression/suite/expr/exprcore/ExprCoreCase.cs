@@ -1502,7 +1502,5 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             return new SupportMarketDataBean(symbol, price, volume, null);
         }
-
-        private static readonly ILog log = LogManager.GetLogger(typeof(ExprCoreCase));
     }
 } // end of namespace

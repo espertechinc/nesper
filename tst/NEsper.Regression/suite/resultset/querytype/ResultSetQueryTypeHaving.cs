@@ -546,6 +546,6 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.SendEventBean(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(ResultSetQueryTypeHaving));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ResultSetQueryTypeHaving));
     }
 } // end of namespace

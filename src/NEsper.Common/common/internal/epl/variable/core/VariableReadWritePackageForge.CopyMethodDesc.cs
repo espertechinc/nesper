@@ -10,8 +10,8 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
                 string variableName,
                 IList<string> propertiesCopied)
             {
-                this.VariableName = variableName;
-                this.PropertiesCopied = propertiesCopied;
+                VariableName = variableName;
+                PropertiesCopied = propertiesCopied;
             }
 
             public string VariableName { get; }

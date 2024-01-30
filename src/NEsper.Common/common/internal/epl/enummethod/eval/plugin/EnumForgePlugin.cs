@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plugin
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(_expectedStateReturnType, typeof(EnumForgePlugin), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
-                .AddParam(inputType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(inputType, REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
                 .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
             

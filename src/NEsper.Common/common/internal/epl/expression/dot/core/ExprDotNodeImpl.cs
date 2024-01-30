@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
 
                 IList<Chainable> modifiedChainXX = new List<Chainable>(aggregationMethodNode.Second);
-                this.SetChainSpec(modifiedChainXX);
+                SetChainSpec(modifiedChainXX);
                 ChildNodes[0] = aggregationMethodNode.First;
             }
 

@@ -52,7 +52,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
 
-            log.Info(".testPerformance Starting test");
+            Log.Info(".testPerformance Starting test");
 
             for (int i = 0; i < 10; i++)   // Change to 1E8 for performance testing
             {
@@ -60,7 +60,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
                 Assert.AreEqual(10, value);
             }
 
-            log.Info(".testPerformance Done test");
+            Log.Info(".testPerformance Done test");
         }
 
         private ReflectionPropMethodGetter MakeGetter(Type clazz, string methodName)
@@ -72,6 +72,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             return getter;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

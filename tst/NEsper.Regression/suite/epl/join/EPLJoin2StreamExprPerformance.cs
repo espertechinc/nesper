@@ -22,7 +22,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin2StreamExprPerformance : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -123,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             var delta = PerformanceObserver.MilliTime - startTime;
             Assert.That(delta, Is.LessThan(2000), "delta=" + delta);
-            log.Info($"delta={delta}");
+            Log.Info($"delta={delta}");
 
             env.UndeployAll();
         }

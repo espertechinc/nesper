@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class VariableReadWriteCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly SupportUpdateListener selectListener;
@@ -75,11 +75,11 @@ namespace com.espertech.esper.regressionlib.support.multithread
                 }
             }
             catch (AssertionException ex) {
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception ex) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

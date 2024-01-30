@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeployAddListenerMileZero(stmtText, "s0");
 
                 // preload
-                log.Info("Preload");
+                Log.Info("Preload");
                 for (var i = 0; i < 10; i++) {
                     env.SendEventBean(new SupportBean_ST1($"ST1_{i}", "K", i));
                 }
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.SendEventBean(new SupportBean_ST0($"ST0_{i}", "K", i));
                 }
 
-                log.Info("Preload done");
+                Log.Info("Preload done");
 
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 100; i++) {
@@ -260,6 +260,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.SendEventBean(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPLJoin3StreamOuterJoinCoercionPerformance));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLJoin3StreamOuterJoinCoercionPerformance));
     }
 } // end of namespace

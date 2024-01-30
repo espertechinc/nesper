@@ -16,8 +16,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.plain.reverse
 
             public EnumForgeDescFactoryReverse(EPChainableType type, bool isScalar)
             {
-                this._type = type;
-                this._isScalar = isScalar;
+                _type = type;
+                _isScalar = isScalar;
             }
 
             public EnumForgeLambdaDesc GetLambdaStreamTypesForParameter(int parameterNum)

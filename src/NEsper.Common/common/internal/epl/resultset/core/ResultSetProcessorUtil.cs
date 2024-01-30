@@ -727,8 +727,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.core
 
             if (result != null) {
                 return orderByProcessor.SortPlain(
-                    CollectionUtil.ToArrayEvents(result),
-                    CollectionUtil.ToArrayEventsArray(eventGenerators),
+                    ToArrayEvents(result),
+                    ToArrayEventsArray(eventGenerators),
                     isNewData,
                     exprEvaluatorContext,
                     aggregationService);

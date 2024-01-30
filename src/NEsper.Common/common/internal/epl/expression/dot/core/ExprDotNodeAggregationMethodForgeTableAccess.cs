@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TableMetadataColumnAggregation column)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this._subprop = subprop;
-            this._column = column;
+            _subprop = subprop;
+            _column = column;
         }
 
         protected override string TableName => _subprop.TableName;

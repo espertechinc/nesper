@@ -41,8 +41,8 @@ namespace com.espertech.esper.common.@internal.@event.map
                 throw new ArgumentException("Getter is a required parameter");
             }
 
-            this._propertyMap = propertyMap;
-            this._getter = getter;
+            _propertyMap = propertyMap;
+            _getter = getter;
         }
 
         public static IDictionary<string, object> GetStringDictionary(object valueToObj, string propertyKey)

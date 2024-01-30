@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 {
     public class FilterTestMultiStmtExecution : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly FilterTestMultiStmtCase _theCase;
         private readonly string _testCaseName;
@@ -66,7 +66,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 }
                 catch (AssertionException ex) {
                     var message = "Failed after create stmt " + i + " and before milestone P" + milestone.Get();
-                    log.Error(message, ex);
+                    Log.Error(message, ex);
                     Assert.Fail(message, ex);
                 }
 

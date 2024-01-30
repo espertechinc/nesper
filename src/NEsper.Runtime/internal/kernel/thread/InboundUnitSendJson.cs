@@ -20,12 +20,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 	/// </summary>
 	public class InboundUnitSendJson : InboundUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string eventTypeName;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly string _eventTypeName;
 
-        private readonly string json;
-        private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly EPServicesEvaluation services;
+        private readonly string _json;
+        private readonly EPRuntimeEventProcessWrapped _runtime;
+        private readonly EPServicesEvaluation _services;
 
         public InboundUnitSendJson(
             string json,
@@ -33,21 +34,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EPRuntimeEventProcessWrapped runtime,
             EPServicesEvaluation services)
         {
-            this.json = json;
-            this.eventTypeName = eventTypeName;
-            this.runtime = runtime;
-            this.services = services;
+            this._json = json;
+            this._eventTypeName = eventTypeName;
+            this._runtime = runtime;
+            this._services = services;
         }
 
         public void Run()
         {
             try {
-                var eventBean = services.EventTypeResolvingBeanFactory.AdapterForJson(json, eventTypeName);
-                runtime.ProcessWrappedEvent(eventBean);
+                var eventBean = _services.EventTypeResolvingBeanFactory.AdapterForJson(_json, _eventTypeName);
+                _runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, json);
-                log.Error("Unexpected error processing Json event: " + e.Message, e);
+                _services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, e, _json);
+                Log.Error("Unexpected error processing Json event: " + e.Message, e);
             }
         }
     }

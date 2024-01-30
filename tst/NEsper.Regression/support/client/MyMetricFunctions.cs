@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.support.client
 {
     public class MyMetricFunctions
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static bool TakeMillis(double milliSecTarget)
         {
@@ -58,7 +58,7 @@ namespace com.espertech.esper.regressionlib.support.client
                 }
             }
             catch (ThreadInterruptedException e) {
-                log.Error("Unexpected exception", e);
+                Log.Error("Unexpected exception", e);
             }
 
             return true;

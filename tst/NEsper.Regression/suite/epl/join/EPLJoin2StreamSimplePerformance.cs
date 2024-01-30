@@ -64,17 +64,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var methodName = ".testPerformanceJoinNoResults";
 
                 // Send events for each stream
-                log.Info($"{methodName} Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     SendEvent(env, MakeMarketEvent($"IBM_{i}"));
                     SendEvent(env, MakeSupportEvent($"CSCO_{i}"));
                 }
 
-                log.Info($"{methodName} Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"{methodName} delta={(endTime - startTime)}");
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 50 ms
                 Assert.IsTrue((endTime - startTime) < 500);
@@ -95,17 +95,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var methodName = ".testJoinPerformanceStreamA";
 
                 // Send 100k events
-                log.Info($"{methodName} Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 for (var i = 0; i < 50000; i++) {
                     SendEvent(env, MakeMarketEvent($"IBM_{i}"));
                 }
 
-                log.Info($"{methodName} Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var startTime = PerformanceObserver.MilliTime;
                 SendEvent(env, MakeSupportEvent("IBM_10"));
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"{methodName} delta={(endTime - startTime)}");
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
                 // Stay below 50 ms
@@ -127,12 +127,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SetupStatement(env);
 
                 // Send 100k events
-                log.Info($"{methodName} Preloading events");
+                Log.Info($"{methodName} Preloading events");
                 for (var i = 0; i < 50000; i++) {
                     SendEvent(env, MakeSupportEvent($"IBM_{i}"));
                 }
 
-                log.Info($"{methodName} Done preloading");
+                Log.Info($"{methodName} Done preloading");
 
                 var startTime = PerformanceObserver.MilliTime;
 
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, MakeMarketEvent($"IBM_{10}"));
 
                 var endTime = PerformanceObserver.MilliTime;
-                log.Info($"{methodName} delta={(endTime - startTime)}");
+                Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
                 // Stay below 50 ms
@@ -177,6 +177,6 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.CompileDeployAddListenerMileZero(epl, "s0");
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(EPLJoin2StreamSimplePerformance));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(EPLJoin2StreamSimplePerformance));
     }
 } // end of namespace

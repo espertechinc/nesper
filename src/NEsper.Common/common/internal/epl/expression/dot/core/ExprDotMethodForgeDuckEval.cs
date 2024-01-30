@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprDotMethodForgeDuck forge,
             ExprEvaluator[] parameters)
         {
-            this._forge = forge;
-            this._parameters = parameters;
+            _forge = forge;
+            _parameters = parameters;
             _cache = new Dictionary<Type, MethodInfo>();
         }
 

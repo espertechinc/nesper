@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtUpdateSendCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly int threadNum;
@@ -39,21 +39,21 @@ namespace com.espertech.esper.regressionlib.support.multithread
         public object Call()
         {
             try {
-                log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " sending " + numRepeats + " events");
+                Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " sending " + numRepeats + " events");
                 for (var loop = 0; loop < numRepeats; loop++) {
                     var id = Convert.ToString(threadNum * 100000000 + loop);
                     var bean = new SupportBean(id, 0);
                     runtime.EventService.SendEventBean(bean, bean.GetType().Name);
                 }
 
-                log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " completed.");
+                Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " completed.");
             }
             catch (AssertionException ex) {
-                log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
             catch (Exception t) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, t);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, t);
                 return false;
             }
 

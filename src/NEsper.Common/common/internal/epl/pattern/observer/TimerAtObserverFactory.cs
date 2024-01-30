@@ -22,27 +22,27 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
     /// </summary>
     public class TimerAtObserverFactory : ObserverFactory
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TimerAtObserverFactory));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TimerAtObserverFactory));
 
-        private MatchedEventConvertor optionalConvertor;
-        private ExprEvaluator[] parameters;
-        private int scheduleCallbackId = -1;
-        private ScheduleSpec spec;
+        private MatchedEventConvertor _optionalConvertor;
+        private ExprEvaluator[] _parameters;
+        private int _scheduleCallbackId = -1;
+        private ScheduleSpec _spec;
 
         public ExprEvaluator[] Parameters {
-            set => parameters = value;
+            set => _parameters = value;
         }
 
         public MatchedEventConvertor OptionalConvertor {
-            set => optionalConvertor = value;
+            set => _optionalConvertor = value;
         }
 
         public ScheduleSpec Spec {
-            set => spec = value;
+            set => _spec = value;
         }
 
         public int ScheduleCallbackId {
-            set => scheduleCallbackId = value;
+            set => _scheduleCallbackId = value;
         }
 
         public EventObserver MakeObserver(
@@ -61,14 +61,14 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             MatchedEventMap beginState,
             PatternAgentInstanceContext context)
         {
-            if (spec != null) {
-                return spec;
+            if (_spec != null) {
+                return _spec;
             }
 
             var observerParameters = EvaluateRuntime(
                 beginState,
-                parameters,
-                optionalConvertor,
+                _parameters,
+                _optionalConvertor,
                 context.AgentInstanceContext);
             try {
                 return ScheduleSpecUtil.ComputeValues(observerParameters);
@@ -102,7 +102,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                         message += ": " + ex.Message;
                     }
 
-                    log.Error(message, ex);
+                    Log.Error(message, ex);
                     throw new EPException(message);
                 }
             }

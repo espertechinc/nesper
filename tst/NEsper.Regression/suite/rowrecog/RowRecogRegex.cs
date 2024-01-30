@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogRegex : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public void Run(RegressionEnvironment env)
         {
@@ -449,12 +449,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             }
 
             if (testDesc.Expected.Length != received.Length) {
-                log.Info("expected: " + testDesc.Expected.RenderAny());
-                log.Info("received: " + receivedText.RenderAny());
+                Log.Info("expected: " + testDesc.Expected.RenderAny());
+                Log.Info("received: " + receivedText.RenderAny());
                 Assert.AreEqual(testDesc.Expected.Length, received.Length, message);
             }
 
-            log.Debug("comparing: " + message);
+            Log.Debug("comparing: " + message);
             EPAssertionUtil.AssertEqualsAnyOrder(testDesc.Expected, receivedText);
         }
     }

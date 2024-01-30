@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextCountSimple : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -90,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             if (received.Count != numRepeats * numThreads) {
-                log.Info("Received are " + received.Count + " entries");
+                Log.Info("Received are " + received.Count + " entries");
                 Assert.Fail();
             }
         }

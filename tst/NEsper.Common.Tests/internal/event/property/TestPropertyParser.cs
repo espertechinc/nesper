@@ -52,11 +52,11 @@ namespace com.espertech.esper.common.@internal.@event.property
         private string TryKey(string key)
         {
             string propertyName = "m(\"" + key + "\")";
-            log.Debug(".tryKey propertyName=" + propertyName + " key=" + key);
+            Log.Debug(".tryKey propertyName=" + propertyName + " key=" + key);
             Property property = PropertyParser.ParseAndWalk(propertyName, false);
             return ((MappedProperty) property).Key;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

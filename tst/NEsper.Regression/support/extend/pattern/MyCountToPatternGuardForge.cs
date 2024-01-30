@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.extend.pattern
 {
     public class MyCountToPatternGuardForge : GuardForge
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private MatchedEventConvertorForge convertor;
 
         private ExprNode numCountToExpr;

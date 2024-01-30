@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadStmtPatternFollowedBy : RegressionExecutionPreConfigured
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private EPRuntimeProvider _runtimeProvider = new EPRuntimeProvider();
 
@@ -83,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             };
 
             for (var i = 0; i < 20; i++) {
-                log.Info("i=" + i);
+                Log.Info("i=" + i);
                 var listener = new SupportMTUpdateListener();
                 var stmts = new EPStatement[epls.Length];
                 for (var j = 0; j < epls.Length; j++) {

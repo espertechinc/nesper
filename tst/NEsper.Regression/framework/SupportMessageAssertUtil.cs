@@ -7,14 +7,11 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using System;
-using System.Reflection;
-
 using com.espertech.esper.common.client;
 using com.espertech.esper.common.client.configuration;
 using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.function;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compiler.client;
 using com.espertech.esper.runtime.client;
 
@@ -24,8 +21,6 @@ namespace com.espertech.esper.regressionlib.framework
 {
     public class SupportMessageAssertUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-
         public static void TryInvalidFAFCompile(
             RegressionEnvironment env,
             RegressionPath path,
@@ -118,13 +113,13 @@ namespace com.espertech.esper.regressionlib.framework
 #if DEPRECATED
             if (message.Length > 10) {
                 if (!ex.Message.StartsWith(message)) {
-                    log.Error("Expected:" + message + "\nReceived:" + ex.Message, ex);
+                    Log.Error("Expected:" + message + "\nReceived:" + ex.Message, ex);
                     Assert.Fail("\nExpected:" + message + "\nReceived:" + ex.Message);
                 }
             }
             else {
                 // Comment-in for logging: log.error("Exception: " + ex.getMessage(), ex);
-                log.Error("No assertion provided, received: " + ex.Message, ex);
+                Log.Error("No assertion provided, received: " + ex.Message, ex);
                 Assert.Fail("No assertion provided, received: " + ex.Message);
             }
 #endif

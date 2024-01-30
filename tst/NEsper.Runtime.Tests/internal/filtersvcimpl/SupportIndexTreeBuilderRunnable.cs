@@ -27,7 +27,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
     {
         protected static readonly Random random = new Random();
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly EventType eventType;
         private readonly FilterServiceGranularLockFactory lockFactory;
         private readonly IList<EventBean> matchedEvents;
@@ -81,7 +81,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             if (matches.Count != 0)
             {
-                log.Error(
+                Log.Error(
                     ".Run (" +
                     currentThreadId +
                     ") Got a match but expected no-match, matchCount=" +
@@ -98,7 +98,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             if (matches.Count != 1)
             {
-                log.Error(
+                Log.Error(
                     ".Run (" +
                     currentThreadId +
                     ") Got zero or two or more match but expected a match, count=" +
@@ -110,7 +110,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Remove the same expression again
             IndexTreeBuilderRemove.Remove(eventType, filterCallback, filterValues[0], topNode);
-            log.Debug(".Run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
+            Log.Debug(".Run (" + Thread.CurrentThread.ManagedThreadId + ")" + " Completed");
 
             ObjectReservationSingleton.GetInstance().Unreserve(filterSpec);
         }

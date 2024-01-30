@@ -24,7 +24,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprStreamUnderlyingNode undLeft,
             ExprStreamUnderlyingNode undRight)
         {
-            this._node = node;
+            _node = node;
             UndLeft = undLeft;
             UndRight = undRight;
         }

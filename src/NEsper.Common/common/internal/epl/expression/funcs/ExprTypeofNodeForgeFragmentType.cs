@@ -35,10 +35,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             EventPropertyGetterSPI getter,
             string fragmentType)
         {
-            this._parent = parent;
-            this._streamId = streamId;
-            this._getter = getter;
-            this._fragmentType = fragmentType;
+            _parent = parent;
+            _streamId = streamId;
+            _getter = getter;
+            _fragmentType = fragmentType;
         }
 
         public override ExprForgeConstantType ForgeConstantType => ExprForgeConstantType.NONCONST;

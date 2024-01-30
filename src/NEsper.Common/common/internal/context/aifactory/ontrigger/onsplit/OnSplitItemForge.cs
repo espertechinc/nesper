@@ -84,7 +84,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.ontrigger.onspl
                 .SetProperty(
                     Ref("eval"),
                     "RspFactoryProvider",
-                    CodegenExpressionBuilder.NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
+                    NewInstanceInner(resultSetProcessorClassName, symbols.GetAddInitSvc(method), Ref("statementFields")))
                 .SetProperty(
                     Ref("eval"),
                     "PropertyEvaluator",

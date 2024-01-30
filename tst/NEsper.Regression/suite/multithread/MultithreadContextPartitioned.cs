@@ -31,7 +31,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextPartitioned : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             foreach (var eventList in events) {
                 foreach (var @event in eventList) {
                     if (!listener.Beans.Contains(@event)) {
-                        log.Info("Expected event was not received, event " + @event);
+                        Log.Info("Expected event was not received, event " + @event);
                     }
                 }
             }

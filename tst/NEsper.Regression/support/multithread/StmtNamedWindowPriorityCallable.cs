@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtNamedWindowPriorityCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly int threadNum;
@@ -60,7 +60,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     Console.WriteLine();
                 }
 
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 return false;
             }
 

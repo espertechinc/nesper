@@ -35,8 +35,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             TableMetadataColumnAggregation column)
             : base(parent, aggregationMethodName, parameters, validation)
         {
-            this._identNode = identNode;
-            this._column = column;
+            _identNode = identNode;
+            _column = column;
         }
 
         protected override string TableName => _identNode.TableMetadata.TableName;

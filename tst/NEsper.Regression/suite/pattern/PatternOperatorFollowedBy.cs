@@ -612,7 +612,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         {
             var format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.fff");
             var date = format.Parse(dateText);
-            log.Debug(".dateToLong out=" + date);
+            Log.Debug(".dateToLong out=" + date);
             return date.UtcMillis;
         }
 
@@ -661,6 +661,6 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AdvanceTime(time);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(PatternOperatorFollowedBy));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(PatternOperatorFollowedBy));
     }
 } // end of namespace

@@ -22,9 +22,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprEvaluator evaluator,
             ExprCastNode.CasterParserComputer casterParserComputer)
         {
-            this._parent = parent;
-            this._evaluator = evaluator;
-            this._casterParserComputer = casterParserComputer;
+            _parent = parent;
+            _evaluator = evaluator;
+            _casterParserComputer = casterParserComputer;
         }
 
         public object Evaluate(

@@ -60,17 +60,17 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
         public class MySupportTypeResolver : TypeResolver
         {
-            private readonly IList<string> names = new List<string>();
+            private readonly IList<string> _names = new List<string>();
 
             public Type ResolveType(
                 string typeName,
                 bool resolve)
             {
-                names.Add(typeName);
+                _names.Add(typeName);
                 return TypeHelper.ResolveType(typeName, resolve);
             }
 
-            public IList<string> Names => names;
+            public IList<string> Names => _names;
         }
     }
 } // end of namespace

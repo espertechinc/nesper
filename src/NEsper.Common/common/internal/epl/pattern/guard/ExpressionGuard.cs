@@ -21,20 +21,20 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
     /// </summary>
     public class ExpressionGuard : Guard
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ExpressionGuard));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ExpressionGuard));
 
-        private readonly MatchedEventConvertor convertor;
-        private readonly ExprEvaluator expression;
-        private readonly Quitable quitable;
+        private readonly MatchedEventConvertor _convertor;
+        private readonly ExprEvaluator _expression;
+        private readonly Quitable _quitable;
 
         public ExpressionGuard(
             MatchedEventConvertor convertor,
             ExprEvaluator expression,
             Quitable quitable)
         {
-            this.quitable = quitable;
-            this.convertor = convertor;
-            this.expression = expression;
+            _quitable = quitable;
+            _convertor = convertor;
+            _expression = expression;
         }
 
         public void StartGuard()
@@ -43,10 +43,10 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
 
         public bool Inspect(MatchedEventMap matchEvent)
         {
-            var eventsPerStream = convertor.Invoke(matchEvent);
+            var eventsPerStream = _convertor.Invoke(matchEvent);
 
             try {
-                var result = expression.Evaluate(eventsPerStream, true, quitable.Context.AgentInstanceContext);
+                var result = _expression.Evaluate(eventsPerStream, true, _quitable.Context.AgentInstanceContext);
                 if (result == null) {
                     return false;
                 }
@@ -55,18 +55,18 @@ namespace com.espertech.esper.common.@internal.epl.pattern.guard
                     return true;
                 }
 
-                quitable.GuardQuit();
+                _quitable.GuardQuit();
                 return false;
             }
             catch (EPRuntimeException ex) {
                 var message = "Failed to evaluate expression for pattern-guard for statement '" +
-                              quitable.Context.AgentInstanceContext.StatementName +
+                              _quitable.Context.AgentInstanceContext.StatementName +
                               "'";
                 if (ex.Message != null) {
                     message += ": " + ex.Message;
                 }
 
-                log.Error(message, ex);
+                Log.Error(message, ex);
                 throw new EPException(message);
             }
         }

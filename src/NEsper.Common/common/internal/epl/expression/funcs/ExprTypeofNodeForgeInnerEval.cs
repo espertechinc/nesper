@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprTypeofNodeForgeInnerEval(ExprTypeofNode parent)
         {
-            this._parent = parent;
+            _parent = parent;
         }
 
         public override ExprEvaluator ExprEvaluator => new InnerEvaluator(_parent.ChildNodes[0].Forge.ExprEvaluator);
@@ -76,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             internal InnerEvaluator(ExprEvaluator evaluator)
             {
-                this._evaluator = evaluator;
+                _evaluator = evaluator;
             }
 
             public virtual object Evaluate(

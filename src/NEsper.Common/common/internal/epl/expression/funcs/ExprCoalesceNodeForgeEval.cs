@@ -28,8 +28,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprCoalesceNodeForge forge,
             ExprEvaluator[] evaluators)
         {
-            this._forge = forge;
-            this._evaluators = evaluators;
+            _forge = forge;
+            _evaluators = evaluators;
         }
 
         public object Evaluate(

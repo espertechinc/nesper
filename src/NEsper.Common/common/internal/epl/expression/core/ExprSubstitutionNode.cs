@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             string optionalName,
             ClassDescriptor optionalType)
         {
-            this.OptionalName = optionalName;
-            this.OptionalType = optionalType;
+            OptionalName = optionalName;
+            OptionalType = optionalType;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)

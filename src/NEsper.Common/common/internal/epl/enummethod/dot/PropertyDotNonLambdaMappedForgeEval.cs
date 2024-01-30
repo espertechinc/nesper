@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             PropertyDotNonLambdaMappedForge forge,
             ExprEvaluator paramEval)
         {
-            this._forge = forge;
-            this._paramEval = paramEval;
+            _forge = forge;
+            _paramEval = paramEval;
         }
 
         public object Evaluate(

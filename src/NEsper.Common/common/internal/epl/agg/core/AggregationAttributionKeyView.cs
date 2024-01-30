@@ -15,9 +15,9 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
             int? subqueryNum,
             int[] grouping)
         {
-            this.StreamNum = streamNum;
-            this.SubqueryNum = subqueryNum;
-            this.Grouping = grouping;
+            StreamNum = streamNum;
+            SubqueryNum = subqueryNum;
+            Grouping = grouping;
         }
 
         public int StreamNum { get; }

@@ -82,10 +82,10 @@ namespace com.espertech.esper.common.@internal.@event.xml
             }
 
             if (optionalCastToType == typeof(XmlNode)) {
-                this._optionalCastToType = null;
+                _optionalCastToType = null;
             }
             else {
-                this._optionalCastToType = optionalCastToType;
+                _optionalCastToType = optionalCastToType;
             }
         }
 

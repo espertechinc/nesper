@@ -37,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             ClassDescriptor classIdentNoDimensions,
             int numArrayDimensions)
         {
-            this._classIdentNoDimensions = classIdentNoDimensions;
-            this._numArrayDimensions = numArrayDimensions;
+            _classIdentNoDimensions = classIdentNoDimensions;
+            _numArrayDimensions = numArrayDimensions;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)

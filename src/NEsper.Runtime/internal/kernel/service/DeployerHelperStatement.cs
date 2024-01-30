@@ -29,7 +29,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class DeployerHelperStatement
 	{
-		private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
 		internal static EPStatement[] DeployStatements(
 			int rolloutItemNumber,
@@ -64,7 +64,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 								epRuntime.ServicesContext);
 						}
 						catch (Exception udex) {
-							log.Warn(udex.Message, udex);
+							Log.Warn(udex.Message, udex);
 						}
 
 						throw new EPDeployException("Failed to deploy: " + ex.Message, ex, rolloutItemNumber);

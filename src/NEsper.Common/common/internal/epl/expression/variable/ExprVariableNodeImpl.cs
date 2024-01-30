@@ -44,8 +44,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.variable
             VariableMetaData variableMeta,
             string optSubPropName)
         {
-            this._variableMeta = variableMeta;
-            this._optSubPropName = optSubPropName;
+            _variableMeta = variableMeta;
+            _optSubPropName = optSubPropName;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)

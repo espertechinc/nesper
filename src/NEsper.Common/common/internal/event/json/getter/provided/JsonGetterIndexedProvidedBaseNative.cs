@@ -38,8 +38,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field,
             int index) : base(eventBeanTypedEventFactory, beanEventTypeFactory, returnType)
         {
-            this._field = field;
-            this._index = index;
+            _field = field;
+            _index = index;
         }
 
         public override CodegenExpression EventBeanGetCodegen(

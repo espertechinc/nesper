@@ -21,7 +21,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
     public class EventInfraPropertyAccessPerformance : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -39,17 +39,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             // Send events for each stream
             var theEvent = SupportBeanCombinedProps.MakeDefaultBean();
-            log.Info(methodName + " Sending events");
+            Log.Info(methodName + " Sending events");
 
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 10000; i++) {
                 SendEvent(env, theEvent);
             }
 
-            log.Info(methodName + " Done sending events");
+            Log.Info(methodName + " Done sending events");
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info(methodName + " delta=" + (endTime - startTime));
+            Log.Info(methodName + " delta=" + (endTime - startTime));
 
             // Stays at 250, below 500ms
             Assert.IsTrue(endTime - startTime < 1000);

@@ -9,7 +9,7 @@ using com.espertech.esper.compat;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {
-    public class JsonConverterRuntimeType : JsonConverter<System.Type>
+    public class JsonConverterRuntimeType : JsonConverter<Type>
     {
         private readonly TypeResolver _typeResolver;
         private readonly IDictionary<Type, bool> _typeResultCache;

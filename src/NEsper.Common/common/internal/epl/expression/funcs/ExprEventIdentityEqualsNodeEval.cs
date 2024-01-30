@@ -25,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             int streamLeft,
             int streamRight)
         {
-            this._streamLeft = streamLeft;
-            this._streamRight = streamRight;
+            _streamLeft = streamLeft;
+            _streamRight = streamRight;
         }
 
         public object Evaluate(

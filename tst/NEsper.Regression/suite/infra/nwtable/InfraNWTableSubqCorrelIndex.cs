@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableSubqCorrelIndex : IndexBackingTableInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(InfraNWTableSubqCorrelIndex));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InfraNWTableSubqCorrelIndex));
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -681,7 +681,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             var count = 0;
             foreach (var assertion in assertions) {
-                log.Info("======= Testing #" + count++);
+                Log.Info("======= Testing #" + count++);
                 var consumeEpl = INDEX_CALLBACK_HOOK +
                                  "@name('s0') " +
                                  (assertion.Hint == null ? "" : assertion.Hint) +

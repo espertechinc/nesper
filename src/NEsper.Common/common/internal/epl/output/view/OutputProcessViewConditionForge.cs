@@ -71,9 +71,9 @@ namespace com.espertech.esper.common.@internal.epl.output.view
             this.distinctMultiKey = distinctMultiKey;
             this.afterTimePeriodExpr = afterTimePeriodExpr;
             this.afterNumberOfEvents = afterNumberOfEvents;
-            this._outputConditionFactoryForge = outputConditionFactoryForge;
-            this._streamCount = streamCount;
-            this._conditionType = conditionType;
+            _outputConditionFactoryForge = outputConditionFactoryForge;
+            _streamCount = streamCount;
+            _conditionType = conditionType;
             this.terminable = terminable;
             this.hasAfter = hasAfter;
             this.unaggregatedUngrouped = unaggregatedUngrouped;

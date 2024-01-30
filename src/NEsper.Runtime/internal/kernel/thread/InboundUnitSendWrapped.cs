@@ -21,29 +21,30 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
     /// </summary>
     public class InboundUnitSendWrapped : InboundUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly EventBean eventBean;
-        private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly EPServicesEvaluation services;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly EventBean _eventBean;
+        private readonly EPRuntimeEventProcessWrapped _runtime;
+        private readonly EPServicesEvaluation _services;
 
         public InboundUnitSendWrapped(
             EventBean eventBean,
             EPRuntimeEventProcessWrapped runtime,
             EPServicesEvaluation services)
         {
-            this.eventBean = eventBean;
-            this.runtime = runtime;
-            this.services = services;
+            this._eventBean = eventBean;
+            this._runtime = runtime;
+            this._services = services;
         }
 
         public void Run()
         {
             try {
-                runtime.ProcessWrappedEvent(eventBean);
+                _runtime.ProcessWrappedEvent(_eventBean);
             }
             catch (Exception e) {
-                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, eventBean);
-                log.Error("Unexpected error processing wrapped event: " + e.Message, e);
+                _services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, e, _eventBean);
+                Log.Error("Unexpected error processing wrapped event: " + e.Message, e);
             }
         }
     }

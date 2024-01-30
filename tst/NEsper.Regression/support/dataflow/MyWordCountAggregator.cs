@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
         DataFlowOperatorFactory,
         DataFlowOperator
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly MyWordCountStats aggregate = new MyWordCountStats();
 
@@ -60,12 +60,12 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             int chars)
         {
             aggregate.Add(lines, words, chars);
-            log.Debug("Aggregated: " + aggregate);
+            Log.Debug("Aggregated: " + aggregate);
         }
 
         public void OnSignal(EPDataFlowSignal signal)
         {
-            log.Debug("Received punctuation, submitting totals: " + aggregate);
+            Log.Debug("Received punctuation, submitting totals: " + aggregate);
             graphContext.Submit(aggregate);
         }
     }

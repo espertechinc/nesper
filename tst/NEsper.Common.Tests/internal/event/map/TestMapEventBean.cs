@@ -70,7 +70,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             catch (PropertyAccessException ex)
             {
                 // Expected
-                log.Debug(".testGetter Expected exception, msg=" + ex.Message);
+                Log.Debug(".testGetter Expected exception, msg=" + ex.Message);
             }
         }
 
@@ -97,6 +97,6 @@ namespace com.espertech.esper.common.@internal.@event.map
             Assert.AreSame(theEvent.Get("b"), beanTwo);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

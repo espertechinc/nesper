@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoin5StreamPerformance : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -44,14 +44,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                             "and S3.P30 = S4.P40 ";
             env.CompileDeployAddListenerMileZero(statement, "s0");
 
-            log.Info(".testPerfAllProps Preloading events");
+            Log.Info(".testPerfAllProps Preloading events");
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
                 SendEvents(env, new[] { 0, 0, 0, 0, 0 }, new[] { $"s0{i}", $"s1{i}", $"s2{i}", $"s3{i}", $"s4{i}" });
             }
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info($".testPerfAllProps delta={(endTime - startTime)}");
+            Log.Info($".testPerfAllProps delta={(endTime - startTime)}");
             Assert.IsTrue(endTime - startTime < 1500);
 
             // test if join returns data

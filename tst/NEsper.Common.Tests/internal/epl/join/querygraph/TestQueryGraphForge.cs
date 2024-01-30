@@ -129,7 +129,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                 // success
             }
 
-            log.Debug(queryGraph.ToString());
+            Log.Debug(queryGraph.ToString());
         }
 
         [Test]
@@ -180,7 +180,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             // s1.p11 = s0.p01 and s0.p02 = s1.p12
             queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 0, "P01", Make(0, "P01"));
             queryGraph.AddStrictEquals(0, "P02", Make(0, "P02"), 1, "P12", Make(1, "P12"));
-            log.Debug(queryGraph.ToString());
+            Log.Debug(queryGraph.ToString());
 
             string[] expectedOne = new string[] { "P11", "P12" };
             string[] expectedTwo = new string[] { "P01", "P02" };
@@ -206,6 +206,6 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             return new ExprIdentNodeImpl(types[stream], p, stream);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

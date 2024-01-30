@@ -24,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.method.core
             MethodTargetStrategy methodTargetStrategy,
             MethodConversionStrategy methodConversionStrategy)
         {
-            this._methodTargetStrategy = methodTargetStrategy;
-            this._methodConversionStrategy = methodConversionStrategy;
+            _methodTargetStrategy = methodTargetStrategy;
+            _methodConversionStrategy = methodConversionStrategy;
         }
 
         public void Start()

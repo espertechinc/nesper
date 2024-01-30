@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.order
 
             providerCtor.Block.AssignRef(
                 memberOrderByFactory,
-                CodegenExpressionBuilder.NewInstanceInner(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
+                NewInstanceInner(CLASSNAME_ORDERBYPROCESSORFACTORY, Ref("this")));
         }
 
         private static void MakeFactory(

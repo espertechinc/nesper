@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadContextPartitionedWCount : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -79,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // join
-            log.Info("Waiting for completion");
+            Log.Info("Waiting for completion");
             for (var i = 0; i < runnables.Length; i++) {
                 SupportCompileDeployUtil.ThreadJoin(threads[i]);
             }
@@ -140,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started event send");
+                Log.Info("Started event send");
 
                 try {
                     for (var i = 0; i < numEvents; i++) {
@@ -156,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send");
+                Log.Info("Completed event send");
             }
 
             public IDictionary<string, int> GetTotals()

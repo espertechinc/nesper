@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.util
 {
 	public class SupportSpatialUtil
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(SupportSpatialUtil));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(SupportSpatialUtil));
 
 		public static IList<SupportSpatialEventRectangle> RandomRectangles(
 			Random random,
@@ -260,8 +260,8 @@ namespace com.espertech.esper.regressionlib.support.util
 					var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
 					var expected = SortGetExpectedRectangles(bb, rectangles);
 					if (!received.Equals(expected)) {
-						log.Error("Expected: " + expected);
-						log.Error("Received: " + received);
+						Log.Error("Expected: " + expected);
+						Log.Error("Received: " + received);
 					}
 
 					Assert.AreEqual(expected, received);

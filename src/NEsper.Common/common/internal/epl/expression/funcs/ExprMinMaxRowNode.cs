@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="minMaxTypeEnum">type of compare</param>
         public ExprMinMaxRowNode(MinMaxTypeEnum minMaxTypeEnum)
         {
-            this._minMaxTypeEnum = minMaxTypeEnum;
+            _minMaxTypeEnum = minMaxTypeEnum;
         }
 
         public ExprEvaluator ExprEvaluator {

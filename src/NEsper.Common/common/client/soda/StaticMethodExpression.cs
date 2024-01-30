@@ -58,8 +58,8 @@ namespace com.espertech.esper.common.client.soda
             string className,
             IList<DotExpressionItem> chain)
         {
-            this._className = className;
-            this._chain = chain;
+            _className = className;
+            _chain = chain;
         }
 
         /// <summary>
@@ -77,7 +77,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="chain">method chain</param>
         public StaticMethodExpression SetChain(IList<DotExpressionItem> chain)
         {
-            this._chain = chain;
+            _chain = chain;
             return this;
         }
 
@@ -104,7 +104,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="className">class name</param>
         public StaticMethodExpression SetClassName(string className)
         {
-            this._className = className;
+            _className = className;
             return this;
         }
     }

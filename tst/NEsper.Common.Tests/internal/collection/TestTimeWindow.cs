@@ -138,7 +138,7 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestTimeWindowPerformance()
         {
-            log.Info(".testTimeWindowPerformance Starting");
+            Log.Info(".testTimeWindowPerformance Starting");
 
             TimeWindow window = new TimeWindow(false);
 
@@ -154,7 +154,7 @@ namespace com.espertech.esper.common.@internal.collection
                 window.ExpireEvents(i - 100);
             }
 
-            log.Info(".testTimeWindowPerformance Done");
+            Log.Info(".testTimeWindowPerformance Done");
         }
 
         private EventBean CreateBean()
@@ -162,6 +162,6 @@ namespace com.espertech.esper.common.@internal.collection
             return SupportEventBeanFactory.CreateObject(supportEventTypeFactory, new SupportBean());
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

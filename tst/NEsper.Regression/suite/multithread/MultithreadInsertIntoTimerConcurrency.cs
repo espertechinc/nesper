@@ -24,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 {
     public class MultithreadInsertIntoTimerConcurrency : RegressionExecutionPreConfigured
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private EPRuntimeProvider _runtimeProvider;
         private EPEventService _runtime;
@@ -126,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     count++;
 
                     if (count % 1000 == 0) {
-                        log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " send " + count + " events");
+                        Log.Info("Thread " + Thread.CurrentThread.ManagedThreadId + " send " + count + " events");
                     }
 
                     if (count > maxSent) {

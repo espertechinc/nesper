@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
     public class ClientDeployUndeploy
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(ClientDeployUndeploy));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ClientDeployUndeploy));
 
         public static IList<RegressionExecution> Executions()
         {
@@ -456,7 +456,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             string text)
         {
             env.CompileDeploy(epl, path);
-            log.Info("Deployed as " + env.DeploymentId(dependingStatementName) + ": " + epl);
+            Log.Info("Deployed as " + env.DeploymentId(dependingStatementName) + ": " + epl);
             var message = "A precondition is not satisfied: " +
                           text +
                           " cannot be un-deployed as it is referenced by deployment '" +

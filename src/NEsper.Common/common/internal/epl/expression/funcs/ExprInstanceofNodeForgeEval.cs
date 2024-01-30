@@ -33,8 +33,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprInstanceofNodeForge forge,
             ExprEvaluator evaluator)
         {
-            this._forge = forge;
-            this._evaluator = evaluator;
+            _forge = forge;
+            _evaluator = evaluator;
         }
 
         public object Evaluate(

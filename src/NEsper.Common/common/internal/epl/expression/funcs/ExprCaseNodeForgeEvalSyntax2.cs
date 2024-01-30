@@ -36,10 +36,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprEvaluator compareExprNode,
             ExprEvaluator optionalElseExprNode)
         {
-            this._forge = forge;
-            this._whenThenNodeList = whenThenNodeList;
-            this._compareExprNode = compareExprNode;
-            this._optionalElseExprNode = optionalElseExprNode;
+            _forge = forge;
+            _whenThenNodeList = whenThenNodeList;
+            _compareExprNode = compareExprNode;
+            _optionalElseExprNode = optionalElseExprNode;
         }
 
         public object Evaluate(

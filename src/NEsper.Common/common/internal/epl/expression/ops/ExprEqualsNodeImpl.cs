@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             bool isNotEquals,
             bool isIs)
         {
-            this._isNotEquals = isNotEquals;
-            this._isIs = isIs;
+            _isNotEquals = isNotEquals;
+            _isIs = isIs;
         }
 
         public override ExprNode Validate(ExprValidationContext validationContext)

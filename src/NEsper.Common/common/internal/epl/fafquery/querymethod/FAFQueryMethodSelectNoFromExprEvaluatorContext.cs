@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.fafquery.querymethod
             StatementContextRuntimeServices services,
             FAFQueryMethodSelect select)
         {
-            this._services = services;
-            this._select = select;
-            this._lock = new StatementAgentInstanceLockRW(false);
+            _services = services;
+            _select = select;
+            _lock = new StatementAgentInstanceLockRW(false);
 
             tableExprEvaluatorContext = select.HasTableAccess
                 ? new TableExprEvaluatorContext(services.Container.ThreadLocalManager())

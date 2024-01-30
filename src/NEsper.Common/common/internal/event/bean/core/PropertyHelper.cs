@@ -17,7 +17,6 @@ using com.espertech.esper.common.@internal.@event.bean.service;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 using com.espertech.esper.compat.magic;
 
 namespace com.espertech.esper.common.@internal.@event.bean.core
@@ -408,7 +407,5 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             writer.Write(propertyName.Substring(1));
             return writer.ToString();
         }
-
-        private static readonly ILog log = LogManager.GetLogger(typeof(PropertyHelper));
     }
 } // end of namespace

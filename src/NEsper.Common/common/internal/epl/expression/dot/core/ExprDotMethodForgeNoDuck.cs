@@ -41,10 +41,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             WrapType wrapType)
         {
             OptionalStatementName = optionalStatementName;
-            this._method = method;
-            this._methodTargetType = methodTargetType;
+            _method = method;
+            _methodTargetType = methodTargetType;
             Parameters = parameters;
-            this._wrapType = wrapType;
+            _wrapType = wrapType;
         }
 
         public string OptionalStatementName { get; }

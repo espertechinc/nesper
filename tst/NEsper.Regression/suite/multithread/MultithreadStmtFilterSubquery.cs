@@ -26,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadStmtFilterSubquery : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -55,11 +55,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var filterThread = new Thread(new FilterRunnable(env.Runtime, 1000).Run);
             filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
-            log.Info("Starting threads");
+            Log.Info("Starting threads");
             insertThread.Start();
             filterThread.Start();
 
-            log.Info("Waiting for join");
+            Log.Info("Waiting for join");
             ThreadJoin(insertThread);
             ThreadJoin(filterThread);
 
@@ -80,11 +80,11 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 new FilterRunnable(env.Runtime, 1000).Run);
             filterThread.Name = nameof(MultithreadStmtFilterSubquery) + "-filter";
 
-            log.Info("Starting threads");
+            Log.Info("Starting threads");
             insertThread.Start();
             filterThread.Start();
 
-            log.Info("Waiting for join");
+            Log.Info("Waiting for join");
             ThreadJoin(insertThread);
             ThreadJoin(filterThread);
 
@@ -106,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Starting insert thread");
+                Log.Info("Starting insert thread");
                 for (var i = 0; i < numInserts; i++) {
                     runtime.EventService.SendEventBean(new SupportBean_S0(i, "E"), "SupportBean_S0");
                 }
 
-                log.Info("Completed insert thread, " + numInserts + " inserted");
+                Log.Info("Completed insert thread, " + numInserts + " inserted");
             }
         }
 
@@ -130,12 +130,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Starting filter thread");
+                Log.Info("Starting filter thread");
                 for (var i = 0; i < numEvents; i++) {
                     runtime.EventService.SendEventBean(new SupportBean("G" + i, i), "SupportBean");
                 }
 
-                log.Info("Completed filter thread, " + numEvents + " completed");
+                Log.Info("Completed filter thread, " + numEvents + " completed");
             }
         }
     }

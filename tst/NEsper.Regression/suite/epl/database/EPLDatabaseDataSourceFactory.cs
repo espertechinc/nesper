@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 {
     public class EPLDatabaseDataSourceFactory : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public void Run(RegressionEnvironment env)
         {
@@ -52,7 +52,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             }
 
             var endTime = PerformanceObserver.MilliTime;
-            log.Info("delta=" + (endTime - startTime));
+            Log.Info("delta=" + (endTime - startTime));
             Assert.IsTrue(endTime - startTime < 5000);
 
             env.UndeployAll();

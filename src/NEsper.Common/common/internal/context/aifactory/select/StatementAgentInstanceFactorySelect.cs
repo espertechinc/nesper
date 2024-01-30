@@ -494,7 +494,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 preloadMethod.SetBuffer(buffer, i);
             }
 
-            return new StatementAgentInstanceFactorySelect.JoinPlanResult(outputProcessView, preloadMethod, joinSetComposerDesc);
+            return new JoinPlanResult(outputProcessView, preloadMethod, joinSetComposerDesc);
         }
 
         private void HandlePreloads(

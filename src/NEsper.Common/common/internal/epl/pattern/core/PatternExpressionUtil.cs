@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
     /// </summary>
     public class PatternExpressionUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(PatternExpressionUtil));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(PatternExpressionUtil));
 
         public static void ToPrecedenceFreeEPL(
             TextWriter writer,
@@ -75,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.core
                 message += ": " + ex.Message;
             }
 
-            log.Error(message, ex);
+            Log.Error(message, ex);
             throw new EPException(message);
         }
     }

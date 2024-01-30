@@ -35,7 +35,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowpergrouprollup
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorRowPerGroupRollupImpl.StopMethodCodegenBound(method, instance);
+            StopMethodCodegenBound(method, instance);
             method.Block.ExprDotMethod(Ref(NAME_UNBOUNDHELPER), "Destroy");
         }
 

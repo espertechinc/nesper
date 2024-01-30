@@ -77,14 +77,14 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
                 .DeclareVar<
                     AggregationServiceFactory>(
                     "svcFactory",
-                    CodegenExpressionBuilder.NewInstanceInner(classNames.ServiceFactory, Ref("this")))
+                    NewInstanceInner(classNames.ServiceFactory, Ref("this")))
                 .DeclareVar<
                     AggregationRowFactory>(
                     "rowFactory",
-                    CodegenExpressionBuilder.NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
+                    NewInstanceInner(classNames.RowFactoryTop, Ref("this")))
                 .DeclareVar<DataInputOutputSerde<AggregationRow>>(
                     "rowSerde",
-                    CodegenExpressionBuilder.NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
+                    NewInstanceInner(classNames.RowSerdeTop, Ref("this")))
                 .MethodReturn(
                     ExprDotMethodChain(EPStatementInitServicesConstants.REF)
                         .Get(EPStatementInitServicesConstants.AGGREGATIONSERVICEFACTORYSERVICE)
@@ -108,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.rollup
             CodegenClassScope classScope,
             AggregationClassNames classNames)
         {
-            method.Block.MethodReturn(CodegenExpressionBuilder.NewInstanceInner(classNames.Service, Ref("o")));
+            method.Block.MethodReturn(NewInstanceInner(classNames.Service, Ref("o")));
         }
 
         public void CtorCodegen(

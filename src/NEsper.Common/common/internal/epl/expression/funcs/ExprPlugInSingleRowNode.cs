@@ -54,9 +54,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ImportSingleRowDesc config)
         {
             FunctionName = functionName;
-            this._clazz = clazz;
+            _clazz = clazz;
             ChainSpec = chainSpec;
-            this._config = config;
+            _config = config;
         }
 
         public ImportSingleRowDesc Config => _config;

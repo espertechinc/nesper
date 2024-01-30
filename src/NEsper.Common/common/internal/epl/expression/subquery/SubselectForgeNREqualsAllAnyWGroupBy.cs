@@ -40,8 +40,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge havingEval,
             bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
-            this._havingEval = havingEval;
-            this._isAll = isAll;
+            _havingEval = havingEval;
+            _isAll = isAll;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(

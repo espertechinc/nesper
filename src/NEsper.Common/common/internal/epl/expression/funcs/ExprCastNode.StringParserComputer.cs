@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             public StringParserComputer(SimpleTypeParserSPI parser)
             {
-                this._parser = parser;
+                _parser = parser;
             }
 
             public object Compute(

@@ -20,7 +20,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
 {
     public class MultiStmtAssertUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void RunIsInvokedWTestdataUniform(
             RegressionEnvironment env,
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             ValidateDescriptors(descriptors, testData.Length);
             DeployAndMilestone(env, descriptors, milestone);
 
-            log.Info("Running {} assertions", descriptors.Count * testData.Length);
+            Log.Info("Running {} assertions", descriptors.Count * testData.Length);
             for (var @event = 0; @event < testData.Length; @event++) {
                 sender.Invoke(testData[@event]);
                 AssertDescriptors(env, descriptors, @event);
@@ -69,7 +69,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             ValidateDescriptors(descriptors, numEvents);
             DeployAndMilestone(env, descriptors, milestone);
 
-            log.Info("Running {} assertions", descriptors.Count * numEvents);
+            Log.Info("Running {} assertions", descriptors.Count * numEvents);
             for (var @event = 0; @event < numEvents; @event++) {
                 sender.Invoke(@event);
                 AssertDescriptors(env, descriptors, @event);
@@ -90,13 +90,13 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             for (var i = 0; i < epls.Count; i++) {
                 var name = "s" + i;
                 var epl = "@name('" + name + "') " + epls[i];
-                log.Info("Compiling and deploying ... {}", epl);
+                Log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }
 
             env.Milestone(milestone.GetAndIncrement());
 
-            log.Info("Running {} assertions", epls.Count * testData.Length);
+            Log.Info("Running {} assertions", epls.Count * testData.Length);
             for (var @event = 0; @event < testData.Length; @event++) {
                 sender.Invoke(testData[@event]);
 
@@ -127,13 +127,13 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             for (var i = 0; i < epls.Count; i++) {
                 var name = "s" + i;
                 var epl = "@name('" + name + "') " + epls[i];
-                log.Info("Compiling and deploying ... {}", epl);
+                Log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }
 
             env.Milestone(milestone.GetAndIncrement());
 
-            log.Info("Running {} assertions", epls.Count * pairs.Length);
+            Log.Info("Running {} assertions", epls.Count * pairs.Length);
             for (var @event = 0; @event < pairs.Length; @event++) {
                 pairs[@event].Sender.Invoke();
 
@@ -158,7 +158,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
                 var name = "s" + i;
                 var desc = descriptors[i];
                 var epl = "@name('" + name + "') " + desc.Epl();
-                log.Info("Compiling and deploying ... {}", epl);
+                Log.Info("Compiling and deploying ... {}", epl);
                 env.CompileDeploy(epl).AddListener(name);
             }
 

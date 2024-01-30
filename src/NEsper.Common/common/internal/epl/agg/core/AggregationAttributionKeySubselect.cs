@@ -12,7 +12,7 @@ namespace com.espertech.esper.common.@internal.epl.agg.core
     {
         public AggregationAttributionKeySubselect(int subqueryNumber)
         {
-            this.SubqueryNumber = subqueryNumber;
+            SubqueryNumber = subqueryNumber;
         }
 
         public int SubqueryNumber { get; }

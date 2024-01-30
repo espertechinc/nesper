@@ -19,8 +19,6 @@ namespace com.espertech.esper.common.@internal.epl.lookupplansubord
 {
     public class EventTableIndexMetadata
     {
-        private static int _gid = 0;
-        private int _id = _gid++;
         public IDictionary<IndexMultiKey, EventTableIndexMetadataEntry> Indexes { get; }
 
         public EventTableIndexMetadata()

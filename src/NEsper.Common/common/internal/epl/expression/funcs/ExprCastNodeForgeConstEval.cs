@@ -26,8 +26,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprCastNodeForge forge,
             object theConstant)
         {
-            this._forge = forge;
-            this._theConstant = theConstant;
+            _forge = forge;
+            _theConstant = theConstant;
         }
 
         public object Evaluate(

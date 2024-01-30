@@ -27,7 +27,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.inner
 
         public InnerDotCollForge(ExprForge rootForge)
         {
-            this._rootForge = rootForge;
+            _rootForge = rootForge;
         }
 
         public ExprDotEvalRootChildInnerEval InnerEvaluator => new InnerDotCollEval(_rootForge.ExprEvaluator);

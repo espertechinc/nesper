@@ -66,10 +66,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
 		public override ExprNode Validate(ExprValidationContext validationContext)
 		{
-			var length = this.ChildNodes.Length;
+			var length = ChildNodes.Length;
 
 			// Can be an empty array with no content
-			if (this.ChildNodes.Length == 0) {
+			if (ChildNodes.Length == 0) {
 				if (_optionalRequiredType == null) {
 					_forge = new ExprArrayNodeForge(this, typeof(object), CollectionUtil.OBJECTARRAY_EMPTY);
 				}
@@ -85,7 +85,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 
 			IList<Type> comparedTypes = new List<Type>();
 			for (var i = 0; i < length; i++) {
-				var evalType = this.ChildNodes[i].Forge.EvaluationType;
+				var evalType = ChildNodes[i].Forge.EvaluationType;
 				comparedTypes.Add(evalType);
 			}
 
@@ -139,7 +139,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 			// Determine if we are dealing with constants only
 			var results = new object[length];
 			var index = 0;
-			foreach (var child in this.ChildNodes) {
+			foreach (var child in ChildNodes) {
 				if (!child.Forge.ForgeConstantType.IsCompileTimeConstant) {
 					results = null; // not using a constant result
 					break;
@@ -194,7 +194,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
 		{
 			var delimiter = "";
 			writer.Write("{");
-			foreach (var expr in this.ChildNodes) {
+			foreach (var expr in ChildNodes) {
 				writer.Write(delimiter);
 				expr.ToEPL(writer, ExprPrecedenceEnum.MINIMUM, flags);
 				delimiter = ",";

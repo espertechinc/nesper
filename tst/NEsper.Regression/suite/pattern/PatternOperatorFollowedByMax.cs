@@ -384,6 +384,6 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 });
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(PatternOperatorFollowedByMax));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(PatternOperatorFollowedByMax));
     }
 } // end of namespace

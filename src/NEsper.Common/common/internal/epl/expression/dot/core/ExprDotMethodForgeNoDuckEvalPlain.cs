@@ -157,7 +157,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
             CodegenExpression target = Ref("target");
             if ((instanceType != innerType) && (innerType == instanceType.GetBoxedType())) {
-                target = CodegenExpressionBuilder.Unbox(target);
+                target = Unbox(target);
             }
             
             var tryBlock = block.TryCatch();

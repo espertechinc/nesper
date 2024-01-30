@@ -61,10 +61,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 throw new ArgumentException("Empty forges-unpacking");
             }
 
-            this._parent = parent;
-            this._filterExprAnalyzerAffector = filterExprAnalyzerAffector;
-            this._streamNumReferenced = streamNumReferenced;
-            this._rootPropertyName = rootPropertyName;
+            _parent = parent;
+            _filterExprAnalyzerAffector = filterExprAnalyzerAffector;
+            _streamNumReferenced = streamNumReferenced;
+            _rootPropertyName = rootPropertyName;
             if (rootLambdaEvaluator != null) {
                 if (typeInfo is EPChainableTypeEventMulti multi) {
                     _innerForge = new InnerDotEnumerableEventCollectionForge(rootLambdaEvaluator, multi.Component);
@@ -103,8 +103,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
                 }
             }
 
-            this._forgesUnpacking = forgesUnpacking;
-            this._forgesIteratorEventBean = forgesIteratorEventBean;
+            _forgesUnpacking = forgesUnpacking;
+            _forgesIteratorEventBean = forgesIteratorEventBean;
         }
 
         public override CodegenExpression EvaluateCodegen(

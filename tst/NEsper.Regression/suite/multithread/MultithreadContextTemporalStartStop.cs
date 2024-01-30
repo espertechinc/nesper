@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadContextTemporalStartStop : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started time drive");
+                Log.Info("Started time drive");
                 try {
                     var current = start;
                     long stepCount = 0;
@@ -98,16 +98,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         stepCount++;
 
                         if (stepCount % 10000 == 0) {
-                            log.Info("Sending step #" + stepCount + " of " + expectedSteps);
+                            Log.Info("Sending step #" + stepCount + " of " + expectedSteps);
                         }
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed time drive");
+                Log.Info("Completed time drive");
             }
         }
 
@@ -128,7 +128,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             public void Run()
             {
-                log.Info("Started event send");
+                Log.Info("Started event send");
                 try {
                     long count = 0;
                     while (count < numEvents) {
@@ -136,16 +136,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         count++;
 
                         if (count % 10000 == 0) {
-                            log.Info("Sending event #" + count);
+                            Log.Info("Sending event #" + count);
                         }
                     }
                 }
                 catch (Exception ex) {
-                    log.Error("Exception encountered: " + ex.Message, ex);
+                    Log.Error("Exception encountered: " + ex.Message, ex);
                     Exception = ex;
                 }
 
-                log.Info("Completed event send");
+                Log.Info("Completed event send");
             }
         }
     }

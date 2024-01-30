@@ -38,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
     /// </summary>
     public class InfraNamedWindowJoin : IndexBackingTableInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(InfraNamedWindowJoin));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InfraNamedWindowJoin));
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var count = 0;
                 foreach (var assertion in assertions) {
-                    log.Info("======= Testing #" + count);
+                    Log.Info("======= Testing #" + count);
                     count++;
 
                     var epl = INDEX_CALLBACK_HOOK +

@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
 {
     public class SupportDataFlowAssertionUtil
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static void TryInvalidRun(
             RegressionEnvironment env,
@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
                 Assert.Fail();
             }
             catch (EPDataFlowInstantiationException ex) {
-                log.Info("Expected exception: " + ex.Message, ex);
+                Log.Info("Expected exception: " + ex.Message, ex);
                 AssertException(message, ex.Message);
             }
             finally {

@@ -2238,7 +2238,7 @@ namespace com.espertech.esper.common.@internal.@event.core
                     annotations,
                     services.Configuration,
                     spec.AssignedType);
-                IDictionary<string, object> typing = EventTypeUtility.BuildType(
+                IDictionary<string, object> typing = BuildType(
                     spec.Columns,
                     spec.CopyFrom,
                     services.ImportServiceCompileTime,

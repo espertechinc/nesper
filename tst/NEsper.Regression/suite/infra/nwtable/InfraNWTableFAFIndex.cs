@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableFAFIndex : IndexBackingTableInfo
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(InfraNWTableFAFIndex));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(InfraNWTableFAFIndex));
 
         public static ICollection<RegressionExecution> Executions()
         {
@@ -487,7 +487,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 var count = 0;
                 foreach (var assertion in assertions) {
-                    log.Info("======= Testing #" + count++);
+                    Log.Info("======= Testing #" + count++);
                     var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                               (assertion.Hint ?? "") +
                               "select * from W1 as W1, W2 as W2 " +
@@ -498,7 +498,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         result = env.CompileExecuteFAF(epl, path);
                     }
                     catch (Exception ex) {
-                        log.Error("Failed to process:" + ex.Message, ex);
+                        Log.Error("Failed to process:" + ex.Message, ex);
                         if (assertion.EventSendAssertion == null) {
                             // no assertion, expected
                             Assert.IsTrue(ex.Message.Contains("index hint busted"));
@@ -726,7 +726,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
             var count = 0;
             foreach (var assertion in assertions) {
-                log.Info("======= Testing #" + count++);
+                Log.Info("======= Testing #" + count++);
                 var epl = IndexBackingTableInfo.INDEX_CALLBACK_HOOK +
                           (assertion.Hint ?? "") +
                           "select * from MyInfra where " +

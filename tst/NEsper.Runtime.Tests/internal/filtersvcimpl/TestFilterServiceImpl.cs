@@ -146,7 +146,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             return supportEventBeanFactory.CreateObject(bean);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         /// <summary>
         ///     Test for removing a callback that is waiting to occur,
@@ -204,8 +204,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
                     if (matches[j] != callback.GetAndResetCountInvoked())
                     {
-                        log.Debug(".testEvalEvents Match failed, event=" + events[i].Underlying);
-                        log.Debug(".testEvalEvents Match failed, eventNumber=" + i + " index=" + j);
+                        Log.Debug(".testEvalEvents Match failed, event=" + events[i].Underlying);
+                        Log.Debug(".testEvalEvents Match failed, eventNumber=" + i + " index=" + j);
                         Assert.IsTrue(false);
                     }
                 }
@@ -234,7 +234,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                 EventBean theEvent,
                 ICollection<FilterHandleCallback> allStmtMatches)
             {
-                log.Debug(".matchFound Removing callbackTwo");
+                Log.Debug(".matchFound Removing callbackTwo");
                 filterService.Remove(callback, eventType, spec);
             }
         }

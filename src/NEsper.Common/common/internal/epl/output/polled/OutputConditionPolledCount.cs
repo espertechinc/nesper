@@ -48,8 +48,8 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             state.OldEventsCount = state.OldEventsCount + oldDataCount;
 
             if (IsSatisfied() || state.IsFirst) {
-                if (ExecutionPathDebugLog.IsDebugEnabled && log.IsDebugEnabled) {
-                    log.Debug(".updateOutputCondition() condition satisfied");
+                if (ExecutionPathDebugLog.IsDebugEnabled && Log.IsDebugEnabled) {
+                    Log.Debug(".updateOutputCondition() condition satisfied");
                 }
 
                 state.IsFirst = false;
@@ -66,6 +66,6 @@ namespace com.espertech.esper.common.@internal.epl.output.polled
             return state.NewEventsCount >= state.EventRate || state.OldEventsCount >= state.EventRate;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(OutputConditionPolledCount));
     }
 } // end of namespace

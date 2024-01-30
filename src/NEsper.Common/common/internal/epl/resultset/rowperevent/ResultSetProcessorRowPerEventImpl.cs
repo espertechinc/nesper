@@ -433,7 +433,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorUtil.PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
+            PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
                 var forEach = method.Block
@@ -569,7 +569,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 }
             }
 
-            ResultSetProcessorUtil.FinalizeOutputMaySortMayRStreamCodegen(
+            FinalizeOutputMaySortMayRStreamCodegen(
                 method.Block,
                 Ref("newEvents"),
                 Ref("newEventsSortKey"),
@@ -709,7 +709,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
             CodegenMethod method,
             CodegenInstanceAux instance)
         {
-            ResultSetProcessorUtil.PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
+            PrefixCodegenNewOldEvents(method.Block, forge.IsSorting, forge.IsSelectRStream);
 
             {
                 var forEach = method.Block
@@ -842,7 +842,7 @@ namespace com.espertech.esper.common.@internal.epl.resultset.rowperevent
                 }
             }
 
-            ResultSetProcessorUtil.FinalizeOutputMaySortMayRStreamCodegen(
+            FinalizeOutputMaySortMayRStreamCodegen(
                 method.Block,
                 Ref("newEvents"),
                 Ref("newEventsSortKey"),

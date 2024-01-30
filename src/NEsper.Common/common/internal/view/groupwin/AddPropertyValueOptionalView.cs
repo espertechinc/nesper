@@ -15,7 +15,6 @@ using com.espertech.esper.common.@internal.context.util;
 using com.espertech.esper.common.@internal.@event.core;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.compat.collections;
-using com.espertech.esper.compat.logging;
 
 namespace com.espertech.esper.common.@internal.view.groupwin
 {
@@ -25,8 +24,6 @@ namespace com.espertech.esper.common.@internal.view.groupwin
     public class AddPropertyValueOptionalView : ViewSupport,
         AgentInstanceMgmtCallback
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(AddPropertyValueOptionalView));
-
         private readonly AgentInstanceViewFactoryChainContext agentInstanceContext;
         private readonly GroupByViewFactory groupByViewFactory;
         private readonly object propertyValues;

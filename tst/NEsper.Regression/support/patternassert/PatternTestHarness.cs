@@ -29,7 +29,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 	/// </summary>
 	public class PatternTestHarness
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(PatternTestHarness));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(PatternTestHarness));
 
 		private readonly EventCollection sendEventCollection;
 		private readonly CaseList caseList;
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 			if (sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID) != null) {
 				var startTime = sendEventCollection.GetTime(EventCollection.ON_START_EVENT_ID);
 				env.AdvanceTime(startTime.Value);
-				log.Debug(".RunTest Start time is " + startTime);
+				Log.Debug(".RunTest Start time is " + startTime);
 			}
 
 			// Set up expression filters and match listeners
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				var statementName = NameOfStatement(descriptor);
 				var nameAnnotation = "@name(\"" + statementName + "\") ";
 				EPCompiled compiled;
-				log.Debug(".runTest Deploying " + epl);
+				Log.Debug(".runTest Deploying " + epl);
 
 				try {
 					if (model != null) {
@@ -144,7 +144,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 						text = "Model: " + model.ToEPL();
 					}
 
-					log.Error(
+					Log.Error(
 						".RunTest Failed to create statement for style " + testStyle + " pattern expression=" + text,
 						ex);
 					compiled = null;
@@ -179,7 +179,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				if (sendEventCollection.GetTime(eventId) != null) {
 					if (sendEventCollection.TryGetTime(eventId, out var currentTime)) {
 						env.AdvanceTime(currentTime);
-						log.Debug(
+						Log.Debug(
 							".RunTest Sending event " +
 							entry.Key +
 							" = " +
@@ -220,7 +220,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				() => {
 					if (totalExpected.Get() != totalEventsReceived.Get() &&
 					    testStyle != PatternTestStyle.USE_EPL_AND_CONSUME_NOCHECK) {
-						log.Debug(
+						Log.Debug(
 							".test Count expected does not match count received, expected=" +
 							totalExpected +
 							" received=" +
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 		{
 			// For each test descriptor, make sure the listener has received exactly the events expected
 			var index = 0;
-			log.Debug(".checkResults Checking results for event " + eventId);
+			Log.Debug(".checkResults Checking results for event " + eventId);
 
 			foreach (var descriptor in caseList.Results) {
 				var statementName = NameOfStatement(descriptor);
@@ -267,18 +267,18 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				// If nothing at all was expected for this event, make sure nothing was received
 				if (!(allExpectedResults.ContainsKey(eventId))) {
 					if ((receivedResults != null) && (receivedResults.Length > 0)) {
-						log.Debug(
+						Log.Debug(
 							".checkResults Incorrect result for style " +
 							testStyle +
 							" expression : " +
 							expressionText);
-						log.Debug(
+						Log.Debug(
 							".checkResults Expected no results for event " +
 							eventId +
 							", but received " +
 							receivedResults.Length +
 							" events");
-						log.Debug(".checkResults Received, have " + receivedResults.Length + " entries");
+						Log.Debug(".checkResults Received, have " + receivedResults.Length + " entries");
 						PrintList(receivedResults);
 						Assert.Fail();
 					}
@@ -291,20 +291,20 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				// Compare the result lists, not caring about the order of the elements
 				try {
 					if (!(CompareLists(receivedResults, expectedResults))) {
-						log.Debug(
+						Log.Debug(
 							".checkResults Incorrect result for style " +
 							testStyle +
 							" expression : " +
 							expressionText);
-						log.Debug(
+						Log.Debug(
 							".checkResults Expected size=" +
 							expectedResults.Count +
 							" received size=" +
 							(receivedResults == null ? 0 : receivedResults.Length));
 
-						log.Debug(".checkResults Expected, have " + expectedResults.Count + " entries");
+						Log.Debug(".checkResults Expected, have " + expectedResults.Count + " entries");
 						PrintList(expectedResults);
-						log.Debug(
+						Log.Debug(
 							".checkResults Received, have " +
 							(receivedResults == null ? 0 : receivedResults.Length) +
 							" entries");
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 					}
 				}
 				catch (Exception ex) {
-					log.Error("Unexpected exception", ex);
+					Log.Error("Unexpected exception", ex);
 					Assert.Fail("For statement '" + expressionText + "' failed to assert: " + ex.Message);
 				}
 			}
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				}
 
 				if (result == null) {
-					log.Debug("For tag " + entry.Key + " the value is NULL");
+					Log.Debug("For tag " + entry.Key + " the value is NULL");
 					return false;
 				}
 
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 					buffer.Append("  eventId=" + id);
 				}
 
-				log.Debug(".printList (" + index + ") : " + buffer);
+				Log.Debug(".printList (" + index + ") : " + buffer);
 				index++;
 			}
 		}
@@ -435,13 +435,13 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 		private void PrintList(EventBean[] events)
 		{
 			if (events == null) {
-				log.Debug(".printList : null-value events array");
+				Log.Debug(".printList : null-value events array");
 				return;
 			}
 
-			log.Debug(".printList : " + events.Length + " elements...");
+			Log.Debug(".printList : " + events.Length + " elements...");
 			for (var i = 0; i < events.Length; i++) {
-				log.Debug("  " + EventBeanUtility.PrintEvent(events[i]));
+				Log.Debug("  " + EventBeanUtility.PrintEvent(events[i]));
 			}
 		}
 

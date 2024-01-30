@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             ExprNode[] parameters,
             AggregationPortableValidation validation)
         {
-            this._parent = parent;
-            this._aggregationMethodName = aggregationMethodName;
-            this._parameters = parameters;
-            this._validation = validation;
+            _parent = parent;
+            _aggregationMethodName = aggregationMethodName;
+            _parameters = parameters;
+            _validation = validation;
         }
 
         public void Validate(ExprValidationContext validationContext)

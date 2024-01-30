@@ -23,7 +23,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 {
     public class StmtIterateCallable : ICallable<object>
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
         private readonly int numRepeats;
         private readonly EPRuntime runtime;
         private readonly EPStatement[] stmt;
@@ -45,13 +45,13 @@ namespace com.espertech.esper.regressionlib.support.multithread
         {
             try {
                 for (var loop = 0; loop < numRepeats; loop++) {
-                    log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + loop);
+                    Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " sending event " + loop);
                     var id = Convert.ToString(threadNum * 100000000 + loop);
                     var bean = new SupportBean(id, 0);
                     runtime.EventService.SendEventBean(bean, bean.GetType().Name);
 
                     for (var i = 0; i < stmt.Length; i++) {
-                        log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting iterator " + loop);
+                        Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " starting iterator " + loop);
 
                         var found = false;
 
@@ -65,16 +65,16 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         }
 
                         Assert.IsTrue(found);
-                        log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " end iterator " + loop);
+                        Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " end iterator " + loop);
                     }
                 }
 
                 //} catch (AssertionException ex) {
-                //    log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
+                //    Log.Error("Assertion error in thread " + Thread.CurrentThread.ManagedThreadId, ex);
                 //    return false;
             }
             catch (Exception t) {
-                log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, t);
+                Log.Error("Error in thread " + Thread.CurrentThread.ManagedThreadId, t);
                 return false;
             }
 

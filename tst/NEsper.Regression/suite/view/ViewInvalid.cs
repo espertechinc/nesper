@@ -399,8 +399,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 Assert.Fail();
             }
             catch (EPCompileException ex) {
-                if (log.IsDebugEnabled) {
-                    log.Debug($".getSyntaxExceptionView expression={expression}", ex);
+                if (Log.IsDebugEnabled) {
+                    Log.Debug($".getSyntaxExceptionView expression={expression}", ex);
                 }
 
                 // Expected exception
@@ -421,8 +421,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             }
             catch (PropertyAccessException ex) {
                 exceptionText = ex.Message;
-                if (log.IsDebugEnabled) {
-                    log.Debug($".getSyntaxExceptionProperty expression={expression}", ex);
+                if (Log.IsDebugEnabled) {
+                    Log.Debug($".getSyntaxExceptionProperty expression={expression}", ex);
                 }
                 // Expected exception
             }
@@ -449,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             catch (EPCompileException ex) {
                 var first = ex.Items[0];
                 if (isLogException) {
-                    log.Debug($".getStatementExceptionView expression={first}", first);
+                    Log.Debug($".getStatementExceptionView expression={first}", first);
                 }
 
                 if (first is EPCompileExceptionSyntaxItem) {
@@ -469,6 +469,6 @@ namespace com.espertech.esper.regressionlib.suite.view
             env.Compile(epl);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(typeof(ViewInvalid));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(ViewInvalid));
     }
 } // end of namespace

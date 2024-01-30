@@ -54,10 +54,10 @@ namespace com.espertech.esper.common.@internal.epl.agg.method.core
             bool hasFilter,
             ExprNode optionalFilter)
         {
-            this._optionalDistinctValueType = optionalDistinctValueType;
-            this._optionalDistinctSerde = optionalDistinctSerde;
-            this._optionalFilter = optionalFilter;
-            this._hasFilter = hasFilter;
+            _optionalDistinctValueType = optionalDistinctValueType;
+            _optionalDistinctSerde = optionalDistinctSerde;
+            _optionalFilter = optionalFilter;
+            _hasFilter = hasFilter;
         }
 
         public void InitForge(

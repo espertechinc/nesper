@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternInvalid
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             }
             catch (EPCompileException ex) {
                 exceptionText = ex.Message;
-                log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
+                Log.Debug(".getSyntaxExceptionPattern pattern=" + expression, ex);
                 // Expected exception
             }
 
@@ -111,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             catch (EPCompileException ex) {
                 // Expected exception
                 if (isLogException) {
-                    log.Debug(expression, ex);
+                    Log.Debug(expression, ex);
                 }
 
                 return ex;

@@ -80,7 +80,7 @@ namespace com.espertech.esper.common.@internal.@event.map
             return levelZero;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestEquals()

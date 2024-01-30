@@ -294,7 +294,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 .AddParam<AggregationService>(NAME_AGGREGATIONSVC)
                 .AddParam<ExprEvaluatorContext>(NAME_EXPREVALCONTEXT);
             instantiateMethod.Block.MethodReturn(
-                CodegenExpressionBuilder.NewInstanceInner(
+                NewInstanceInner(
                     CLASSNAME_RESULTSETPROCESSOR,
                     Ref("o"),
                     MEMBER_ORDERBYPROCESSOR,
@@ -320,7 +320,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
 
             providerCtor.Block.AssignMember(
                 MEMBERNAME_RESULTSETPROCESSORFACTORY,
-                CodegenExpressionBuilder.NewInstanceInner(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
+                NewInstanceInner(CLASSNAME_RESULTSETPROCESSORFACTORY, Ref("this")));
         }
 
         private static void MakeResultSetProcessor(
@@ -807,7 +807,7 @@ namespace com.espertech.esper.common.@internal.compile.stage3
                 outerClassCtor.Block.AssignArrayElement(
                     "selectExprProcessorArray",
                     Constant(i),
-                    CodegenExpressionBuilder.NewInstanceInner(
+                    NewInstanceInner(
                         "SelectExprProcessorImpl" + i,
                         Ref("this"),
                         EPStatementInitServicesConstants.REF));

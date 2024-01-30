@@ -47,10 +47,10 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EventPropertyGetterSPI getter,
             Type componentType)
         {
-            this._propertyName = propertyName;
-            this._streamId = streamId;
-            this._getter = getter;
-            this._componentType = componentType;
+            _propertyName = propertyName;
+            _streamId = streamId;
+            _getter = getter;
+            _componentType = componentType;
         }
 
         public ExprEnumerationEval ExprEvaluatorEnumeration => this;

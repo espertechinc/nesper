@@ -32,8 +32,8 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EventBeanTypedEventFactory eventBeanTypedEventFactory,
             BeanEventType type)
         {
-            this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-            this._type = type;
+            _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+            _type = type;
         }
 
         public EPChainableType TypeInfo => EPChainableTypeHelper.CollectionOfEvents(_type);
@@ -78,9 +78,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
                 BeanEventType type,
                 object array)
             {
-                this._eventBeanTypedEventFactory = eventBeanTypedEventFactory;
-                this._type = type;
-                this._array = (Array)array;
+                _eventBeanTypedEventFactory = eventBeanTypedEventFactory;
+                _type = type;
+                _array = (Array)array;
             }
 
             public int Count => _array.Length;

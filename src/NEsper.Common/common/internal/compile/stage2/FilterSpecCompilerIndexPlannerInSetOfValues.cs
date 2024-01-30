@@ -185,7 +185,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
 
                     listofValues.Add(inValue);
                 }
-                else if (FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+                else if (HasLevelOrHint(
                              FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE,
                              raw,
                              services) &&

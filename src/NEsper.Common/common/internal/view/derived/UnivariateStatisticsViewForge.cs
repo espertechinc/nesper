@@ -46,7 +46,7 @@ namespace com.espertech.esper.common.@internal.view.derived
             ViewForgeEnv viewForgeEnv)
         {
             var validated = ViewForgeSupport.Validate(
-                this.ViewName,
+                ViewName,
                 parentEventType,
                 ViewParameters,
                 true,

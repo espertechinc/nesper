@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
         public ExprCaseNodeForgeEvalTypable(ExprCaseNodeForge forge)
         {
-            this._forge = forge;
+            _forge = forge;
             _evaluator = forge.ExprEvaluator;
         }
 

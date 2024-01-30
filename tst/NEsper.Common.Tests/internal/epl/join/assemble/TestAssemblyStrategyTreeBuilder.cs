@@ -32,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             }
             catch (ArgumentException ex)
             {
-                log.Debug(".tryInvalidBuild expected exception=" + ex);
+                Log.Debug(".tryInvalidBuild expected exception=" + ex);
                 // expected
             }
         }
@@ -48,7 +48,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             return result;
         }
 
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         [Test]
         public void TestInvalidBuild()

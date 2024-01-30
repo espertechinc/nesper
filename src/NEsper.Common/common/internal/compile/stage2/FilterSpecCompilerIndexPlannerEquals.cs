@@ -225,7 +225,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
             var lookupableType = lookupable.Forge.EvaluationType;
             var valueType = value.Forge.EvaluationType;
             if (lookupable is ExprIdentNode identNode) {
-                if (!FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+                if (!HasLevelOrHint(
                         FilterSpecCompilerIndexPlannerHint.VALUECOMPOSITE,
                         raw,
                         services)) {
@@ -239,7 +239,7 @@ namespace com.espertech.esper.common.@internal.compile.stage2
                 lookupableForge = identNode.FilterLookupable;
             }
             else {
-                if (!FilterSpecCompilerIndexPlannerHelper.HasLevelOrHint(
+                if (!HasLevelOrHint(
                         FilterSpecCompilerIndexPlannerHint.LKUPCOMPOSITE,
                         raw,
                         services)) {

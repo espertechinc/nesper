@@ -42,8 +42,8 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             beanEventTypeFactory,
             returnType)
         {
-            this._field = field;
-            this._nestedGetter = nestedGetter;
+            _field = field;
+            _nestedGetter = nestedGetter;
         }
 
         public override Type TargetType => _field.DeclaringType;

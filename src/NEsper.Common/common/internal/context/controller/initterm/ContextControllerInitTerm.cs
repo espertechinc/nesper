@@ -33,7 +33,7 @@ namespace com.espertech.esper.common.@internal.context.controller.initterm
             ContextControllerInitTermFactory factory,
             ContextManagerRealization realization)
         {
-            this._factory = factory;
+            _factory = factory;
             this.realization = realization;
         }
 

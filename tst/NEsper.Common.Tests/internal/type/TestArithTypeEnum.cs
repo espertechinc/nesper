@@ -147,7 +147,7 @@ namespace com.espertech.esper.common.@internal.type
                     result = computer.Compute(lhs, rhs);
                 }
                 catch (Exception ex) {
-                    log.Error("Exception expected", ex);
+                    Log.Error("Exception expected", ex);
                 }
 
                 Assert.AreEqual(expected, result, "line " + i + " lhs=" + lhs + " op=" + e + " rhs=" + rhs);
@@ -164,6 +164,6 @@ namespace com.espertech.esper.common.@internal.type
             TryInvalid(typeof(byte));
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

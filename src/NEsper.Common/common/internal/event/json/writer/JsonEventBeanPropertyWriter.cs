@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
 {
     public class JsonEventBeanPropertyWriter : EventPropertyWriterSPI
     {
-        private static readonly ILog log =
+        private static readonly ILog Log =
             LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IJsonDelegate _delegate;
@@ -68,7 +68,7 @@ namespace com.espertech.esper.common.@internal.@event.json.writer
             object und)
         {
             if (!_delegate.TrySetProperty(_field.PropertyNumber, value, und)) {
-                log.Warn($"Attempted to write property \"{_field.PropertyNumber}\" failed");
+                Log.Warn($"Attempted to write property \"{_field.PropertyNumber}\" failed");
             }
         }
 

@@ -29,11 +29,11 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
         DataFlowOperatorLifecycle,
         UpdateDispatchView
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly AgentInstanceContext agentInstanceContext;
-
-        private readonly SelectFactory factory;
-        private readonly StatementAgentInstanceFactorySelectResult startResult;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly AgentInstanceContext _agentInstanceContext;
+        private readonly SelectFactory _factory;
+        private readonly StatementAgentInstanceFactorySelectResult _startResult;
 
 #pragma warning disable 649
         [DataFlowContext] private EPDataFlowEmitter graphContext;
@@ -43,15 +43,15 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
             SelectFactory factory,
             AgentInstanceContext agentInstanceContext)
         {
-            this.factory = factory;
-            this.agentInstanceContext = agentInstanceContext;
+            this._factory = factory;
+            this._agentInstanceContext = agentInstanceContext;
 
-            startResult = (StatementAgentInstanceFactorySelectResult) factory.FactorySelect.NewContext(agentInstanceContext, false);
-            startResult.FinalView.Child = this;
+            _startResult = (StatementAgentInstanceFactorySelectResult) factory.FactorySelect.NewContext(agentInstanceContext, false);
+            _startResult.FinalView.Child = this;
             AIRegistryUtil.AssignFutures(
-                factory.ResourceRegistry, agentInstanceContext.AgentInstanceId, startResult.OptionalAggegationService, startResult.PriorStrategies,
-                startResult.PreviousGetterStrategies, startResult.SubselectStrategies, startResult.TableAccessStrategies,
-                startResult.RowRecogPreviousStrategy);
+                factory.ResourceRegistry, agentInstanceContext.AgentInstanceId, _startResult.OptionalAggegationService, _startResult.PriorStrategies,
+                _startResult.PreviousGetterStrategies, _startResult.SubselectStrategies, _startResult.TableAccessStrategies,
+                _startResult.RowRecogPreviousStrategy);
         }
 
         public void Open(DataFlowOpOpenContext openContext)
@@ -60,8 +60,8 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
 
         public void Close(DataFlowOpCloseContext closeContext)
         {
-            AgentInstanceUtil.Stop(startResult.StopCallback, agentInstanceContext, startResult.FinalView, false, false);
-            factory.ResourceRegistry.Deassign(agentInstanceContext.AgentInstanceId);
+            AgentInstanceUtil.Stop(_startResult.StopCallback, _agentInstanceContext, _startResult.FinalView, false, false);
+            _factory.ResourceRegistry.Deassign(_agentInstanceContext.AgentInstanceId);
         }
 
         public override void Update(
@@ -83,7 +83,7 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
             }
 
             foreach (var item in result.First) {
-                if (factory.IsSubmitEventBean) {
+                if (_factory.IsSubmitEventBean) {
                     graphContext.Submit(item);
                 }
                 else {
@@ -92,43 +92,43 @@ namespace com.espertech.esper.runtime.@internal.dataflow.op.select
             }
         }
 
-        public override EventType EventType => factory.FactorySelect.StatementEventType;
+        public override EventType EventType => _factory.FactorySelect.StatementEventType;
 
         public void OnInput(
             int originatingStream,
             object row)
         {
-            if (log.IsDebugEnabled) {
-                log.Debug("Received row from stream " + originatingStream + " for select, row is " + row);
+            if (Log.IsDebugEnabled) {
+                Log.Debug("Received row from stream " + originatingStream + " for select, row is " + row);
             }
 
-            var theEvent = factory.AdapterFactories[originatingStream].MakeAdapter(row);
+            var theEvent = _factory.AdapterFactories[originatingStream].MakeAdapter(row);
 
-            agentInstanceContext.AgentInstanceLock.AcquireWriteLock();
+            _agentInstanceContext.AgentInstanceLock.AcquireWriteLock();
             try {
-                var target = factory.OriginatingStreamToViewableStream[originatingStream];
-                startResult.ViewableActivationResults[target].Viewable.Child.Update(new[] {theEvent}, null);
-                if (startResult.ViewableActivationResults.Length > 1) {
-                    agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
+                var target = _factory.OriginatingStreamToViewableStream[originatingStream];
+                _startResult.ViewableActivationResults[target].Viewable.Child.Update(new[] {theEvent}, null);
+                if (_startResult.ViewableActivationResults.Length > 1) {
+                    _agentInstanceContext.EpStatementAgentInstanceHandle.OptionalDispatchable.Execute();
                 }
             }
             finally {
-                if (agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
-                    agentInstanceContext.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
+                if (_agentInstanceContext.StatementContext.EpStatementHandle.HasTableAccess) {
+                    _agentInstanceContext.StatementContext.TableExprEvaluatorContext.ReleaseAcquiredLocks();
                 }
 
-                agentInstanceContext.AgentInstanceLock.ReleaseWriteLock();
+                _agentInstanceContext.AgentInstanceLock.ReleaseWriteLock();
             }
         }
 
         public void OnSignal(EPDataFlowSignal signal)
         {
-            if (factory.IsIterate && signal is EPDataFlowSignalFinalMarker) {
-                using (var enumerator = startResult.FinalView.GetEnumerator())
+            if (_factory.IsIterate && signal is EPDataFlowSignalFinalMarker) {
+                using (var enumerator = _startResult.FinalView.GetEnumerator())
                 {
                     while (enumerator.MoveNext()) {
                         var @event = enumerator.Current;
-                        if (factory.IsSubmitEventBean) {
+                        if (_factory.IsSubmitEventBean) {
                             graphContext.Submit(@event);
                         }
                         else {

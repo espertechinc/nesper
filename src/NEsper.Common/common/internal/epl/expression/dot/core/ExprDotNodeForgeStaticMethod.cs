@@ -51,24 +51,24 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
             string optionalStatementName,
             bool localInlinedClass)
         {
-            this._parent = parent;
-            this._isReturnsConstantResult = isReturnsConstantResult;
-            this._classOrPropertyName = classOrPropertyName;
-            this._staticMethod = staticMethod;
-            this._childForges = childForges;
+            _parent = parent;
+            _isReturnsConstantResult = isReturnsConstantResult;
+            _classOrPropertyName = classOrPropertyName;
+            _staticMethod = staticMethod;
+            _childForges = childForges;
             if (chainForges.Length > 0) {
-                this._isConstantParameters = false;
+                _isConstantParameters = false;
             }
             else {
-                this._isConstantParameters = isConstantParameters;
+                _isConstantParameters = isConstantParameters;
             }
 
-            this._chainForges = chainForges;
-            this._resultWrapLambda = resultWrapLambda;
-            this._rethrowExceptions = rethrowExceptions;
-            this._targetObject = targetObject;
-            this._optionalStatementName = optionalStatementName;
-            this._localInlinedClass = localInlinedClass;
+            _chainForges = chainForges;
+            _resultWrapLambda = resultWrapLambda;
+            _rethrowExceptions = rethrowExceptions;
+            _targetObject = targetObject;
+            _optionalStatementName = optionalStatementName;
+            _localInlinedClass = localInlinedClass;
         }
 
         public override ExprEvaluator ExprEvaluator {

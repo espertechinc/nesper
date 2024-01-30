@@ -10,8 +10,8 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
                 object type,
                 ExprForge forge)
             {
-                this.Type = type;
-                this.Forge = forge;
+                Type = type;
+                Forge = forge;
             }
 
             public ExprForge Forge { get; }

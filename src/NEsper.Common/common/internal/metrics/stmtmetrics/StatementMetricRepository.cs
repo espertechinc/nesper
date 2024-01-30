@@ -41,7 +41,7 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
             ConfigurationRuntimeMetricsReporting specification,
             IReaderWriterLockManager rwLockManager)
         {
-            this._specification = specification;
+            _specification = specification;
             var numGroups = specification.StatementGroups.Count + 1; // +1 for default group (remaining stmts)
             _groupMetrics = new StatementMetricArray[numGroups];
 

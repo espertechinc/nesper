@@ -20,12 +20,13 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
 	/// </summary>
 	public class InboundUnitSendAvro : InboundUnitRunnable
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
-        private readonly string eventTypeName;
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        
+        private readonly string _eventTypeName;
 
-        private readonly object genericRecordDotData;
-        private readonly EPRuntimeEventProcessWrapped runtime;
-        private readonly EPServicesEvaluation services;
+        private readonly object _genericRecordDotData;
+        private readonly EPRuntimeEventProcessWrapped _runtime;
+        private readonly EPServicesEvaluation _services;
 
         /// <summary>
         ///     Ctor.
@@ -40,21 +41,21 @@ namespace com.espertech.esper.runtime.@internal.kernel.thread
             EPRuntimeEventProcessWrapped runtime,
             EPServicesEvaluation services)
         {
-            this.eventTypeName = eventTypeName;
-            this.genericRecordDotData = genericRecordDotData;
-            this.runtime = runtime;
-            this.services = services;
+            this._eventTypeName = eventTypeName;
+            this._genericRecordDotData = genericRecordDotData;
+            this._runtime = runtime;
+            this._services = services;
         }
 
         public void Run()
         {
             try {
-                var eventBean = services.EventTypeResolvingBeanFactory.AdapterForAvro(genericRecordDotData, eventTypeName);
-                runtime.ProcessWrappedEvent(eventBean);
+                var eventBean = _services.EventTypeResolvingBeanFactory.AdapterForAvro(_genericRecordDotData, _eventTypeName);
+                _runtime.ProcessWrappedEvent(eventBean);
             }
             catch (Exception e) {
-                services.ExceptionHandlingService.HandleInboundPoolException(runtime.URI, e, genericRecordDotData);
-                log.Error("Unexpected error processing Object-array event: " + e.Message, e);
+                _services.ExceptionHandlingService.HandleInboundPoolException(_runtime.URI, e, _genericRecordDotData);
+                Log.Error("Unexpected error processing Object-array event: " + e.Message, e);
             }
         }
     }

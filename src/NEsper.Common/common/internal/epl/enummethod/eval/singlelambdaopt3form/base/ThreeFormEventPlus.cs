@@ -55,7 +55,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             int numParameters)
             : base(lambda, indexEventType)
         {
-            this.NumParameters = numParameters;
+            NumParameters = numParameters;
         }
 
         public override CodegenExpression Codegen(

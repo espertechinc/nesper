@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.@internal.epl.script.core
             this.parameterNames = parameterNames;
             this.parameters = parameters;
             this.returnType = returnType;
-            this._defaultDialect = defaultDialect;
+            _defaultDialect = defaultDialect;
         }
 
         public CodegenExpression Make(

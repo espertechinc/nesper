@@ -36,7 +36,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             IList<string> propertyNames = new List<string>();
             foreach (PropertyStem desc in result)
             {
-                log.Debug("desc=" + desc.PropertyName);
+                Log.Debug("desc=" + desc.PropertyName);
                 propertyNames.Add(desc.PropertyName);
             }
             EPAssertionUtil.AssertEqualsAnyOrder(new object[] { "a", "AB", "ABC", "ab", "abc", "fooBah" }, propertyNames.ToArray());
@@ -51,7 +51,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
 
             foreach (PropertyStem desc in result)
             {
-                log.Debug("desc=" + desc.PropertyName);
+                Log.Debug("desc=" + desc.PropertyName);
             }
 
             Assert.AreEqual(11, result.Count); // for "class" is also in there
@@ -114,6 +114,6 @@ namespace com.espertech.esper.common.@internal.@event.bean.core
             Assert.AreEqual("", getter.Get(bean));
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

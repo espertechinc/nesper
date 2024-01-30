@@ -97,7 +97,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.twolambda.tom
             var methodNode = codegenMethodScope
                 .MakeChildWithScope(dictionaryType, typeof(EnumToMapScalar), scope, codegenClassScope)
                 .AddParam(ExprForgeCodegenNames.FP_EPS)
-                .AddParam(premade.EnumcollType, EnumForgeCodegenNames.REF_ENUMCOLL.Ref)
+                .AddParam(premade.EnumcollType, REF_ENUMCOLL.Ref)
                 .AddParam(ExprForgeCodegenNames.FP_ISNEWDATA)
                 .AddParam(ExprForgeCodegenNames.FP_EXPREVALCONTEXT);
             

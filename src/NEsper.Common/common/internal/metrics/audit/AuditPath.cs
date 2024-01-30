@@ -63,7 +63,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
         /// </summary>
         public static bool isAuditEnabled = false;
 
-        private static readonly ILockable _lock = new MonitorLock(60000);
+        private static readonly ILockable Lock = new MonitorLock(60000);
 
         public static bool IsInfoEnabled => AUDIT_LOG_DESTINATION.IsInfoEnabled || auditCallback != null;
 
@@ -322,7 +322,7 @@ namespace com.espertech.esper.common.@internal.metrics.audit
             EvalFactoryNode factoryNode,
             AgentInstanceContext agentInstanceContext)
         {
-            using (_lock.Acquire()) {
+            using (Lock.Acquire()) {
                 if (IsInfoEnabled) {
                     if (patternInstanceCounts == null) {
                         patternInstanceCounts = new LRUCache<AuditPatternInstanceKey, int>(100);

@@ -50,9 +50,9 @@ namespace com.espertech.esper.common.@internal.@event.bean.manufacturer
             ImportService importService
         )
         {
-            this._jsonEventType = jsonEventType;
-            this._properties = properties;
-            this._importService = importService;
+            _jsonEventType = jsonEventType;
+            _properties = properties;
+            _importService = importService;
 
             _beanInstantiator = new BeanInstantiatorForgeByNewInstanceReflection(jsonEventType.UnderlyingType);
 

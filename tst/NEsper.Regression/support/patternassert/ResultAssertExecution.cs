@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 {
 	public class ResultAssertExecution
 	{
-		private static readonly ILog log = LogManager.GetLogger(typeof(ResultAssertExecution));
+		private static readonly ILog Log = LogManager.GetLogger(typeof(ResultAssertExecution));
 		private static readonly ILog PREFORMATLOG = LogManager.GetLogger("PREFORMATTED");
 
 		private readonly string epl;
@@ -110,7 +110,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				var time = timeEntry.Key;
 				var timeInSec = string.Format("%3.1f", time / 1000.0);
 
-				log.Info(".execute At " + timeInSec + " sending timer event");
+				Log.Info(".execute At " + timeInSec + " sending timer event");
 				SendTimer(time);
 
 				if (PREFORMATLOG.IsDebugEnabled) {
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 			for (var step = 1; step < 10; step++) {
 				if (value.Events.Count >= step) {
 					var sendEvent = value.Events[step - 1];
-					log.Info(
+					Log.Info(
 						".execute At " +
 						timeInSec +
 						" sending event: " +

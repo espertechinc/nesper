@@ -34,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.json.getter.provided
             FieldInfo field)
             : base(index, underlyingClassName, optionalInnerType, eventBeanTypedEventFactory)
         {
-            this._field = field;
+            _field = field;
         }
 
         public override string FieldName => _field.Name;

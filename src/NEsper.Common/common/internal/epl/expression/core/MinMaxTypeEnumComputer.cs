@@ -121,7 +121,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
                 rhs = CodegenLegoCast.CastSafeFromObjectType(resultType, rhs);
             }
 
-            return CodegenExpressionBuilder.Op(lhs, op.GetExpressionText(), rhs);
+            return Op(lhs, op.GetExpressionText(), rhs);
         }
 
         private static CodegenExpression CodegenCompareCompareTo(

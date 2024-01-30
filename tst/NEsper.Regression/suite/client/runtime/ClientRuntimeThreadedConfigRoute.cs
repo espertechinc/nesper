@@ -27,7 +27,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
     public class ClientRuntimeThreadedConfigRoute : RegressionExecutionWithConfigure
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -49,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
         public void Run(RegressionEnvironment env)
         {
-            log.Debug("Creating statements");
+            Log.Debug("Creating statements");
             var countStatements = 100;
             var listener = new SupportListenerTimerHRes();
             var compiled = env.Compile("select SupportStaticMethodLib.Sleep(10) from SupportBean");
@@ -59,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement(stmtName).AddListener(listener);
             }
 
-            log.Info("Sending trigger event");
+            Log.Info("Sending trigger event");
             var start = PerformanceObserver.NanoTime;
             env.SendEventBean(new SupportBean());
             var end = PerformanceObserver.NanoTime;

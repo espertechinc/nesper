@@ -181,7 +181,7 @@ namespace com.espertech.esper.common.@internal.context.aifactory.select
                 .AddParam<ResultSetProcessor>(NAME_RESULTSETPROCESSOR)
                 .AddParam<AgentInstanceContext>(NAME_AGENTINSTANCECONTEXT);
             makeViewMethod.Block.MethodReturn(
-                CodegenExpressionBuilder.NewInstanceInner(
+                NewInstanceInner(
                     CLASSNAME_OUTPUTPROCESSVIEW,
                     Ref("o"),
                     MEMBER_RESULTSETPROCESSOR,

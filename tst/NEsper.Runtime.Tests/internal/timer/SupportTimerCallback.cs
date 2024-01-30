@@ -20,7 +20,7 @@ namespace com.espertech.esper.runtime.@internal.timer
         public void TimerCallback()
         {
             var current = numInvoked.IncrementAndGet();
-            log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread);
+            Log.Debug(".timerCallback numInvoked=" + current + " thread=" + Thread.CurrentThread);
         }
 
         public long Count
@@ -33,6 +33,6 @@ namespace com.espertech.esper.runtime.@internal.timer
             return numInvoked.GetAndSet(0);
         }
 
-        private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
     }
 } // end of namespace

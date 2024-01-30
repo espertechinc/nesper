@@ -19,7 +19,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 this.inputElementType = inputElementType;
                 this.targetElementType = targetElementType;
-                this.WidenResultType = targetElementType.MakeArrayType();
+                WidenResultType = targetElementType.MakeArrayType();
             }
 
             public Type WidenResultType { get; }

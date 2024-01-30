@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// <param name="classIdentifiers">is a list of type names to check type for</param>
         public ExprInstanceofNode(string[] classIdentifiers)
         {
-            this._classIdentifiers = classIdentifiers;
+            _classIdentifiers = classIdentifiers;
         }
 
         public ExprEvaluator ExprEvaluator {

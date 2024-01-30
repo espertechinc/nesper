@@ -953,8 +953,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public class EPLSpatialPREventIndexRandomDoublePointsWRandomQuery : RegressionExecution
         {
-            private static readonly ILog log =
-                LogManager.GetLogger(typeof(EPLSpatialPREventIndexRandomDoublePointsWRandomQuery));
+            private static readonly ILog Log = LogManager.GetLogger(typeof(EPLSpatialPREventIndexRandomDoublePointsWRandomQuery));
 
             private const int NUM_POINTS = 1000;
             private const int X = 0;
@@ -1006,7 +1005,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     }
 
                     if (Array.BinarySearch(CHECKPOINT_REMAINING, points.Count) >= 0) {
-                        log.Info("Checkpoint at " + points.Count);
+                        Log.Info("Checkpoint at " + points.Count);
                         env.MilestoneInc(milestone);
                         preparedDelete = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(deleteQuery);
                     }
@@ -1132,7 +1131,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
 
         public class EPLSpatialPREventIndexRandomMovingPoints : RegressionExecution
         {
-            private static readonly ILog log = LogManager.GetLogger(typeof(EPLSpatialPREventIndexRandomMovingPoints));
+            private static readonly ILog Log = LogManager.GetLogger(typeof(EPLSpatialPREventIndexRandomMovingPoints));
 
             private const int NUM_POINTS = 1000;
             private const int NUM_MOVES = 5000;
@@ -1175,7 +1174,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     AssertBBPoints(env, bb, points);
 
                     if (Array.BinarySearch(CHECKPOINT_AT, i) >= 0) {
-                        log.Info("Checkpoint at " + points.Count);
+                        Log.Info("Checkpoint at " + points.Count);
                         env.MilestoneInc(milestone);
                         preparedDelete = env.Runtime.FireAndForgetService.PrepareQueryWithParameters(deleteQuery);
                     }

@@ -22,11 +22,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 {
     public class EPLDatabaseQueryResultCache : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
-        private readonly long assertMaximumTime;
-        private readonly int numEvents;
-        private readonly bool useRandomKeyLookup;
+        private readonly long _assertMaximumTime;
+        private readonly int _numEvents;
+        private readonly bool _useRandomKeyLookup;
 
         public EPLDatabaseQueryResultCache(
             bool lru,
@@ -41,9 +41,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             LruSize = lruSize;
             ExpiryMaxAgeSeconds = expiryMaxAgeSeconds;
             ExpiryPurgeIntervalSeconds = expiryPurgeIntervalSeconds;
-            this.assertMaximumTime = assertMaximumTime;
-            this.numEvents = numEvents;
-            this.useRandomKeyLookup = useRandomKeyLookup;
+            this._assertMaximumTime = assertMaximumTime;
+            this._numEvents = numEvents;
+            this._useRandomKeyLookup = useRandomKeyLookup;
         }
 
         public bool IsLru { get; }
@@ -56,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
         public void Run(RegressionEnvironment env)
         {
-            TryCache(env, assertMaximumTime, numEvents, useRandomKeyLookup);
+            TryCache(env, _assertMaximumTime, _numEvents, _useRandomKeyLookup);
         }
 
         public ISet<RegressionFlag> Flags()
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             bool useRandomLookupKey)
         {
             var delta = PerformanceObserver.TimeMillis(() => TrySendEvents(env, numEvents, useRandomLookupKey));
-            log.Info($".tryCache delta={delta}");
+            Log.Info($".tryCache delta={delta}");
             Assert.That(delta, Is.LessThan(assertMaximumTime));
         }
 
@@ -86,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                            " sql:MyDB ['select myint from mytesttable where ${Id} = mytesttable.myBigint'] as S1";
             env.CompileDeploy(stmtText).AddListener("s0");
 
-            log.Debug(".trySendEvents Sending " + numEvents + " events");
+            Log.Debug(".trySendEvents Sending " + numEvents + " events");
             for (var i = 0; i < numEvents; i++) {
                 var id = 0;
                 if (useRandomLookupKey) {
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 }
             }
 
-            log.Debug(".trySendEvents Stopping statement");
+            Log.Debug(".trySendEvents Stopping statement");
             env.UndeployAll();
         }
     }

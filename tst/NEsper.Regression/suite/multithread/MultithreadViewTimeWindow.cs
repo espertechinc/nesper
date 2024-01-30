@@ -28,7 +28,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
     /// </summary>
     public class MultithreadViewTimeWindow : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -41,7 +41,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var numEvents = 10000;
             var numStmt = 25;
 
-            log.Info($"Processing {numEvents} events for {numThreads} threads and {numStmt} statements");
+            Log.Info($"Processing {numEvents} events for {numThreads} threads and {numStmt} statements");
             var listeners = new SupportCountListener[numStmt];
             for (var i = 0; i < numStmt; i++) {
                 listeners[i] = new SupportCountListener();
@@ -78,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 future[i] = executor.Submit(callable);
             }
 
-            log.Info("Waiting for threadpool shutdown");
+            Log.Info("Waiting for threadpool shutdown");
             executor.Shutdown();
             executor.AwaitTermination(TimeSpan.FromSeconds(30));
 
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // set time to a large value
-            log.Info("Waiting for calm down");
+            Log.Info("Waiting for calm down");
             Thread.Sleep(5000);
 
             // Assert results

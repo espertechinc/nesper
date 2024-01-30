@@ -40,7 +40,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         /// </param>
         public ExprCaseNode(bool isCase2)
         {
-            this._isCase2 = isCase2;
+            _isCase2 = isCase2;
         }
 
         /// <summary>

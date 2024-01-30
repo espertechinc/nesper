@@ -23,7 +23,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
     /// </summary>
     public class TimerScheduleISO8601Parser
     {
-        private static readonly ILog log = LogManager.GetLogger(typeof(TimerScheduleISO8601Parser));
+        private static readonly ILog Log = LogManager.GetLogger(typeof(TimerScheduleISO8601Parser));
 
         public static TimerScheduleSpec Parse(string iso)
         {
@@ -106,7 +106,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
             }
             catch (Exception e) {
                 var message = "Exception parsing date '" + dateText + "', the date is not a supported ISO 8601 date";
-                log.Debug(message, e);
+                Log.Debug(message, e);
                 throw new ScheduleParameterException(message);
             }
         }
@@ -132,7 +132,7 @@ namespace com.espertech.esper.common.@internal.epl.pattern.observer
                                   "', expecting an long-typed value but received '" +
                                   repeat.Substring(1) +
                                   "'";
-                    log.Debug(message, ex);
+                    Log.Debug(message, ex);
                     throw new ScheduleParameterException(message);
                 }
             }

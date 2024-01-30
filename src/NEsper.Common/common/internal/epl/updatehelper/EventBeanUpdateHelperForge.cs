@@ -40,9 +40,9 @@ namespace com.espertech.esper.common.@internal.epl.updatehelper
             EventBeanCopyMethodForge copyMethod,
             EventBeanUpdateItemForge[] updateItems)
         {
-            this._eventType = eventType;
-            this._copyMethod = copyMethod;
-            this._updateItems = updateItems;
+            _eventType = eventType;
+            _copyMethod = copyMethod;
+            _updateItems = updateItems;
         }
 
         public CodegenExpression MakeWCopy(

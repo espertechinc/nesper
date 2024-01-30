@@ -31,7 +31,7 @@ namespace com.espertech.esper.common.client.soda
         /// <param name="operator">can be any of '-', '+', '*', '/' or '%' (modulo).</param>
         public ArithmaticExpression(string @operator)
         {
-            this._operator = @operator;
+            _operator = @operator;
         }
 
         /// <summary>
@@ -45,7 +45,7 @@ namespace com.espertech.esper.common.client.soda
             string @operator,
             Expression right)
         {
-            this._operator = @operator;
+            _operator = @operator;
             AddChild(left);
             AddChild(right);
         }

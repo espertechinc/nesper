@@ -62,8 +62,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.common
             int streamNum,
             EventType eventType)
         {
-            this._streamNum = streamNum;
-            this._eventType = eventType;
+            _streamNum = streamNum;
+            _eventType = eventType;
         }
 
         public CodegenExpression Make(

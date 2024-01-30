@@ -25,7 +25,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogDataSet
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public static IList<RegressionExecution> Executions()
         {
@@ -63,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                             var matchesInner = listener.LastNewData;
                             if (matchesInner != null) {
                                 for (var i = 0; i < matchesInner.Length; i++) {
-                                    log.Info("Received matches: " + GetProps(matchesInner[i]));
+                                    Log.Info("Received matches: " + GetProps(matchesInner[i]));
                                 }
                             }
                         }
@@ -84,14 +84,14 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                         matchesText = new string[matches.Length];
                         for (var i = 0; i < matches.Length; i++) {
                             matchesText[i] = GetProps(matches[i]);
-                            log.Debug(GetProps(matches[i]));
+                            Log.Debug(GetProps(matches[i]));
                         }
                     }
                     else {
                         if (expected != null) {
-                            log.Info("Received no matches but expected: ");
+                            Log.Info("Received no matches but expected: ");
                             for (var i = 0; i < expected.Length; i++) {
-                                log.Info(expected[i]);
+                                Log.Info(expected[i]);
                             }
 
                             Assert.Fail();
@@ -104,8 +104,8 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
                     for (var i = 0; i < expected.Length; i++) {
                         if (!expected[i].Equals(matchesText[i])) {
-                            log.Info("expected:" + expected[i]);
-                            log.Info("  actual:" + expected[i]);
+                            Log.Info("expected:" + expected[i]);
+                            Log.Info("  actual:" + expected[i]);
                             Assert.AreEqual(
                                 expected[i],
                                 matchesText[i],

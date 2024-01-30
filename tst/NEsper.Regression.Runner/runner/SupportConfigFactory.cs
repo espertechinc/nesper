@@ -48,7 +48,7 @@ namespace com.espertech.esper.regressionrun.runner
             else
             {
                 config = new Configuration(container);
-                config.Compiler.Logging.AuditDirectory = @"F:\Logs\NEsper\NEsper.Regression.Review\generated";
+                //config.Compiler.Logging.AuditDirectory = @"F:\Logs\NEsper\NEsper.Regression.Review\generated";
 
 #if NETFRAMEWORK
                 config.Common.Scripting.AddEngine(typeof(ScriptingEngineJScript));

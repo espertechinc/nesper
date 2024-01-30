@@ -30,7 +30,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
 
             public NumberCasterComputer(SimpleTypeCaster numericTypeCaster)
             {
-                this._numericTypeCaster = numericTypeCaster;
+                _numericTypeCaster = numericTypeCaster;
             }
 
             public object Compute(

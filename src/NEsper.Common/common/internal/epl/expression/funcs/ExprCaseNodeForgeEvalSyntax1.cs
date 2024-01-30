@@ -31,9 +31,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             IList<UniformPair<ExprEvaluator>> whenThenNodeList,
             ExprEvaluator optionalElseExprNode)
         {
-            this._forge = forge;
-            this._whenThenNodeList = whenThenNodeList;
-            this._optionalElseExprNode = optionalElseExprNode;
+            _forge = forge;
+            _whenThenNodeList = whenThenNodeList;
+            _optionalElseExprNode = optionalElseExprNode;
         }
 
         public object Evaluate(

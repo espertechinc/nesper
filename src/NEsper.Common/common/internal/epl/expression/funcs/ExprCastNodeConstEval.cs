@@ -20,8 +20,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             ExprCastNode parent,
             object theConstant)
         {
-            this._parent = parent;
-            this._theConstant = theConstant;
+            _parent = parent;
+            _theConstant = theConstant;
         }
 
         public object Evaluate(

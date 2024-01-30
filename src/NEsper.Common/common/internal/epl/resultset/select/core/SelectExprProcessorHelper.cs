@@ -68,11 +68,11 @@ namespace com.espertech.esper.common.@internal.epl.resultset.select.core
             SelectProcessorArgs args,
             InsertIntoDesc insertIntoDesc)
         {
-            this._container = args.Container;
-            this._selectionList = selectionList;
-            this._selectedStreams = selectedStreams;
-            this._args = args;
-            this._insertIntoDesc = insertIntoDesc;
+            _container = args.Container;
+            _selectionList = selectionList;
+            _selectedStreams = selectedStreams;
+            _args = args;
+            _insertIntoDesc = insertIntoDesc;
         }
 
         private EventType AllocateBeanTransposeUnderlyingType(

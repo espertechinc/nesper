@@ -32,7 +32,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 {
 	public class EPDeploymentServiceImpl : EPDeploymentServiceSPI
 	{
-		private static readonly ILog log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
+		private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);
 
 		private readonly EPServicesContext _services;
 		private readonly EPRuntimeSPI _runtime;
@@ -360,7 +360,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 					Undeployer.Undeploy(deploymentId, deployment.DeploymentTypes, reverted, deployment.ModuleProvider, _services);
 				}
 				catch (Exception ex) {
-					log.Error("Exception encountered during undeploy: " + ex.Message, ex);
+					Log.Error("Exception encountered during undeploy: " + ex.Message, ex);
 					undeployException = ex;
 				}
 
@@ -483,7 +483,7 @@ namespace com.espertech.esper.runtime.@internal.kernel.service
 			string typeOfOperation,
 			Exception ex)
 		{
-			log.Error(
+			Log.Error(
 				"Application-provided deployment state listener reported an exception upon receiving the " +
 				typeOfOperation +
 				" event, logging and ignoring the exception, detail: " +

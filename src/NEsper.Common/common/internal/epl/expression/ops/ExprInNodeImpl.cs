@@ -37,7 +37,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         /// <param name = "isNotIn">is true for "not in" and false for "in"</param>
         public ExprInNodeImpl(bool isNotIn)
         {
-            this._isNotIn = isNotIn;
+            _isNotIn = isNotIn;
         }
 
         /// <summary>

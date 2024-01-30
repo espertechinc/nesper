@@ -20,7 +20,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotNodeForgeTransposeAsStreamEval(ExprEvaluator inner)
         {
-            this._inner = inner;
+            _inner = inner;
         }
 
         public object Evaluate(

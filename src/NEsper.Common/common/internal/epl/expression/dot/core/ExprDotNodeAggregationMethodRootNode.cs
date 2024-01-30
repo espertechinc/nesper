@@ -29,7 +29,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.dot.core
 
         public ExprDotNodeAggregationMethodRootNode(ExprDotNodeAggregationMethodForge forge)
         {
-            this._forge = forge;
+            _forge = forge;
         }
 
         public override ExprForge Forge => this;

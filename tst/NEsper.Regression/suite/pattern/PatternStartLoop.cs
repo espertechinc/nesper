@@ -18,7 +18,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternStartLoop : RegressionExecution
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         public ISet<RegressionFlag> Flags()
         {
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 object sender,
                 UpdateEventArgs eventArgs)
             {
-                log.Warn(".update");
+                Log.Warn(".update");
 
                 if (Count < 10) {
                     Count++;

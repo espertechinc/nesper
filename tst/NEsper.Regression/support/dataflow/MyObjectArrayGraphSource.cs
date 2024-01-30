@@ -19,7 +19,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
 {
     public class MyObjectArrayGraphSource : DataFlowSourceOperator
     {
-        private static readonly ILog log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
+        private static readonly ILog Log = LogManager.GetLogger(MethodBase.GetCurrentMethod().DeclaringType);
 
         private readonly IEnumerator<object[]> enumerator;
 
@@ -34,15 +34,15 @@ namespace com.espertech.esper.regressionlib.support.dataflow
         {
             if (enumerator.MoveNext()) {
                 var next = enumerator.Current;
-                if (log.IsDebugEnabled) {
-                    log.Debug("submitting row " + next.RenderAny());
+                if (Log.IsDebugEnabled) {
+                    Log.Debug("submitting row " + next.RenderAny());
                 }
 
                 graphContext.Submit(next);
             }
             else {
-                if (log.IsDebugEnabled) {
-                    log.Debug("submitting punctuation");
+                if (Log.IsDebugEnabled) {
+                    Log.Debug("submitting punctuation");
                 }
 
                 graphContext.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());

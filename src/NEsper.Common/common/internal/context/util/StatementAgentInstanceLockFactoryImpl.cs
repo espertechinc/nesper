@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.context.util
             bool lockLogging,
             IReaderWriterLockManager readerWriterLockManager)
         {
-            this._readerWriterLockManager = readerWriterLockManager;
-            this._fairlocks = fairlocks;
-            this._disableLocking = disableLocking;
-            this._lockLogging = lockLogging;
+            _readerWriterLockManager = readerWriterLockManager;
+            _fairlocks = fairlocks;
+            _disableLocking = disableLocking;
+            _lockLogging = lockLogging;
         }
 
         public IReaderWriterLock GetStatementLock(

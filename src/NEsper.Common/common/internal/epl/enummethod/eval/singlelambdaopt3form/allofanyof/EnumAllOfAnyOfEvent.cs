@@ -26,7 +26,7 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.eval.singlelambdao
             ExprDotEvalParamLambda lambda,
             bool all) : base(lambda)
         {
-            this._all = all;
+            _all = all;
         }
 
         public override EnumEval EnumEvaluator {

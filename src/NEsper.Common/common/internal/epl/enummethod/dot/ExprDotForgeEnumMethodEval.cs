@@ -39,9 +39,9 @@ namespace com.espertech.esper.common.@internal.epl.enummethod.dot
             EnumEval enumEval,
             int enumEvalNumRequiredEvents)
         {
-            this._forge = forge;
-            this._enumEval = enumEval;
-            this._enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
+            _forge = forge;
+            _enumEval = enumEval;
+            _enumEvalNumRequiredEvents = enumEvalNumRequiredEvents;
         }
 
         public object Evaluate(

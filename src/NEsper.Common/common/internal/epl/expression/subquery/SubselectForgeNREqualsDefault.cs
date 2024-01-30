@@ -39,8 +39,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.subquery
             ExprForge filterEval,
             bool isAll) : base(subselect, valueEval, selectEval, resultWhenNoMatchingEvents, isNot, coercer)
         {
-            this._filterEval = filterEval;
-            this._isAll = isAll;
+            _filterEval = filterEval;
+            _isAll = isAll;
         }
 
         protected override CodegenExpression CodegenEvaluateInternal(

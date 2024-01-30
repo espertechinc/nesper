@@ -33,10 +33,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Type typeLhs,
             Type typeRhs) : base(parent)
         {
-            this._coercerLHS = coercerLhs;
-            this._coercerRHS = coercerRhs;
-            this._typeLHS = typeLhs;
-            this._typeRHS = typeRhs;
+            _coercerLHS = coercerLhs;
+            _coercerRHS = coercerRhs;
+            _typeLHS = typeLhs;
+            _typeRHS = typeRhs;
         }
 
         public override CodegenExpression EvaluateCodegenUninstrumented(
