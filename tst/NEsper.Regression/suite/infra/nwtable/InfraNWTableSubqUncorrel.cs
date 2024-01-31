@@ -14,7 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
@@ -87,8 +87,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             statement.EventType.PropertyNames,
                             new string[] { "value", "Symbol" });
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("value"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("value"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
                     });
 
                 SendMarketBean(env, "M1");

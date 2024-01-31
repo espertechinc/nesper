@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -34,8 +35,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 "create",
                 statement => {
                     var eventTypeNW = statement.EventType;
-                    Assert.AreEqual("LongdateStart", eventTypeNW.StartTimestampPropertyName);
-                    Assert.AreEqual("LongdateEnd", eventTypeNW.EndTimestampPropertyName);
+                    ClassicAssert.AreEqual("LongdateStart", eventTypeNW.StartTimestampPropertyName);
+                    ClassicAssert.AreEqual("LongdateEnd", eventTypeNW.EndTimestampPropertyName);
                 });
 
             // preload

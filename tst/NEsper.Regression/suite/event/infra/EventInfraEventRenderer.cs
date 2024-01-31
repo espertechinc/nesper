@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
@@ -107,11 +107,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 eventBean => {
                     var jsonEventRenderer = env.Runtime.RenderEventService.GetJSONRenderer(eventBean.EventType);
                     var json = jsonEventRenderer.Render(eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-                    Assert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
+                    ClassicAssert.AreEqual("{\"MyInt\":1,\"MyString\":\"abc\",\"Nested\":{\"MyInsideInt\":10}}", json);
 
                     var xmlEventRenderer = env.Runtime.RenderEventService.GetXMLRenderer(eventBean.EventType);
                     var xml = xmlEventRenderer.Render("root", eventBean).RegexReplaceAll("(\\s|\\n|\\t)", "");
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "<?xmlversion=\"1.0\"encoding=\"UTF-8\"?><root><MyInt>1</MyInt><MyString>abc</MyString><Nested><MyInsideInt>10</MyInsideInt></Nested></root>",
                         xml);
                 });

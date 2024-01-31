@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -85,10 +86,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
 
             var events = EPAssertionUtil.EnumeratorToArray(stmtWindow.GetEnumerator());
-            Assert.AreEqual(numThreads * numRepeats, events.Length);
+            ClassicAssert.AreEqual(numThreads * numRepeats, events.Length);
             for (var i = 0; i < events.Length; i++) {
                 var valueC1 = (string)events[i].Get("c1");
-                Assert.AreEqual("y", valueC1);
+                ClassicAssert.AreEqual("y", valueC1);
             }
         }
     }

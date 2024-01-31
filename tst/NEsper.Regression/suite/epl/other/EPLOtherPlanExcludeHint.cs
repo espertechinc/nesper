@@ -22,6 +22,8 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherPlanExcludeHint : IndexBackingTableInfo
@@ -94,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@hint('exclude_plan(true)') select (select * from SupportBean_S0#unique(P00) as s0 where s1.P10 = P00) from SupportBean_S1 as s1",
                     path);
                 var subq = SupportQueryPlanIndexHook.GetAndResetSubqueries()[0];
-                Assert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subq.TableLookupStrategy);
+                ClassicAssert.AreEqual(nameof(SubordFullTableScanLookupStrategyFactoryForge), subq.TableLookupStrategy);
 
                 // test named window
                 env.CompileDeploy("@public create window S0Window#keepall as SupportBean_S0", path);
@@ -103,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "@hint('exclude_plan(true)') on SupportBean_S1 as s1 select * from S0Window as s0 where s1.P10 = s0.P00",
                     path);
                 var onExpr = SupportQueryPlanIndexHook.GetAndResetOnExpr();
-                Assert.AreEqual(nameof(SubordWMatchExprLookupStrategyAllFilteredForge), onExpr.StrategyName);
+                ClassicAssert.AreEqual(nameof(SubordWMatchExprLookupStrategyAllFilteredForge), onExpr.StrategyName);
 
                 env.UndeployAll();
             }

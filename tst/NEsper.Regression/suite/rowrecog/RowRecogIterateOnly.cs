@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.support.rowrecog;
 
 using static com.espertech.esper.regressionlib.framework.RegressionFlag; // PERFORMANCE
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 }
 
                 var end = PerformanceObserver.MilliTime;
-                Assert.IsTrue((end - start) <= 100);
+                ClassicAssert.IsTrue((end - start) <= 100);
                 env.AssertListenerNotInvoked("s0");
 
                 env.Milestone(0);
@@ -116,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("E3", 3));
                 env.SendEventBean(new SupportRecogBean("E4", 4));
                 env.SendEventBean(new SupportRecogBean("E5", 2));
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 
@@ -163,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("E3", "B", 3));
                 env.SendEventBean(new SupportRecogBean("E4", "A", 4));
                 env.SendEventBean(new SupportRecogBean("E5", "B", 2));
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 

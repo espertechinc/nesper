@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.support.@event;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 
@@ -211,9 +211,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myid"));
-                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myid").GetBoxedType());
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
+                    ClassicAssert.AreEqual(expectedPropertyType, eventType.GetPropertyType("myid"));
+                    ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_myid").GetBoxedType());
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
                 });
 
             foreach (var pair in tests) {
@@ -233,14 +233,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         var getter = @out.EventType.GetGetter("Item.Id?");
 
                         if (!typename.Equals(XML_TYPENAME)) {
-                            Assert.AreEqual(expected.Value, getter.Get(@out));
+                            ClassicAssert.AreEqual(expected.Value, getter.Get(@out));
                         }
                         else {
                             var item = (XmlNode)getter.Get(@out);
-                            Assert.AreEqual(expected.Value, item?.InnerText);
+                            ClassicAssert.AreEqual(expected.Value, item?.InnerText);
                         }
 
-                        Assert.AreEqual(expected.IsExists, getter.IsExistsProperty(@out));
+                        ClassicAssert.AreEqual(expected.IsExists, getter.IsExistsProperty(@out));
                     });
             }
 

@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherPatternQueries
@@ -108,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                "from pattern [every s0=SupportBean_S0" +
                                " or every s1=SupportBean_S1] " +
                                "where s0.Id is not null and s0.Id<100 or s1.Id is not null and s1.Id>=100";
-                Assert.AreEqual(stmtText, reverse);
+                ClassicAssert.AreEqual(stmtText, reverse);
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -141,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model = env.CopyMayFail(model);
 
                 var reverse = model.ToEPL();
-                Assert.AreEqual(stmtText, reverse);
+                ClassicAssert.AreEqual(stmtText, reverse);
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -268,8 +270,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
-                        Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
+                        ClassicAssert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
+                        ClassicAssert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
                     });
 
                 env.Milestone(2);
@@ -285,11 +287,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     listener => {
                         var @event = listener.LastOldData[0];
-                        Assert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
-                        Assert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
+                        ClassicAssert.AreEqual(eventOne.Symbol, @event.Get("s0.Symbol"));
+                        ClassicAssert.AreEqual(eventTwo.Symbol, @event.Get("s1.Symbol"));
                         @event = listener.LastNewData[0];
-                        Assert.AreEqual(eventFour.Symbol, @event.Get("s0.Symbol"));
-                        Assert.AreEqual(eventThree.Symbol, @event.Get("s1.Symbol"));
+                        ClassicAssert.AreEqual(eventFour.Symbol, @event.Get("s0.Symbol"));
+                        ClassicAssert.AreEqual(eventThree.Symbol, @event.Get("s1.Symbol"));
                     });
 
                 env.UndeployAll();
@@ -327,10 +329,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             int idB,
             string p00)
         {
-            Assert.AreEqual(idA, eventBean.Get("idA"));
-            Assert.AreEqual(idB, eventBean.Get("idB"));
-            Assert.AreEqual(p00, eventBean.Get("p00A"));
-            Assert.AreEqual(p00, eventBean.Get("p00B"));
+            ClassicAssert.AreEqual(idA, eventBean.Get("idA"));
+            ClassicAssert.AreEqual(idB, eventBean.Get("idB"));
+            ClassicAssert.AreEqual(p00, eventBean.Get("p00A"));
+            ClassicAssert.AreEqual(p00, eventBean.Get("p00B"));
         }
 
         private static void SendEvent(
@@ -367,8 +369,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "s0",
                 listener => {
                     var eventBean = listener.GetAndResetLastNewData()[0];
-                    Assert.AreEqual(idS0, eventBean.Get("idS0"));
-                    Assert.AreEqual(idS1, eventBean.Get("idS1"));
+                    ClassicAssert.AreEqual(idS0, eventBean.Get("idS0"));
+                    ClassicAssert.AreEqual(idS1, eventBean.Get("idS1"));
                     listener.Reset();
                 });
         }
@@ -383,9 +385,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "s0",
                 listener => {
                     var eventBean = listener.GetAndResetLastNewData()[0];
-                    Assert.AreEqual(sumS0, eventBean.Get("sumS0"));
-                    Assert.AreEqual(sumS1, eventBean.Get("sumS1"));
-                    Assert.AreEqual(sumS0S1, eventBean.Get("sumS0S1"));
+                    ClassicAssert.AreEqual(sumS0, eventBean.Get("sumS0"));
+                    ClassicAssert.AreEqual(sumS1, eventBean.Get("sumS1"));
+                    ClassicAssert.AreEqual(sumS0S1, eventBean.Get("sumS0S1"));
                     listener.Reset();
                 });
         }

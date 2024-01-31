@@ -18,7 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
         {
             public void Run(RegressionEnvironment env)
             {
-                env.AssertThat(() => Assert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap")));
+                env.AssertThat(() => ClassicAssert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMap")));
                 env.CompileDeploy("@name('s0') select lev0name.lev1name.sb.TheString as val from MyMap")
                     .AddListener("s0");
 
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                             Assert.Fail();
                         }
                         catch (EPException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                         "Event type named 'MyMap' has not been defined or is not a Object-array event type, the name 'MyMap' refers to a System.Collections.Generic.IDictionary<System.String, System.Object> event type",
                                 ex.Message);
                         }
@@ -122,8 +122,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertThat(
                     () => {
                         var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("myMapEvent");
-                        Assert.AreEqual(EventTypeApplicationType.MAP, type.Metadata.ApplicationType);
-                        Assert.AreEqual("myMapEvent", type.Metadata.Name);
+                        ClassicAssert.AreEqual(EventTypeApplicationType.MAP, type.Metadata.ApplicationType);
+                        ClassicAssert.AreEqual("myMapEvent", type.Metadata.Name);
 
                         SupportEventPropUtil.AssertPropsEquals(
                             type.PropertyDescriptors.ToArray(),
@@ -152,9 +152,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("NestedValue", @event.Get("nested"));
-                        Assert.AreEqual(2, @event.Get("indexed"));
-                        Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
+                        ClassicAssert.AreEqual("NestedValue", @event.Get("nested"));
+                        ClassicAssert.AreEqual(2, @event.Get("indexed"));
+                        ClassicAssert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });
 
                 env.UndeployAll();
@@ -174,8 +174,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(3, @event.Get("intVal"));
-                        Assert.AreEqual("some string", @event.Get("stringVal"));
+                        ClassicAssert.AreEqual(3, @event.Get("intVal"));
+                        ClassicAssert.AreEqual("some string", @event.Get("stringVal"));
                     });
 
                 // send Map base event
@@ -186,8 +186,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(4, @event.Get("intVal"));
-                        Assert.AreEqual("string2", @event.Get("stringVal"));
+                        ClassicAssert.AreEqual(4, @event.Get("intVal"));
+                        ClassicAssert.AreEqual("string2", @event.Get("stringVal"));
                     });
 
                 env.UndeployAll();

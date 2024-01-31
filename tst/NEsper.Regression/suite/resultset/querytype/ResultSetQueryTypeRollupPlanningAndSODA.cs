@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -161,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.UndeployAll();
 
             var model = env.EplToModel(epl);
-            Assert.AreEqual(epl, model.ToEPL());
+            ClassicAssert.AreEqual(epl, model.ToEPL());
             SupportGroupRollupPlanHook.Reset();
 
             model.Annotations.Add(AnnotationPart.NameAnnotation("s0"));
@@ -191,10 +192,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 }
             }
 
-            Assert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
+            ClassicAssert.AreEqual(expectedCSV.Length, received.Length, "Received: " + ToCSV(received));
             for (var i = 0; i < expectedCSV.Length; i++) {
                 var receivedCSV = ToCSV(received[i]);
-                Assert.AreEqual(expectedCSV[i], receivedCSV, "Failed at row " + i);
+                ClassicAssert.AreEqual(expectedCSV[i], receivedCSV, "Failed at row " + i);
             }
         }
 

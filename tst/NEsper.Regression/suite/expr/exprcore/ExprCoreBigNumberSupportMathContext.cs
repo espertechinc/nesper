@@ -13,6 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var fields = "c0".SplitCsv();
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(decimal), statement.EventType.GetPropertyType("c0")));
 
                 env.SendEventBean(new SupportBean());
                 env.AssertPropsNew("s0", fields, new object[] { 2.0m });
@@ -75,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             public void Update(decimal? value)
             {
-                Assert.AreEqual(0.1739130m, value);
+                ClassicAssert.AreEqual(0.1739130m, value);
             }
         }
     }

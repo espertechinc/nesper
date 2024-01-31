@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using static com.espertech.esper.regressionlib.framework.RegressionFlag;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -84,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "from CarWindow group by grouping sets((Name, Place),Name, Place,())";
                 var result = env.CompileExecuteFAF(epl, path);
 
-                Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("grouping(Name)"));
-                Assert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid"));
+                ClassicAssert.AreEqual(typeof(int?), result.EventType.GetPropertyType("grouping(Name)"));
+                ClassicAssert.AreEqual(typeof(int?), result.EventType.GetPropertyType("gid"));
 
                 var fields = new string[] { "Name", "Place", "sum(Count)", "grouping(Name)", "grouping(Place)", "gid" };
                 EPAssertionUtil.AssertPropsPerRow(
@@ -292,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
             public static object[][] AssertGetAndClear(int numRows)
             {
-                Assert.AreEqual(numRows, parameters.Count);
+                ClassicAssert.AreEqual(numRows, parameters.Count);
                 var result = parameters.ToArray();
                 parameters.Clear();
                 return result;

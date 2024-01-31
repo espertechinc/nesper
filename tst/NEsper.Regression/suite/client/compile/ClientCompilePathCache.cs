@@ -20,6 +20,7 @@ using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -155,11 +156,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var detectorOne = new SupportModuleLoadDetector();
                 CompileAdd(env, cache, path, detectorOne, "create schema X()");
-                Assert.IsTrue(detectorOne.IsLoadedModuleProvider);
+                ClassicAssert.IsTrue(detectorOne.IsLoadedModuleProvider);
 
                 var detectorTwo = new SupportModuleLoadDetector();
                 CompileAdd(env, cache, path, detectorTwo, EPL_CONSUME);
-                Assert.IsFalse(detectorTwo.IsLoadedModuleProvider);
+                ClassicAssert.IsFalse(detectorTwo.IsLoadedModuleProvider);
             }
         }
 
@@ -176,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var eplConsume = "module a.b.c; select myvariable from SupportBean;\n";
                 CompileAdd(env, cache, path, classLoaderProvider, eplConsume);
-                Assert.IsFalse(classLoaderProvider.IsLoadedModuleProvider);
+                ClassicAssert.IsFalse(classLoaderProvider.IsLoadedModuleProvider);
             }
         }
 
@@ -193,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 CompileAdd(env, cache, path, classLoaderProvider, EPL_CONSUME);
 
                 CompileFAF(cache, path, classLoaderProvider, "select * from MyWindow");
-                Assert.IsFalse(classLoaderProvider.IsLoadedModuleProvider);
+                ClassicAssert.IsFalse(classLoaderProvider.IsLoadedModuleProvider);
             }
         }
 

@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -827,9 +828,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             listener.LastOldData,
                             "Id".SplitCsv(),
@@ -893,13 +894,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E2", theEvent.Get("Id"));
-                        Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
-                        Assert.AreEqual("E1", theEvent.Get("prevIdOne"));
-                        Assert.AreEqual("E1", theEvent.Get("priorIdOne"));
-                        Assert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
-                        Assert.AreEqual("E2", theEvent.Get("prevTailIdOne"));
-                        Assert.AreEqual(2L, theEvent.Get("prevCountId"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("Id"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("prevIdZero"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("prevIdOne"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("priorIdOne"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("prevTailIdOne"));
+                        ClassicAssert.AreEqual(2L, theEvent.Get("prevCountId"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             (object[])theEvent.Get("prevWindowId"),
                             new object[] { "E2", "E1" });
@@ -916,13 +917,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E3", theEvent.Get("Id"));
-                        Assert.AreEqual("E2", theEvent.Get("prevIdZero"));
-                        Assert.AreEqual("E3", theEvent.Get("prevIdOne"));
-                        Assert.AreEqual("E2", theEvent.Get("priorIdOne"));
-                        Assert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
-                        Assert.AreEqual("E3", theEvent.Get("prevTailIdOne"));
-                        Assert.AreEqual(3L, theEvent.Get("prevCountId"));
+                        ClassicAssert.AreEqual("E3", theEvent.Get("Id"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("prevIdZero"));
+                        ClassicAssert.AreEqual("E3", theEvent.Get("prevIdOne"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("priorIdOne"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("prevTailIdZero"));
+                        ClassicAssert.AreEqual("E3", theEvent.Get("prevTailIdOne"));
+                        ClassicAssert.AreEqual(3L, theEvent.Get("prevCountId"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             (object[])theEvent.Get("prevWindowId"),
                             new object[] { "E2", "E3", "E1" });
@@ -940,18 +941,18 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(1, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                         var theEvent = env.Listener("s0").LastOldData[0];
-                        Assert.AreEqual("E2", theEvent.Get("Id"));
-                        Assert.IsNull(theEvent.Get("prevIdZero"));
-                        Assert.IsNull(theEvent.Get("prevIdOne"));
-                        Assert.AreEqual("E1", theEvent.Get("priorIdOne"));
-                        Assert.IsNull(theEvent.Get("prevTailIdZero"));
-                        Assert.IsNull(theEvent.Get("prevTailIdOne"));
-                        Assert.IsNull(theEvent.Get("prevCountId"));
-                        Assert.IsNull(theEvent.Get("prevWindowId"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("Id"));
+                        ClassicAssert.IsNull(theEvent.Get("prevIdZero"));
+                        ClassicAssert.IsNull(theEvent.Get("prevIdOne"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("priorIdOne"));
+                        ClassicAssert.IsNull(theEvent.Get("prevTailIdZero"));
+                        ClassicAssert.IsNull(theEvent.Get("prevTailIdOne"));
+                        ClassicAssert.IsNull(theEvent.Get("prevCountId"));
+                        ClassicAssert.IsNull(theEvent.Get("prevWindowId"));
                         env.Listener("s0").Reset();
                     });
                 env.AssertPropsPerRowIterator(
@@ -1012,7 +1013,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
                         AssertData(oldData[0], "E1", null, null, null, null, null);
                         listener.Reset();
@@ -1035,7 +1036,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
                         AssertData(oldData[0], "E4", null, "E3", null, null, null);
                         listener.Reset();
@@ -1049,7 +1050,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
                         AssertData(oldData[0], "E3", null, "E2", null, null, null);
                         listener.Reset();
@@ -1111,11 +1112,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             long? prevCountId,
             object[] prevWindowId)
         {
-            Assert.AreEqual(id, @event.Get("Id"));
-            Assert.AreEqual(prevId, @event.Get("prevId"));
-            Assert.AreEqual(priorId, @event.Get("priorId"));
-            Assert.AreEqual(prevTailId, @event.Get("prevtail"));
-            Assert.AreEqual(prevCountId, @event.Get("prevCountId"));
+            ClassicAssert.AreEqual(id, @event.Get("Id"));
+            ClassicAssert.AreEqual(prevId, @event.Get("prevId"));
+            ClassicAssert.AreEqual(priorId, @event.Get("priorId"));
+            ClassicAssert.AreEqual(prevTailId, @event.Get("prevtail"));
+            ClassicAssert.AreEqual(prevCountId, @event.Get("prevCountId"));
             EPAssertionUtil.AssertEqualsExactOrder(prevWindowId, (object[])@event.Get("prevWindowId"));
         }
 

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -114,17 +115,17 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // compare
             var rows = env.CompileExecuteFAF("select * from MyWindow", path).Array;
-            Assert.AreEqual(rows.Length, totals.Count);
+            ClassicAssert.AreEqual(rows.Length, totals.Count);
             long totalUpdates = 0;
             foreach (var row in rows) {
                 var key = new Pair<string, int>((string)row.Get("TheString"), row.Get("IntPrimitive").AsInt32());
                 var total = totals.Get(key);
-                Assert.AreEqual(total.Num, row.Get("IntBoxed"));
-                Assert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
+                ClassicAssert.AreEqual(total.Num, row.Get("IntBoxed"));
+                ClassicAssert.AreEqual(total.Sum, row.Get("DoublePrimitive"));
                 totalUpdates += total.Num;
             }
 
-            Assert.AreEqual(totalUpdates, numThreads * numEventsPerThread);
+            ClassicAssert.AreEqual(totalUpdates, numThreads * numEventsPerThread);
             //long deltaTime = endTime - startTime;
             //Console.WriteLine("Totals updated: " + totalUpdates + "  Delta cumu: " + deltaCumulative + "  Delta pooled: " + deltaTime);
 

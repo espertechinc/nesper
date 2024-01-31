@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 // TryInvalidCompile
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -91,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
-                Assert.AreEqual(EPL, model.ToEPL());
+                ClassicAssert.AreEqual(EPL, model.ToEPL());
 
                 env.CompileDeploy("@name('s0')  " + EPL).AddListener("s0");
 
@@ -111,11 +112,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
-                        Assert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
-                        Assert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
-                        Assert.AreEqual(typeof(bool?), type.GetPropertyType("myFifthProperty"));
+                        ClassicAssert.AreEqual(typeof(byte?), type.GetPropertyType("myFirstProperty"));
+                        ClassicAssert.AreEqual(typeof(short?), type.GetPropertyType("mySecondProperty"));
+                        ClassicAssert.AreEqual(typeof(int?), type.GetPropertyType("myThirdProperty"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("myFourthProperty"));
+                        ClassicAssert.AreEqual(typeof(bool?), type.GetPropertyType("myFifthProperty"));
                     });
 
                 RunBitWiseOperators(env);
@@ -150,11 +151,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.AssertEventNew(
                 "s0",
                 received => {
-                    Assert.AreEqual((byte)1, received.Get("myFirstProperty"));
-                    Assert.IsTrue(((short?)(received.Get("mySecondProperty")) & SECOND_EVENT) == SECOND_EVENT);
-                    Assert.IsTrue(((int?)(received.Get("myThirdProperty")) & FIRST_EVENT) == FIRST_EVENT);
-                    Assert.AreEqual(7L, received.Get("myFourthProperty"));
-                    Assert.AreEqual(false, received.Get("myFifthProperty"));
+                    ClassicAssert.AreEqual((byte)1, received.Get("myFirstProperty"));
+                    ClassicAssert.IsTrue(((short?)(received.Get("mySecondProperty")) & SECOND_EVENT) == SECOND_EVENT);
+                    ClassicAssert.IsTrue(((int?)(received.Get("myThirdProperty")) & FIRST_EVENT) == FIRST_EVENT);
+                    ClassicAssert.AreEqual(7L, received.Get("myFourthProperty"));
+                    ClassicAssert.AreEqual(false, received.Get("myFifthProperty"));
                 });
         }
 

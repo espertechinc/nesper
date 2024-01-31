@@ -22,6 +22,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -161,7 +162,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             pool.Shutdown();
             pool.AwaitTermination(1, TimeUnit.SECONDS);
 
-            Assert.IsTrue(pool.NumExecuted == numberOfRunnables);
+            ClassicAssert.IsTrue(pool.NumExecuted == numberOfRunnables);
         }
 
         private void Sleep(int sec)
@@ -226,7 +227,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 0);
+                ClassicAssert.IsTrue(matches.Count == 0);
             }
 
             // All of the matching events should cause exactly one match
@@ -234,7 +235,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 1);
+                ClassicAssert.IsTrue(matches.Count == 1);
             }
 
             // Remove all expressions previously added
@@ -251,7 +252,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             {
                 IList<FilterHandle> matches = new List<FilterHandle>();
                 topNode.MatchEvent(theEvent, matches, null);
-                Assert.IsTrue(matches.Count == 0);
+                ClassicAssert.IsTrue(matches.Count == 0);
             }
         }
     }

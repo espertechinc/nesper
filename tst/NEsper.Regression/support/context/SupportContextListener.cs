@@ -14,6 +14,7 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.context
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.regressionlib.support.context
         public void OnContextPartitionAllocated(ContextStateEventContextPartitionAllocated @event)
         {
             events.Add(@event);
-            Assert.IsNotNull(
+            ClassicAssert.IsNotNull(
                 env.Runtime.ContextPartitionService.GetContextProperties(
                     @event.ContextDeploymentId,
                     @event.ContextName,
@@ -87,7 +88,7 @@ namespace com.espertech.esper.regressionlib.support.context
         public void AssertAndReset(params Consumer<ContextStateEvent>[] consumers)
         {
             var events = GetAndReset();
-            Assert.AreEqual(consumers.Length, events.Count);
+            ClassicAssert.AreEqual(consumers.Length, events.Count);
             var count = 0;
             foreach (var consumer in consumers) {
                 consumer.Invoke(events[count++]);
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.support.context
 
         public void AssertNotInvoked()
         {
-            Assert.IsTrue(events.IsEmpty());
+            ClassicAssert.IsTrue(events.IsEmpty());
         }
     }
 } // end of namespace

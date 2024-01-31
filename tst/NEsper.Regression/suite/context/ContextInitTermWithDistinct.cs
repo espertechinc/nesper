@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.context
@@ -336,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(1);
 
                 env.SendEventBean(new SupportBean("A", 30));
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
                 env.UndeployAll();
             }
@@ -362,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.Milestone(0);
 
                 SendSBEvent(env, "A", 10, 1);
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
                 env.UndeployAll();
             }

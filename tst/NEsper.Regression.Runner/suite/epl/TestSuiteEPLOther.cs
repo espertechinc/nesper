@@ -31,6 +31,7 @@ using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.Support
 namespace com.espertech.esper.regressionrun.suite.epl
 {
     [TestFixture]
+    [Parallelizable(ParallelScope.None)]
     public class TestSuiteEPLOther : AbstractTestBase
     {
         public static void Configure(Configuration configuration)

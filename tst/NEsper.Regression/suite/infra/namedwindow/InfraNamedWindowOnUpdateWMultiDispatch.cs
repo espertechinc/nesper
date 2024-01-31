@@ -15,6 +15,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
@@ -61,11 +63,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 "s0",
                 listener => {
                     if (listener.LastNewData.Length == 2) {
-                        Assert.AreEqual(1L, listener.LastNewData[0].Get("cnt"));
-                        Assert.AreEqual(2L, listener.LastNewData[1].Get("cnt"));
+                        ClassicAssert.AreEqual(1L, listener.LastNewData[0].Get("cnt"));
+                        ClassicAssert.AreEqual(2L, listener.LastNewData[1].Get("cnt"));
                     }
                     else {
-                        Assert.AreEqual(2L, listener.AssertOneGetNewAndReset().Get("cnt"));
+                        ClassicAssert.AreEqual(2L, listener.AssertOneGetNewAndReset().Get("cnt"));
                     }
                 });
             env.AssertPropsPerRowIterator(

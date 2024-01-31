@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.suite.resultset.aggregate.ResultSetAggregationMethodSorted; // assertType
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregationMethodWindow
@@ -84,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "s0",
                     @event => {
                         var events = (IList<EventBean>)@event.Get("collref");
-                        Assert.AreEqual(2, events.Count);
+                        ClassicAssert.AreEqual(2, events.Count);
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] {
                                 events[0].Underlying,

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -92,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // verify
             var sum = 0;
             for (var i = 0; i < runnables.Length; i++) {
-                Assert.IsNull(runnables[i].Exception);
+                ClassicAssert.IsNull(runnables[i].Exception);
                 foreach (var entry in runnables[i].GetTotals()) {
                     var current = totals.Get(entry.Key);
                     current += entry.Value;
@@ -102,17 +103,17 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.AreEqual(numThreads * numEvents, sum);
+            ClassicAssert.AreEqual(numThreads * numEvents, sum);
 
             env.Runtime.VariableService.SetVariableValue(env.DeploymentId("var"), "myvar", true);
             env.AdvanceTime(10000);
             var result = listener.LastNewData;
-            Assert.AreEqual(choices.Length, result.Length);
+            ClassicAssert.AreEqual(choices.Length, result.Length);
             foreach (var item in result) {
                 var theString = (string)item.Get("TheString");
                 var count = item.Get("cnt").AsInt64();
                 //Console.WriteLine("String " + string + " count " + count);
-                Assert.AreEqual(count, totals.Get(theString));
+                ClassicAssert.AreEqual(count, totals.Get(theString));
             }
 
             env.UndeployAll();

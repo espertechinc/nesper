@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
@@ -196,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "select * from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.P00 = s1.P10 left outer join SupportBean_S2#keepall as s2 on s0.P00 = s2.P20",
                     model.ToEPL());
 

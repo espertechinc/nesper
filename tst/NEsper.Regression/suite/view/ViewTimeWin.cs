@@ -18,7 +18,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.schedule.SupportDateTimeUtil; // timePlusMonth
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -750,22 +750,22 @@ namespace com.espertech.esper.regressionlib.suite.view
             var newData = listener.LastNewData;
 
             if (!unique)
-                Assert.IsNull(oldData);
+                ClassicAssert.IsNull(oldData);
 
-            Assert.AreEqual(1, newData.Length);
+            ClassicAssert.AreEqual(1, newData.Length);
 
-            Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-            Assert.AreEqual(volume, newData[0].Get("Volume"));
-            Assert.AreEqual(sum, newData[0].Get("mySum"));
+            ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+            ClassicAssert.AreEqual(volume, newData[0].Get("Volume"));
+            ClassicAssert.AreEqual(sum, newData[0].Get("mySum"));
 
             listener.Reset();
         }
 
         private static void AssertSelectResultType(EPStatement stmt)
         {
-            Assert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("Symbol"));
-            Assert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("Volume"));
-            Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
+            ClassicAssert.AreEqual(typeof(string), stmt.EventType.GetPropertyType("Symbol"));
+            ClassicAssert.AreEqual(typeof(long?), stmt.EventType.GetPropertyType("Volume"));
+            ClassicAssert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("mySum"));
         }
 
         private static void SendEvent(

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
@@ -83,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var text = "@name('ABC') create variable long varDRR = 2";
                 env.CompileDeploy(text);
 
-                Assert.AreEqual(2L, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("ABC"), "varDRR"));
+                ClassicAssert.AreEqual(2L, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("ABC"), "varDRR"));
 
                 var deploymentIdABC = env.DeploymentId("ABC");
                 env.UndeployModuleContaining("ABC");
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 text = "@name('CDE') create variable string varDRR = 'a'";
                 env.CompileDeploy(text);
 
-                Assert.AreEqual("a", env.Runtime.VariableService.GetVariableValue(env.DeploymentId("CDE"), "varDRR"));
+                ClassicAssert.AreEqual("a", env.Runtime.VariableService.GetVariableValue(env.DeploymentId("CDE"), "varDRR"));
 
                 var deploymentIdCDE = env.DeploymentId("CDE");
                 env.UndeployModuleContaining("CDE");
@@ -115,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 // single variable
                 env.CompileDeploy("@name('S0') @public create variable boolean var2vmd = true", path);
                 env.CompileDeploy("@name('S1') select * from SupportBean(var2vmd)", path);
-                Assert.AreEqual(true, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("S0"), "var2vmd"));
+                ClassicAssert.AreEqual(true, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("S0"), "var2vmd"));
 
                 try {
                     env.Deployment.Undeploy(env.DeploymentId("S0"));
@@ -126,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
 
                 env.UndeployModuleContaining("S1");
-                Assert.AreEqual(true, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("S0"), "var2vmd"));
+                ClassicAssert.AreEqual(true, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("S0"), "var2vmd"));
 
                 var deploymentIdS0 = env.DeploymentId("S0");
                 env.UndeployModuleContaining("S0");

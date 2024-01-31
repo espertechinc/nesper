@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             var @event = listener.AssertOneGetNewAndReset();
             var events = (EventBean[])@event.GetFragment("detail");
             if (values == null) {
-                Assert.IsNull(events);
+                ClassicAssert.IsNull(events);
                 return;
             }
 

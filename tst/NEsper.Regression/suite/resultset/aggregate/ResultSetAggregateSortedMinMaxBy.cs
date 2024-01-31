@@ -13,6 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
@@ -98,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("c0")));
 
                 env.SendEventBean(new SupportBean("C", 10));
                 AssertExpected(env, new object[][] { new object[] { "C", 10 } });
@@ -310,11 +311,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "s0",
                     statement => {
                         var props = statement.EventType.PropertyDescriptors;
-                        Assert.AreEqual("maxby(IntPrimitive).TheString", props[0].PropertyName);
-                        Assert.AreEqual("minby(IntPrimitive)", props[1].PropertyName);
-                        Assert.AreEqual("maxbyever(IntPrimitive).TheString", props[2].PropertyName);
-                        Assert.AreEqual("minbyever(IntPrimitive)", props[3].PropertyName);
-                        Assert.AreEqual("sorted(IntPrimitive,TheString desc)", props[4].PropertyName);
+                        ClassicAssert.AreEqual("maxby(IntPrimitive).TheString", props[0].PropertyName);
+                        ClassicAssert.AreEqual("minby(IntPrimitive)", props[1].PropertyName);
+                        ClassicAssert.AreEqual("maxbyever(IntPrimitive).TheString", props[2].PropertyName);
+                        ClassicAssert.AreEqual("minbyever(IntPrimitive)", props[3].PropertyName);
+                        ClassicAssert.AreEqual("sorted(IntPrimitive,TheString desc)", props[4].PropertyName);
                     });
 
                 env.UndeployAll();
@@ -687,8 +688,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 listener => {
                     var und = (SupportBean[])listener.AssertOneGetNewAndReset().Get("c0");
                     for (var i = 0; i < und.Length; i++) {
-                        Assert.AreEqual(expected[i][0], und[i].TheString);
-                        Assert.AreEqual(expected[i][1], und[i].IntPrimitive);
+                        ClassicAssert.AreEqual(expected[i][0], und[i].TheString);
+                        ClassicAssert.AreEqual(expected[i][1], und[i].IntPrimitive);
                     }
                 });
         }

@@ -12,7 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.@event.core.EventBeanTypedEventFactoryCompileTime;
 
 namespace com.espertech.esper.common.@internal.@event.property
@@ -42,21 +42,21 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void TestGetGetter()
         {
             EventPropertyGetter getter = prop.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-            Assert.AreEqual("simple", getter.Get(theEvent));
+            ClassicAssert.AreEqual("simple", getter.Get(theEvent));
 
-            Assert.IsNull(invalidDummy.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
-            Assert.IsNull(invalidPropMap.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
-            Assert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidDummy.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidPropMap.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
         [Test]
         public void TestGetPropertyType()
         {
-            Assert.AreEqual(typeof(string), prop.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.AreEqual(typeof(string), prop.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
 
-            Assert.IsNull(invalidDummy.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
-            Assert.IsNull(invalidPropMap.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
-            Assert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidDummy.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidPropMap.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(invalidPropIndexed.GetGetter(eventType, INSTANCE, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
     }
 } // end of namespace

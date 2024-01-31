@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
@@ -65,21 +66,21 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                     result[group.Name] = resultGroup;
                     group.IterateStatements(metric => { resultGroup[metric.Metric.StatementName] = metric.Metric; });
                 });
-            Assert.AreEqual(0, result.Get("group-default").Count);
-            Assert.AreEqual(0, result.Get("group-2").Count);
+            ClassicAssert.AreEqual(0, result.Get("group-default").Count);
+            ClassicAssert.AreEqual(0, result.Get("group-2").Count);
             var group = result.Get("group-1");
             EPAssertionUtil.AssertEqualsAnyOrder(
                 group.Keys,
                 new string[] { "cpuStmtTwo", "wallStmtFour", "cpuStmtOne", "wallStmtThree" });
             var metric = group.Get("cpuStmtOne");
-            Assert.AreEqual(1, metric.NumInput);
+            ClassicAssert.AreEqual(1, metric.NumInput);
 
             var runtimeMetric = env.Runtime.MetricsService.GetRuntimeMetric();
-            Assert.AreEqual(4, runtimeMetric.InputCount);
+            ClassicAssert.AreEqual(4, runtimeMetric.InputCount);
 
             var listener = env.Listener("stmt_metrics");
             SendTimer(env, 10999);
-            Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
+            ClassicAssert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
 
             SendTimer(env, 11000);
             TryAssertion(env, 11000);
@@ -98,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             }
 
             SendTimer(env, 31000);
-            Assert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
+            ClassicAssert.IsFalse(env.Listener("stmt_metrics").IsInvoked);
 
             env.UndeployAll();
         }
@@ -115,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var fields = new[] { "RuntimeURI", "StatementName" };
 
             var listener = env.Listener("stmt_metrics");
-            Assert.AreEqual(4, listener.NewDataList.Count);
+            ClassicAssert.AreEqual(4, listener.NewDataList.Count);
             var received = listener.NewDataListFlattened;
 
             EPAssertionUtil.AssertProps(
@@ -150,9 +151,9 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
 #endif
 
             for (var i = 0; i < 4; i++) {
-                Assert.AreEqual(1L, received[i].Get("OutputIStreamCount"));
-                Assert.AreEqual(0L, received[i].Get("OutputRStreamCount"));
-                Assert.AreEqual(timestamp, received[i].Get("Timestamp"));
+                ClassicAssert.AreEqual(1L, received[i].Get("OutputIStreamCount"));
+                ClassicAssert.AreEqual(0L, received[i].Get("OutputRStreamCount"));
+                ClassicAssert.AreEqual(timestamp, received[i].Get("Timestamp"));
             }
 
             listener.Reset();

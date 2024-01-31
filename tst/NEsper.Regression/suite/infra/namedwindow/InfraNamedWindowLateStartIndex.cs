@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -36,7 +37,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var eplJoin =
                 "@name('s0') select * from SupportBean_S0 as S0 unidirectional, AWindow(P00='x') as aw where aw.Id = S0.Id";
             env.CompileDeploy(eplJoin, path).AddListener("s0");
-            Assert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
+            ClassicAssert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 
             env.SendEventBean(new SupportBean_S0(-1, "x"));
             env.AssertListenerInvoked("s0");
@@ -46,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 "@name('s1') select (select Id from AWindow(P00='x') as aw where aw.Id = S0.Id) " +
                 "from SupportBean_S0 as S0 unidirectional";
             env.CompileDeploy(eplSubqueryNoIndexShare, path).AddListener("s1");
-            Assert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
+            ClassicAssert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 
             env.SendEventBean(new SupportBean_S0(-1, "x"));
             env.UndeployAll();
@@ -58,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 "@name('s2') select (select Id from AWindow(P00='x') as aw where aw.Id = S0.Id) " +
                 "from SupportBean_S0 as S0 unidirectional";
             env.CompileDeploy(eplSubqueryWithIndexShare, path).AddListener("s2");
-            Assert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
+            ClassicAssert.AreEqual(2, SupportCountAccessEvent.GetAndResetCountGetterCalled());
 
             env.SendEventBean(new SupportBean_S0(-1, "x"));
             env.AssertListenerInvoked("s2");
@@ -85,7 +86,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             }
 
             env.SendEventBean(new SupportCountAccessEvent(-1, "x"));
-            Assert.AreEqual(101, SupportCountAccessEvent.GetAndResetCountGetterCalled());
+            ClassicAssert.AreEqual(101, SupportCountAccessEvent.GetAndResetCountGetterCalled());
             return path;
         }
     }

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -65,15 +66,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "window",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(1, events.Length);
-                        Assert.AreEqual("EmptyPropWin", events[0].EventType.Name);
+                        ClassicAssert.AreEqual(1, events.Length);
+                        ClassicAssert.AreEqual("EmptyPropWin", events[0].EventType.Name);
                     });
 
                 // try fire-and-forget query
                 env.CompileExecuteFAFNoResult("insert into EmptyPropWin select null", path);
                 env.AssertIterator(
                     "window",
-                    iterator => Assert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
                 env.CompileExecuteFAFNoResult("delete from EmptyPropWin", path); // empty window
 
                 // try on-merge
@@ -84,14 +85,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertIterator(
                     "window",
-                    iterator => Assert.AreEqual(1, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(1, EPAssertionUtil.EnumeratorToArray(iterator).Length));
 
                 // try on-insert
                 env.CompileDeploy("on SupportBean_S1 insert into EmptyPropWin select null", path);
                 env.SendEventBean(new SupportBean_S1(0));
                 env.AssertIterator(
                     "window",
-                    iterator => Assert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
 
                 env.UndeployAll();
             }
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("@name('s0') select * from MyBeanWithoutProps", path).AddListener("s0");
 
             env.SendEventBean(new SupportBean());
-            env.AssertEventNew("s0", @event => Assert.IsTrue(@event.Underlying is SupportBeanWithoutProps));
+            env.AssertEventNew("s0", @event => ClassicAssert.IsTrue(@event.Underlying is SupportBeanWithoutProps));
 
             env.UndeployAll();
         }
@@ -136,8 +137,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.IsTrue(((IDictionary<string, object>)@event.Underlying).IsEmpty());
-                    Assert.AreEqual(0, @event.EventType.PropertyDescriptors.Count);
+                    ClassicAssert.IsTrue(((IDictionary<string, object>)@event.Underlying).IsEmpty());
+                    ClassicAssert.AreEqual(0, @event.EventType.PropertyDescriptors.Count);
                 });
             env.UndeployAll();
         }
@@ -150,14 +151,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy("@name('s0') select * from EmptyOASchema", path).AddListener("s0").SetSubscriber("s0");
 
             env.SendEventBean(new SupportBean());
-            env.AssertEventNew("s0", @event => Assert.AreEqual(0, ((object[])@event.Underlying).Length));
+            env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(0, ((object[])@event.Underlying).Length));
 
             env.AssertSubscriber(
                 "s0",
                 subscriber => {
                     var lastNewSubscriberData = subscriber.LastNewData;
-                    Assert.AreEqual(1, lastNewSubscriberData.Length);
-                    Assert.AreEqual(0, ((object[])lastNewSubscriberData[0]).Length);
+                    ClassicAssert.AreEqual(1, lastNewSubscriberData.Length);
+                    ClassicAssert.AreEqual(0, ((object[])lastNewSubscriberData[0]).Length);
                 });
 
             env.UndeployAll();

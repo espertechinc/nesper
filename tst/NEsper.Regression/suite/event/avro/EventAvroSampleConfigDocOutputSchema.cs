@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Core.AvroConstant;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
@@ -36,7 +36,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 statement => {
                     var schema = (Schema)((AvroSchemaEventType)statement.EventType).Schema;
                     var schemaJson = schema.ToJsonObject();
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "{\"type\":\"record\",\"name\":\"stmt0_out0\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                         schemaJson.ToString(Newtonsoft.Json.Formatting.None));
                 });
@@ -51,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                     "carType",
                     StringType(
                         Property(PROP_STRING_KEY, PROP_STRING_VALUE))));
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 "{\"type\":\"record\",\"name\":\"MyAvroEvent\",\"fields\":[{\"name\":\"carId\",\"type\":\"int\"},{\"name\":\"carType\",\"type\":{\"type\":\"string\",\"avro.string\":\"string\"}}]}",
                 schemaTwo.ToJsonObject().ToString(Newtonsoft.Json.Formatting.None));
             env.UndeployAll();

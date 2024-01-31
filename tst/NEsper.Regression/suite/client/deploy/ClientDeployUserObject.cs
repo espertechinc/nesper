@@ -16,6 +16,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -71,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.Deployment.Deploy(compiled, options);
 
                 var ctx = MyUserObjectRuntimeOption.Contexts[0];
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(env.DeploymentId("s0"), ctx.DeploymentId);
-                Assert.AreSame(env.Statement("s0").Annotations, ctx.Annotations);
-                Assert.AreEqual(epl, ctx.Epl);
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(env.DeploymentId("s0"), ctx.DeploymentId);
+                ClassicAssert.AreSame(env.Statement("s0").Annotations, ctx.Annotations);
+                ClassicAssert.AreEqual(epl, ctx.Epl);
 
                 env.UndeployAll();
             }

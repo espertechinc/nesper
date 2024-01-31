@@ -28,6 +28,7 @@ using NEsper.Avro.Util.Support;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.contained
 {
@@ -88,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     "s0",
                     listener => {
                         var context = (EPLScriptContext) listener.AssertOneGetNewAndReset().Get("c0");
-                        Assert.IsNotNull(context.EventBeanService);
+                        ClassicAssert.IsNotNull(context.EventBeanService);
                     });
 
                 env.UndeployAll();
@@ -200,8 +201,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual("WordEvent", statement.EventType.Name);
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                    ClassicAssert.AreEqual("WordEvent", statement.EventType.Name);
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
                 });
 
             SendMySentenceEvent(env, eventRepresentationEnum, "I am testing this code");
@@ -242,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                            "select * from MySentenceEvent[SplitSentenceJS(sentence)@type(WordEvent)]";
 
                 env.CompileDeploy(stmtText, path).AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
                 env.SendEventMap(EmptyDictionary<string, object>.Instance, "MySentenceEvent");
                 env.AssertPropsPerRowLastNewAnyOrder(
@@ -260,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                        eventRepresentationEnum.GetName() +
                        "(word)@type(CharacterEvent)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
-            env.AssertStatement("s0", statement => Assert.AreEqual("CharacterEvent", statement.EventType.Name));
+            env.AssertStatement("s0", statement => ClassicAssert.AreEqual("CharacterEvent", statement.EventType.Name));
 
             SendMySentenceEvent(env, eventRepresentationEnum, "I am");
             env.AssertPropsPerRowLastNewAnyOrder(
@@ -275,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                        eventRepresentationEnum.GetName() +
                        "(*)@type(WordEvent)]";
             env.CompileDeploy(stmtText, path).AddListener("s0");
-            env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+            env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
             SendMySentenceEvent(env, eventRepresentationEnum, "another test sentence");
             env.AssertPropsPerRowLastNewAnyOrder(
@@ -290,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
                            " @Name('s0') select * from SupportObjectArrayEvent[SomeObjectArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
                 var rows = new object[][]
                     { new object[] { "this" }, new object[] { "is" }, new object[] { "collection" } };
@@ -305,7 +306,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 stmtText = eventRepresentationEnum.GetAnnotationText() +
                            " @Name('s0') select * from SupportCollectionEvent[SomeCollection@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
                 var coll = new List<IDictionary<string, object>>();
                 coll.Add(Collections.SingletonDataMap("word", "this"));
@@ -324,7 +325,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                            eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonWord)) +
                            " select * from SupportAvroArrayEvent[SomeAvroArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
                 var rows = new GenericRecord[3];
                 var words = "this,is,avro".SplitCsv();
@@ -346,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                            eventRepresentationEnum.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonWord)) +
                            " select * from SupportJsonArrayEvent[SomeJsonArray@type(WordEvent)]";
                 env.CompileDeploy(stmtText, path).AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual("WordEvent", statement.EventType.Name));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual("WordEvent", statement.EventType.Name));
 
                 var rows = new string[3];
                 var words = "this,is,avro".SplitCsv();
@@ -455,8 +456,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             string propertyName,
             string propertyValue)
         {
-            Assert.AreEqual(typeName, @event.EventType.Name);
-            Assert.AreEqual(propertyValue, @event.Get(propertyName));
+            ClassicAssert.AreEqual(typeName, @event.EventType.Name);
+            ClassicAssert.AreEqual(propertyValue, @event.Get(propertyName));
         }
 
         public static EventBean[] MySplitUDFReturnEventBeanArray(

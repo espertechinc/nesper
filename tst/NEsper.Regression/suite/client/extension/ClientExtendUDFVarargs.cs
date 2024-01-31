@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -65,9 +66,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "s0",
                     @event => {
                         var data = (object[])@event.Get("c0");
-                        Assert.AreEqual(1, data[0]);
-                        Assert.IsTrue(data[1] is SupportBean);
-                        Assert.IsTrue(((ICollection<SupportBean>)data[2]).First() is SupportBean);
+                        ClassicAssert.AreEqual(1, data[0]);
+                        ClassicAssert.IsTrue(data[1] is SupportBean);
+                        ClassicAssert.IsTrue(((ICollection<SupportBean>)data[2]).First() is SupportBean);
                     });
 
                 env.UndeployAll();
@@ -219,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 @event => {
                     var index = 0;
                     foreach (var pair in pairs) {
-                        Assert.AreEqual(pair.Second, @event.Get("c" + index), "failed for '" + pair.First + "'");
+                        ClassicAssert.AreEqual(pair.Second, @event.Get("c" + index), "failed for '" + pair.First + "'");
                         index++;
                     }
                 });

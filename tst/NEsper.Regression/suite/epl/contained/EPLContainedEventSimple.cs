@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.wordexample;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 using static com.espertech.esper.regressionlib.support.bookexample.OrderBeanFactory;
 
@@ -173,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                     new object[][] { new object[] { "10020" }, new object[] { "10021" }, new object[] { "10022" } });
 
                 // highest price (27 is the last value)
-                env.AssertIterator("nw", iterator => Assert.AreEqual(35.0, iterator.Advance().Get("Price")));
+                env.AssertIterator("nw", iterator => ClassicAssert.AreEqual(35.0, iterator.Advance().Get("Price")));
 
                 env.UndeployAll();
             }
@@ -209,8 +209,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.UndeployAll();
 
                 var model = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, model.ToEPL());
-                Assert.AreEqual(stmtTextFormatted, model.ToEPL(new EPStatementFormatter(true)));
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextFormatted, model.ToEPL(new EPStatementFormatter(true)));
                 env.CompileDeploy(model).AddListener("s0");
 
                 TryAssertionUnidirectionalJoin(env);
@@ -445,7 +445,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.LastNewData,
                             "BookId".SplitCsv(),

@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
 namespace com.espertech.esper.regressionlib.suite.context
@@ -323,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             env.DeploymentId("ctx"),
                             "CtxPartitionInitWCorrTerm",
                             ContextPartitionSelectorAll.INSTANCE);
-                        Assert.AreEqual(2, partitions.Identifiers.Count);
+                        ClassicAssert.AreEqual(2, partitions.Identifiers.Count);
                         var first = (ContextPartitionIdentifierPartitioned)partitions.Identifiers.Get(0);
                         var second = (ContextPartitionIdentifierPartitioned)partitions.Identifiers.Get(1);
                         EPAssertionUtil.AssertEqualsExactOrder(new object[] { "A" }, first.Keys);
@@ -353,8 +353,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("ctx0"));
-                        Assert.AreEqual(typeof(SupportBean_S1), statement.EventType.GetPropertyType("ctx1"));
+                        ClassicAssert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("ctx0"));
+                        ClassicAssert.AreEqual(typeof(SupportBean_S1), statement.EventType.GetPropertyType("ctx1"));
                     });
 
                 env.SendEventBean(new SupportBean_S0(1, "A"));
@@ -400,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("s0")));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("s0")));
 
                 SendS0AssertNone(env, 0, "A", "G1");
                 SendS0AssertNone(env, -1, "B", "G1");
@@ -692,7 +692,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean_S2(0, "A"));
                 env.AssertPropsNew("s0", fields, new object[] { "A", 3L });
 
-                env.AssertThat(() => Assert.AreEqual(3, GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(3, GetFilterSvcCountApprox(env)));
                 env.UndeployAll();
             }
         }

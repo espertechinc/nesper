@@ -18,6 +18,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.DoublePrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyDoubleBoxed(
@@ -66,7 +67,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.DoubleBoxed = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyLongBoxed(
@@ -76,7 +77,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.LongBoxed = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyLongPrimitive(
@@ -86,7 +87,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.LongPrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)
@@ -111,11 +112,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             VerifyDoublePrimitive(index, -1, 0);
             VerifyDoublePrimitive(index, 99, 3);
 
-            Assert.AreEqual(testEvaluator, index.Get(1.5d));
-            Assert.IsTrue(index.ReadWriteLock != null);
+            ClassicAssert.AreEqual(testEvaluator, index.Get(1.5d));
+            ClassicAssert.IsTrue(index.ReadWriteLock != null);
             index.Remove(1.5d);
             index.Remove(1.5d);
-            Assert.AreEqual(null, index.Get(1.5d));
+            ClassicAssert.AreEqual(null, index.Get(1.5d));
 
             Assert.That(
                 () => index.Put("a", testEvaluator),

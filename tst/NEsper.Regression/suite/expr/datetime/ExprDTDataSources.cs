@@ -18,6 +18,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
     public class ExprDTDataSources
@@ -138,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                     "s0",
                     statement => {
                         foreach (var field in fields) {
-                            Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(field));
+                            ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(field));
                         }
                     });
 
@@ -183,8 +185,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
-                        Assert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
+                        ClassicAssert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
+                        ClassicAssert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
                     });
 
                 env.UndeployAll();
@@ -200,8 +202,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
-                        Assert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
+                        ClassicAssert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
+                        ClassicAssert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
                     });
 
                 env.UndeployAll();
@@ -220,8 +222,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AssertStatement(
                     "s2",
                     statement => {
-                        Assert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
-                        Assert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
+                        ClassicAssert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
+                        ClassicAssert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
                     });
 
                 env.UndeployAll();
@@ -241,8 +243,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 env.AssertStatement(
                     "s2",
                     statement => {
-                        Assert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
-                        Assert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
+                        ClassicAssert.AreEqual("StartTS", statement.EventType.StartTimestampPropertyName);
+                        ClassicAssert.AreEqual("EndTS", statement.EventType.EndTimestampPropertyName);
                     });
 
                 env.UndeployAll();

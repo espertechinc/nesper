@@ -13,6 +13,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -186,14 +187,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AdvanceTime(flipTime - 1);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+                    listener => ClassicAssert.IsFalse(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
 
-                Assert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
+                ClassicAssert.IsFalse(env.Listener("s0").GetAndClearIsInvoked(), "Failed for flip " + count);
 
                 env.AdvanceTime(flipTime);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
+                    listener => ClassicAssert.IsTrue(listener.GetAndClearIsInvoked(), "Failed for flip " + count));
                 count++;
             }
 

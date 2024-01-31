@@ -15,7 +15,9 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
-using NUnit.Framework;using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsAnyOrder
+using NUnit.Framework;
+using NUnit.Framework.Legacy;
+using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertEqualsAnyOrder
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -116,14 +118,14 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
         {
             public void Run(RegressionEnvironment env)
             {
-                Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed("dummy"));
-                Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided("dummy"));
+                ClassicAssert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed("dummy"));
+                ClassicAssert.IsNull(env.Deployment.GetDeploymentDependenciesProvided("dummy"));
 
                 Assert.Throws<ArgumentException>(
-                    () => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null)); });
+                    () => { ClassicAssert.IsNull(env.Deployment.GetDeploymentDependenciesConsumed(null)); });
 
                 Assert.Throws<ArgumentException>(
-                    () => { Assert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null)); });
+                    () => { ClassicAssert.IsNull(env.Deployment.GetDeploymentDependenciesProvided(null)); });
             }
 
             public ISet<RegressionFlag> Flags()

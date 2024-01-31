@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -42,7 +43,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 1,
                 Patterns.Filter(Filter.Create("SupportBean_B", filter), "b"));
             model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-            Assert.AreEqual(text, model.ToEPL().Replace("\"", "'"));
+            ClassicAssert.AreEqual(text, model.ToEPL().Replace("\"", "'"));
             testCase = new EventExpressionCase(model);
             testCase.Add("B3", "b", events.GetEvent("B3"));
             testCaseList.AddTest(testCase);

@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -94,7 +95,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("P2", 1));
                 env.SendEventBean(new SupportRecogBean("E1", 3));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 
@@ -163,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[][] { new object[] { "E5", "E6" } });
 
                 SendTimer(11500, env);
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -199,7 +200,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("P2", "c1", 1));
                 env.SendEventBean(new SupportRecogBean("E1", "c1", 3));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(1);
 
@@ -268,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     new object[][] { new object[] { "c2", "E5", "E6" } });
 
                 SendTimer(11500, env);
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -389,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.Milestone(8);
 
                 SendTimer(16000, env);
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -427,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("S2", "T2", 1001));
                 env.SendEventBean(new SupportRecogBean("S1", null, 9));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(2);
 
@@ -501,7 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("E1", 5));
                 env.SendEventBean(new SupportRecogBean("E2", 3));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(0);
 
@@ -576,7 +577,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("E1", 5));
                 env.SendEventBean(new SupportRecogBean("E2", 4));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(6);
 

@@ -12,7 +12,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -84,8 +84,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_a"));
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_b"));
                 });
 
             env.UndeployAll();

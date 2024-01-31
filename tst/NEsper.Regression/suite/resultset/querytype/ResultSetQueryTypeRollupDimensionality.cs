@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -279,9 +280,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var events = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(expectedIntArray, events[0].Get("thesum"));
-                        Assert.AreEqual(expectedLongArray, events[1].Get("thesum"));
-                        Assert.AreEqual(expectedDoubleArray, events[2].Get("thesum"));
+                        ClassicAssert.AreEqual(expectedIntArray, events[0].Get("thesum"));
+                        ClassicAssert.AreEqual(expectedLongArray, events[1].Get("thesum"));
+                        ClassicAssert.AreEqual(expectedDoubleArray, events[2].Get("thesum"));
                     });
             }
         }
@@ -390,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c0")));
                 var fields = "c0,c1".SplitCsv();
 
                 env.SendEventBean(MakeEvent("E1", 1, 10));
@@ -639,8 +640,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
                     });
 
                 env.SendEventBean(MakeEvent("E1", 10, 100, 1000));
@@ -687,7 +688,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
 
                 env.SendEventBean(MakeEvent("E1", 10, 100));
                 env.AssertPropsPerRowIRPairFlattened(
@@ -750,7 +751,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
 
                 env.SendEventBean(MakeEvent("E1", 10, 100));
                 env.AssertPropsPerRowIRPairFlattened(
@@ -799,9 +800,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("c3"));
                     });
 
                 env.SendEventBean(MakeEvent("E1", 1, 10, 100, 1000));
@@ -1474,7 +1475,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1")));
 
                 env.SendEventBean(MakeEvent("E1", 10, 100));
                 env.AssertPropsPerRowLastNew(
@@ -1948,8 +1949,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
+                    ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c1"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("c2"));
                 });
 
             env.SendEventBean(MakeEvent("E1", 10, 100, 1000));
@@ -2178,9 +2179,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(expectedC0, statement.EventType.GetPropertyType("c0"));
-                    Assert.AreEqual(expectedC1, statement.EventType.GetPropertyType("c1"));
-                    Assert.AreEqual(expectedC2, statement.EventType.GetPropertyType("c2"));
+                    ClassicAssert.AreEqual(expectedC0, statement.EventType.GetPropertyType("c0"));
+                    ClassicAssert.AreEqual(expectedC1, statement.EventType.GetPropertyType("c1"));
+                    ClassicAssert.AreEqual(expectedC2, statement.EventType.GetPropertyType("c2"));
                 });
         }
     }

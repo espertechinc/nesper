@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -81,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             t2.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
         }
 
         public class WriteRunnable : IRunnable
@@ -155,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                         env.SendEventBean(new SupportBean_S0(0, currentEventId));
                         var value = listener.AssertOneGetNewAndReset().Get("c0").AsInt32();
-                        Assert.AreEqual(10, value);
+                        ClassicAssert.AreEqual(10, value);
                     }
                 }
                 catch (Exception ex) {

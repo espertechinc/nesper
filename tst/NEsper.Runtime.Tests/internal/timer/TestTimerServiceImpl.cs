@@ -16,6 +16,7 @@ using com.espertech.esper.compat.timers;
 using com.espertech.esper.container;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.timer
 {
@@ -77,7 +78,7 @@ namespace com.espertech.esper.runtime.@internal.timer
             // Loop for some clock cycles
             service.StartInternalClock();
             Sleep(RESOLUTION / 10);
-            Assert.IsTrue(callback.GetAndResetCount() == 1);
+            ClassicAssert.IsTrue(callback.GetAndResetCount() == 1);
             Sleep(service.MsecTimerResolution * 20);
             var count = callback.GetAndResetCount();
             Log.Debug(".testClocking count=" + count);

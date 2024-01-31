@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.util;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // tryInvalidFAFCompile
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -235,9 +236,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var result = CompileExecute(env, path, query);
                 var delta = PerformanceObserver.MilliTime - start;
                 Assert.That(delta, Is.LessThan(1000), "delta is " + delta);
-                Assert.AreEqual(numRows, result.Array.Length);
+                ClassicAssert.AreEqual(numRows, result.Array.Length);
                 for (var i = 0; i < numRows; i++) {
-                    Assert.AreEqual(-1 * i, result.Array[i].Get("c0"));
+                    ClassicAssert.AreEqual(-1 * i, result.Array[i].Get("c0"));
                 }
 
                 env.UndeployAll();
@@ -297,8 +298,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 for (var i = 5000; i < 6000; i++) {
                     prepared.SetObject("p0", "v" + i);
                     var result = env.Runtime.FireAndForgetService.ExecuteQuery(prepared);
-                    Assert.AreEqual(1, result.Array.Length);
-                    Assert.AreEqual(i, result.Array[0].Get("c0"));
+                    ClassicAssert.AreEqual(1, result.Array.Length);
+                    ClassicAssert.AreEqual(i, result.Array[0].Get("c0"));
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
@@ -375,8 +376,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 SendSB(env, "E1", 10);
                 SendSB(env, "E1", 11);
                 var result = (IDictionary<string, object>)RunQuerySingle(env, path, query);
-                Assert.AreEqual("E1", result.Get("TheString"));
-                Assert.AreEqual(21, result.Get("thesum"));
+                ClassicAssert.AreEqual("E1", result.Get("TheString"));
+                ClassicAssert.AreEqual(21, result.Get("thesum"));
 
                 env.UndeployAll();
             }
@@ -889,8 +890,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var compiled = env.CompileFAF(query, path);
             var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
-            Assert.AreEqual(0, result.Array?.Length ?? 0);
-            Assert.AreEqual(result.EventType.GetPropertyType("c0"), resultType);
+            ClassicAssert.AreEqual(0, result.Array?.Length ?? 0);
+            ClassicAssert.AreEqual(result.EventType.GetPropertyType("c0"), resultType);
         }
 
         private static void AssertQuerySingle(
@@ -900,7 +901,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             object c0Expected)
         {
             var result = RunQuerySingle(env, path, query);
-            Assert.AreEqual(c0Expected, result);
+            ClassicAssert.AreEqual(c0Expected, result);
         }
 
         private static object RunQuerySingle(
@@ -909,7 +910,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string query)
         {
             var result = CompileExecute(env, path, query);
-            Assert.AreEqual(1, result.Array.Length);
+            ClassicAssert.AreEqual(1, result.Array.Length);
             return result.Array[0].Get("c0");
         }
 

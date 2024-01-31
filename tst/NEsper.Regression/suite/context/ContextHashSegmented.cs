@@ -25,6 +25,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -218,12 +219,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                             statement.GetSafeEnumerator(selector),
                             fields,
                             new object[][] { new object[] { 5, "E1", 6 }, new object[] { 9, "E3", 201 } });
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             statement.GetEnumerator(new SupportSelectorByHashCode(Collections.SingletonSet(99)))
                                 .MoveNext());
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             statement.GetEnumerator(new SupportSelectorByHashCode(EmptySet<int>.Instance)).MoveNext());
-                        Assert.IsFalse(statement.GetEnumerator(new SupportSelectorByHashCode(null)).MoveNext());
+                        ClassicAssert.IsFalse(statement.GetEnumerator(new SupportSelectorByHashCode(null)).MoveNext());
 
                         // test iterator filtered
                         var filtered = new MySelectorFilteredHash(Collections.SingletonSet<int>(15));
@@ -241,15 +242,15 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                         // test always-false filter - compare context partition info
                         filtered = new MySelectorFilteredHash(EmptySet<int>.Instance);
-                        Assert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
-                        Assert.AreEqual(16, filtered.Contexts.Count);
+                        ClassicAssert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
+                        ClassicAssert.AreEqual(16, filtered.Contexts.Count);
 
                         try {
                             statement.GetEnumerator(new ProxyContextPartitionSelectorSegmented(() => null));
                             Assert.Fail();
                         }
                         catch (InvalidContextPartitionSelector ex) {
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 ex.Message.StartsWith(
                                     "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorHash] interfaces but received com."),
                                 "message: " + ex.Message);
@@ -544,13 +545,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy(eplStmt, path).AddListener("s0");
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(4, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(4, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                         AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 4, null, null, null);
                     });
 
                 TryAssertionHash(env, milestone, "s0", ctx); // equivalent to: SupportHashCodeFuncGranularCRC32(4)
 
-                env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 path.Clear();
 
                 // test same with SODA
@@ -578,12 +579,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AddListener("s0");
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                         AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 6, null, null, null);
                     });
 
                 TryAssertionHash(env, milestone, "s0", ctx);
-                env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 path.Clear();
 
                 // test no pre-allocate
@@ -604,12 +605,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AddListener("s0");
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(1, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                         AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 0, null, null, null);
                     });
 
                 TryAssertionHash(env, milestone, "s0", ctx);
-                env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
 
                 env.UndeployAll();
             }
@@ -703,13 +704,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                         new object[] { stmtNameContext, "E2", 6 }
                     });
 
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
 
                 env.UndeployModuleContaining("s0");
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
 
                 env.UndeployAll();
-                env.AssertThat(() => Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
             }
         }
 

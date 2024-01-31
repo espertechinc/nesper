@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.RegressionFlag;
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -370,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(10, SupportScheduleHelper.ScheduleCount(statement)));
+                    statement => ClassicAssert.AreEqual(10, SupportScheduleHelper.ScheduleCount(statement)));
 
                 env.Milestone(0);
 
@@ -379,11 +379,11 @@ namespace com.espertech.esper.regressionlib.suite.view
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(1, SupportScheduleHelper.ScheduleCount(statement)));
+                    statement => ClassicAssert.AreEqual(1, SupportScheduleHelper.ScheduleCount(statement)));
 
                 env.UndeployAll();
 
-                env.AssertRuntime(rt => Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(rt)));
+                env.AssertRuntime(rt => ClassicAssert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(rt)));
             }
         }
 
@@ -416,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.IsTrue(events.Length <= 6 * maxEventsPerSlot);
+                        ClassicAssert.IsTrue(events.Length <= 6 * maxEventsPerSlot);
                     });
 
                 env.SendEventBean(new SupportBean("E0", 1));
@@ -427,7 +427,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(6 * maxEventsPerSlot + 1, events.Length);
+                        ClassicAssert.AreEqual(6 * maxEventsPerSlot + 1, events.Length);
                     });
 
                 env.UndeployAll();
@@ -540,7 +540,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                         DateTimeParsingFunctions.ParseDefaultMSec("2002-01-15T09:0:00.000")));
                 env.AssertListener(
                     "s0",
-                    listener => { Assert.AreEqual(1, listener.DataListsFlattened.Second.Length); });
+                    listener => { ClassicAssert.AreEqual(1, listener.DataListsFlattened.Second.Length); });
 
                 env.UndeployAll();
             }
@@ -558,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("correlation"));
                     });
 
                 var fields = new string[] { "Symbol", "correlation", "Feed" };
@@ -593,25 +593,25 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("slope"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YIntercept"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XAverage"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationPop"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationSample"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XSum"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XVariance"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YAverage"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationPop"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationSample"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YSum"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YVariance"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("dataPoints"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("n"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumX"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXSq"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXY"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumY"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("slope"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YIntercept"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XAverage"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationPop"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XStandardDeviationSample"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XSum"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("XVariance"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YAverage"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationPop"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YStandardDeviationSample"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YSum"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("YVariance"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("dataPoints"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("n"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumX"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXSq"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumXY"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumY"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("sumYSq"));
                     });
 
                 var fields = new string[] { "Symbol", "slope", "YIntercept", "Feed" };
@@ -629,23 +629,23 @@ namespace com.espertech.esper.regressionlib.suite.view
                             theEvent,
                             fields,
                             new object[] { "DEF", double.NaN, double.NaN, "f2" });
-                        Assert.AreEqual(1d, theEvent.Get("XAverage"));
-                        Assert.AreEqual(0d, theEvent.Get("XStandardDeviationPop"));
-                        Assert.AreEqual(double.NaN, theEvent.Get("XStandardDeviationSample"));
-                        Assert.AreEqual(1d, theEvent.Get("XSum"));
-                        Assert.AreEqual(double.NaN, theEvent.Get("XVariance"));
-                        Assert.AreEqual(1d, theEvent.Get("YAverage"));
-                        Assert.AreEqual(0d, theEvent.Get("YStandardDeviationPop"));
-                        Assert.AreEqual(double.NaN, theEvent.Get("YStandardDeviationSample"));
-                        Assert.AreEqual(1d, theEvent.Get("YSum"));
-                        Assert.AreEqual(double.NaN, theEvent.Get("YVariance"));
-                        Assert.AreEqual(1L, theEvent.Get("dataPoints"));
-                        Assert.AreEqual(1L, theEvent.Get("n"));
-                        Assert.AreEqual(1d, theEvent.Get("sumX"));
-                        Assert.AreEqual(1d, theEvent.Get("sumXSq"));
-                        Assert.AreEqual(1d, theEvent.Get("sumXY"));
-                        Assert.AreEqual(1d, theEvent.Get("sumY"));
-                        Assert.AreEqual(1d, theEvent.Get("sumYSq"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("XAverage"));
+                        ClassicAssert.AreEqual(0d, theEvent.Get("XStandardDeviationPop"));
+                        ClassicAssert.AreEqual(double.NaN, theEvent.Get("XStandardDeviationSample"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("XSum"));
+                        ClassicAssert.AreEqual(double.NaN, theEvent.Get("XVariance"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("YAverage"));
+                        ClassicAssert.AreEqual(0d, theEvent.Get("YStandardDeviationPop"));
+                        ClassicAssert.AreEqual(double.NaN, theEvent.Get("YStandardDeviationSample"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("YSum"));
+                        ClassicAssert.AreEqual(double.NaN, theEvent.Get("YVariance"));
+                        ClassicAssert.AreEqual(1L, theEvent.Get("dataPoints"));
+                        ClassicAssert.AreEqual(1L, theEvent.Get("n"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("sumX"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("sumXSq"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("sumXY"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("sumY"));
+                        ClassicAssert.AreEqual(1d, theEvent.Get("sumYSq"));
                         // above computed values tested in more detail in RegressionBean test
                     });
 
@@ -702,7 +702,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 var endTime = PerformanceObserver.NanoTime;
                 var delta = (endTime - startTime) / 1000d / 1000d / 1000d;
                 // Console.WriteLine("delta=" + delta);
-                Assert.Less(delta, 1);
+                ClassicAssert.Less(delta, 1);
 
                 env.UndeployAll();
             }
@@ -1185,7 +1185,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             EPStatement stmt,
             long count)
         {
-            Assert.AreEqual(count, EPAssertionUtil.EnumeratorCount(stmt.GetEnumerator()));
+            ClassicAssert.AreEqual(count, EPAssertionUtil.EnumeratorCount(stmt.GetEnumerator()));
         }
 
         private static void SendEvent(

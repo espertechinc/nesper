@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
@@ -62,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
+                statement => ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mydouble")));
 
             SendSupportBeanEvent(env, 10);
             env.AssertEqualsNew("s0", "mydouble", 1.2);

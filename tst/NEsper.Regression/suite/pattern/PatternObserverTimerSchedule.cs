@@ -15,6 +15,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -844,7 +845,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AdvanceTime(msec);
             env.AssertListener(
                 "s0",
-                listener => Assert.IsTrue(listener.IsInvokedAndReset(), "expected but not received at " + time));
+                listener => ClassicAssert.IsTrue(listener.IsInvokedAndReset(), "expected but not received at " + time));
         }
 
         private static void SendTimeEvent(

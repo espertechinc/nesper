@@ -11,6 +11,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -116,14 +117,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // Comment-me-in: Console.WriteLine("Advance to " + printMicro(nextLong));
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsFalse(listener.IsInvoked, "unexpected callback at " + next));
+                    listener => ClassicAssert.IsFalse(listener.IsInvoked, "unexpected callback at " + next));
 
                 // send right-after time
                 env.AdvanceTime(nextLong);
                 // Comment-me-in: Console.WriteLine("Advance to " + printMicro(nextLong));
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsTrue(listener.GetAndClearIsInvoked(), "missing callback at " + next));
+                    listener => ClassicAssert.IsTrue(listener.GetAndClearIsInvoked(), "missing callback at " + next));
 
                 env.AssertListenerNotInvoked("s0");
             }

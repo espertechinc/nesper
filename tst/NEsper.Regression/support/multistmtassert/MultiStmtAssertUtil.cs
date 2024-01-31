@@ -15,6 +15,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multistmtassert
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             bool[] received,
             AtomicLong milestone)
         {
-            Assert.AreEqual(testData.Length, received.Length);
+            ClassicAssert.AreEqual(testData.Length, received.Length);
             IList<EPLWithInvokedFlags> list = new List<EPLWithInvokedFlags>();
             foreach (var epl in epls) {
                 list.Add(new EPLWithInvokedFlags(epl, received));
@@ -183,7 +184,7 @@ namespace com.espertech.esper.regressionlib.support.multistmtassert
             int length)
         {
             foreach (var desc in descriptors) {
-                Assert.AreEqual(desc.Received.Length, length);
+                ClassicAssert.AreEqual(desc.Received.Length, length);
             }
         }
     }

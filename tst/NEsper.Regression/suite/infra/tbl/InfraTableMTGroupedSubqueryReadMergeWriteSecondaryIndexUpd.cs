@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -106,10 +107,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             readThread.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numLoops > 100);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numLoops > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             Console.Out.WriteLine(
                 "Send " + writeRunnable.numLoops + " and performed " + readRunnable.numQueries + " reads");
         }
@@ -192,7 +193,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     while (!shutdown) {
                         env.SendEventBean(new SupportBean(null, 0));
                         var value = listener.AssertOneGetNewAndReset().Get("c0");
-                        Assert.IsTrue((long?)value >= 1);
+                        ClassicAssert.IsTrue((long?)value >= 1);
                         numQueries++;
                     }
                 }

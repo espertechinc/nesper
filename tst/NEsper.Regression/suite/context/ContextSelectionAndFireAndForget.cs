@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.context;
 
 // fail
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -202,7 +203,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                         });
                 }
                 catch (InvalidContextPartitionSelector ex) {
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         ex.Message.StartsWith(
                             "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorSegmented] interfaces but received com"),
                         "message: " + ex.Message);
@@ -327,17 +328,17 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             statement.GetEnumerator(new SupportSelectorById(Collections.GetEmptySet<int>()))
                                 .MoveNext());
-                        Assert.IsFalse(statement.GetEnumerator(new SupportSelectorById(null)).MoveNext());
+                        ClassicAssert.IsFalse(statement.GetEnumerator(new SupportSelectorById(null)).MoveNext());
 
                         try {
                             statement.GetEnumerator(null);
                             Assert.Fail();
                         }
                         catch (ArgumentException ex) {
-                            Assert.AreEqual(ex.Message, "No selector provided");
+                            ClassicAssert.AreEqual(ex.Message, "No selector provided");
                         }
 
                         try {
@@ -345,7 +346,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             Assert.Fail();
                         }
                         catch (ArgumentException ex) {
-                            Assert.AreEqual(ex.Message, "No selector provided");
+                            ClassicAssert.AreEqual(ex.Message, "No selector provided");
                         }
                     });
 
@@ -358,7 +359,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             Assert.Fail();
                         }
                         catch (UnsupportedOperationException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 ex.Message,
                                 "Enumerator with context selector is only supported for statements under context");
                         }
@@ -368,7 +369,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             Assert.Fail();
                         }
                         catch (UnsupportedOperationException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 ex.Message,
                                 "Enumerator with context selector is only supported for statements under context");
                         }
@@ -448,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 Assert.Fail();
             }
             catch (ArgumentException ex) {
-                Assert.AreEqual(ex.Message, expected);
+                ClassicAssert.AreEqual(ex.Message, expected);
             }
         }
 

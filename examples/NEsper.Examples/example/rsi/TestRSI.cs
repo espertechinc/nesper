@@ -16,7 +16,7 @@ using NEsper.Examples.StockTicker.eventbean;
 using NEsper.Examples.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.RSI
@@ -67,19 +67,19 @@ namespace NEsper.Examples.RSI
 			// Bullish Stock, RSI rises beyond 70
 			SendEvent(SYMBOL, 50);
 			SendEvent(SYMBOL, 100);
-			Assert.AreEqual(_rsiListener.AvgGain, Double.MinValue);
-			Assert.AreEqual(_rsiListener.RS, Double.MinValue);
-			Assert.AreEqual(_rsiListener.RSI, Double.MinValue);
-			Assert.AreEqual(_rsiListener.RSICount, 0);
+			ClassicAssert.AreEqual(_rsiListener.AvgGain, Double.MinValue);
+			ClassicAssert.AreEqual(_rsiListener.RS, Double.MinValue);
+			ClassicAssert.AreEqual(_rsiListener.RSI, Double.MinValue);
+			ClassicAssert.AreEqual(_rsiListener.RSICount, 0);
 			SendEvent(SYMBOL, 75);
 			SendEvent(SYMBOL, 100);
 			SendEvent(SYMBOL, 150);
 			// AvgLoss = 25 / (period = 4)
-			Assert.AreEqual(_rsiListener.AvgLoss, -6.2);
+			ClassicAssert.AreEqual(_rsiListener.AvgLoss, -6.2);
 			// AvgGain = (50 + 50 + 25) / (period = 4)
-			Assert.AreEqual(_rsiListener.AvgGain, 31.2);
+			ClassicAssert.AreEqual(_rsiListener.AvgGain, 31.2);
 			// First RSI value when number of ticks = periods
-			Assert.AreEqual(_rsiListener.RSICount, 1);
+			ClassicAssert.AreEqual(_rsiListener.RSICount, 1);
 			SendEvent(SYMBOL, 125);
 			// Add a couple of stock events
 			// The trend is bullish, RSI goes beyond 70, overbought signal

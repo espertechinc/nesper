@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.util.serde;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -78,7 +79,7 @@ namespace com.espertech.esper.common.@internal.util
 
             // null values are simply not serialized
             bytes = serializerFactory.Serialize(new[] { serializerFactory.GetSerializer(typeof(int?)) }, new object[] { null });
-            Assert.AreEqual(0, bytes[0].Length);
+            ClassicAssert.AreEqual(0, bytes[0].Length);
         }
     }
 } // end of namespace

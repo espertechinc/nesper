@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -79,15 +80,15 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             // verify results
-            Assert.AreEqual(numMessages * numThreads, listener.Values.Count);
+            ClassicAssert.AreEqual(numMessages * numThreads, listener.Values.Count);
             var result = new SortedSet<int>();
             foreach (var row in listener.Values) {
                 result.Add(row.AsInt32());
             }
 
-            Assert.AreEqual(numMessages * numThreads, result.Count);
-            Assert.AreEqual(1, result.First());
-            Assert.AreEqual(numMessages * numThreads, result.Last());
+            ClassicAssert.AreEqual(numMessages * numThreads, result.Count);
+            ClassicAssert.AreEqual(1, result.First());
+            ClassicAssert.AreEqual(numMessages * numThreads, result.Last());
 
             env.UndeployAll();
         }

@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -384,7 +385,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[] objects)
         {
             var result = env.CompileExecuteFAF(epl, path);
-            Assert.AreEqual(1, result.Array.Length);
+            ClassicAssert.AreEqual(1, result.Array.Length);
             EPAssertionUtil.AssertProps(result.Array[0], fields.SplitCsv(), objects);
         }
     }

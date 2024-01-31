@@ -9,6 +9,8 @@
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableCreateIndexAdvancedSyntax : RegressionExecution
@@ -58,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string epl)
         {
             var model = env.EplToModel(epl);
-            Assert.AreEqual(epl, model.ToEPL());
+            ClassicAssert.AreEqual(epl, model.ToEPL());
         }
     }
 } // end of namespace

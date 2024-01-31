@@ -12,6 +12,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
@@ -30,15 +31,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 "s0",
                 listener => {
                     var received = listener.NewDataListFlattened;
-                    Assert.IsTrue(received.Length >= 5, "received : " + received.Length);
+                    ClassicAssert.IsTrue(received.Length >= 5, "received : " + received.Length);
 
                     for (var i = 0; i < received.Length; i++) {
                         var var1 = received[i].Get("var1").AsInt64();
                         var var2 = received[i].Get("var2").AsInt64();
                         var var3 = received[i].Get("var3").AsInt64();
-                        Assert.IsTrue(var1 >= startTime);
-                        Assert.AreEqual(var1, var2 - 1);
-                        Assert.AreEqual(var3, var2 + var1);
+                        ClassicAssert.IsTrue(var1 >= startTime);
+                        ClassicAssert.AreEqual(var1, var2 - 1);
+                        ClassicAssert.AreEqual(var3, var2 + var1);
                     }
                 });
 

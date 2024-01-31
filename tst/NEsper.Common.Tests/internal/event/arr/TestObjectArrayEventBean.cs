@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.arr
 {
@@ -54,19 +55,19 @@ namespace com.espertech.esper.common.@internal.@event.arr
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(eventType, eventBean.EventType);
-            Assert.AreEqual(testValues, eventBean.Underlying);
+            ClassicAssert.AreEqual(eventType, eventBean.EventType);
+            ClassicAssert.AreEqual(testValues, eventBean.Underlying);
 
-            Assert.AreEqual("test", eventBean.Get("aString"));
-            Assert.AreEqual(10, eventBean.Get("anInt"));
+            ClassicAssert.AreEqual("test", eventBean.Get("aString"));
+            ClassicAssert.AreEqual(10, eventBean.Get("anInt"));
 
-            Assert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
+            ClassicAssert.AreEqual("NestedValue", eventBean.Get("MyComplexBean.Nested.NestedValue"));
 
             // test wrong property name
             try
             {
                 eventBean.Get("dummy");
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (PropertyAccessException ex)
             {

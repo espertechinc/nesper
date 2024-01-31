@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -178,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     Patterns.And(Patterns.Filter("SupportBean_B", "b"), Patterns.Filter("SupportBean_D", "d")));
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "select * from pattern [every (b=SupportBean_B and d=SupportBean_D" + ")]",
                     model.ToEPL());
                 testCase = new EventExpressionCase(model);

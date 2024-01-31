@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.bytecodemodel.util
 {
@@ -17,12 +18,12 @@ namespace com.espertech.esper.common.@internal.bytecodemodel.util
             string expected,
             string input)
         {
-            Assert.AreEqual(expected, IdentifierUtil.GetIdentifierMayStartNumeric(input));
+            ClassicAssert.AreEqual(expected, IdentifierUtil.GetIdentifierMayStartNumeric(input));
         }
 
         private void AssertNoop(string input)
         {
-            Assert.AreEqual(input, IdentifierUtil.GetIdentifierMayStartNumeric(input));
+            ClassicAssert.AreEqual(input, IdentifierUtil.GetIdentifierMayStartNumeric(input));
         }
 
         [Test]

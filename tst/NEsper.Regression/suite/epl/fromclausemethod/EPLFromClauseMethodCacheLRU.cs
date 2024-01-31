@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 {
@@ -38,27 +39,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
             SendBeanEvent(env, "E3", 3);
             env.AssertPropsNew("s0", fields, new object[] { 3, "|E3|", "E3" });
-            env.AssertThat(() => Assert.AreEqual(3, SupportStaticMethodInvocations.GetInvocationSizeReset()));
+            env.AssertThat(() => ClassicAssert.AreEqual(3, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should be cached
             SendBeanEvent(env, "E3", 3);
             env.AssertPropsNew("s0", fields, new object[] { 3, "|E3|", "E3" });
-            env.AssertThat(() => Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
+            env.AssertThat(() => ClassicAssert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should not be cached
             SendBeanEvent(env, "E4", 4);
             env.AssertPropsNew("s0", fields, new object[] { 4, "|E4|", "E4" });
-            env.AssertThat(() => Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
+            env.AssertThat(() => ClassicAssert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should be cached
             SendBeanEvent(env, "E2", 2);
             env.AssertPropsNew("s0", fields, new object[] { 2, "|E2|", "E2" });
-            env.AssertThat(() => Assert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
+            env.AssertThat(() => ClassicAssert.AreEqual(0, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             // should not be cached
             SendBeanEvent(env, "E1", 1);
             env.AssertPropsNew("s0", fields, new object[] { 1, "|E1|", "E1" });
-            env.AssertThat(() => Assert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
+            env.AssertThat(() => ClassicAssert.AreEqual(1, SupportStaticMethodInvocations.GetInvocationSizeReset()));
 
             env.UndeployAll();
         }

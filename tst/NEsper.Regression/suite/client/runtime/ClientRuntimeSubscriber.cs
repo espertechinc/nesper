@@ -21,7 +21,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface;
@@ -142,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement("s0").Subscriber = null;
 
                 env.SendEventBean(new SupportBean());
-                Assert.IsFalse(supportSubscriber.IsInvoked);
+                ClassicAssert.IsFalse(supportSubscriber.IsInvoked);
 
                 env.UndeployAll();
             }
@@ -323,8 +323,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.SendEventBean(new SupportBean("E1", 1));
 
                 var theEvent = listener.AssertOneGetNewAndReset();
-                Assert.AreEqual("E1", theEvent.Get("TheString"));
-                Assert.AreEqual(1, theEvent.Get("IntPrimitive"));
+                ClassicAssert.AreEqual("E1", theEvent.Get("TheString"));
+                ClassicAssert.AreEqual(1, theEvent.Get("IntPrimitive"));
                 Assert.That(theEvent.Underlying, Is.InstanceOf<Pair<object, IDictionary<string, object>>>());
 
                 foreach (var property in stmt.EventType.PropertyNames) {
@@ -396,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 "#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertNoneReceived();
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 "#length_batch(2)";
             var stmt = env.CompileDeploy(stmtText).Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertNoneReceived();
@@ -467,7 +467,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     " @name('s0') select BytePrimitive, IntPrimitive, LongPrimitive, FloatPrimitive from SupportBean(TheString='E1')")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             var bean = new SupportBean();
             bean.TheString = "E1";
@@ -491,7 +491,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     " @name('s0') select TheString, IntPrimitive from SupportBean#unique(TheString)")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertOneAndReset(stmt, new object[] { "E1", 1 });
@@ -512,7 +512,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     " @name('s0') select irstream TheString, IntPrimitive from SupportBean#unique(TheString)")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertIRStreamAndReset(stmt, FIELDS, new object[] { "E1", 1 }, null);
@@ -636,7 +636,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     " @name('s0') select TheString, IntPrimitive from SupportBean output every 2 events")
                 .Statement("s0");
             stmt.SetSubscriber(subscriber);
-            Assert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
+            ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(stmt.EventType.UnderlyingType));
 
             env.SendEventBean(new SupportBean("E1", 1));
             subscriber.AssertNoneReceived();
@@ -733,7 +733,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             EPAssertionUtil.AssertEqualsExactOrder(
                 new object[][] { new object[] { "E2", 200 } },
                 SupportSubscriberRowByRowStaticWStatement.Indicate);
-            Assert.AreEqual(stmt, SupportSubscriberRowByRowStaticWStatement.Statements[0]);
+            ClassicAssert.AreEqual(stmt, SupportSubscriberRowByRowStaticWStatement.Statements[0]);
             subscriberWStmt.Reset();
 
             env.UndeployAll();
@@ -865,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 var c1 = new SupportBean_C("C1");
                 env.SendEventBean(c1);
-                Assert.AreEqual(0, subscriber.GetAndResetIndicate().Count);
+                ClassicAssert.AreEqual(0, subscriber.GetAndResetIndicate().Count);
 
                 env.Deploy(compiled).Statement("s0").SetSubscriber(subscriber);
 
@@ -1012,7 +1012,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     stmt.GetEnumerator(),
                     FIELDS,
                     new object[][] { new object[] { "E2", 200 } });
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 // add listener
                 var stmtAwareListener = new SupportUpdateListener();
@@ -1102,7 +1102,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 var end = PerformanceObserver.MilliTime;
 
-                Assert.AreEqual(numLoop, results.Count);
+                ClassicAssert.AreEqual(numLoop, results.Count);
                 for (var i = 0; i < numLoop; i++) {
                     EPAssertionUtil.AssertEqualsAnyOrder(results[i], new object[] { "E1", 1000 + i });
                 }
@@ -1123,7 +1123,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 Assert.Fail();
             }
             catch (EPSubscriberException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 

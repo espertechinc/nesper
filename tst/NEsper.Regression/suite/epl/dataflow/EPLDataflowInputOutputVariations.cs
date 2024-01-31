@@ -24,7 +24,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
@@ -222,8 +222,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPException(t);
                 }
 
-                Assert.AreEqual(1, result.Length);
-                Assert.AreEqual((long)5 * 4 * 3 * 2, ((object[])result[0])[0]);
+                ClassicAssert.AreEqual(1, result.Length);
+                ClassicAssert.AreEqual((long)5 * 4 * 3 * 2, ((object[])result[0])[0]);
 
                 env.UndeployAll();
             }

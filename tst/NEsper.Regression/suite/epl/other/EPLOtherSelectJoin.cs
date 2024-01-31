@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -57,9 +58,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(holder.eventsA[0], listener.LastNewData[0].Get("streamA"));
-                        Assert.AreSame(holder.eventsB[0], listener.LastNewData[0].Get("streamB"));
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreSame(holder.eventsA[0], listener.LastNewData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsB[0], listener.LastNewData[0].Get("streamB"));
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -68,37 +69,37 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(holder.eventsA[1], listener.LastNewData[0].Get("streamA"));
-                        Assert.AreSame(holder.eventsB[1], listener.LastNewData[0].Get("streamB"));
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreSame(holder.eventsA[1], listener.LastNewData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsB[1], listener.LastNewData[0].Get("streamB"));
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
                 SendEvent(env, holder.eventsA[2]);
-                env.AssertListener("s0", listener => Assert.IsNull(listener.LastOldData));
+                env.AssertListener("s0", listener => ClassicAssert.IsNull(listener.LastOldData));
 
                 // Test join old A id 0 leaves length window of 3 events
                 SendEvent(env, holder.eventsA[3]);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(holder.eventsA[0], listener.LastOldData[0].Get("streamA"));
-                        Assert.AreSame(holder.eventsB[0], listener.LastOldData[0].Get("streamB"));
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreSame(holder.eventsA[0], listener.LastOldData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsB[0], listener.LastOldData[0].Get("streamB"));
+                        ClassicAssert.IsNull(listener.LastNewData);
                         listener.Reset();
                     });
 
                 // Test join old B id 1 leaves window
                 SendEvent(env, holder.eventsB[4]);
-                env.AssertListener("s0", listener => Assert.IsNull(listener.LastOldData));
+                env.AssertListener("s0", listener => ClassicAssert.IsNull(listener.LastOldData));
 
                 SendEvent(env, holder.eventsB[5]);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(holder.eventsA[1], listener.LastOldData[0].Get("streamA"));
-                        Assert.AreSame(holder.eventsB[1], listener.LastOldData[0].Get("streamB"));
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreSame(holder.eventsA[1], listener.LastOldData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsB[1], listener.LastOldData[0].Get("streamB"));
+                        ClassicAssert.IsNull(listener.LastNewData);
                     });
 
                 env.UndeployAll();
@@ -116,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, holder.eventsASetTwo[0]);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsTrue(listener.LastOldData == null && listener.LastNewData == null));
+                    listener => ClassicAssert.IsTrue(listener.LastOldData == null && listener.LastNewData == null));
 
                 SendEvent(env, holder.eventsB[0]); // Event B id 0 joins to A id 0 twice
                 env.AssertListener(
@@ -131,7 +132,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 .Or
                                 .EqualTo(data[1].Get("streamA"))); // Order arbitrary
 
-                        Assert.AreSame(holder.eventsB[0], data[0].Get("streamB"));
+                        ClassicAssert.AreSame(holder.eventsB[0], data[0].Get("streamB"));
 
                         Assert.That(
                             holder.eventsA[0],
@@ -140,8 +141,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 .Or
                                 .EqualTo(data[1].Get("streamA")));
 
-                        Assert.AreSame(holder.eventsB[0], data[1].Get("streamB"));
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreSame(holder.eventsB[0], data[1].Get("streamB"));
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -154,14 +155,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     listener => {
                         var data = listener.LastOldData;
-                        Assert.AreSame(holder.eventsA[0], listener.LastOldData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsA[0], listener.LastOldData[0].Get("streamA"));
                         Assert.That(
                             holder.eventsB[0],
                             Is
                                 .EqualTo(data[0].Get("streamB")).Or
                                 .EqualTo(data[1].Get("streamB")));    // B order arbitrary
                         
-                        Assert.AreSame(holder.eventsA[0], listener.LastOldData[1].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsA[0], listener.LastOldData[1].Get("streamA"));
 
                         Assert.That(
                             holder.eventsBSetTwo[0],
@@ -169,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                                 .EqualTo(data[0].Get("streamB")).Or
                                 .EqualTo(data[1].Get("streamB")));
 
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         listener.Reset();
                     });
 
@@ -177,9 +178,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(holder.eventsASetTwo[0], listener.LastOldData[0].Get("streamA"));
-                        Assert.AreSame(holder.eventsB[0], listener.LastOldData[0].Get("streamB"));
-                        Assert.AreEqual(1, listener.LastOldData.Length);
+                        ClassicAssert.AreSame(holder.eventsASetTwo[0], listener.LastOldData[0].Get("streamA"));
+                        ClassicAssert.AreSame(holder.eventsB[0], listener.LastOldData[0].Get("streamB"));
+                        ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                     });
 
                 env.UndeployAll();
@@ -197,9 +198,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(SupportBean_A), statement.EventType.GetPropertyType("streamA"));
-                    Assert.AreEqual(typeof(SupportBean_B), statement.EventType.GetPropertyType("streamB"));
-                    Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                    ClassicAssert.AreEqual(typeof(SupportBean_A), statement.EventType.GetPropertyType("streamA"));
+                    ClassicAssert.AreEqual(typeof(SupportBean_B), statement.EventType.GetPropertyType("streamB"));
+                    ClassicAssert.AreEqual(2, statement.EventType.PropertyNames.Length);
                 });
 
             holder.eventsA = new SupportBean_A[10];

@@ -13,6 +13,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
     public class InfraNWTableStartStop
@@ -168,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.AssertPropsNew("create", fields, new object[] { "E2", 2 });
                 }
 
-                Assert.IsFalse(selectListenerTemp.IsInvoked);
+                ClassicAssert.IsFalse(selectListenerTemp.IsInvoked);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "create",
                     fields,
@@ -206,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.AssertPropsNew("create", fields, new object[] { "E4", 4 });
                 }
 
-                Assert.IsFalse(selectListenerTemp.IsInvoked);
+                ClassicAssert.IsFalse(selectListenerTemp.IsInvoked);
 
                 env.UndeployAll();
             }

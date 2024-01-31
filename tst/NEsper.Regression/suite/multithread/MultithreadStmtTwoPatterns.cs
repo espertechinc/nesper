@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.regressionlib.support.multithread;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -81,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             runnable.Shutdown = true;
             SupportCompileDeployUtil.ThreadSleep(1000);
-            Assert.IsFalse(t.IsAlive);
+            ClassicAssert.IsFalse(t.IsAlive);
 
             env.UndeployAll();
         }

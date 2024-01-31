@@ -20,6 +20,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLSchemaEventTransposeDOMGetter
@@ -145,8 +147,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         new object[] { "SAMPLE_V1", true, "SAMPLE_ATTR1" });
 
                     var fragmentNested2 = (EventBean)stmtInsertWildcardBean.GetFragment("nested2");
-                    Assert.AreEqual(4, fragmentNested2.Get("prop3[1]"));
-                    Assert.AreEqual(eventTypeName + ".nested1.nested2", fragmentNested2.EventType.Name);
+                    ClassicAssert.AreEqual(4, fragmentNested2.Get("prop3[1]"));
+                    ClassicAssert.AreEqual(eventTypeName + ".nested1.nested2", fragmentNested2.EventType.Name);
                 });
 
             env.AssertIterator(
@@ -155,8 +157,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var stmtInsertBean = iterator.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(stmtInsertBean);
                     var fragmentNested1 = (EventBean)stmtInsertBean.GetFragment("nested1");
-                    Assert.AreEqual(5, fragmentNested1.Get("nested2.prop3[2]"));
-                    Assert.AreEqual(eventTypeName + ".nested1", fragmentNested1.EventType.Name);
+                    ClassicAssert.AreEqual(5, fragmentNested1.Get("nested2.prop3[2]"));
+                    ClassicAssert.AreEqual(eventTypeName + ".nested1", fragmentNested1.EventType.Name);
                 });
             env.AssertIterator("sw", iterator => SupportEventTypeAssertionUtil.AssertConsistency(iterator.Advance()));
 

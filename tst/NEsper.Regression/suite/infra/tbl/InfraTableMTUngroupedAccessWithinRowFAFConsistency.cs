@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -88,11 +89,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             t1.Join();
             t2.Join();
 
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
             Log.Info("Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
-            Assert.IsTrue(writeRunnable.numEvents > 100);
-            Assert.IsTrue(readRunnable.numQueries > 20);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 20);
 
             env.UndeployAll();
         }
@@ -183,8 +184,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var count = result.Array[0].Get("c0").AsInt64();
                         var sumint = result.Array[0].Get("c1").AsInt32();
                         var avgint = (double)result.Array[0].Get("c2");
-                        Assert.AreEqual(2d, avgint, 0);
-                        Assert.AreEqual(sumint, count * 2);
+                        ClassicAssert.AreEqual(2d, avgint, 0);
+                        ClassicAssert.AreEqual(sumint, count * 2);
                         numQueries++;
                     }
                 }

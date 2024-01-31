@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -97,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "insert",
                 iterator => {
                     var stmtInsertWildcardBean = iterator.Advance();
-                    Assert.IsNotNull(stmtInsertWildcardBean.Get("nested1"));
+                    ClassicAssert.IsNotNull(stmtInsertWildcardBean.Get("nested1"));
                     SupportEventTypeAssertionUtil.AssertConsistency(stmtInsertWildcardBean);
                 });
             env.AssertIterator(
@@ -105,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 iterator => {
                     var stmtSelectWildcardBean = iterator.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(stmtSelectWildcardBean);
-                    Assert.AreEqual(0, stmtSelectWildcardBean.EventType.PropertyNames.Length);
+                    ClassicAssert.AreEqual(0, stmtSelectWildcardBean.EventType.PropertyNames.Length);
                 });
 
             env.UndeployAll();

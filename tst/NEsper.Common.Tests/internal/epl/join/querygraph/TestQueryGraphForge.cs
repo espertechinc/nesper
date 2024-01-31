@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.querygraph
 {
@@ -47,17 +48,17 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             queryGraph.AddStrictEquals(0, "P00", Make(0, "P00"), 1, "P10", Make(1, "P10"));
             queryGraph.AddStrictEquals(1, "P10", Make(1, "P10"), 2, "P20", Make(2, "P20"));
 
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
-            Assert.AreEqual(0, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2).Length);
-            Assert.AreEqual(0, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2).Length);
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.AreEqual(0, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2).Length);
+            ClassicAssert.AreEqual(0, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2).Length);
 
             QueryGraphForge.FillEquivalentNav(types, queryGraph);
 
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
             string[] expectedOne = new string[] { "P00" };
             string[] expectedTwo = new string[] { "P20" };
-            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2)));
-            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 2)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 2)));
 
             // test with 5 streams, connect all streams to all streams
             queryGraph = new QueryGraphForge(5, null, false);
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
                     {
                         continue;
                     }
-                    Assert.IsTrue(queryGraph.IsNavigableAtAll(i, j), "Not navigable: i=" + i + " j=" + j);
+                    ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(i, j), "Not navigable: i=" + i + " j=" + j);
                 }
             }
         }
@@ -107,7 +108,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             }
 
             // Try :        s1.p11 = s2.p21  and  s2.p22 = s3.p31
-            Assert.IsTrue(queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 2, "P21", Make(2, "P21")));
+            ClassicAssert.IsTrue(queryGraph.AddStrictEquals(1, "P11", Make(1, "P11"), 2, "P21", Make(2, "P21")));
 
             try
             {
@@ -137,24 +138,24 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
         {
             ExprIdentNode fake = supportExprNodeFactory.MakeIdentNode("TheString", "s0");
 
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 1));
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(0, 1));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
 
             queryGraph.AddStrictEquals(0, "P1", fake, 1, "P2", fake);
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(1, 2));
 
             queryGraph.AddStrictEquals(2, "P1", fake, 1, "P2", fake);
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
-            Assert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
+            ClassicAssert.IsFalse(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
 
             queryGraph.AddStrictEquals(2, "P1", fake, 0, "P2", fake);
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
-            Assert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(0, 1));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(0, 2));
+            ClassicAssert.IsTrue(queryGraph.IsNavigableAtAll(1, 2));
         }
 
         [Test]
@@ -167,7 +168,7 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
             queryGraph.AddStrictEquals(2, "P2", fake, 3, "p3", fake);
             queryGraph.AddStrictEquals(1, "P1", fake, 2, "P2", fake);
 
-            Assert.AreEqual(0, queryGraph.GetNavigableStreams(0).Count);
+            ClassicAssert.AreEqual(0, queryGraph.GetNavigableStreams(0).Count);
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 2 }, queryGraph.GetNavigableStreams(1));
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 1, 3 }, queryGraph.GetNavigableStreams(2));
             EPAssertionUtil.AssertEqualsAnyOrder(new int[] { 2, 4 }, queryGraph.GetNavigableStreams(3));
@@ -184,10 +185,10 @@ namespace com.espertech.esper.common.@internal.epl.join.querygraph
 
             string[] expectedOne = new string[] { "P11", "P12" };
             string[] expectedTwo = new string[] { "P01", "P02" };
-            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
-            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
-            Assert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));
-            Assert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 1)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 1, 0)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetIndexProperties(queryGraph, 0, 1)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedOne, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 1, 0)));
+            ClassicAssert.IsTrue(Arrays.AreEqual(expectedTwo, SupportQueryGraphTestUtil.GetStrictKeyProperties(queryGraph, 0, 1)));
         }
 
         private IDictionary<string, object> CreateType(string propCSV)

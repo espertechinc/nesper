@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -77,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 50 ms
-                Assert.IsTrue((endTime - startTime) < 500);
+                ClassicAssert.IsTrue((endTime - startTime) < 500);
                 env.UndeployAll();
             }
         }
@@ -107,9 +108,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var endTime = PerformanceObserver.MilliTime;
                 Log.Info($"{methodName} delta={(endTime - startTime)}");
 
-                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(1, listener.LastNewData.Length));
                 // Stay below 50 ms
-                Assert.IsTrue((endTime - startTime) < 50);
+                ClassicAssert.IsTrue((endTime - startTime) < 50);
                 env.UndeployAll();
             }
         }
@@ -142,9 +143,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var endTime = PerformanceObserver.MilliTime;
                 Log.Info($"{methodName} delta={(endTime - startTime)}");
 
-                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.LastNewData.Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(1, listener.LastNewData.Length));
                 // Stay below 50 ms
-                Assert.IsTrue((endTime - startTime) < 25);
+                ClassicAssert.IsTrue((endTime - startTime) < 25);
                 env.UndeployAll();
             }
         }

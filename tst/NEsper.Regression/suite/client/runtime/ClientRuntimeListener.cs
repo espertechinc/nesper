@@ -21,6 +21,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -107,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 foreach (var name in new[] { "map", "bean", "oa", "xml", "avro", "json" }) {
                     var listener = env.Listener(name);
-                    Assert.IsTrue(listener.IsInvoked, "failed for " + name);
-                    Assert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));
+                    ClassicAssert.IsTrue(listener.IsInvoked, "failed for " + name);
+                    ClassicAssert.AreEqual("xy", env.Listener(name).AssertOneGetNewAndReset().Get("Ident"));
                 }
 
                 env.UndeployAll();

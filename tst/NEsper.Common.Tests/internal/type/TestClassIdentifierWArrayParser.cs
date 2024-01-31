@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -60,7 +61,7 @@ namespace com.espertech.esper.common.@internal.type
                 ClassDescriptor.ParseTypeText(classIdentifier);
                 Assert.Fail();
             } catch (EPException ex) {
-                Assert.AreEqual(ex.Message, expected);
+                ClassicAssert.AreEqual(ex.Message, expected);
             }
         }
         
@@ -73,7 +74,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             ClassDescriptor ident = ClassDescriptor.ParseTypeText(classIdentifier);
             ClassDescriptor expected = new ClassDescriptor(name, typeParams, dimensions, arrayOfPrimitive);
-            Assert.AreEqual(expected, ident);
+            ClassicAssert.AreEqual(expected, ident);
         }
     }
 } // end of namespace

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             Log.Info(methodName + " delta=" + (endTime - startTime));
 
             // Stays at 250, below 500ms
-            Assert.IsTrue(endTime - startTime < 1000);
+            ClassicAssert.IsTrue(endTime - startTime < 1000);
 
             env.UndeployAll();
         }

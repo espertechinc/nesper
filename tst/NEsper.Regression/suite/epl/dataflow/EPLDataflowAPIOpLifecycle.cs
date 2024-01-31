@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.Compile(
                     "create schema MySchema(key string, value int);\n" +
                     "@name('flow') create dataflow MyDataFlowOne MyCaptureOutputPortOp -> outstream<EventBean<MySchema>> {}");
-                Assert.AreEqual("MySchema", MyCaptureOutputPortOpForge.Port.OptionalDeclaredType.EventType.Name);
+                ClassicAssert.AreEqual("MySchema", MyCaptureOutputPortOpForge.Port.OptionalDeclaredType.EventType.Name);
 
                 env.UndeployAll();
             }
@@ -88,29 +88,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var compiled = env.Compile(
                     "@name('flow') create dataflow MyDataFlow @Name('Goodie') @Audit SupportGraphSource -> outstream<SupportBean> {propOne:'abc'}");
                 var events = SupportGraphSourceForge.GetAndResetLifecycle();
-                Assert.AreEqual(3, events.Count);
-                Assert.AreEqual("instantiated", events[0]);
-                Assert.AreEqual("SetPropOne=abc", events[1]);
+                ClassicAssert.AreEqual(3, events.Count);
+                ClassicAssert.AreEqual("instantiated", events[0]);
+                ClassicAssert.AreEqual("SetPropOne=abc", events[1]);
                 var forgeCtx = (DataFlowOpForgeInitializeContext)events[2];
-                Assert.AreEqual(0, forgeCtx.InputPorts.Count);
-                Assert.AreEqual(1, forgeCtx.OutputPorts.Count);
-                Assert.AreEqual("outstream", forgeCtx.OutputPorts[0].StreamName);
-                Assert.AreEqual("SupportBean", forgeCtx.OutputPorts[0].OptionalDeclaredType.EventType.Name);
-                Assert.AreEqual(2, forgeCtx.OperatorAnnotations.Length);
-                Assert.AreEqual("Goodie", ((NameAttribute)forgeCtx.OperatorAnnotations[0]).Value);
-                Assert.IsNotNull((AuditAttribute)forgeCtx.OperatorAnnotations[1]);
-                Assert.AreEqual("MyDataFlow", forgeCtx.DataflowName);
-                Assert.AreEqual(0, forgeCtx.OperatorNumber);
+                ClassicAssert.AreEqual(0, forgeCtx.InputPorts.Count);
+                ClassicAssert.AreEqual(1, forgeCtx.OutputPorts.Count);
+                ClassicAssert.AreEqual("outstream", forgeCtx.OutputPorts[0].StreamName);
+                ClassicAssert.AreEqual("SupportBean", forgeCtx.OutputPorts[0].OptionalDeclaredType.EventType.Name);
+                ClassicAssert.AreEqual(2, forgeCtx.OperatorAnnotations.Length);
+                ClassicAssert.AreEqual("Goodie", ((NameAttribute)forgeCtx.OperatorAnnotations[0]).Value);
+                ClassicAssert.IsNotNull((AuditAttribute)forgeCtx.OperatorAnnotations[1]);
+                ClassicAssert.AreEqual("MyDataFlow", forgeCtx.DataflowName);
+                ClassicAssert.AreEqual(0, forgeCtx.OperatorNumber);
 
                 env.Deploy(compiled);
                 events = SupportGraphSourceFactory.GetAndResetLifecycle();
-                Assert.AreEqual(3, events.Count);
-                Assert.AreEqual("instantiated", events[0]);
-                Assert.AreEqual("SetPropOne=abc", events[1]);
+                ClassicAssert.AreEqual(3, events.Count);
+                ClassicAssert.AreEqual("instantiated", events[0]);
+                ClassicAssert.AreEqual("SetPropOne=abc", events[1]);
                 var factoryCtx = (DataFlowOpFactoryInitializeContext)events[2];
-                Assert.AreEqual("MyDataFlow", factoryCtx.DataFlowName);
-                Assert.AreEqual(0, factoryCtx.OperatorNumber);
-                Assert.IsNotNull(factoryCtx.StatementContext);
+                ClassicAssert.AreEqual("MyDataFlow", factoryCtx.DataFlowName);
+                ClassicAssert.AreEqual(0, factoryCtx.OperatorNumber);
+                ClassicAssert.IsNotNull(factoryCtx.StatementContext);
 
                 // instantiate
                 var options = new EPDataFlowInstantiationOptions()
@@ -118,29 +118,29 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     .WithDataFlowInstanceUserObject("myobject");
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
                 events = SupportGraphSourceFactory.GetAndResetLifecycle();
-                Assert.AreEqual(1, events.Count);
+                ClassicAssert.AreEqual(1, events.Count);
                 var opCtx = (DataFlowOpInitializeContext)events[0];
-                Assert.AreEqual("MyDataFlow", opCtx.DataFlowName);
-                Assert.AreEqual("id1", opCtx.DataFlowInstanceId);
-                Assert.IsNotNull(opCtx.AgentInstanceContext);
-                Assert.AreEqual("myobject", opCtx.DataflowInstanceUserObject);
-                Assert.AreEqual(0, opCtx.OperatorNumber);
-                Assert.AreEqual("SupportGraphSource", opCtx.OperatorName);
+                ClassicAssert.AreEqual("MyDataFlow", opCtx.DataFlowName);
+                ClassicAssert.AreEqual("id1", opCtx.DataFlowInstanceId);
+                ClassicAssert.IsNotNull(opCtx.AgentInstanceContext);
+                ClassicAssert.AreEqual("myobject", opCtx.DataflowInstanceUserObject);
+                ClassicAssert.AreEqual(0, opCtx.OperatorNumber);
+                ClassicAssert.AreEqual("SupportGraphSource", opCtx.OperatorName);
 
                 events = SupportGraphSource.GetAndResetLifecycle();
-                Assert.AreEqual(1, events.Count);
-                Assert.AreEqual("instantiated", events[0]); // instantiated
+                ClassicAssert.AreEqual(1, events.Count);
+                ClassicAssert.AreEqual("instantiated", events[0]); // instantiated
 
                 // run
                 df.Run();
 
                 events = SupportGraphSource.GetAndResetLifecycle();
-                Assert.AreEqual(5, events.Count);
-                Assert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
-                Assert.AreEqual("next(numrows=0)", events[1]);
-                Assert.AreEqual("next(numrows=1)", events[2]);
-                Assert.AreEqual("next(numrows=2)", events[3]);
-                Assert.IsTrue(events[4] is DataFlowOpCloseContext); // called close (GraphSource only)
+                ClassicAssert.AreEqual(5, events.Count);
+                ClassicAssert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
+                ClassicAssert.AreEqual("next(numrows=0)", events[1]);
+                ClassicAssert.AreEqual("next(numrows=1)", events[2]);
+                ClassicAssert.AreEqual("next(numrows=2)", events[3]);
+                ClassicAssert.IsTrue(events[4] is DataFlowOpCloseContext); // called close (GraphSource only)
 
                 env.UndeployAll();
             }
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.CompileDeploy(
                     "@name('flow') create dataflow MyDataFlow MyLineFeedSource -> outstream {} SupportOperator(outstream) {propOne:'abc'}");
-                Assert.AreEqual(0, SupportOperator.GetAndResetLifecycle().Count);
+                ClassicAssert.AreEqual(0, SupportOperator.GetAndResetLifecycle().Count);
 
                 // instantiate
                 var src = new MyLineFeedSource(Arrays.AsList("abc", "def").GetEnumerator());
@@ -169,18 +169,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
 
                 var events = SupportOperator.GetAndResetLifecycle();
-                Assert.AreEqual(1, events.Count);
-                Assert.AreEqual("instantiated", events[0]); // instantiated
+                ClassicAssert.AreEqual(1, events.Count);
+                ClassicAssert.AreEqual("instantiated", events[0]); // instantiated
 
                 // run
                 df.Run();
 
                 events = SupportOperator.GetAndResetLifecycle();
-                Assert.AreEqual(4, events.Count);
-                Assert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
-                Assert.AreEqual("abc", ((object[])events[1])[0]);
-                Assert.AreEqual("def", ((object[])events[2])[0]);
-                Assert.IsTrue(events[3] is DataFlowOpCloseContext); // called close (GraphSource only)
+                ClassicAssert.AreEqual(4, events.Count);
+                ClassicAssert.IsTrue(events[0] is DataFlowOpOpenContext); // called open (GraphSource only)
+                ClassicAssert.AreEqual("abc", ((object[])events[1])[0]);
+                ClassicAssert.AreEqual("def", ((object[])events[2])[0]);
+                ClassicAssert.IsTrue(events[3] is DataFlowOpCloseContext); // called close (GraphSource only)
 
                 env.UndeployAll();
             }

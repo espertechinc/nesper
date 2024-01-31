@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -104,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                     var listenerValues = listener.LastNewData[0];
                     CheckValue(listenerValues, meanExpected);
                     listener.Reset();
@@ -119,7 +120,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "s0",
                 iterator => {
                     CheckValue(iterator.Advance(), meanExpected);
-                    Assert.IsFalse(iterator.MoveNext());
+                    ClassicAssert.IsFalse(iterator.MoveNext());
                 });
         }
 
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             double avgE)
         {
             var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
         }
 
         private double GetDoubleValue(

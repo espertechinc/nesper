@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -40,58 +41,58 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestEquals()
         {
-            Assert.IsTrue(pair1a.Equals(pair1d) && pair1d.Equals(pair1a));
-            Assert.IsTrue(pair1a.Equals(pair1e) && pair1e.Equals(pair1a));
-            Assert.IsFalse(pair1a.Equals(pair1b));
-            Assert.IsFalse(pair1a.Equals(pair1c));
-            Assert.IsFalse(pair1a.Equals(pair2a));
-            Assert.IsFalse(pair1a.Equals(pair3a));
-            Assert.IsFalse(pair1a.Equals(pair4a));
+            ClassicAssert.IsTrue(pair1a.Equals(pair1d) && pair1d.Equals(pair1a));
+            ClassicAssert.IsTrue(pair1a.Equals(pair1e) && pair1e.Equals(pair1a));
+            ClassicAssert.IsFalse(pair1a.Equals(pair1b));
+            ClassicAssert.IsFalse(pair1a.Equals(pair1c));
+            ClassicAssert.IsFalse(pair1a.Equals(pair2a));
+            ClassicAssert.IsFalse(pair1a.Equals(pair3a));
+            ClassicAssert.IsFalse(pair1a.Equals(pair4a));
 
-            Assert.IsTrue(pair2a.Equals(pair2c) && pair2c.Equals(pair2a));
-            Assert.IsTrue(pair2b.Equals(pair3a) && pair3a.Equals(pair2b));
-            Assert.IsFalse(pair2a.Equals(pair2b));
-            Assert.IsFalse(pair2a.Equals(pair1a));
-            Assert.IsFalse(pair2b.Equals(pair1e));
-            Assert.IsFalse(pair2b.Equals(pair3b));
-            Assert.IsFalse(pair2a.Equals(pair4a));
+            ClassicAssert.IsTrue(pair2a.Equals(pair2c) && pair2c.Equals(pair2a));
+            ClassicAssert.IsTrue(pair2b.Equals(pair3a) && pair3a.Equals(pair2b));
+            ClassicAssert.IsFalse(pair2a.Equals(pair2b));
+            ClassicAssert.IsFalse(pair2a.Equals(pair1a));
+            ClassicAssert.IsFalse(pair2b.Equals(pair1e));
+            ClassicAssert.IsFalse(pair2b.Equals(pair3b));
+            ClassicAssert.IsFalse(pair2a.Equals(pair4a));
 
-            Assert.IsTrue(pair3a.Equals(pair3c) && pair3c.Equals(pair3a));
-            Assert.IsTrue(pair3c.Equals(pair2b) && pair2b.Equals(pair3c));
-            Assert.IsFalse(pair3a.Equals(pair3b));
-            Assert.IsFalse(pair3b.Equals(pair3a));
-            Assert.IsFalse(pair3a.Equals(pair1a));
-            Assert.IsFalse(pair3a.Equals(pair2a));
-            Assert.IsFalse(pair3a.Equals(pair4a));
+            ClassicAssert.IsTrue(pair3a.Equals(pair3c) && pair3c.Equals(pair3a));
+            ClassicAssert.IsTrue(pair3c.Equals(pair2b) && pair2b.Equals(pair3c));
+            ClassicAssert.IsFalse(pair3a.Equals(pair3b));
+            ClassicAssert.IsFalse(pair3b.Equals(pair3a));
+            ClassicAssert.IsFalse(pair3a.Equals(pair1a));
+            ClassicAssert.IsFalse(pair3a.Equals(pair2a));
+            ClassicAssert.IsFalse(pair3a.Equals(pair4a));
 
-            Assert.IsTrue(pair4a.Equals(pair4b) && pair4b.Equals(pair4a));
-            Assert.IsFalse(pair4a.Equals(pair1b) || pair4a.Equals(pair2a) || pair4a.Equals(pair3a));
+            ClassicAssert.IsTrue(pair4a.Equals(pair4b) && pair4b.Equals(pair4a));
+            ClassicAssert.IsFalse(pair4a.Equals(pair1b) || pair4a.Equals(pair2a) || pair4a.Equals(pair3a));
         }
 
         [Test]
         public void TestHashCode()
         {
             if ("a".GetHashCode() > "b".GetHashCode()) {
-                Assert.IsTrue(pair1a.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
+                ClassicAssert.IsTrue(pair1a.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
             }
             else {
-                Assert.IsTrue(pair1a.GetHashCode() == ("b".GetHashCode() * 397 ^ "a".GetHashCode()));
+                ClassicAssert.IsTrue(pair1a.GetHashCode() == ("b".GetHashCode() * 397 ^ "a".GetHashCode()));
             }
 
-            Assert.IsTrue(pair2a.GetHashCode() == "a".GetHashCode());
-            Assert.IsTrue(pair3a.GetHashCode() == "b".GetHashCode());
-            Assert.IsTrue(pair4a.GetHashCode() == 0);
+            ClassicAssert.IsTrue(pair2a.GetHashCode() == "a".GetHashCode());
+            ClassicAssert.IsTrue(pair3a.GetHashCode() == "b".GetHashCode());
+            ClassicAssert.IsTrue(pair4a.GetHashCode() == 0);
 
-            Assert.IsTrue(pair1a.GetHashCode() != pair2a.GetHashCode());
-            Assert.IsTrue(pair1a.GetHashCode() != pair3a.GetHashCode());
-            Assert.IsTrue(pair1a.GetHashCode() != pair4a.GetHashCode());
+            ClassicAssert.IsTrue(pair1a.GetHashCode() != pair2a.GetHashCode());
+            ClassicAssert.IsTrue(pair1a.GetHashCode() != pair3a.GetHashCode());
+            ClassicAssert.IsTrue(pair1a.GetHashCode() != pair4a.GetHashCode());
 
-            Assert.IsTrue(pair1a.GetHashCode() == pair1d.GetHashCode());
-            Assert.IsTrue(pair2a.GetHashCode() == pair2c.GetHashCode());
-            Assert.IsTrue(pair3a.GetHashCode() == pair3c.GetHashCode());
-            Assert.IsTrue(pair4a.GetHashCode() == pair4b.GetHashCode());
+            ClassicAssert.IsTrue(pair1a.GetHashCode() == pair1d.GetHashCode());
+            ClassicAssert.IsTrue(pair2a.GetHashCode() == pair2c.GetHashCode());
+            ClassicAssert.IsTrue(pair3a.GetHashCode() == pair3c.GetHashCode());
+            ClassicAssert.IsTrue(pair4a.GetHashCode() == pair4b.GetHashCode());
 
-            Assert.IsTrue(pair2b.GetHashCode() == pair3a.GetHashCode());
+            ClassicAssert.IsTrue(pair2b.GetHashCode() == pair3a.GetHashCode());
         }
 
         [Test]
@@ -109,26 +110,26 @@ namespace com.espertech.esper.common.@internal.collection
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[0], events[1]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[0], events[2]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[1], events[2]));
-            Assert.AreEqual(3, eventPairs.Count);
+            ClassicAssert.AreEqual(3, eventPairs.Count);
 
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[0], events[1]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[1], events[2]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[2], events[0]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[2], events[1]));
             eventPairs.Add(new InterchangeablePair<EventBean, EventBean>(events[1], events[0]));
-            Assert.AreEqual(3, eventPairs.Count);
+            ClassicAssert.AreEqual(3, eventPairs.Count);
 
-            Assert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[1], events[0])));
-            Assert.IsFalse(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[3], events[0])));
-            Assert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[1], events[2])));
-            Assert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[2], events[0])));
+            ClassicAssert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[1], events[0])));
+            ClassicAssert.IsFalse(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[3], events[0])));
+            ClassicAssert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[1], events[2])));
+            ClassicAssert.IsTrue(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[2], events[0])));
 
             eventPairs.Remove(new InterchangeablePair<EventBean, EventBean>(events[2], events[0]));
-            Assert.IsFalse(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[2], events[0])));
+            ClassicAssert.IsFalse(eventPairs.Contains(new InterchangeablePair<EventBean, EventBean>(events[2], events[0])));
             eventPairs.Remove(new InterchangeablePair<EventBean, EventBean>(events[1], events[2]));
             eventPairs.Remove(new InterchangeablePair<EventBean, EventBean>(events[1], events[0]));
 
-            Assert.IsTrue(eventPairs.IsEmpty());
+            ClassicAssert.IsTrue(eventPairs.IsEmpty());
         }
     }
 } // end of namespace

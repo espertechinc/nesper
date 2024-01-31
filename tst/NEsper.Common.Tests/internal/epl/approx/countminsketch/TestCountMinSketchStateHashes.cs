@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.io;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
 {
@@ -106,14 +107,14 @@ namespace com.espertech.esper.common.@internal.epl.approx.countminsketch
             var state = CountMinSketchStateHashes.MakeState(DefaultSpec);
 
             Add(state, "hello", 100);
-            Assert.AreEqual(100, EstimateCount(state, "hello"));
+            ClassicAssert.AreEqual(100, EstimateCount(state, "hello"));
 
             Add(state, "text", 1);
-            Assert.AreEqual(1, EstimateCount(state, "text"));
+            ClassicAssert.AreEqual(1, EstimateCount(state, "text"));
 
             Add(state, "hello", 3);
-            Assert.AreEqual(103, EstimateCount(state, "hello"));
-            Assert.AreEqual(1, EstimateCount(state, "text"));
+            ClassicAssert.AreEqual(103, EstimateCount(state, "hello"));
+            ClassicAssert.AreEqual(1, EstimateCount(state, "text"));
         }
 
         [Test]

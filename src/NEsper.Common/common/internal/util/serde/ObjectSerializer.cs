@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Text;
@@ -9,6 +10,7 @@ using System.Text.Json.Serialization.Metadata;
 
 using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.compat;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {

@@ -32,7 +32,7 @@ using com.espertech.esper.runtime.@internal.kernel.statement;
 using NEsper.Avro.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
@@ -376,7 +376,7 @@ namespace com.espertech.esper.regressionlib.framework
 			}
 			else {
 				var model = EplToModel(epl);
-				Assert.AreEqual(epl, model.ToEPL());
+				ClassicAssert.AreEqual(epl, model.ToEPL());
 				CompileDeploy(model, path);
 			}
 
@@ -437,7 +437,7 @@ namespace com.espertech.esper.regressionlib.framework
 			}
 
 			var copy = EplToModel(epl);
-			Assert.AreEqual(epl, copy.ToEPL());
+			ClassicAssert.AreEqual(epl, copy.ToEPL());
 			arguments.Configuration = Configuration;
 			return Compile(copy, arguments);
 		}
@@ -488,13 +488,13 @@ namespace com.espertech.esper.regressionlib.framework
 		{
 			var copy = EplToModel(epl);
 
-			Assert.AreEqual(epl.Trim(), copy.ToEPL());
+			ClassicAssert.AreEqual(epl.Trim(), copy.ToEPL());
 
 			var compiled = Compile(copy, new CompilerArguments(Configuration));
 			var result = TryDeploy(compiled);
 
 			var stmt = result.Statements[0];
-			Assert.AreEqual(epl.Trim(), stmt.GetProperty(StatementProperty.EPL));
+			ClassicAssert.AreEqual(epl.Trim(), stmt.GetProperty(StatementProperty.EPL));
 			return this;
 		}
 
@@ -504,7 +504,7 @@ namespace com.espertech.esper.regressionlib.framework
 		{
 			var copy = EplToModel(epl);
 
-			Assert.AreEqual(epl.Trim(), copy.ToEPL());
+			ClassicAssert.AreEqual(epl.Trim(), copy.ToEPL());
 
 			var args = GetArgsWithExportToPath(path);
 
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.framework
 
 			var result = TryDeploy(compiled);
 
-			Assert.AreEqual(epl.Trim(), result.Statements[0].GetProperty(StatementProperty.EPL));
+			ClassicAssert.AreEqual(epl.Trim(), result.Statements[0].GetProperty(StatementProperty.EPL));
 			return this;
 		}
 
@@ -735,7 +735,7 @@ namespace com.espertech.esper.regressionlib.framework
 		{
 			var listener = Listener(statementName);
 			EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, expecteds);
-			Assert.IsNull(listener.LastOldData);
+			ClassicAssert.IsNull(listener.LastOldData);
 			listener.Reset();
 		}
 
@@ -770,19 +770,19 @@ namespace com.espertech.esper.regressionlib.framework
 
 		public void AssertListenerInvoked(string statementName)
 		{
-			Assert.IsTrue(Listener(statementName).IsInvokedAndReset());
+			ClassicAssert.IsTrue(Listener(statementName).IsInvokedAndReset());
 		}
 
 		public void AssertListenerNotInvoked(string statementName)
 		{
-			Assert.IsFalse(Listener(statementName).IsInvoked);
+			ClassicAssert.IsFalse(Listener(statementName).IsInvoked);
 		}
 
 		public void AssertListenerInvokedFlag(
 			string statementName,
 			bool expected)
 		{
-			Assert.AreEqual(expected, Listener(statementName).IsInvokedAndReset());
+			ClassicAssert.AreEqual(expected, Listener(statementName).IsInvokedAndReset());
 		}
 
 		public void AssertListenerInvokedFlag(
@@ -790,7 +790,7 @@ namespace com.espertech.esper.regressionlib.framework
 			bool expected,
 			string message)
 		{
-			Assert.AreEqual(expected, Listener(statementName).IsInvokedAndReset(), message);
+			ClassicAssert.AreEqual(expected, Listener(statementName).IsInvokedAndReset(), message);
 		}
 
 		public void ListenerReset(string statementName)
@@ -805,8 +805,8 @@ namespace com.espertech.esper.regressionlib.framework
 			object[][] oldExpected)
 		{
 			var listener = Listener("s0");
-			Assert.AreEqual(1, listener.NewDataList.Count);
-			Assert.AreEqual(1, listener.OldDataList.Count);
+			ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+			ClassicAssert.AreEqual(1, listener.OldDataList.Count);
 			EPAssertionUtil.AssertPropsPerRow(listener.LastNewData, fields, newExpected);
 			EPAssertionUtil.AssertPropsPerRow(listener.LastOldData, fields, oldExpected);
 			listener.Reset();
@@ -830,8 +830,8 @@ namespace com.espertech.esper.regressionlib.framework
 			object[][] nameAndValuePairsOld)
 		{
 			var listener = Listener(statementName);
-			Assert.AreEqual(1, listener.NewDataList.Count);
-			Assert.AreEqual(1, listener.OldDataList.Count);
+			ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+			ClassicAssert.AreEqual(1, listener.OldDataList.Count);
 			EPAssertionUtil.AssertNameValuePairs(listener.LastNewData, nameAndValuePairsNew);
 			EPAssertionUtil.AssertNameValuePairs(listener.LastOldData, nameAndValuePairsOld);
 			listener.Reset();
@@ -922,7 +922,7 @@ namespace com.espertech.esper.regressionlib.framework
 			object expected)
 		{
 			var eventBean = Listener(statementName).AssertOneGetNewAndReset();
-			Assert.AreEqual(expected, eventBean.Get(fieldName));
+			ClassicAssert.AreEqual(expected, eventBean.Get(fieldName));
 		}
 
 		public void AssertEqualsOld(
@@ -930,7 +930,7 @@ namespace com.espertech.esper.regressionlib.framework
 			string fieldName,
 			object expected)
 		{
-			Assert.AreEqual(expected, Listener(statementName).AssertOneGetOldAndReset().Get(fieldName));
+			ClassicAssert.AreEqual(expected, Listener(statementName).AssertOneGetOldAndReset().Get(fieldName));
 		}
 
 		public void TryInvalidCompile(

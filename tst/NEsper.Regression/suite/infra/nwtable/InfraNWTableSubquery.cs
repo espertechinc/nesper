@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
@@ -314,7 +314,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.AssertListener(
                         "create",
                         listener => {
-                            Assert.AreEqual(2, listener.NewDataList.Count);
+                            ClassicAssert.AreEqual(2, listener.NewDataList.Count);
                             EPAssertionUtil.AssertProps(listener.OldDataList[0][0], fields, new object[] { "E1", 1 });
                             EPAssertionUtil.AssertProps(listener.NewDataList[1][0], fields, new object[] { "E1", 3 });
                         });

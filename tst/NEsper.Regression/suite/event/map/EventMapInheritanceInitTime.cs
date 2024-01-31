@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
@@ -62,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 listeners[0].AssertOneGetNewAndReset(),
                 fields,
                 new object[] { "a", "b", "x", "c", "y" });
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(
                 listeners[1].AssertOneGetNewAndReset(),
                 fields,
@@ -77,7 +78,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 listeners[0].AssertOneGetNewAndReset(),
                 fields,
                 new object[] { "f1", "f2", "f3", "f4", "f5" });
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(
                 listeners[1].AssertOneGetNewAndReset(),
                 fields,
@@ -90,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.SendEventMap(EventMapCore.MakeMap("base=XBASE,sub1=X1,sub2=X2,subb=XY"), "SubBEvent");
             object[] values = { "XBASE", "X1", "X2", null, "XY" };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[3].IsInvoked);
+            ClassicAssert.IsFalse(listeners[3].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, values);
             EPAssertionUtil.AssertProps(listeners[4].AssertOneGetNewAndReset(), fields, values);
@@ -98,19 +99,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.SendEventMap(EventMapCore.MakeMap("base=YBASE,sub1=Y1"), "Sub1Event");
             values = new object[] { "YBASE", "Y1", null, null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
 
             env.SendEventMap(EventMapCore.MakeMap("base=YBASE,sub2=Y2"), "Sub2Event");
             values = new object[] { "YBASE", null, "Y2", null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[1].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[1].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, values);
 
             env.SendEventMap(EventMapCore.MakeMap("base=ZBASE"), "RootEvent");
             values = new object[] { "ZBASE", null, null, null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(
+            ClassicAssert.IsFalse(
                 listeners[1].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
 
             // try property not available

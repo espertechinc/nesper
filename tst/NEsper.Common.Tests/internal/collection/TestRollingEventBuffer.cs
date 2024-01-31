@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -36,16 +37,16 @@ namespace com.espertech.esper.common.@internal.collection
         public void TestFlowSizeOne()
         {
             bufferOne.Add((EventBean[]) null);
-            Assert.IsNull(bufferOne.Get(0));
+            ClassicAssert.IsNull(bufferOne.Get(0));
 
             EventBean[] set1 = Make(2);
             bufferOne.Add(set1);
-            Assert.AreSame(set1[1], bufferOne.Get(0));
+            ClassicAssert.AreSame(set1[1], bufferOne.Get(0));
             TryInvalid(bufferOne, 1);
 
             EventBean[] set2 = Make(1);
             bufferOne.Add(set2);
-            Assert.AreSame(set2[0], bufferOne.Get(0));
+            ClassicAssert.AreSame(set2[0], bufferOne.Get(0));
             TryInvalid(bufferOne, 1);
         }
 
@@ -115,7 +116,7 @@ namespace com.espertech.esper.common.@internal.collection
         {
             for (int i = 0; i < expected.Length; i++)
             {
-                Assert.AreSame(expected[i], buffer.Get(i));
+                ClassicAssert.AreSame(expected[i], buffer.Get(i));
             }
             TryInvalid(buffer, expected.Length);
         }

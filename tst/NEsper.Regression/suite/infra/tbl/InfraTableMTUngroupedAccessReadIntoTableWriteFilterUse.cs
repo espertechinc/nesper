@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -92,10 +93,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             t2.Join();
 
             env.UndeployAll();
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numEvents > 100);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             Console.Out.WriteLine(
                 "Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
         }

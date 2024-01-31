@@ -17,6 +17,7 @@ using com.espertech.esper.compiler.@internal.util;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -44,7 +45,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             EPCompilerSPIExpression expressionCompiler)
         {
             var actual = CompileEvaluate(expression, expressionCompiler);
-            Assert.AreEqual(expected, actual);
+            ClassicAssert.AreEqual(expected, actual);
         }
 
         private static object CompileEvaluate(
@@ -73,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 CompileEvaluate($"{arrays}.AsList({{'a', 'b'}}).firstOf()", "a", expressionCompiler);
 
                 var timePeriod = (ExprTimePeriod)expressionCompiler.CompileValidate("5 seconds");
-                Assert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
+                ClassicAssert.AreEqual(5d, timePeriod.EvaluateAsSeconds(null, true, null), 0.0001);
             }
 
             public ISet<RegressionFlag> Flags()

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -727,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
                         var events = listener.LastNewData;
                         AssertData(events[0], 0, null, null);
                         AssertData(events[1], 1.0, 0.0, 0.0);
@@ -757,9 +758,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
                         var events = listener.LastNewData;
-                        Assert.IsNull(events);
+                        ClassicAssert.IsNull(events);
                         listener.Reset();
                     });
 
@@ -779,13 +780,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
                         var events = listener.LastNewData;
-                        Assert.AreEqual(2, events.Length);
-                        Assert.AreEqual("S1", events[0].Get("Symbol"));
-                        Assert.AreEqual(11d, events[0].Get("s"));
-                        Assert.AreEqual("S2", events[1].Get("Symbol"));
-                        Assert.AreEqual(77d, events[1].Get("s"));
+                        ClassicAssert.AreEqual(2, events.Length);
+                        ClassicAssert.AreEqual("S1", events[0].Get("Symbol"));
+                        ClassicAssert.AreEqual(11d, events[0].Get("s"));
+                        ClassicAssert.AreEqual("S2", events[1].Get("Symbol"));
+                        ClassicAssert.AreEqual(77d, events[1].Get("s"));
                         listener.Reset();
                     });
 
@@ -806,9 +807,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             double? prevPrice,
             double? priorPrice)
         {
-            Assert.AreEqual(price, theEvent.Get("Price"));
-            Assert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
-            Assert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
+            ClassicAssert.AreEqual(price, theEvent.Get("Price"));
+            ClassicAssert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
+            ClassicAssert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
         }
 
         private static SupportMarketDataBean[] Get100Events()
@@ -838,8 +839,8 @@ namespace com.espertech.esper.regressionlib.suite.view
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.OldDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.OldDataList.Count);
                     EPAssertionUtil.AssertEqualsExactOrderUnderlying(newUnd, listener.NewDataListFlattened);
                     EPAssertionUtil.AssertEqualsExactOrderUnderlying(oldUnd, listener.OldDataListFlattened);
                     listener.Reset();

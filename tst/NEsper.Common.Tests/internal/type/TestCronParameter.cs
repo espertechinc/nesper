@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -17,7 +18,7 @@ namespace com.espertech.esper.common.@internal.type
         public void TestFormat()
         {
             CronParameter cronParameter = new CronParameter(CronOperatorEnum.LASTDAY, 1);
-            Assert.AreEqual("LASTDAY(day 1 month null)", cronParameter.Formatted());
+            ClassicAssert.AreEqual("LASTDAY(day 1 month null)", cronParameter.Formatted());
         }
     }
 } // end of namespace

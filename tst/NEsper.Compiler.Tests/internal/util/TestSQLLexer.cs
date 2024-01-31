@@ -9,6 +9,8 @@
 using System;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
     [TestFixture]
@@ -75,7 +77,7 @@ namespace com.espertech.esper.compiler.@internal.util
 	                Assert.Fail("failed case with exception:" + testcases[i][0]);
 	            }
 	            string expected = testcases[i][1].Trim();
-	            Assert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
+	            ClassicAssert.AreEqual(expected, result, "failed case " + i + " :" + testcases[i][0]);
 	        }
 	    }
 	}

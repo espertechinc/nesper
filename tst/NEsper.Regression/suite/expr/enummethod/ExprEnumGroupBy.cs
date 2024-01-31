@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var assertionNull = builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull());
                 foreach (var field in fields) {
-                    assertionNull.Verify(field, Assert.IsNull);
+                    assertionNull.Verify(field, ClassicAssert.IsNull);
                 }
 
                 var assertionEmpty = builder.WithAssertion(SupportBean_ST0_Container.Make2Value());
@@ -162,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var assertionNull = builder.WithAssertion(SupportCollection.MakeString(null));
                 foreach (var field in fields) {
-                    assertionNull.Verify(field, Assert.IsNull);
+                    assertionNull.Verify(field, ClassicAssert.IsNull);
                 }
 
                 var assertionEmpty = builder.WithAssertion(SupportCollection.MakeString(""));
@@ -216,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var assertionNull = builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull());
                 foreach (var field in fields) {
-                    assertionNull.Verify(field, Assert.IsNull);
+                    assertionNull.Verify(field, ClassicAssert.IsNull);
                 }
 
                 var assertionEmpty = builder.WithAssertion(SupportBean_ST0_Container.Make2Value());
@@ -268,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 var assertionNull = builder.WithAssertion(SupportCollection.MakeString(null));
                 foreach (var field in fields) {
-                    assertionNull.Verify(field, Assert.IsNull);
+                    assertionNull.Verify(field, ClassicAssert.IsNull);
                 }
 
                 var assertionEmpty = builder.WithAssertion(SupportCollection.MakeString(""));
@@ -308,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             }
 
             var asObjectDictionary = val.AsObjectDictionary(MagicMarker.SingletonInstance);
-            Assert.NotNull(asObjectDictionary);
+            ClassicAssert.NotNull(asObjectDictionary);
             EPAssertionUtil.AssertMapOfCollection(asObjectDictionary, keys, values, extractorEvents);
         }
     }

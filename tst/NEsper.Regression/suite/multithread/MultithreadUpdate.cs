@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.IsTrue(found);
+            ClassicAssert.IsTrue(found);
 
             env.UndeployAll();
         }

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -58,19 +59,19 @@ namespace com.espertech.esper.regressionlib.support.util
 			env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
 			var events = env.Listener("s0").GetAndResetLastNewData();
 			if (events == null || events.Length == 0) {
-				Assert.IsTrue(expected.IsEmpty());
+				ClassicAssert.IsTrue(expected.IsEmpty());
 				return;
 			}
 
-			Assert.AreEqual(expected.Count, events.Length);
+			ClassicAssert.AreEqual(expected.Count, events.Length);
 			ISet<string> received = new HashSet<string>();
 			foreach (var @event in events) {
 				received.Add(@event.Get("c0").ToString());
 			}
 
-			Assert.AreEqual(expected.Count, received.Count);
+			ClassicAssert.AreEqual(expected.Count, received.Count);
 			foreach (var r in expected) {
-				Assert.IsTrue(received.Contains(r.Id));
+				ClassicAssert.IsTrue(received.Contains(r.Id));
 			}
 		}
 
@@ -176,19 +177,19 @@ namespace com.espertech.esper.regressionlib.support.util
 			env.SendEventBean(new SupportSpatialAABB("", x, y, width, height));
 			var events = env.Listener("s0").GetAndResetLastNewData();
 			if (events == null || events.Length == 0) {
-				Assert.IsTrue(expected.IsEmpty());
+				ClassicAssert.IsTrue(expected.IsEmpty());
 				return;
 			}
 
-			Assert.AreEqual(expected.Count, events.Length);
+			ClassicAssert.AreEqual(expected.Count, events.Length);
 			ISet<string> received = new HashSet<string>();
 			foreach (var @event in events) {
 				received.Add(@event.Get("c0").ToString());
 			}
 
-			Assert.AreEqual(expected.Count, received.Count);
+			ClassicAssert.AreEqual(expected.Count, received.Count);
 			foreach (var p in expected) {
-				Assert.IsTrue(received.Contains(p.Id));
+				ClassicAssert.IsTrue(received.Contains(p.Id));
 			}
 		}
 
@@ -215,7 +216,7 @@ namespace com.espertech.esper.regressionlib.support.util
 				listener => {
 					var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
 					var expected = SortGetExpectedPoints(bb, points);
-					Assert.AreEqual(expected, received);
+					ClassicAssert.AreEqual(expected, received);
 				});
 		}
 
@@ -264,7 +265,7 @@ namespace com.espertech.esper.regressionlib.support.util
 						Log.Error("Received: " + received);
 					}
 
-					Assert.AreEqual(expected, received);
+					ClassicAssert.AreEqual(expected, received);
 				});
 		}
 
@@ -289,7 +290,7 @@ namespace com.espertech.esper.regressionlib.support.util
 				var box = rectangles[i];
 				SendRectangle(env, "R" + box.ToString(), box.MinX, box.MinY, box.MaxX - box.MinX, box.MaxY - box.MinY);
 				var c0 = listener.AssertOneGetNewAndReset().Get("c0").ToString();
-				Assert.AreEqual(matches[i], c0, "for box " + i);
+				ClassicAssert.AreEqual(matches[i], c0, "for box " + i);
 			}
 		}
 
@@ -306,7 +307,7 @@ namespace com.espertech.esper.regressionlib.support.util
 					"s0",
 					@event => {
 						var c0 = @event.Get("c0").ToString();
-						Assert.AreEqual(matches[index], c0, "for box " + index);
+						ClassicAssert.AreEqual(matches[index], c0, "for box " + index);
 					});
 			}
 		}
@@ -337,7 +338,7 @@ namespace com.espertech.esper.regressionlib.support.util
 								Assert.Fail("No output for box " + index);
 							}
 
-							Assert.AreEqual(matches[index], SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
+							ClassicAssert.AreEqual(matches[index], SortJoinProperty(listener.GetAndResetLastNewData(), "c0"));
 						}
 					});
 			}

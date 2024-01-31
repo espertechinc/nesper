@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
 {
@@ -44,13 +45,13 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.SELECT, topNode,
                 SupportExprValidationContextFactory.MakeEmpty(container));
 
-            Assert.AreEqual(1, supportNode1_1.ValidateCountSnapshot);
-            Assert.AreEqual(2, supportNode1_2.ValidateCountSnapshot);
-            Assert.AreEqual(3, parent_1.ValidateCountSnapshot);
-            Assert.AreEqual(4, supportNode2_1.ValidateCountSnapshot);
-            Assert.AreEqual(5, supportNode2_2.ValidateCountSnapshot);
-            Assert.AreEqual(6, parent_2.ValidateCountSnapshot);
-            Assert.AreEqual(7, topNode.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(1, supportNode1_1.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(2, supportNode1_2.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(3, parent_1.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(4, supportNode2_1.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(5, supportNode2_2.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(6, parent_2.ValidateCountSnapshot);
+            ClassicAssert.AreEqual(7, topNode.ValidateCountSnapshot);
         }
     }
 } // end of namespace

@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -28,8 +29,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(andNode.EqualsNode(new ExprAndNodeImpl(), false));
-            Assert.IsFalse(andNode.EqualsNode(new ExprOrNode(), false));
+            ClassicAssert.IsTrue(andNode.EqualsNode(new ExprAndNodeImpl(), false));
+            ClassicAssert.IsFalse(andNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]
@@ -38,19 +39,19 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             andNode.AddChildNode(new SupportBoolExprNode(true));
             andNode.AddChildNode(new SupportBoolExprNode(true));
             SupportExprNodeUtil.Validate(container, andNode);
-            Assert.IsTrue((bool) andNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) andNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             andNode = new ExprAndNodeImpl();
             andNode.AddChildNode(new SupportBoolExprNode(true));
             andNode.AddChildNode(new SupportBoolExprNode(false));
             SupportExprNodeUtil.Validate(container, andNode);
-            Assert.IsFalse((bool) andNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) andNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), andNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), andNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             andNode.AddChildNode(new SupportExprNode(true));
             andNode.AddChildNode(new SupportExprNode(false));
 
-            Assert.AreEqual("true and false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode));
+            ClassicAssert.AreEqual("true and false", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(andNode));
         }
 
         [Test]

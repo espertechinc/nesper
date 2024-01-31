@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.schedule;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.datetime
 {
@@ -1574,7 +1575,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var message = "time " + testtime + " duration " + testduration + " for '" + whereClause + "'";
 
                 if (validator != null) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         expected,
                         validator.Validate(leftStart, leftEnd, rightStart, rightEnd),
                         "Validation of expected result failed for " + message);
@@ -1634,7 +1635,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.datetime
                 var message = "time " + testtime + " duration " + testduration + " for '" + whereClause + "'";
 
                 if (validator != null) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         expected,
                         validator.Validate(leftStart, leftEnd, rightStart, rightEnd),
                         "Validation of expected result failed for " + message);

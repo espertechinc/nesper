@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -163,16 +163,16 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             if (useDefault || preserve.GetValueOrDefault()) {
-                Assert.AreEqual(0, countMultiDeliveries, "multiple row deliveries: " + countMultiDeliveries);
+                ClassicAssert.AreEqual(0, countMultiDeliveries, "multiple row deliveries: " + countMultiDeliveries);
                 // the number of non-monotone delivers should be small but not zero
                 // this is because when the event get generated and when the event actually gets processed may not be in the same order
-                Assert.IsTrue(countNotMonotone < 100, "count not monotone: " + countNotMonotone);
-                Assert.IsTrue(
+                ClassicAssert.IsTrue(countNotMonotone < 100, "count not monotone: " + countNotMonotone);
+                ClassicAssert.IsTrue(
                     delivered.Count >=
                     197); // its possible to not have 199 since there may not be events on one side of the join
             }
             else {
-                Assert.IsTrue(countNotMonotone > 5, "count not monotone: " + countNotMonotone);
+                ClassicAssert.IsTrue(countNotMonotone > 5, "count not monotone: " + countNotMonotone);
             }
 
             runtime.Destroy();

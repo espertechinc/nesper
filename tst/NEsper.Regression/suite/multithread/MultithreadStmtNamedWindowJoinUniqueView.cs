@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -60,7 +61,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ExecutorAwait(es, 20, TimeUnit.SECONDS);
 
             foreach (var runnable in runnables) {
-                Assert.IsNull(runnable.Exception);
+                ClassicAssert.IsNull(runnable.Exception);
             }
 
             env.UndeployAll();

@@ -22,6 +22,8 @@ using static
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableLookupableLimitedExpr
@@ -498,7 +500,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             SupportFilterPlanHook.Reset();
             env.Compile(epl, path);
             var forge = SupportFilterPlanHook.AssertPlanSingleForTypeAndReset(typeName);
-            Assert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, forge.FilterOperator);
+            ClassicAssert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, forge.FilterOperator);
         }
     }
 } // end of namespace

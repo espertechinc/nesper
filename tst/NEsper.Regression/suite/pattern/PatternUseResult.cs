@@ -21,7 +21,7 @@ using com.espertech.esper.runtime.client;
 
 using static com.espertech.esper.regressionlib.framework.RegressionFlag; // OBSERVEROPS
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -428,7 +428,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     env.SendEventBean(theEvent);
                 }
 
-                Assert.AreEqual(0, listener.BadMatchCount);
+                ClassicAssert.AreEqual(0, listener.BadMatchCount);
                 env.UndeployAll();
             }
 
@@ -486,7 +486,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AssertPropsNew("s0", fields, new object[] { intPrimitiveExpected });
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(
+                statement => ClassicAssert.AreEqual(
                     numFiltersRemaining,
                     SupportFilterServiceHelper.GetFilterSvcCount(statement, "SupportBean_A")));
         }

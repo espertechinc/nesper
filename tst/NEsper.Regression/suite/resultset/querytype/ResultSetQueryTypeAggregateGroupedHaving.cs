@@ -14,6 +14,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
     public class ResultSetQueryTypeAggregateGroupedHaving
@@ -141,9 +143,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
                 });
 
             var fields = "Symbol,Volume,mySum".SplitCsv();

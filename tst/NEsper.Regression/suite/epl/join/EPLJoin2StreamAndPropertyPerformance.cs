@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -101,10 +102,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.CompileDeployAddListenerMileZero(epl, "s0");
 
                 env.SendEventBean(new SupportBean_S0(1, "x"));
-                Assert.AreEqual(0, MyStaticEval.CountCalled);
+                ClassicAssert.AreEqual(0, MyStaticEval.CountCalled);
 
                 env.SendEventBean(new SupportBean("y", 10));
-                Assert.AreEqual(1, MyStaticEval.CountCalled);
+                ClassicAssert.AreEqual(1, MyStaticEval.CountCalled);
                 env.AssertListenerInvoked("s0");
 
                 // this would be observed as hanging if there was remove-stream evaluation
@@ -146,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay at 250, belwo 500ms
-                Assert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.IsTrue(endTime - startTime < 500);
                 env.UndeployAll();
             }
         }

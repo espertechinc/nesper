@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.common.@internal.collection
                 Assert.That(result, Is.EqualTo(expected), "Mismatch in count=" + count);
             }
 
-            Assert.AreEqual(count, expectedValues.Length);
+            ClassicAssert.AreEqual(count, expectedValues.Length);
             Assert.That(enumeration.MoveNext(), Is.False);
 
             // Enumerators exposed via yield do not throw exceptions

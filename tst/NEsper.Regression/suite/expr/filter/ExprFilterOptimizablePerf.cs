@@ -18,6 +18,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -171,14 +172,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // Console.WriteLine("Starting " + DateTime.print(new Date()));
                 for (var i = 0; i < 10000; i++) {
                     env.SendEventBean(new SupportBean("100", 1));
-                    Assert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
                     listener.Reset();
                 }
 
                 // Console.WriteLine("Ending " + DateTime.print(new Date()));
                 var delta = (PerformanceObserver.NanoTime - start) / 1000d / 1000d;
                 // Console.WriteLine("Delta=" + (delta + " msec"));
-                Assert.Less(delta,  500);
+                ClassicAssert.Less(delta,  500);
 
                 env.UndeployAll();
             }
@@ -208,7 +209,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;
-            Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
+            ClassicAssert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
 
             Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
             env.UndeployAll();
@@ -247,16 +248,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var key = "E_" + i % 100;
                 env.SendEventBean(new SupportBean(key, 0));
                 if (key.Equals("E_1")) {
-                    Assert.AreEqual(count, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(count, listener.NewDataList.Count);
                     listener.Reset();
                 }
                 else {
-                    Assert.IsFalse(listener.IsInvoked);
+                    ClassicAssert.IsFalse(listener.IsInvoked);
                 }
             }
 
             var delta = PerformanceObserver.MilliTime - startTime;
-            Assert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
+            ClassicAssert.AreEqual(loops, SupportStaticMethodLib.CountInvoked);
 
             Assert.That(delta, Is.LessThan(1000), "Delta is " + delta);
             env.UndeployAll();

@@ -13,6 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
@@ -73,14 +74,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                 env.AssertStatement(
                     "s0",
                     statement =>
-                        Assert.AreEqual("MyBean", statement.EventType.GetPropertyType("c0").Name));
+                        ClassicAssert.AreEqual("MyBean", statement.EventType.GetPropertyType("c0").Name));
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 env.AssertEventNew(
                     "s0",
                     @event => {
                         var result = @event.Get("c0");
-                        Assert.AreEqual(10, result.GetType().GetProperty("Id")?.GetValue(result));
+                        ClassicAssert.AreEqual(10, result.GetType().GetProperty("Id")?.GetValue(result));
                     });
 
                 env.UndeployAll();

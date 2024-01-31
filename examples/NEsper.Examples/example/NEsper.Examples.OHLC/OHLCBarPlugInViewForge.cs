@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.@event.bean.core;
 using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.common.@internal.view.core;
 using com.espertech.esper.common.@internal.view.util;
+using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 
@@ -48,17 +49,14 @@ namespace NEsper.Examples.OHLC
 
         public IList<ViewFactoryForge> InnerForges => EmptyList<ViewFactoryForge>.Instance;
 
-        public void Attach(
-            EventType parentEventType,
-            int streamNumber,
-            ViewForgeEnv env)
+        public void Attach(EventType parentEventType, ViewForgeEnv env)
         {
             if (_viewParameters.Count != 2) {
                 throw new ViewParameterException(
                     "View requires a two parameters: the expression returning timestamps and the expression supplying OHLC data points");
             }
 
-            var validatedNodes = ViewForgeSupport.Validate("OHLC view", parentEventType, _viewParameters, false, env, streamNumber);
+            var validatedNodes = ViewForgeSupport.Validate("OHLC view", parentEventType, _viewParameters, false, env);
 
             _timestampExpression = validatedNodes[0];
             _valueExpression = validatedNodes[1];
@@ -66,7 +64,7 @@ namespace NEsper.Examples.OHLC
             if (!_timestampExpression.Forge.EvaluationType.IsInt64()) {
                 throw new ViewParameterException("View requires long-typed timestamp values in parameter 1");
             }
-            if (!_valueExpression.Forge.EvaluationType.IsDouble()) {
+            if (!_valueExpression.Forge.EvaluationType.IsTypeDouble()) {
                 throw new ViewParameterException("View requires double-typed values for in parameter 2");
             }
 
@@ -74,7 +72,7 @@ namespace NEsper.Examples.OHLC
              * Allocate a custom event type for this example. This event type will be a Bean event type.
              */
             // make event type name
-            var outputEventTypeName = env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(ViewName, streamNumber);
+            var outputEventTypeName = env.StatementCompileTimeServices.EventTypeNameGeneratorStatement.GetViewDerived(ViewName, env.StreamNumber);
 
             // make event type metadata
             var metadata = new EventTypeMetadata(
@@ -107,13 +105,18 @@ namespace NEsper.Examples.OHLC
 
         public CodegenExpression Make(
             CodegenMethodScope parent,
-            CodegenSymbolProvider symbols,
+            SAIFFInitializeSymbol symbols,
             CodegenClassScope classScope)
         {
             return new SAIFFInitializeBuilder(typeof(OHLCBarPlugInViewFactory), GetType(), "factory", parent, (SAIFFInitializeSymbol) symbols, classScope)
                 .Exprnode("timestampExpression", _timestampExpression)
                 .Exprnode("valueExpression", _valueExpression)
                 .Build();
+        }
+
+        public T Accept<T>(ViewFactoryForgeVisitor<T> visitor)
+        {
+            return visitor.VisitExtension(this);
         }
     }
 }

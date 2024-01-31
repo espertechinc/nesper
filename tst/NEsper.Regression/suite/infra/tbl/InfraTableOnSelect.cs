@@ -11,6 +11,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     var index = i;
                     env.AssertEventNew(
                         "s0",
-                        @event => Assert.AreEqual(
+                        @event => ClassicAssert.AreEqual(
                             values[index],
                             @event.Get("value"),
                             $"Failed for key '{keyarr[index]}'"));

@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -45,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             env.AssertSafeEnumerator(
                 "s0",
                 en => {
-                    Assert.AreEqual(1L, en.Advance().Get("c0"));
+                    ClassicAssert.AreEqual(1L, en.Advance().Get("c0"));
                     en.Dispose();
                 });
 

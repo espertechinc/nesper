@@ -21,6 +21,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.patternassert
 {
@@ -240,7 +241,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 			// Make sure all listeners are still at zero
 			foreach (var descriptor in caseList.Results) {
 				var statementName = NameOfStatement(descriptor);
-				env.AssertThat(() => Assert.IsNull(env.Statement(statementName)));
+				env.AssertThat(() => ClassicAssert.IsNull(env.Statement(statementName)));
 			}
 		}
 

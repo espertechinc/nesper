@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
     public class EPLDatabaseHintHook
@@ -63,24 +65,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("myint")));
+                    statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("myint")));
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { false } });
 
                 // assert contexts
                 env.AssertThat(
                     () => {
                         var type = SupportSQLColumnTypeConversion.TypeContexts[0];
-                        Assert.AreEqual("System.Int32", type.ColumnSqlType);
-                        Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
-                        Assert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
-                        Assert.AreEqual("myint", type.ColumnName);
-                        Assert.AreEqual(1, type.ColumnNumber);
-                        Assert.AreEqual(typeof(int?), type.ColumnClassType);
+                        ClassicAssert.AreEqual("System.Int32", type.ColumnSqlType);
+                        ClassicAssert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
+                        ClassicAssert.AreEqual("select myint from mytesttable where myint = ${myvariableOCC}", type.Sql);
+                        ClassicAssert.AreEqual("myint", type.ColumnName);
+                        ClassicAssert.AreEqual(1, type.ColumnNumber);
+                        ClassicAssert.AreEqual(typeof(int?), type.ColumnClassType);
 
                         var val = SupportSQLColumnTypeConversion.ValueContexts[0];
-                        Assert.AreEqual(10, val.ColumnValue);
-                        Assert.AreEqual("myint", val.ColumnName);
-                        Assert.AreEqual(1, val.ColumnNumber);
+                        ClassicAssert.AreEqual(10, val.ColumnValue);
+                        ClassicAssert.AreEqual("myint", val.ColumnName);
+                        ClassicAssert.AreEqual(1, val.ColumnNumber);
                     });
 
                 env.RuntimeSetVariable(null, "myvariableOCC", 60); // greater 50 turns true
@@ -109,8 +111,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertThat(
                     () => {
                         var param = SupportSQLColumnTypeConversion.ParamContexts[0];
-                        Assert.AreEqual(1, param.ParameterNumber);
-                        Assert.AreEqual("x60", param.ParameterValue);
+                        ClassicAssert.AreEqual(1, param.ParameterNumber);
+                        ClassicAssert.AreEqual("x60", param.ParameterValue);
                     });
 
                 env.UndeployAll();
@@ -132,18 +134,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
                 env.AssertPropsPerRowIteratorAnyOrder("s0", fields, new object[][] { new object[] { ">10<", 99010 } });
 
                 env.AssertThat(
                     () => {
                         var type = SupportSQLOutputRowConversion.TypeContexts[0];
-                        Assert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
-                        Assert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
-                        Assert.AreEqual(typeof(int), type.Fields.Get("myint"));
+                        ClassicAssert.AreEqual("MyDBWithTxnIso1WithReadOnly", type.Db);
+                        ClassicAssert.AreEqual("select * from mytesttable where myint = ${myvariableORC}", type.Sql);
+                        ClassicAssert.AreEqual(typeof(int), type.Fields.Get("myint"));
 
                         var val = SupportSQLOutputRowConversion.ValueContexts[0];
-                        Assert.AreEqual(10, val.Values.Get("myint"));
+                        ClassicAssert.AreEqual(10, val.Values.Get("myint"));
                     });
 
                 env.RuntimeSetVariable(null, "myvariableORC", 60); // greater 50 turns true

@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -58,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.Fail();
             }
             catch (EPDataFlowInstantiationException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             string message)
         {
             var received = message.Substring(0, message.IndexOf("[") + 1);
-            Assert.AreEqual(expected, received);
+            ClassicAssert.AreEqual(expected, received);
         }
 
         internal class EPLDataflowCreateStartStop : RegressionExecution
@@ -88,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new[] { new DeploymentIdNamePair(env.DeploymentId("flow"), "MyGraph") },
                     dfruntime.DataFlows);
                 var desc = dfruntime.GetDataFlow("DEP1", "MyGraph");
-                Assert.AreEqual("MyGraph", desc.DataFlowName);
-                Assert.AreEqual("flow", desc.StatementName);
+                ClassicAssert.AreEqual("MyGraph", desc.DataFlowName);
+                ClassicAssert.AreEqual("flow", desc.StatementName);
 
                 dfruntime.Instantiate(env.DeploymentId("flow"), "MyGraph");
 
@@ -107,8 +108,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "Data flow by name 'DUMMY' for deployment id 'DEP1' has not been defined");
 
                 // destroy - should be gone
-                Assert.AreEqual(null, dfruntime.GetDataFlow("DEP1", "MyGraph"));
-                Assert.AreEqual(0, dfruntime.DataFlows.Length);
+                ClassicAssert.AreEqual(null, dfruntime.GetDataFlow("DEP1", "MyGraph"));
+                ClassicAssert.AreEqual(0, dfruntime.DataFlows.Length);
                 TryInstantiate(
                     env,
                     "DEP1",
@@ -145,7 +146,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 var module = env.Compiler.ParseModule(epl);
 
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
                 env.CompileDeploy(epl);
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "TheGraph");

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -58,10 +59,10 @@ namespace com.espertech.esper.common.@internal.util
 
             var result = PlaceholderParser.ParsePlaceholder(parseString);
 
-            Assert.AreEqual(expected.Length, result.Count, "Incorrect count for '" + parseString + "'");
+            ClassicAssert.AreEqual(expected.Length, result.Count, "Incorrect count for '" + parseString + "'");
             for (var i = 0; i < expected.Length; i++)
             {
-                Assert.AreEqual(expected[i], result[i], "Incorrect value for '" + parseString + "' at " + i);
+                ClassicAssert.AreEqual(expected[i], result[i], "Incorrect value for '" + parseString + "' at " + i);
             }
         }
 

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -66,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "schema",
                     statement => {
                         var type = env.Statement("schema").EventType.UnderlyingType;
-                        Assert.AreEqual(typeof(SupportBeanParameterizedWFieldSinglePlain<int?>), type);
+                        ClassicAssert.AreEqual(typeof(SupportBeanParameterizedWFieldSinglePlain<int?>), type);
                         SupportEventPropUtil.AssertPropsEquals(
                             env.Statement("schema").EventType.PropertyDescriptors.ToArray(),
                             new SupportEventPropDesc("SimpleProperty", typeof(int?)),

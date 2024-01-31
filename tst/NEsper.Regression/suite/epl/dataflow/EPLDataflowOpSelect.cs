@@ -23,6 +23,8 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
     public class EPLDataflowOpSelect
@@ -255,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 emitter.Submit(new SupportBean("E1", 1));
                 emitter.Submit(new SupportBean("E2", 2));
                 emitter.Submit(new SupportBean("E1", 5));
-                Assert.AreEqual(0, capture.Current.Length);
+                ClassicAssert.AreEqual(0, capture.Current.Length);
 
                 emitter.SubmitSignal(new EPDataFlowSignalFinalMarkerImpl());
 
@@ -306,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 emitter.Submit(new SupportBean("E1", 5));
                 emitter.Submit(new SupportBean("E2", 3));
                 emitter.Submit(new SupportBean("E3", 6));
-                Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
+                ClassicAssert.AreEqual(0, capture.GetCurrentAndReset().Length);
 
                 env.AdvanceTime(60000 + 5000);
                 EPAssertionUtil.AssertProps(
@@ -317,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 emitter.Submit(new SupportBean("E4", 3));
                 emitter.Submit(new SupportBean("E5", 6));
-                Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
+                ClassicAssert.AreEqual(0, capture.GetCurrentAndReset().Length);
 
                 env.AdvanceTime(120000 + 5000);
                 EPAssertionUtil.AssertProps(
@@ -330,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 emitter.Submit(new SupportBean("E5", 6));
                 env.AdvanceTime(240000 + 5000);
-                Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
+                ClassicAssert.AreEqual(0, capture.GetCurrentAndReset().Length);
 
                 env.UndeployAll();
             }
@@ -489,10 +491,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var captive = instance.StartCaptive();
                 captive.Emitters.Get("emitterS0").Submit(new SupportBean_S0(1));
                 captive.Emitters.Get("emitterS1").Submit(new SupportBean_S1(10));
-                Assert.AreEqual(0, capture.Current.Length);
+                ClassicAssert.AreEqual(0, capture.Current.Length);
 
                 captive.Emitters.Get("emitterS2").Submit(new SupportBean_S2(100));
-                Assert.AreEqual(1, capture.Current.Length);
+                ClassicAssert.AreEqual(1, capture.Current.Length);
                 EPAssertionUtil.AssertProps(
                     env.Container,
                     capture.GetCurrentAndReset()[0],
@@ -502,7 +504,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 instance.Cancel();
 
                 captive.Emitters.Get("emitterS2").Submit(new SupportBean_S2(101));
-                Assert.AreEqual(0, capture.Current.Length);
+                ClassicAssert.AreEqual(0, capture.Current.Length);
 
                 env.UndeployAll();
             }
@@ -575,8 +577,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 if (wrapperWithAdditionalProps) {
                     var underlying = (Pair<object, IDictionary<string, object>>)result[0];
-                    Assert.AreEqual("a", underlying.Second.Get("hello"));
-                    Assert.AreEqual(10, ((IDictionary<string, object>)underlying.First).Get("value"));
+                    ClassicAssert.AreEqual("a", underlying.Second.Get("hello"));
+                    ClassicAssert.AreEqual(10, ((IDictionary<string, object>)underlying.First).Get("value"));
                 }
                 else {
                     EPAssertionUtil.AssertPropsPerRow(

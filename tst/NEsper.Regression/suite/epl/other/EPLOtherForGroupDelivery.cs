@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherForGroupDelivery
@@ -101,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     listener => {
                         var received = listener.NewDataList;
-                        Assert.AreEqual(3, received.Count);
+                        ClassicAssert.AreEqual(3, received.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             received[0],
                             fields,
@@ -142,7 +144,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     listener => {
                         var received = listener.NewDataList;
-                        Assert.AreEqual(3, received.Count);
+                        ClassicAssert.AreEqual(3, received.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             received[0],
                             fields,
@@ -213,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean("E3", 1));
                 SendTimer(env, 1000);
-                Assert.AreEqual(3, subscriber.InsertStreamList.Count);
+                ClassicAssert.AreEqual(3, subscriber.InsertStreamList.Count);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", 1 }, subscriber.InsertStreamList[0][0]);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E2", 2 }, subscriber.InsertStreamList[1][0]);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E3", 1 }, subscriber.InsertStreamList[2][0]);
@@ -228,8 +230,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.SendEventBean(new SupportBean("E3", 1));
                 SendTimer(env, 2000);
-                Assert.AreEqual(2, subscriber.InsertStreamList.Count);
-                Assert.AreEqual(2, subscriber.RemoveStreamList.Count);
+                ClassicAssert.AreEqual(2, subscriber.InsertStreamList.Count);
+                ClassicAssert.AreEqual(2, subscriber.RemoveStreamList.Count);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E1", 1 }, subscriber.InsertStreamList[0][0]);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E3", 1 }, subscriber.InsertStreamList[0][1]);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "E2", 2 }, subscriber.InsertStreamList[1][0]);
@@ -261,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(3, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(3, listener.NewDataList.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
                             "TheString,IntPrimitive".SplitCsv(),
@@ -314,13 +316,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count);
-                        Assert.AreEqual(2, listener.NewDataList[0].Length);
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.NewDataList[0].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
                             "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E1", 1 }, new object[] { "E3", 1 } });
-                        Assert.AreEqual(1, listener.NewDataList[1].Length);
+                        ClassicAssert.AreEqual(1, listener.NewDataList[1].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[1],
                             "TheString,IntPrimitive".SplitCsv(),
@@ -340,13 +342,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count);
-                        Assert.AreEqual(1, listener.NewDataList[0].Length);
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.NewDataList[0].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
                             "TheString,IntPrimitive".SplitCsv(),
                             new object[][] { new object[] { "E2", 2 } });
-                        Assert.AreEqual(2, listener.NewDataList[1].Length);
+                        ClassicAssert.AreEqual(2, listener.NewDataList[1].Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[1],
                             "TheString,IntPrimitive".SplitCsv(),
@@ -372,7 +374,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(4, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(4, listener.NewDataList.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
                             fields,
@@ -404,7 +406,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // test SODA
                 var model = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
 
                 SendEvent(env, "E1", 10d, SupportEnum.ENUM_VALUE_2); // A (1)
@@ -414,7 +416,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count);
                         EPAssertionUtil.AssertPropsPerRow(
                             listener.NewDataList[0],
                             fields,

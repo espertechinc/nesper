@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -44,7 +45,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
 
         public void AssertNoneReceived()
         {
-            Assert.IsTrue(indicate.IsEmpty());
+            ClassicAssert.IsTrue(indicate.IsEmpty());
             AssertStmtNoneReceived();
         }
 
@@ -56,7 +57,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
         {
             AssertStmtOneReceived(stmt);
 
-            Assert.AreEqual(1, indicate.Count);
+            ClassicAssert.AreEqual(1, indicate.Count);
             var result = indicate[0];
             AssertValues(fields, firstExpected, result.First);
             AssertValues(fields, secondExpected, result.Second);
@@ -70,7 +71,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
             IDictionary<string, object>[] received)
         {
             if (expected == null) {
-                Assert.IsNull(received);
+                ClassicAssert.IsNull(received);
                 return;
             }
 

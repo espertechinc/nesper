@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -29,10 +30,10 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(notNode.EqualsNode(notNode, false));
-            Assert.IsFalse(notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
-            Assert.IsFalse(notNode.EqualsNode(new ExprOrNode(), false));
-            Assert.IsTrue(notNode.EqualsNode(new ExprNotNode(), false));
+            ClassicAssert.IsTrue(notNode.EqualsNode(notNode, false));
+            ClassicAssert.IsFalse(notNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            ClassicAssert.IsFalse(notNode.EqualsNode(new ExprOrNode(), false));
+            ClassicAssert.IsTrue(notNode.EqualsNode(new ExprNotNode(), false));
         }
 
         [Test]
@@ -40,25 +41,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             notNode.AddChildNode(new SupportBoolExprNode(true));
             SupportExprNodeUtil.Validate(container, notNode);
-            Assert.IsFalse((bool) notNode.Evaluate(null, false, null));
+            ClassicAssert.IsFalse((bool) notNode.Evaluate(null, false, null));
 
             notNode = new ExprNotNode();
             notNode.AddChildNode(new SupportBoolExprNode(false));
             SupportExprNodeUtil.Validate(container, notNode);
-            Assert.IsTrue((bool) notNode.Evaluate(null, false, null));
+            ClassicAssert.IsTrue((bool) notNode.Evaluate(null, false, null));
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(bool?), notNode.EvaluationType);
+            ClassicAssert.AreEqual(typeof(bool?), notNode.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
             notNode.AddChildNode(new SupportExprNode(true));
-            Assert.AreEqual("not true", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
+            ClassicAssert.AreEqual("not true", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(notNode));
         }
 
         [Test]

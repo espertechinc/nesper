@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -41,8 +42,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         [Test]
         public void TestEquals()
         {
-            Assert.IsFalse(_existsNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
-            Assert.IsTrue(_existsNodes[0].EqualsNode(_existsNodes[1], false));
+            ClassicAssert.IsFalse(_existsNodes[0].EqualsNode(new ExprEqualsNodeImpl(true, false), false));
+            ClassicAssert.IsTrue(_existsNodes[0].EqualsNode(_existsNodes[1], false));
         }
 
         [Test]
@@ -53,12 +54,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
                 _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
             }
 
-            Assert.AreEqual(false, _existsNodes[0].Evaluate(new EventBean[3], false, null));
-            Assert.AreEqual(false, _existsNodes[1].Evaluate(new EventBean[3], false, null));
+            ClassicAssert.AreEqual(false, _existsNodes[0].Evaluate(new EventBean[3], false, null));
+            ClassicAssert.AreEqual(false, _existsNodes[1].Evaluate(new EventBean[3], false, null));
 
             EventBean[] events = { SupportEventBeanFactory.MakeEvents(supportEventTypeFactory, new string[1])[0] };
-            Assert.AreEqual(false, _existsNodes[0].Evaluate(events, false, null));
-            Assert.AreEqual(true, _existsNodes[1].Evaluate(events, false, null));
+            ClassicAssert.AreEqual(false, _existsNodes[0].Evaluate(events, false, null));
+            ClassicAssert.AreEqual(true, _existsNodes[1].Evaluate(events, false, null));
         }
 
         [Test]
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             for (var i = 0; i < _existsNodes.Length; i++)
             {
                 _existsNodes[i].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-                Assert.AreEqual(typeof(bool?), _existsNodes[i].EvaluationType);
+                ClassicAssert.AreEqual(typeof(bool?), _existsNodes[i].EvaluationType);
             }
         }
 
@@ -75,7 +76,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         public void TestToExpressionString()
         {
             _existsNodes[0].Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual("exists(s0.dummy?)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_existsNodes[0]));
+            ClassicAssert.AreEqual("exists(s0.dummy?)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_existsNodes[0]));
         }
 
         [Test]

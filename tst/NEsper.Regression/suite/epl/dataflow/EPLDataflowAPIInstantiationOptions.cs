@@ -20,6 +20,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -65,24 +66,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
                 var myOp = MyOp.GetAndClearInstances()[0];
-                Assert.AreEqual("abc", myOp.PropOne);
-                Assert.AreEqual("def", myOp.PropTwo);
+                ClassicAssert.AreEqual("abc", myOp.PropOne);
+                ClassicAssert.AreEqual("def", myOp.PropTwo);
 
-                Assert.AreEqual(3, myParameterProvider.contextMap.Count);
-                Assert.IsNotNull(myParameterProvider.contextMap.Get("propOne"));
+                ClassicAssert.AreEqual(3, myParameterProvider.contextMap.Count);
+                ClassicAssert.IsNotNull(myParameterProvider.contextMap.Get("propOne"));
 
                 var context = myParameterProvider.contextMap.Get("propTwo");
-                Assert.AreEqual("propTwo", context.ParameterName);
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreSame(myOp.Factory, context.Factory);
-                Assert.AreEqual(0, context.OperatorNum);
-                Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
+                ClassicAssert.AreEqual("propTwo", context.ParameterName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreSame(myOp.Factory, context.Factory);
+                ClassicAssert.AreEqual(0, context.OperatorNum);
+                ClassicAssert.AreEqual("MyDataFlowOne", context.DataFlowName);
 
                 context = myParameterProvider.contextMap.Get("propThree");
-                Assert.AreEqual("propThree", context.ParameterName);
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreSame(myOp.Factory, context.Factory);
-                Assert.AreEqual(0, context.OperatorNum);
+                ClassicAssert.AreEqual("propThree", context.ParameterName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreSame(myOp.Factory, context.Factory);
+                ClassicAssert.AreEqual(0, context.OperatorNum);
 
                 env.UndeployAll();
             }
@@ -109,10 +110,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
 
-                Assert.AreEqual(1, myOperatorProvider.contextMap.Count);
+                ClassicAssert.AreEqual(1, myOperatorProvider.contextMap.Count);
                 var context = myOperatorProvider.contextMap.Get("MyOp");
-                Assert.AreEqual("MyOp", context.OperatorName);
-                Assert.AreEqual("MyDataFlowOne", context.DataFlowName);
+                ClassicAssert.AreEqual("MyOp", context.OperatorName);
+                ClassicAssert.AreEqual("MyDataFlowOne", context.DataFlowName);
 
                 env.UndeployAll();
             }

@@ -15,7 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
@@ -79,11 +79,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                        Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
-                        Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
+                        ClassicAssert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
                     });
                 env.UndeployAll();
 
@@ -99,11 +99,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                        Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
-                        Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("d"));
+                        ClassicAssert.AreEqual(typeof(int[]), eventType.GetPropertyType("e"));
                     });
 
                 env.UndeployAll();
@@ -125,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "v1" });
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+                    statement => ClassicAssert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
                 env.UndeployAll();
 
                 env.CompileDeploy("@name('s0') select outer.P0('k1') as a from MyMappedPropertyMapOuter");
@@ -137,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "v1" });
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+                    statement => ClassicAssert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
                 env.UndeployModuleContaining("s0");
 
                 // test map that contains a bean which has a map property
@@ -152,7 +152,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertPropsNew("s0", "a".SplitCsv(), new object[] { "yOne" });
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
+                    statement => ClassicAssert.AreEqual(typeof(object), statement.EventType.GetPropertyType("a")));
 
                 env.UndeployAll();
             }
@@ -180,11 +180,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
                     });
 
                 env.UndeployAll();
@@ -197,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 env.AssertPropsNew("s0", "a,b,c,d,e".SplitCsv(), new object[] { 1, 2, 3, n0Bean1, n0Bean2 });
                 env.AssertStatement(
                     "s0",
-                    statement => { Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("a")); });
+                    statement => { ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("a")); });
 
                 env.UndeployAll();
             }
@@ -227,19 +227,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                             "a,b,c,d".SplitCsv(),
                             new object[] { 1, 2, 3, n0Bean1 });
                         var valueE = (IDictionary<string, object>[])eventResult.Get("e");
-                        Assert.AreEqual(valueE[0], n0Bean2[0]);
-                        Assert.AreEqual(valueE[1], n0Bean2[1]);
+                        ClassicAssert.AreEqual(valueE[0], n0Bean2[0]);
+                        ClassicAssert.AreEqual(valueE[1], n0Bean2[1]);
                     });
 
                 env.AssertStatement(
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("d"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>[]), eventType.GetPropertyType("e"));
                     });
 
                 env.UndeployAll();

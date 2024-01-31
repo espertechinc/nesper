@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface; // assertEquals
@@ -81,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         for (var i = 0; i < 5; i++) {
-                            Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c" + i));
+                            ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c" + i));
                         }
                     });
 
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     statement => {
                         for (var i = 0; i < 11; i++) {
-                            Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t" + i));
+                            ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t" + i));
                         }
                     });
 
@@ -174,7 +174,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.SelectClause = SelectClause.Create().Add(Expressions.ExistsProperty("Item?.IntBoxed"), "t0");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportMarkerInterface)));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
         {
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t0")));
+                statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("t0")));
 
             env.SendEventBean(new SupportBeanDynRoot(new SupportBean()));
             env.AssertEqualsNew("s0", "t0", true);
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             bool[] result)
         {
             for (var i = 0; i < result.Length; i++) {
-                Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+                ClassicAssert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
             }
         }
     }

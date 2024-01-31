@@ -12,6 +12,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             {
                 var combined = SupportBeanCombinedProps.MakeDefaultBean();
                 var complex = SupportBeanComplexProps.MakeDefaultBean();
-                Assert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
+                ClassicAssert.AreEqual("0ma0", combined.GetIndexed(0).GetMapped("0ma").Value);
 
                 var epl = "@name('s0') select Nested.Nested, S1.Indexed[0], Nested.Indexed[1] from " +
                           "SupportBeanComplexProps#length(3) Nested, " +
@@ -63,9 +64,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "s0",
                     listener => {
                         var theEvent = listener.GetAndResetLastNewData()[0];
-                        Assert.AreSame(complex.Nested, theEvent.Get("Nested.Nested"));
-                        Assert.AreSame(combined.GetIndexed(0), theEvent.Get("S1.Indexed[0]"));
-                        Assert.AreEqual(complex.GetIndexed(1), theEvent.Get("Nested.Indexed[1]"));
+                        ClassicAssert.AreSame(complex.Nested, theEvent.Get("Nested.Nested"));
+                        ClassicAssert.AreSame(combined.GetIndexed(0), theEvent.Get("S1.Indexed[0]"));
+                        ClassicAssert.AreEqual(complex.GetIndexed(1), theEvent.Get("Nested.Indexed[1]"));
                     });
 
                 env.UndeployAll();
@@ -89,15 +90,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.SendEventBean(complex);
 
                 // double check that outer join criteria match
-                Assert.AreEqual(complex.GetMapped("keyOne"), combined.GetIndexed(2).GetMapped("2ma").Value);
+                ClassicAssert.AreEqual(complex.GetMapped("keyOne"), combined.GetIndexed(2).GetMapped("2ma").Value);
 
                 env.AssertListener(
                     "s0",
                     listener => {
                         var theEvent = listener.GetAndResetLastNewData()[0];
-                        Assert.AreEqual("Simple", theEvent.Get("S0.SimpleProperty"));
-                        Assert.AreSame(complex, theEvent.Get("S0"));
-                        Assert.AreSame(combined, theEvent.Get("S1"));
+                        ClassicAssert.AreEqual("Simple", theEvent.Get("S0.SimpleProperty"));
+                        ClassicAssert.AreSame(complex, theEvent.Get("S0"));
+                        ClassicAssert.AreSame(combined, theEvent.Get("S1"));
                     });
 
                 env.UndeployAll();

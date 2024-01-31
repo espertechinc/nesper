@@ -21,6 +21,8 @@ using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternObserverTimerAt
@@ -359,7 +361,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 PatternExpr pattern = Patterns.TimerAt(10, 8, null, null, null, null);
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("A1");
                 testCaseList.AddTest(testCase);
@@ -481,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // test SODA
                 var epl = "select * from pattern [every timer:at(*/VFREQ,VMIN:VMAX,1 last,*,[8,2:VMAX,*/VREQ])]";
                 var model = env.EplToModel(epl);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 // test timezone
                 var baseUtcOffset = TimeZoneInfo.Utc.BaseUtcOffset;

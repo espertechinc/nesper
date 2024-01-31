@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
@@ -41,30 +42,30 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             SendEvent(env, "E1", 1, CPUGOALONENANO);
 
             SendTimer(env, 11000);
-            Assert.IsTrue(env.Listener("stmtmetric").GetAndClearIsInvoked());
-            Assert.IsTrue(env.Listener("runtimemetric").GetAndClearIsInvoked());
+            ClassicAssert.IsTrue(env.Listener("stmtmetric").GetAndClearIsInvoked());
+            ClassicAssert.IsTrue(env.Listener("runtimemetric").GetAndClearIsInvoked());
 
             env.Runtime.MetricsService.SetMetricsReportingDisabled();
             SendEvent(env, "E2", 2, CPUGOALONENANO);
             SendTimer(env, 21000);
-            Assert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
-            Assert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
 
             SendTimer(env, 31000);
             SendEvent(env, "E3", 3, CPUGOALONENANO);
-            Assert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
-            Assert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.Listener("stmtmetric").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.Listener("runtimemetric").GetAndClearIsInvoked());
 
             env.Runtime.MetricsService.SetMetricsReportingEnabled();
             SendEvent(env, "E4", 4, CPUGOALONENANO);
             SendTimer(env, 41000);
-            Assert.IsTrue(env.Listener("stmtmetric").GetAndClearIsInvoked());
-            Assert.IsTrue(env.Listener("runtimemetric").GetAndClearIsInvoked());
+            ClassicAssert.IsTrue(env.Listener("stmtmetric").GetAndClearIsInvoked());
+            ClassicAssert.IsTrue(env.Listener("runtimemetric").GetAndClearIsInvoked());
 
             env.UndeployModuleContaining(statements[2].Name);
             SendTimer(env, 51000);
-            Assert.IsTrue(env.Listener("stmtmetric").IsInvoked); // metrics statements reported themselves
-            Assert.IsTrue(env.Listener("runtimemetric").IsInvoked);
+            ClassicAssert.IsTrue(env.Listener("stmtmetric").IsInvoked); // metrics statements reported themselves
+            ClassicAssert.IsTrue(env.Listener("runtimemetric").IsInvoked);
 
             env.UndeployAll();
         }

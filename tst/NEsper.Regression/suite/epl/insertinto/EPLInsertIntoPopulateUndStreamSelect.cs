@@ -22,6 +22,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -99,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     iterator => {
                         var @event = iterator.Advance();
                         var underlying = (object[])@event.Underlying;
-                        Assert.AreEqual("ChildIncident", underlying[0]);
+                        ClassicAssert.AreEqual("ChildIncident", underlying[0]);
                         var underlyingInner = (object[])((EventBean)underlying[1]).Underlying;
                         EPAssertionUtil.AssertEqualsExactOrder(new object[] { "ID1", "INSERT" }, underlyingInner);
                     });

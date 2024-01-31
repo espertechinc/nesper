@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 using com.espertech.esper.compat.collections;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -18,20 +19,20 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestRank()
         {
-            Assert.AreEqual(-1, "a".CompareTo("b"));
-            Assert.AreEqual(1, "b".CompareTo("a"));
+            ClassicAssert.AreEqual(-1, "a".CompareTo("b"));
+            ClassicAssert.AreEqual(1, "b".CompareTo("a"));
 
             MethodExecutableRank r1 = new MethodExecutableRank(1, false);
-            Assert.AreEqual(1, r1.CompareTo(0, false));
-            Assert.AreEqual(-1, r1.CompareTo(2, false));
-            Assert.AreEqual(0, r1.CompareTo(1, false));
-            Assert.AreEqual(-1, r1.CompareTo(1, true));
+            ClassicAssert.AreEqual(1, r1.CompareTo(0, false));
+            ClassicAssert.AreEqual(-1, r1.CompareTo(2, false));
+            ClassicAssert.AreEqual(0, r1.CompareTo(1, false));
+            ClassicAssert.AreEqual(-1, r1.CompareTo(1, true));
 
             MethodExecutableRank r2 = new MethodExecutableRank(0, true);
-            Assert.AreEqual(1, r2.CompareTo(0, false));
-            Assert.AreEqual(0, r2.CompareTo(0, true));
-            Assert.AreEqual(-1, r2.CompareTo(1, false));
-            Assert.AreEqual(-1, r2.CompareTo(1, true));
+            ClassicAssert.AreEqual(1, r2.CompareTo(0, false));
+            ClassicAssert.AreEqual(0, r2.CompareTo(0, true));
+            ClassicAssert.AreEqual(-1, r2.CompareTo(1, false));
+            ClassicAssert.AreEqual(-1, r2.CompareTo(1, true));
 
             SortedSet<MethodExecutableRank> ranks = new SortedSet<MethodExecutableRank>(
                 new ProxyComparer<MethodExecutableRank> {
@@ -48,8 +49,8 @@ namespace com.espertech.esper.common.@internal.util
                 for (int i = 0; i < 6; i++) {
                     enumerator.MoveNext();
                     MethodExecutableRank rank = enumerator.Current;
-                    Assert.AreEqual(i / 2, rank.ConversionCount, "failed for " + i);
-                    Assert.AreEqual(i % 2 == 1, rank.IsVarargs, "failed for " + i);
+                    ClassicAssert.AreEqual(i / 2, rank.ConversionCount, "failed for " + i);
+                    ClassicAssert.AreEqual(i % 2 == 1, rank.IsVarargs, "failed for " + i);
                 }
             }
         }

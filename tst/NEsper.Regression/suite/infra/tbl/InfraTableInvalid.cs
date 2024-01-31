@@ -13,6 +13,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -622,7 +623,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     }
                 }
                 else {
-                    Assert.IsTrue(ex.Message.Contains("Incompatible aggregation function for table"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Incompatible aggregation function for table"));
                 }
             }
 

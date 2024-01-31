@@ -11,6 +11,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -29,7 +30,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             var endTime = PerformanceObserver.MilliTime;
             var delta = endTime - startTime;
 
-            Assert.Greater(delta, 120, "Failed perf test, delta=" + delta);
+            ClassicAssert.Greater(delta, 120, "Failed perf test, delta=" + delta);
             env.UndeployAll();
 
             // test plug-in single-row function

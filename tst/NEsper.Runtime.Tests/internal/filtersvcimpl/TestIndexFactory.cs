@@ -14,6 +14,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -40,44 +41,44 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // Create a "greater" index
             FilterParamIndexBase index = IndexFactory.CreateIndex(MakeLookupable("IntPrimitive"), lockFactory, FilterOperator.GREATER);
 
-            Assert.IsTrue(index != null);
-            Assert.IsTrue(index is FilterParamIndexCompare);
-            Assert.IsTrue(GetPropName(index).Equals("IntPrimitive"));
-            Assert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
+            ClassicAssert.IsTrue(index != null);
+            ClassicAssert.IsTrue(index is FilterParamIndexCompare);
+            ClassicAssert.IsTrue(GetPropName(index).Equals("IntPrimitive"));
+            ClassicAssert.IsTrue(index.FilterOperator == FilterOperator.GREATER);
 
             // Create an "Equals" index
             index = IndexFactory.CreateIndex(MakeLookupable("string"), lockFactory, FilterOperator.EQUAL);
 
-            Assert.IsTrue(index != null);
-            Assert.IsTrue(index is FilterParamIndexEquals);
-            Assert.IsTrue(GetPropName(index).Equals("string"));
-            Assert.IsTrue(index.FilterOperator == FilterOperator.EQUAL);
+            ClassicAssert.IsTrue(index != null);
+            ClassicAssert.IsTrue(index is FilterParamIndexEquals);
+            ClassicAssert.IsTrue(GetPropName(index).Equals("string"));
+            ClassicAssert.IsTrue(index.FilterOperator == FilterOperator.EQUAL);
 
             // Create an "not equals" index
             index = IndexFactory.CreateIndex(MakeLookupable("string"), lockFactory, FilterOperator.NOT_EQUAL);
 
-            Assert.IsTrue(index != null);
-            Assert.IsTrue(index is FilterParamIndexNotEquals);
-            Assert.IsTrue(GetPropName(index).Equals("string"));
-            Assert.IsTrue(index.FilterOperator == FilterOperator.NOT_EQUAL);
+            ClassicAssert.IsTrue(index != null);
+            ClassicAssert.IsTrue(index is FilterParamIndexNotEquals);
+            ClassicAssert.IsTrue(GetPropName(index).Equals("string"));
+            ClassicAssert.IsTrue(index.FilterOperator == FilterOperator.NOT_EQUAL);
 
             // Create a range index
             index = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.RANGE_CLOSED);
-            Assert.IsTrue(index is FilterParamIndexDoubleRange);
+            ClassicAssert.IsTrue(index is FilterParamIndexDoubleRange);
             index = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.NOT_RANGE_CLOSED);
-            Assert.IsTrue(index is FilterParamIndexDoubleRangeInverted);
+            ClassicAssert.IsTrue(index is FilterParamIndexDoubleRangeInverted);
 
             // Create a in-index
             index = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.IN_LIST_OF_VALUES);
-            Assert.IsTrue(index is FilterParamIndexIn);
+            ClassicAssert.IsTrue(index is FilterParamIndexIn);
             index = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.NOT_IN_LIST_OF_VALUES);
-            Assert.IsTrue(index is FilterParamIndexNotIn);
+            ClassicAssert.IsTrue(index is FilterParamIndexNotIn);
 
             // Create a boolean-expression-index
             index = IndexFactory.CreateIndex(MakeLookupable("boolean"), lockFactory, FilterOperator.BOOLEAN_EXPRESSION);
-            Assert.IsTrue(index is FilterParamIndexBooleanExpr);
+            ClassicAssert.IsTrue(index is FilterParamIndexBooleanExpr);
             index = IndexFactory.CreateIndex(MakeLookupable("boolean"), lockFactory, FilterOperator.BOOLEAN_EXPRESSION);
-            Assert.IsTrue(index is FilterParamIndexBooleanExpr);
+            ClassicAssert.IsTrue(index is FilterParamIndexBooleanExpr);
         }
 
         private string GetPropName(FilterParamIndexBase index)

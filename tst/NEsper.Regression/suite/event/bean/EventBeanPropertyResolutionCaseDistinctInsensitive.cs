@@ -10,6 +10,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -24,9 +25,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 result => {
-                    Assert.AreEqual("upper", result.Get("MYPROPERTY"));
-                    Assert.AreEqual("lower", result.Get("myproperty"));
-                    Assert.AreEqual("lowercamel", result.Get("myProperty"));
+                    ClassicAssert.AreEqual("upper", result.Get("MYPROPERTY"));
+                    ClassicAssert.AreEqual("lower", result.Get("myproperty"));
+                    ClassicAssert.AreEqual("lowercamel", result.Get("myProperty"));
                 });
 
             env.TryInvalidCompile(

@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.events
 {
@@ -112,16 +113,16 @@ namespace com.espertech.esper.regressionlib.support.events
 
 		public static void Compare(EventBean @event)
 		{
-			Assert.AreEqual(MakeListOfString(), @event.Get("listOfString"));
-			Assert.AreEqual(MakeListOfNullableInteger(), @event.Get("listOfOptionalInteger"));
-			Assert.AreEqual(MakeMapOfStringAndInteger(), @event.Get("mapOfStringAndInteger"));
-			Assert.AreEqual(
+			ClassicAssert.AreEqual(MakeListOfString(), @event.Get("listOfString"));
+			ClassicAssert.AreEqual(MakeListOfNullableInteger(), @event.Get("listOfOptionalInteger"));
+			ClassicAssert.AreEqual(MakeMapOfStringAndInteger(), @event.Get("mapOfStringAndInteger"));
+			ClassicAssert.AreEqual(
 				MakeListArrayOfString().Render(),
 				@event.Get("listArrayOfString").UnwrapIntoList<string[]>().RenderAny());
 			EPAssertionUtil.AssertEqualsExactOrder(
 				MakeListOfStringArray().ToArray(),
 				((IList<string[]>)@event.Get("listOfStringArray")).ToArray());
-			Assert.AreEqual(
+			ClassicAssert.AreEqual(
 				MakeListArray2DimOfString()[0].RenderAny(),
 				((IList<string>[][])@event.Get("listArray2DimOfString"))[0].RenderAny());
 			EPAssertionUtil.AssertEqualsExactOrder(

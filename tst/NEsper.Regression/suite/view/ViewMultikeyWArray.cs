@@ -20,6 +20,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.view
 {
     public partial class ViewMultikeyWArray
@@ -819,11 +821,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 listener => {
                     var old = listener.LastOldData;
                     if (expectedRemove != null) {
-                        Assert.AreEqual(1, old.Length);
-                        Assert.AreEqual(expectedRemove, old[0].Underlying);
+                        ClassicAssert.AreEqual(1, old.Length);
+                        ClassicAssert.AreEqual(expectedRemove, old[0].Underlying);
                     }
                     else {
-                        Assert.IsNull(old);
+                        ClassicAssert.IsNull(old);
                     }
                 });
         }

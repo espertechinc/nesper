@@ -14,6 +14,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogMaxStatesEngineWideNoPreventStart : RegressionExecutionWithConfigure
@@ -31,7 +33,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         public void Run(RegressionEnvironment env)
         {
             var conditionHandlerFactoryContext = SupportConditionHandlerFactory.FactoryContexts[0];
-            Assert.AreEqual(conditionHandlerFactoryContext.RuntimeURI, env.RuntimeURI);
+            ClassicAssert.AreEqual(conditionHandlerFactoryContext.RuntimeURI, env.RuntimeURI);
             handler = SupportConditionHandlerFactory.LastHandler;
 
             var fields = "c0".SplitCsv();
@@ -51,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(new SupportBean("A", 1));
             env.SendEventBean(new SupportBean("B", 1));
             env.SendEventBean(new SupportBean("C", 1));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(new SupportBean("D", 1));
@@ -79,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AssertPropsNew("s0", fields, new object[] { "C" });
 
             env.SendEventBean(new SupportBean("F", 1));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             env.SendEventBean(new SupportBean("G", 1));
             RowRecogMaxStatesEngineWide3Instance.AssertContextEnginePool(

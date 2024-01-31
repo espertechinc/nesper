@@ -16,6 +16,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.framework
 {

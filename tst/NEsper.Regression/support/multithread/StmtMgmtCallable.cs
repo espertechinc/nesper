@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -64,7 +65,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                         // Should have received one or more events, one of them must be mine
                         var newEvents = listener.NewDataListFlattened;
-                        Assert.IsTrue(newEvents.Length >= 1, "No event received");
+                        ClassicAssert.IsTrue(newEvents.Length >= 1, "No event received");
                         ThreadLogUtil.Trace("assert received, size is", newEvents.Length);
                         var found = false;
                         for (var i = 0; i < newEvents.Length; i++) {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                             }
                         }
 
-                        Assert.IsTrue(found);
+                        ClassicAssert.IsTrue(found);
                         listener.Reset();
 
                         // Stopping statement, the event should not be received, another event may however
@@ -94,7 +95,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                             }
                         }
 
-                        Assert.IsFalse(found);
+                        ClassicAssert.IsFalse(found);
                     }
                 }
             }

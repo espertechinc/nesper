@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -208,7 +210,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < keyarr.Length; i++) {
                 env.SendEventBean(new SupportBean_S0(0, keyarr[i]));
                 var index = i;
-                env.AssertEventNew("s0", @event => Assert.AreEqual(values[index], @event.Get("value")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(values[index], @event.Get("value")));
             }
         }
 

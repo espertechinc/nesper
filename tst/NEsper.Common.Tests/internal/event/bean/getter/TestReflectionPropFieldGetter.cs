@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public void TestGetter()
         {
             ReflectionPropFieldGetter getter = MakeGetter(typeof(SupportLegacyBean), "fieldLegacyVal");
-            Assert.AreEqual("a", getter.Get(unitTestBean));
+            ClassicAssert.AreEqual("a", getter.Get(unitTestBean));
         }
 
         private ReflectionPropFieldGetter MakeGetter(Type clazz, string fieldName)

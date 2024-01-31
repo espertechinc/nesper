@@ -15,6 +15,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     public class InfraTableResetAggregationState
@@ -196,8 +198,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             row,
                             fieldSetOne,
                             new object[] { 8.88888888888889d, 3L, 2L, 30, 10.0, 11.547005383792515d, "E1", 3L, e3 });
-                        Assert.AreEqual(-3, row.Get("myPluginAggSingle"));
-                        Assert.AreEqual(3, row.Get("myPluginAggAccess").AsObjectDictionary().Count);
+                        ClassicAssert.AreEqual(-3, row.Get("myPluginAggSingle"));
+                        ClassicAssert.AreEqual(3, row.Get("myPluginAggAccess").AsObjectDictionary().Count);
                     });
 
                 AssertCountMinSketch(env, "E1", 1);
@@ -225,8 +227,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             row,
                             fieldSetOne,
                             new object[] { null, 0L, 0L, null, null, null, null, 0L, null });
-                        Assert.AreEqual(0, row.Get("myPluginAggSingle"));
-                        Assert.AreEqual(0, row.Get("myPluginAggAccess").AsObjectDictionary().Count);
+                        ClassicAssert.AreEqual(0, row.Get("myPluginAggSingle"));
+                        ClassicAssert.AreEqual(0, row.Get("myPluginAggAccess").AsObjectDictionary().Count);
                     });
 
                 AssertCountMinSketch(env, "E1", 0);
@@ -363,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int? expected)
         {
             env.AssertIterator("table", en => 
-                Assert.AreEqual(expected, en.Advance().Get("asum")));
+                ClassicAssert.AreEqual(expected, en.Advance().Get("asum")));
         }
     }
 } // end of namespace

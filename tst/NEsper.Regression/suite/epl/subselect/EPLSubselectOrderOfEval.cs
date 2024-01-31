@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -60,16 +61,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(1, ((object[])@event.Get("longItems")).Length);
-                        Assert.AreEqual(1, ((object[])@event.Get("shortItems")).Length);
+                        ClassicAssert.AreEqual(1, ((object[])@event.Get("longItems")).Length);
+                        ClassicAssert.AreEqual(1, ((object[])@event.Get("shortItems")).Length);
                     });
 
                 env.SendEventBean(new SupportTradeEventTwo(PerformanceObserver.MilliTime + 10, 1000, 50, 1));
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(2, ((object[])@event.Get("longItems")).Length);
-                        Assert.AreEqual(2, ((object[])@event.Get("shortItems")).Length);
+                        ClassicAssert.AreEqual(2, ((object[])@event.Get("longItems")).Length);
+                        ClassicAssert.AreEqual(2, ((object[])@event.Get("shortItems")).Length);
                     });
 
                 env.UndeployAll();

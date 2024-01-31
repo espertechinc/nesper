@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 
 // record
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -139,9 +140,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             string value)
         {
             var getter = @event.EventType.GetGetter("Property");
-            Assert.IsTrue(getter.IsExistsProperty(@event));
-            Assert.AreEqual(value, getter.Get(@event));
-            Assert.IsNull(getter.GetFragment(@event));
+            ClassicAssert.IsTrue(getter.IsExistsProperty(@event));
+            ClassicAssert.AreEqual(value, getter.Get(@event));
+            ClassicAssert.IsNull(getter.GetFragment(@event));
         }
 
         public class LocalEvent

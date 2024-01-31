@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -84,10 +84,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             StatementType.CREATE_EXPRESSION,
                             statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                        Assert.AreEqual("E1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                        ClassicAssert.AreEqual("E1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                     });
 
                 env.TryInvalidCompile(
@@ -173,19 +173,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // test SODA
                 var eplExpr = "@name('expr') @public create expression somescript(i1) ['a']";
                 var modelExpr = env.EplToModel(eplExpr);
-                Assert.AreEqual(eplExpr, modelExpr.ToEPL());
+                ClassicAssert.AreEqual(eplExpr, modelExpr.ToEPL());
                 env.CompileDeploy(modelExpr, path);
                 env.AssertStatement(
                     "expr",
-                    statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
 
                 var eplSelect = "@name('select') select somescript(1) from SupportBean";
                 var modelSelect = env.EplToModel(eplSelect);
-                Assert.AreEqual(eplSelect, modelSelect.ToEPL());
+                ClassicAssert.AreEqual(eplSelect, modelSelect.ToEPL());
                 env.CompileDeploy(modelSelect, path);
                 env.AssertStatement(
                     "select",
-                    statement => Assert.AreEqual(eplSelect, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(eplSelect, statement.GetProperty(StatementProperty.EPL)));
 
                 env.UndeployAll();
             }
@@ -229,21 +229,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var eplExpr =
                     "@name('expr') @public create expression JoinMultiplication {(s1,s2) => s1.IntPrimitive*s2.Id}";
                 var modelExpr = env.EplToModel(eplExpr);
-                Assert.AreEqual(eplExpr, modelExpr.ToEPL());
+                ClassicAssert.AreEqual(eplExpr, modelExpr.ToEPL());
                 env.CompileDeploy(modelExpr, path);
                 env.AssertStatement(
                     "expr",
-                    statement => Assert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(eplExpr, statement.GetProperty(StatementProperty.EPL)));
 
                 // test SODA and join and 2-stream parameter
                 var eplJoin =
                     "@name('join') select JoinMultiplication(sb,s0) from SupportBean#lastevent as sb, SupportBean_S0#lastevent as s0";
                 var modelJoin = env.EplToModel(eplJoin);
-                Assert.AreEqual(eplJoin, modelJoin.ToEPL());
+                ClassicAssert.AreEqual(eplJoin, modelJoin.ToEPL());
                 env.CompileDeploy(modelJoin, path);
                 env.AssertStatement(
                     "join",
-                    statement => Assert.AreEqual(eplJoin, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(eplJoin, statement.GetProperty(StatementProperty.EPL)));
                 env.UndeployAll();
 
                 // test subquery against named window and table defined in declared expression
@@ -323,16 +323,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@name('s2') " + selector, path).AddListener("s2");
 
             env.SendEventBean(new SupportBean("E3", 0));
-            Assert.IsFalse(listenerS1.GetAndClearIsInvoked() || env.Listener("s2").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(listenerS1.GetAndClearIsInvoked() || env.Listener("s2").GetAndClearIsInvoked());
 
             env.Milestone(0);
 
             env.SendEventBean(new SupportBean("E4", 1));
-            Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
-            Assert.IsFalse(env.Listener("s2").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(listenerS1.GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.Listener("s2").GetAndClearIsInvoked());
             env.SendEventBean(new SupportBean("E4", 2));
-            Assert.IsFalse(listenerS1.GetAndClearIsInvoked());
-            Assert.IsTrue(env.Listener("s2").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(listenerS1.GetAndClearIsInvoked());
+            ClassicAssert.IsTrue(env.Listener("s2").GetAndClearIsInvoked());
 
             env.UndeployAll();
         }

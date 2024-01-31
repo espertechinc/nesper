@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -101,9 +102,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     env.SendEventBean(new SupportBean("G" + i, i));
                 }
 
-                Assert.AreEqual(10L, GetTableCount(env.Statement("create")));
+                ClassicAssert.AreEqual(10L, GetTableCount(env.Statement("create")));
                 env.CompileExecuteFAF("delete from MyTableDEL", path);
-                Assert.AreEqual(0L, GetTableCount(env.Statement("create")));
+                ClassicAssert.AreEqual(0L, GetTableCount(env.Statement("create")));
 
                 env.UndeployAll();
             }
@@ -180,8 +181,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             string[] propertyNames,
             EPStatement stmt)
         {
-            Assert.AreEqual(0, resultOne.Array.Length);
-            Assert.AreSame(resultOne.EventType, stmt.EventType);
+            ClassicAssert.AreEqual(0, resultOne.Array.Length);
+            ClassicAssert.AreSame(resultOne.EventType, stmt.EventType);
         }
     }
 } // end of namespace

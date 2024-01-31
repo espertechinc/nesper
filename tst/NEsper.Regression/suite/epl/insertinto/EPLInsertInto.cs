@@ -33,7 +33,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 using static NEsper.Avro.Extensions.TypeBuilder;
@@ -320,19 +320,19 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertListener(
                 "rld",
                 listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(minDelta, listener.LastNewData[0].Get("minD"));
-                    Assert.AreEqual(maxDelta, listener.LastNewData[0].Get("maxD"));
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(minDelta, listener.LastNewData[0].Get("minD"));
+                    ClassicAssert.AreEqual(maxDelta, listener.LastNewData[0].Get("maxD"));
                     listener.Reset();
                 });
             env.AssertListener(
                 "rlp",
                 listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(minProduct, listener.LastNewData[0].Get("minP"));
-                    Assert.AreEqual(maxProduct, listener.LastNewData[0].Get("maxP"));
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(minProduct, listener.LastNewData[0].Get("minP"));
+                    ClassicAssert.AreEqual(maxProduct, listener.LastNewData[0].Get("maxP"));
                     listener.Reset();
                 });
         }
@@ -345,10 +345,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertListener(
                 "fl",
                 listener => {
-                    Assert.AreEqual(1, listener.NewDataList.Count);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(delta, listener.LastNewData[0].Get("delta"));
-                    Assert.AreEqual(product, listener.LastNewData[0].Get("product"));
+                    ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(delta, listener.LastNewData[0].Get("delta"));
+                    ClassicAssert.AreEqual(product, listener.LastNewData[0].Get("product"));
                     listener.Reset();
                 });
         }
@@ -428,22 +428,22 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     EventRepresentationChoice.AVRO,
                     und => {
                         var rec = (GenericRecord)und;
-                        Assert.AreEqual("E1", rec.Get("TheString"));
-                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("E1", rec.Get("TheString"));
+                        ClassicAssert.AreEqual(10, rec.Get("IntPrimitive"));
                     });
                 assertions.Put(
                     EventRepresentationChoice.JSON,
                     und => {
                         var rec = (JsonEventObject)und;
-                        Assert.AreEqual("E1", rec.Get("TheString"));
-                        Assert.AreEqual(10, rec.Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("E1", rec.Get("TheString"));
+                        ClassicAssert.AreEqual(10, rec.Get("IntPrimitive"));
                     });
                 assertions.Put(
                     EventRepresentationChoice.JSONCLASSPROVIDED,
                     und => {
                         var rec = (MyLocalJsonProvided)und;
-                        Assert.AreEqual("E1", rec.TheString);
-                        Assert.AreEqual(10, rec.IntPrimitive);
+                        ClassicAssert.AreEqual("E1", rec.TheString);
+                        ClassicAssert.AreEqual(10, rec.IntPrimitive);
                     });
 
                 foreach (var rep in EventRepresentationChoiceExtensions.Values()) {
@@ -493,11 +493,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var epl = "@Name('s0') insert rstream into Event_1_RSOM " +
                           "select IntPrimitive, IntBoxed " +
                           "from SupportBean";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 var modelTwo = env.EplToModel(model.ToEPL());
                 model = env.CopyMayFail(modelTwo);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
             }
         }
 
@@ -520,10 +520,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var epl = "@Name('fl') @public insert into Event_1_OMS(delta, product) " +
                           "select IntPrimitive-IntBoxed as deltaTag, IntPrimitive*IntBoxed as productTag " +
                           "from SupportBean#length(100)";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 env.AssertStatement(
                     "fl",
-                    statement => Assert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
 
                 env.UndeployAll();
             }
@@ -540,12 +540,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 var model = env.EplToModel(epl);
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 TryAssertsVariant(env, null, model, "Event_1_EPL");
                 env.AssertStatement(
                     "fl",
-                    statement => Assert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
                 env.UndeployAll();
             }
         }
@@ -586,14 +586,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 // test insert wildcard to wildcard
                 var stmtSelectText = "@name('i0') insert into ABCStream select * from SupportBean";
                 env.CompileDeploy(stmtSelectText).AddListener("i0");
-                env.AssertStatement("i0", statement => Assert.IsTrue(statement.EventType is BeanEventType));
+                env.AssertStatement("i0", statement => ClassicAssert.IsTrue(statement.EventType is BeanEventType));
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertListener(
                     "i0",
                     listener => {
-                        Assert.AreEqual("E1", listener.AssertOneGetNew().Get("TheString"));
-                        Assert.IsTrue(listener.AssertOneGetNew().Underlying is SupportBean);
+                        ClassicAssert.AreEqual("E1", listener.AssertOneGetNew().Get("TheString"));
+                        ClassicAssert.IsTrue(listener.AssertOneGetNew().Underlying is SupportBean);
                     });
 
                 env.UndeployAll();
@@ -669,23 +669,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertListener(
                     "stmt1",
                     listener => {
-                        Assert.IsTrue(listener.GetAndClearIsInvoked());
-                        Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
-                        Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
-                        Assert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
-                        Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
+                        ClassicAssert.IsTrue(listener.GetAndClearIsInvoked());
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
+                        ClassicAssert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
+                        ClassicAssert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
 
                 env.AssertListener(
                     "stmt2",
                     listener => {
-                        Assert.IsTrue(listener.GetAndClearIsInvoked());
-                        Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
-                        Assert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
-                        Assert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
-                        Assert.AreSame(theEvent, listener.LastNewData[0].Underlying);
+                        ClassicAssert.IsTrue(listener.GetAndClearIsInvoked());
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(10, listener.LastNewData[0].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual(11, listener.LastNewData[0].Get("IntBoxed"));
+                        ClassicAssert.AreEqual(22, listener.LastNewData[0].EventType.PropertyNames.Length);
+                        ClassicAssert.AreSame(theEvent, listener.LastNewData[0].Underlying);
                     });
 
                 env.UndeployAll();
@@ -709,11 +709,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "fl",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(NameAccessModifier.PUBLIC, type.Metadata.AccessModifier);
-                        Assert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
-                        Assert.AreEqual(EventTypeApplicationType.MAP, type.Metadata.ApplicationType);
-                        Assert.AreEqual("Event_1_2J", type.Metadata.Name);
-                        Assert.AreEqual(EventTypeBusModifier.NONBUS, type.Metadata.BusModifier);
+                        ClassicAssert.AreEqual(NameAccessModifier.PUBLIC, type.Metadata.AccessModifier);
+                        ClassicAssert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
+                        ClassicAssert.AreEqual(EventTypeApplicationType.MAP, type.Metadata.ApplicationType);
+                        ClassicAssert.AreEqual("Event_1_2J", type.Metadata.Name);
+                        ClassicAssert.AreEqual(EventTypeBusModifier.NONBUS, type.Metadata.BusModifier);
                     });
 
                 env.UndeployAll();
@@ -1002,14 +1002,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsTrue(listener.IsInvoked);
-                        Assert.AreEqual(3, listener.NewDataList.Count);
-                        Assert.AreEqual("CSC", listener.NewDataList[0][0].Get("mySymbol"));
-                        Assert.AreEqual(10.0, listener.NewDataList[0][0].Get("pricesum"));
-                        Assert.AreEqual("GE", listener.NewDataList[1][0].Get("mySymbol"));
-                        Assert.AreEqual(30.0, listener.NewDataList[1][0].Get("pricesum"));
-                        Assert.AreEqual("IBM", listener.NewDataList[2][0].Get("mySymbol"));
-                        Assert.AreEqual(80.0, listener.NewDataList[2][0].Get("pricesum"));
+                        ClassicAssert.IsTrue(listener.IsInvoked);
+                        ClassicAssert.AreEqual(3, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual("CSC", listener.NewDataList[0][0].Get("mySymbol"));
+                        ClassicAssert.AreEqual(10.0, listener.NewDataList[0][0].Get("pricesum"));
+                        ClassicAssert.AreEqual("GE", listener.NewDataList[1][0].Get("mySymbol"));
+                        ClassicAssert.AreEqual(30.0, listener.NewDataList[1][0].Get("pricesum"));
+                        ClassicAssert.AreEqual("IBM", listener.NewDataList[2][0].Get("mySymbol"));
+                        ClassicAssert.AreEqual(80.0, listener.NewDataList[2][0].Get("pricesum"));
                         listener.Reset();
                     });
 
@@ -1020,10 +1020,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual("ABC", listener.NewDataList[0][0].Get("mySymbol"));
-                        Assert.AreEqual(91.0, listener.NewDataList[0][0].Get("pricesum"));
-                        Assert.AreEqual("DEF", listener.NewDataList[1][0].Get("mySymbol"));
-                        Assert.AreEqual(191.0, listener.NewDataList[1][0].Get("pricesum"));
+                        ClassicAssert.AreEqual("ABC", listener.NewDataList[0][0].Get("mySymbol"));
+                        ClassicAssert.AreEqual(91.0, listener.NewDataList[0][0].Get("pricesum"));
+                        ClassicAssert.AreEqual("DEF", listener.NewDataList[1][0].Get("mySymbol"));
+                        ClassicAssert.AreEqual(191.0, listener.NewDataList[1][0].Get("pricesum"));
                     });
 
                 env.UndeployAll();
@@ -1085,7 +1085,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "i0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.UnderlyingType);
                     });
 
                 env.UndeployAll();
@@ -1163,9 +1163,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             private void AssertNullTypeForDummyField(EventType eventType)
             {
                 var fieldName = "dummy";
-                Assert.IsTrue(eventType.IsProperty(fieldName));
+                ClassicAssert.IsTrue(eventType.IsProperty(fieldName));
                 Assert.That(eventType.GetPropertyType(fieldName), Is.EqualTo(typeof(object)));
-                //Assert.AreSame(null, eventType.GetPropertyType(fieldName));
+                //ClassicAssert.AreSame(null, eventType.GetPropertyType(fieldName));
                 var desc = eventType.GetPropertyDescriptor(fieldName);
                 SupportEventPropUtil.AssertPropEquals(new SupportEventPropDesc(fieldName, typeof(object)), desc);
             }
@@ -1217,13 +1217,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertListener(
                 stmtName,
                 listener => {
-                    Assert.IsTrue(listener.GetAndClearIsInvoked());
+                    ClassicAssert.IsTrue(listener.GetAndClearIsInvoked());
                     var eventBean = listener.LastNewData[0];
-                    Assert.AreEqual(myString, eventBean.Get("MyString"));
-                    Assert.AreEqual(myInt, eventBean.Get("MyInt"));
+                    ClassicAssert.AreEqual(myString, eventBean.Get("MyString"));
+                    ClassicAssert.AreEqual(myInt, eventBean.Get("MyInt"));
                     if (additionalString != null) {
-                        Assert.AreEqual(additionalString, eventBean.Get("concat"));
-                        Assert.AreEqual(additionalInt, eventBean.Get("summed"));
+                        ClassicAssert.AreEqual(additionalString, eventBean.Get("concat"));
+                        ClassicAssert.AreEqual(additionalInt, eventBean.Get("summed"));
                     }
                 });
         }
@@ -1255,21 +1255,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertListener(
                 statementName,
                 listener => {
-                    Assert.IsTrue(listener.GetAndClearIsInvoked());
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(2, listener.LastNewData[0].EventType.PropertyNames.Length);
-                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S0"));
-                    Assert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S1"));
+                    ClassicAssert.IsTrue(listener.GetAndClearIsInvoked());
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(2, listener.LastNewData[0].EventType.PropertyNames.Length);
+                    ClassicAssert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S0"));
+                    ClassicAssert.IsTrue(listener.LastNewData[0].EventType.IsProperty("S1"));
                     if (rep != null && (rep.Value.IsJsonEvent() || rep.Value.IsJsonProvidedClassEvent())) {
-                        Assert.AreEqual(((string) eventS0).RemoveWhitespace(), listener.LastNewData[0].Get("S0").ToString().RemoveWhitespace());
-                        Assert.AreEqual(((string) eventS1).RemoveWhitespace(), listener.LastNewData[0].Get("S1").ToString().RemoveWhitespace());
+                        ClassicAssert.AreEqual(((string) eventS0).RemoveWhitespace(), listener.LastNewData[0].Get("S0").ToString().RemoveWhitespace());
+                        ClassicAssert.AreEqual(((string) eventS1).RemoveWhitespace(), listener.LastNewData[0].Get("S1").ToString().RemoveWhitespace());
                     }
                     else {
-                        Assert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
-                        Assert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
+                        ClassicAssert.AreSame(eventS0, listener.LastNewData[0].Get("S0"));
+                        ClassicAssert.AreSame(eventS1, listener.LastNewData[0].Get("S1"));
                     }
 
-                    Assert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
+                    ClassicAssert.IsTrue(rep == null || rep.Value.MatchesClass(listener.LastNewData[0].Underlying.GetType()));
                 });
         }
 

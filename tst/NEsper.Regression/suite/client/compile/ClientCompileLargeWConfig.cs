@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -149,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     statement => {
                         var eventType = statement.EventType;
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.AreEqual(typeof(long), eventType.GetPropertyType("p" + i));
+                            ClassicAssert.AreEqual(typeof(long), eventType.GetPropertyType("p" + i));
                         }
                     });
 
@@ -177,7 +178,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     @event => {
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.AreEqual(i + 1000000L, @event.Get("p" + i));
+                            ClassicAssert.AreEqual(i + 1000000L, @event.Get("p" + i));
                         }
                     });
 
@@ -243,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     @event => {
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.AreEqual("v" + i, @event.Get("c" + i));
+                            ClassicAssert.AreEqual("v" + i, @event.Get("c" + i));
                         }
                     });
 
@@ -297,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var @event = result.Array[0];
 
                 for (var i = 0; i < numColumns; i++) {
-                    Assert.AreEqual("xv" + i, @event.Get("c" + i));
+                    ClassicAssert.AreEqual("xv" + i, @event.Get("c" + i));
                 }
 
                 env.UndeployAll();
@@ -346,7 +347,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     @event => {
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.AreEqual(sbOne, @event.Get("c" + i));
+                            ClassicAssert.AreEqual(sbOne, @event.Get("c" + i));
                         }
                     });
 
@@ -405,8 +406,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     @event => {
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.IsTrue(@event.EventType.IsProperty("c" + i));
-                            Assert.AreEqual(intPrimitive + i, @event.Get("c" + i));
+                            ClassicAssert.IsTrue(@event.EventType.IsProperty("c" + i));
+                            ClassicAssert.AreEqual(intPrimitive + i, @event.Get("c" + i));
                         }
                     });
             }
@@ -583,8 +584,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     @event => {
                         for (var i = 0; i < numColumns; i++) {
-                            Assert.IsTrue(@event.EventType.IsProperty("c" + i));
-                            Assert.AreEqual("x" + i, @event.Get("c" + i));
+                            ClassicAssert.IsTrue(@event.EventType.IsProperty("c" + i));
+                            ClassicAssert.AreEqual("x" + i, @event.Get("c" + i));
                         }
                     });
 
@@ -652,8 +653,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 enumerator => {
                     var result = enumerator.Advance();
                     for (var i = 0; i < numColumns; i++) {
-                        Assert.IsTrue(result.EventType.IsProperty("c" + i));
-                        Assert.AreEqual(intPrimitive + i, result.Get("c" + i));
+                        ClassicAssert.IsTrue(result.EventType.IsProperty("c" + i));
+                        ClassicAssert.AreEqual(intPrimitive + i, result.Get("c" + i));
                     }
                 });
         }
@@ -667,7 +668,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 enumerator => {
                     var result = enumerator.Advance();
                     for (var i = 0; i < numColumns; i++) {
-                        Assert.IsNull(result.Get("c" + i));
+                        ClassicAssert.IsNull(result.Get("c" + i));
                     }
                 });
         }
@@ -683,8 +684,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     var result = iterator.Advance();
                     for (var i = 0; i < numColumns; i++) {
                         var beans = (SupportBean[])result.Get("c" + i);
-                        Assert.AreEqual(1, beans.Length);
-                        Assert.AreEqual(beans[0], sb);
+                        ClassicAssert.AreEqual(1, beans.Length);
+                        ClassicAssert.AreEqual(beans[0], sb);
                     }
                 });
         }

@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
@@ -30,10 +31,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 statement => {
                     var typeSet = statement.EventType;
 
-                    Assert.AreEqual(typeof(string), typeSet.GetPropertyType("p_1"));
-                    Assert.AreEqual(typeof(bool?), typeSet.GetPropertyType("p_2"));
-                    Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("p_3"));
-                    Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("p_4"));
+                    ClassicAssert.AreEqual(typeof(string), typeSet.GetPropertyType("p_1"));
+                    ClassicAssert.AreEqual(typeof(bool?), typeSet.GetPropertyType("p_2"));
+                    ClassicAssert.AreEqual(typeof(long?), typeSet.GetPropertyType("p_3"));
+                    ClassicAssert.AreEqual(typeof(double?), typeSet.GetPropertyType("p_4"));
                     Array.Sort(typeSet.PropertyNames);
                     CollectionAssert.AreEquivalent(fieldsVar, typeSet.PropertyNames);
                 });

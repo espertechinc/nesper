@@ -10,6 +10,7 @@ using System;
 using System.Numerics;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -33,13 +34,13 @@ namespace com.espertech.esper.common.@internal.util
             for (var i = 0; i < tests.Length; i++)
             {
                 var caster = SimpleTypeCasterFactory.GetCaster(null, (Type) tests[i][0]);
-                Assert.AreEqual(tests[i][2], caster.Cast(tests[i][1]), "error in row:" + i);
+                ClassicAssert.AreEqual(tests[i][2], caster.Cast(tests[i][1]), "error in row:" + i);
             }
 
-            Assert.AreEqual('A', SimpleTypeCasterFactory.GetCaster(typeof(string), typeof(char)).Cast("ABC"));
-            Assert.AreEqual(new BigInteger(100), SimpleTypeCasterFactory.GetCaster(typeof(long?), typeof(BigInteger)).Cast(100L));
-            Assert.AreEqual(100.0m, SimpleTypeCasterFactory.GetCaster(typeof(long?), typeof(decimal)).Cast(100L));
-            Assert.AreEqual(100.0m, SimpleTypeCasterFactory.GetCaster(typeof(double?), typeof(decimal)).Cast(100d));
+            ClassicAssert.AreEqual('A', SimpleTypeCasterFactory.GetCaster(typeof(string), typeof(char)).Cast("ABC"));
+            ClassicAssert.AreEqual(new BigInteger(100), SimpleTypeCasterFactory.GetCaster(typeof(long?), typeof(BigInteger)).Cast(100L));
+            ClassicAssert.AreEqual(100.0m, SimpleTypeCasterFactory.GetCaster(typeof(long?), typeof(decimal)).Cast(100L));
+            ClassicAssert.AreEqual(100.0m, SimpleTypeCasterFactory.GetCaster(typeof(double?), typeof(decimal)).Cast(100d));
         }
     }
 } // end of namespace

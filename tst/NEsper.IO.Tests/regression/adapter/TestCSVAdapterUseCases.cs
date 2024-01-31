@@ -26,7 +26,7 @@ using com.espertech.esperio.file;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -103,7 +103,7 @@ namespace com.espertech.esperio.regression.adapter
             stmt.Events += listener.Update;
 
             feed.Start();
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
 
             source = sourceSupplier.Invoke();
 
@@ -120,7 +120,7 @@ namespace com.espertech.esperio.regression.adapter
             var instance = _runtime.DataFlowService.Instantiate(deployment.DeploymentId, "ReadCSV", options);
             instance.Run();
             var received = outputOp.GetAndReset()[0].ToArray();
-            Assert.AreEqual(1, received.Length);
+            ClassicAssert.AreEqual(1, received.Length);
         }
 
         /// <summary>
@@ -152,7 +152,7 @@ namespace com.espertech.esperio.regression.adapter
             InputAdapter inputAdapter = new CSVInputAdapter(_runtime, spec);
             inputAdapter.Start();
 
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
         [Test]
@@ -202,27 +202,27 @@ namespace com.espertech.esperio.regression.adapter
             coordinator.Start();
 
             _runtime.EventService.AdvanceTime(400);
-            Assert.IsFalse(listenerTrade.IsInvoked);
-            Assert.IsFalse(listenerPrice.IsInvoked);
+            ClassicAssert.IsFalse(listenerTrade.IsInvoked);
+            ClassicAssert.IsFalse(listenerPrice.IsInvoked);
 
             // invoke read of events at 500 (see CSV)
             _runtime.EventService.AdvanceTime(1000);
-            Assert.AreEqual(1, listenerTrade.GetNewDataList().Count);
-            Assert.AreEqual(1, listenerPrice.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listenerTrade.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
             listenerPrice.Reset();
 
             // invoke read of price events at 1500 (see CSV)
             _runtime.EventService.AdvanceTime(2000);
-            Assert.AreEqual(0, listenerTrade.GetNewDataList().Count);
-            Assert.AreEqual(1, listenerPrice.GetNewDataList().Count);
+            ClassicAssert.AreEqual(0, listenerTrade.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
             listenerPrice.Reset();
 
             // invoke read of trade events at 2500 (see CSV)
             _runtime.EventService.AdvanceTime(3000);
-            Assert.AreEqual(1, listenerTrade.GetNewDataList().Count);
-            Assert.AreEqual(0, listenerPrice.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listenerTrade.GetNewDataList().Count);
+            ClassicAssert.AreEqual(0, listenerPrice.GetNewDataList().Count);
             listenerTrade.Reset();
             listenerPrice.Reset();
         }
@@ -250,12 +250,12 @@ namespace com.espertech.esperio.regression.adapter
             var listener = new SupportUpdateListener();
             stmt.Events += listener.Update;
 
-            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("symbol"));
-            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("price"));
-            Assert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("volume"));
+            ClassicAssert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("symbol"));
+            ClassicAssert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("price"));
+            ClassicAssert.AreEqual(typeof (string), stmt.EventType.GetPropertyType("volume"));
 
             feed.Start();
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
         /// <summary>
@@ -280,7 +280,7 @@ namespace com.espertech.esperio.regression.adapter
             inputAdapter.Start();
             Thread.Sleep(1000);
 
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
         /// <summary>
@@ -304,13 +304,13 @@ namespace com.espertech.esperio.regression.adapter
             inputAdapter.Start();
 
             Thread.Sleep(1500);
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
             listener.Reset();
             Thread.Sleep(300);
-            Assert.AreEqual(0, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(0, listener.GetNewDataList().Count);
 
             Thread.Sleep(2000);
-            Assert.IsTrue(listener.GetNewDataList().Count >= 2);
+            ClassicAssert.IsTrue(listener.GetNewDataList().Count >= 2);
         }
 
         /// <summary>
@@ -329,7 +329,7 @@ namespace com.espertech.esperio.regression.adapter
 
             (new CSVInputAdapter(_runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "TypeA")).Start();
 
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
         }
 
         /// <summary>

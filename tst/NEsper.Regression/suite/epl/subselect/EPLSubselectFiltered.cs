@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -332,13 +333,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(SupportBean_S1),
                         statement.EventType.GetPropertyType("events1")));
 
                 object theEvent = new SupportBean_S1(-1, "Y");
                 env.SendEventBean(theEvent);
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("events1")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("events1")));
 
                 env.UndeployAll();
             }
@@ -359,20 +360,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 model = env.CopyMayFail(model);
 
                 var stmtText = "select (select * from SupportBean_S1#length(1000)) as events1 from SupportBean_S1";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(SupportBean_S1),
                         statement.EventType.GetPropertyType("events1")));
 
                 object theEvent = new SupportBean_S1(-1, "Y");
                 env.SendEventBean(theEvent);
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("events1")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("events1")));
 
                 env.UndeployAll();
             }
@@ -388,13 +389,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(SupportBean_S1),
                         statement.EventType.GetPropertyType("events1")));
 
                 object theEvent = new SupportBean_S1(-1, "Y");
                 env.SendEventBean(theEvent);
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("events1")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("events1")));
 
                 env.UndeployAll();
             }
@@ -410,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(SupportBean_S1),
                         statement.EventType.GetPropertyType("events1")));
 
@@ -418,7 +419,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.SendEventBean(theEvent);
                 env.SendEventBean(new SupportBean_S0(0));
 
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("events1")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("events1")));
 
                 env.UndeployAll();
             }
@@ -433,7 +434,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(SupportBean_S1),
                         statement.EventType.GetPropertyType("subselect_1")));
 
@@ -441,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.SendEventBean(theEvent);
                 env.SendEventBean(new SupportBean_S0(0));
 
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("subselect_1")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("subselect_1")));
 
                 env.UndeployAll();
             }
@@ -530,7 +531,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var stmtText =
                     "select (select prev(1,Id) from SupportBean_S1#length(1000) where Id=s0.Id) as Value from SupportBean_S0 as s0";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
@@ -902,8 +903,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(2, theEvent.Get("a.Id"));
-                        Assert.AreEqual(4, theEvent.Get("b.Id"));
+                        ClassicAssert.AreEqual(2, theEvent.Get("a.Id"));
+                        ClassicAssert.AreEqual(4, theEvent.Get("b.Id"));
                     });
 
                 env.SendEventBean(new SupportSensorEvent(5, "Temperature", "B", 65, 85.0));
@@ -916,8 +917,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(7, theEvent.Get("a.Id"));
-                        Assert.AreEqual(6, theEvent.Get("b.Id"));
+                        ClassicAssert.AreEqual(7, theEvent.Get("a.Id"));
+                        ClassicAssert.AreEqual(6, theEvent.Get("b.Id"));
                     });
 
                 env.UndeployAll();
@@ -957,8 +958,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     theEvent => {
                         var high = ((SupportSensorEvent)theEvent.Get("high")).Measurement;
                         var low = ((SupportSensorEvent)theEvent.Get("low")).Measurement;
-                        Assert.AreEqual(highExpected, high, 0d);
-                        Assert.AreEqual(lowExpected, low, 0d);
+                        ClassicAssert.AreEqual(highExpected, high, 0d);
+                        ClassicAssert.AreEqual(lowExpected, low, 0d);
                     });
             }
         }
@@ -1108,11 +1109,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(1, theEvent.Get("s0id"));
-                    Assert.AreEqual(1, theEvent.Get("s1id"));
-                    Assert.AreEqual("ab", theEvent.Get("s2p20"));
-                    Assert.AreEqual(null, theEvent.Get("s2p20Prior"));
-                    Assert.AreEqual(null, theEvent.Get("s2p20Prev"));
+                    ClassicAssert.AreEqual(1, theEvent.Get("s0id"));
+                    ClassicAssert.AreEqual(1, theEvent.Get("s1id"));
+                    ClassicAssert.AreEqual("ab", theEvent.Get("s2p20"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("s2p20Prior"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("s2p20Prev"));
                 });
 
             env.SendEventBean(new SupportBean_S2(2, "qx"));
@@ -1121,11 +1122,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(2, theEvent.Get("s0id"));
-                    Assert.AreEqual(2, theEvent.Get("s1id"));
-                    Assert.AreEqual("qx", theEvent.Get("s2p20"));
-                    Assert.AreEqual("ab", theEvent.Get("s2p20Prior"));
-                    Assert.AreEqual("ab", theEvent.Get("s2p20Prev"));
+                    ClassicAssert.AreEqual(2, theEvent.Get("s0id"));
+                    ClassicAssert.AreEqual(2, theEvent.Get("s1id"));
+                    ClassicAssert.AreEqual("qx", theEvent.Get("s2p20"));
+                    ClassicAssert.AreEqual("ab", theEvent.Get("s2p20Prior"));
+                    ClassicAssert.AreEqual("ab", theEvent.Get("s2p20Prev"));
                 });
 
             env.UndeployAll();

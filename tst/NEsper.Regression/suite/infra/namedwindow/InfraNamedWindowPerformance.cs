@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 // assertTrue
@@ -223,8 +223,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // assert they are deleted
                 env.AssertIterator(
                     "create",
-                    iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
-                env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
+                    iterator => ClassicAssert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => ClassicAssert.AreEqual(10000, listener.OldDataList.Count));
 
                 env.UndeployAll();
             }
@@ -264,8 +264,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 // assert they are deleted
                 env.AssertIterator(
                     "create",
-                    iterator => Assert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
-                env.AssertListener("create", listener => Assert.AreEqual(10000, listener.OldDataList.Count));
+                    iterator => ClassicAssert.AreEqual(50000 - 10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => ClassicAssert.AreEqual(10000, listener.OldDataList.Count));
 
                 env.UndeployAll();
             }
@@ -305,8 +305,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.That(delta, Is.LessThan(1500), "Delta=" + delta);
 
                 // assert they are all deleted
-                env.AssertIterator("create", iterator => Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
-                env.AssertListener("create", listener => Assert.AreEqual(20000, listener.OldDataList.Count));
+                env.AssertIterator("create", iterator => ClassicAssert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertListener("create", listener => ClassicAssert.AreEqual(20000, listener.OldDataList.Count));
 
                 env.UndeployAll();
             }
@@ -354,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 Assert.That(delta, Is.LessThan(1000), "Delta=" + delta);
                 env.AssertIterator(
                     "create",
-                    iterator => Assert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(iterator)));
+                    iterator => ClassicAssert.AreEqual(10000, EPAssertionUtil.EnumeratorCount(iterator)));
 
                 // destroy all
                 foreach (var statement in statements) {
@@ -373,10 +373,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             object theEvent,
             int? expected)
         {
-            Assert.AreEqual(0, GetIndexCount(env));
+            ClassicAssert.AreEqual(0, GetIndexCount(env));
 
             env.CompileDeploy("@name('s0')" + epl, path).AddListener("s0");
-            Assert.AreEqual(numIndexes, GetIndexCount(env));
+            ClassicAssert.AreEqual(numIndexes, GetIndexCount(env));
 
             var start = PerformanceObserver.MilliTime;
             var loops = 1000;
@@ -391,7 +391,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             Assert.That(delta, Is.LessThan(1000), "delta=" + delta);
 
             env.UndeployModuleContaining("s0");
-            Assert.AreEqual(0, GetIndexCount(env));
+            ClassicAssert.AreEqual(0, GetIndexCount(env));
         }
 
         private static int GetIndexCount(RegressionEnvironment env)

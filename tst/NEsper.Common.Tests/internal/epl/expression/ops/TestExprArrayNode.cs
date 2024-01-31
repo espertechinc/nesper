@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -49,22 +50,22 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(arrayNodes[0].EqualsNode(arrayNodes[1], false));
-            Assert.IsFalse(arrayNodes[0].EqualsNode(new SupportExprNode(null), false));
+            ClassicAssert.IsTrue(arrayNodes[0].EqualsNode(arrayNodes[1], false));
+            ClassicAssert.IsFalse(arrayNodes[0].EqualsNode(new SupportExprNode(null), false));
         }
 
         [Test]
         public void TestEvaluate()
         {
             var result = arrayNodes[0].Forge.ExprEvaluator.Evaluate(null, true, null);
-            Assert.AreEqual(typeof(object[]), result.GetType());
-            Assert.AreEqual(0, ((object[]) result).Length);
+            ClassicAssert.AreEqual(typeof(object[]), result.GetType());
+            ClassicAssert.AreEqual(0, ((object[]) result).Length);
 
             result = arrayNodes[1].Forge.ExprEvaluator.Evaluate(null, true, null);
-            Assert.AreEqual(typeof(int[]), result.GetType());
-            Assert.AreEqual(2, ((int[]) result).Length);
-            Assert.AreEqual(2, (int) ((int[]) result)[0]);
-            Assert.AreEqual(3, (int) ((int[]) result)[1]);
+            ClassicAssert.AreEqual(typeof(int[]), result.GetType());
+            ClassicAssert.AreEqual(2, ((int[]) result).Length);
+            ClassicAssert.AreEqual(2, (int) ((int[]) result)[0]);
+            ClassicAssert.AreEqual(3, (int) ((int[]) result)[1]);
 
             result = arrayNodes[2].Forge.ExprEvaluator.Evaluate(null, true, null);
             Assert.That(result, Is.InstanceOf<double?[]>());
@@ -73,28 +74,28 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             Assert.That(result, Has.Member(1.0));
 
             result = arrayNodes[3].Forge.ExprEvaluator.Evaluate(null, true, null);
-            Assert.AreEqual(typeof(object[]), result.GetType());
-            Assert.AreEqual(2, ((object[]) result).Length);
-            Assert.AreEqual("a", ((object[]) result)[0]);
-            Assert.AreEqual(1, ((object[]) result)[1]);
+            ClassicAssert.AreEqual(typeof(object[]), result.GetType());
+            ClassicAssert.AreEqual(2, ((object[]) result).Length);
+            ClassicAssert.AreEqual("a", ((object[]) result)[0]);
+            ClassicAssert.AreEqual(1, ((object[]) result)[1]);
         }
 
         [Test]
         public void TestGetType()
         {
-            Assert.AreEqual(typeof(object[]), arrayNodes[0].Forge.EvaluationType);
-            Assert.AreEqual(typeof(int[]), arrayNodes[1].Forge.EvaluationType);
-            Assert.AreEqual(typeof(double?[]), arrayNodes[2].Forge.EvaluationType);
-            Assert.AreEqual(typeof(object[]), arrayNodes[3].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(object[]), arrayNodes[0].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(int[]), arrayNodes[1].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(double?[]), arrayNodes[2].Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(object[]), arrayNodes[3].Forge.EvaluationType);
         }
 
         [Test]
         public void TestToExpressionString()
         {
-            Assert.AreEqual("{}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[0]));
-            Assert.AreEqual("{2,3}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[1]));
-            Assert.AreEqual("{1.5d,1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[2]));
-            Assert.AreEqual("{\"a\",1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[3]));
+            ClassicAssert.AreEqual("{}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[0]));
+            ClassicAssert.AreEqual("{2,3}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[1]));
+            ClassicAssert.AreEqual("{1.5d,1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[2]));
+            ClassicAssert.AreEqual("{\"a\",1}", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arrayNodes[3]));
         }
     }
 } // end of namespace

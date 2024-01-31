@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -94,7 +95,7 @@ namespace com.espertech.esper.common.@internal.type
 
                 object result = computer.Compare(lhs, rhs);
 
-                Assert.AreEqual(expected, result, "line " + i + " lhs=" + lhs + " op=" + e + " rhs=" + rhs);
+                ClassicAssert.AreEqual(expected, result, "line " + i + " lhs=" + lhs + " op=" + e + " rhs=" + rhs);
             }
         }
 
@@ -119,7 +120,7 @@ namespace com.espertech.esper.common.@internal.type
                         .Compare(
                             parameters[i][0],
                             parameters[i][1]);
-                    Assert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
+                    ClassicAssert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }
@@ -155,7 +156,7 @@ namespace com.espertech.esper.common.@internal.type
                         .Compare(
                             parameters[i][0],
                             parameters[i][1]);
-                    Assert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
+                    ClassicAssert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }
@@ -181,7 +182,7 @@ namespace com.espertech.esper.common.@internal.type
                         .Compare(
                             parameters[i][0],
                             parameters[i][1]);
-                    Assert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
+                    ClassicAssert.AreEqual(expected[op][i], result, "op=" + op + ",i=" + i);
                 }
             }
         }

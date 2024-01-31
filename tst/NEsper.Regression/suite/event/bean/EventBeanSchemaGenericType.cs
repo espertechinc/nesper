@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -228,7 +229,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "schema",
                 statement => {
                     var schemaType = statement.EventType;
-                    Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
+                    ClassicAssert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
                     var received = schemaType.PropertyDescriptors.ToArray();
                     var fragment = received[0].IsFragment; // ignore fragment, mapped, indexed flags
                     var indexed = received[0].IsIndexed; // ignore fragment, mapped, indexed flags
@@ -275,13 +276,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "s0",
                 statement => {
                     var schemaType = env.Statement("schema").EventType;
-                    Assert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
-                    Assert.AreEqual(expectedOne, schemaType.GetPropertyType("one"));
-                    Assert.AreEqual(expectedTwo, schemaType.GetPropertyType("two"));
+                    ClassicAssert.AreEqual(expectedUnderlying, schemaType.UnderlyingType);
+                    ClassicAssert.AreEqual(expectedOne, schemaType.GetPropertyType("one"));
+                    ClassicAssert.AreEqual(expectedTwo, schemaType.GetPropertyType("two"));
 
                     var s0Type = statement.EventType;
-                    Assert.AreEqual(expectedOne, s0Type.GetPropertyType("c0"));
-                    Assert.AreEqual(expectedTwo, s0Type.GetPropertyType("c1"));
+                    ClassicAssert.AreEqual(expectedOne, s0Type.GetPropertyType("c0"));
+                    ClassicAssert.AreEqual(expectedTwo, s0Type.GetPropertyType("c1"));
                 });
 
             env.SendEventBean(@event, "MyEvent");

@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -108,10 +109,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             writeThread.Join();
             readThread.Join();
 
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsNull(readRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numEvents > 100);
-            Assert.IsTrue(readRunnable.numQueries > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             Console.Out.WriteLine(
                 "Send " + writeRunnable.numEvents + " and performed " + readRunnable.numQueries + " reads");
 
@@ -196,7 +197,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var len = listener.NewDataList.Count;
                         // Comment me in: Console.WriteLine("Number of events found: " + len);
                         listener.Reset();
-                        Assert.IsTrue(len >= 1);
+                        ClassicAssert.IsTrue(len >= 1);
                         numQueries++;
                     }
                 }

@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.rep
 {
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
             var cursors = repository.GetCursors(0);
             Assert.That(cursors.MoveNext(), Is.True);
             repository.AddResult(cursors.Current, results, 1);
-            Assert.AreEqual(1, repository.NodesPerStream[1].Count);
+            ClassicAssert.AreEqual(1, repository.NodesPerStream[1].Count);
 
             cursors = repository.GetCursors(0);
             Assert.That(
@@ -72,14 +73,14 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         {
             // Lookup from s0
             var cursors = Read(repository.GetCursors(0));
-            Assert.AreEqual(1, cursors.Length);
+            ClassicAssert.AreEqual(1, cursors.Length);
 
             var resultsS1 = supportJoinResultNodeFactory.MakeEventSet(2);
             repository.AddResult(cursors[0], resultsS1, 1);
 
             // Lookup from s1
             cursors = Read(repository.GetCursors(1));
-            Assert.AreEqual(2, cursors.Length);
+            ClassicAssert.AreEqual(2, cursors.Length);
 
             var resultsS2 = supportJoinResultNodeFactory.MakeEventSets(new[] {2, 3});
             repository.AddResult(cursors[0], resultsS2[0], 2);
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
 
             // Lookup from s2
             cursors = Read(repository.GetCursors(2));
-            Assert.AreEqual(5, cursors.Length); // 2 + 3 for s2
+            ClassicAssert.AreEqual(5, cursors.Length); // 2 + 3 for s2
 
             var resultsS3 = supportJoinResultNodeFactory.MakeEventSets(new[] {2, 1, 3, 5, 1});
             repository.AddResult(cursors[0], resultsS3[0], 3);
@@ -98,7 +99,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
 
             // Lookup from s3
             cursors = Read(repository.GetCursors(3));
-            Assert.AreEqual(12, cursors.Length);
+            ClassicAssert.AreEqual(12, cursors.Length);
         }
 
         [Test]
@@ -106,12 +107,12 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         {
             // get cursor for root stream lookup
             var cursors = repository.GetCursors(0);
-            Assert.IsTrue(cursors.MoveNext());
+            ClassicAssert.IsTrue(cursors.MoveNext());
             var cursor = cursors.Current;
             Assert.That(s0Event, Is.SameAs(cursor.TheEvent));
             Assert.That(cursor.Stream, Is.Zero);
 
-            Assert.IsFalse(cursors.MoveNext());
+            ClassicAssert.IsFalse(cursors.MoveNext());
 
             // try invalid get cursor for no results
             Assert.That(() => repository.GetCursors(2), Throws.InstanceOf<NullReferenceException>());

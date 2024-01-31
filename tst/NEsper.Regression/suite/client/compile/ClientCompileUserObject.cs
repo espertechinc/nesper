@@ -14,6 +14,7 @@ using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -59,11 +60,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Compile(epl, args);
 
                 var ctx = MyUserObjectResolver.Contexts[0];
-                Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(null, ctx.ModuleName);
-                Assert.AreEqual(1, ctx.Annotations.Length);
-                Assert.AreEqual(0, ctx.StatementNumber);
+                ClassicAssert.AreEqual(epl, ctx.EplSupplier.Invoke());
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(null, ctx.ModuleName);
+                ClassicAssert.AreEqual(1, ctx.Annotations.Length);
+                ClassicAssert.AreEqual(0, ctx.StatementNumber);
             }
         }
 
@@ -96,13 +97,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 statement => {
                     var received = statement.UserObjectCompileTime;
                     if (received == null) {
-                        Assert.IsNull(userObject);
+                        ClassicAssert.IsNull(userObject);
                     }
                     else if (received.GetType() == typeof(int[])) {
-                        Assert.IsTrue(Arrays.AreEqual((int[])received, (int[])userObject));
+                        ClassicAssert.IsTrue(Arrays.AreEqual((int[])received, (int[])userObject));
                     }
                     else {
-                        Assert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
+                        ClassicAssert.AreEqual(userObject, env.Statement("s0").UserObjectCompileTime);
                     }
                 });
 

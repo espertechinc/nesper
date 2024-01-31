@@ -18,6 +18,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.historical.database.connection
 {
@@ -125,8 +126,8 @@ namespace com.espertech.esper.common.@internal.epl.historical.database.connectio
 
                 using (DbDataReader result = stmt.ExecuteReader())
                 {
-                    Assert.IsTrue(result.Read());
-                    Assert.AreEqual(1, result.GetInt32(0));
+                    ClassicAssert.IsTrue(result.Read());
+                    ClassicAssert.AreEqual(1, result.GetInt32(0));
                 }
             }
 

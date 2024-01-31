@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -492,10 +493,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var result = env.Runtime.FireAndForgetService.ExecuteQuery(parameterizedQuery);
             if (expected == null) {
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
             }
             else {
-                Assert.AreEqual(expected.Length, result.Array.Length);
+                ClassicAssert.AreEqual(expected.Length, result.Array.Length);
                 var resultStrings = new string[result.Array.Length];
                 for (var i = 0; i < resultStrings.Length; i++) {
                     resultStrings[i] = (string)result.Array[i].Get("TheString");

@@ -28,7 +28,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -337,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
                 }
 
                 // index returned null
@@ -393,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.SendEventMap(Collections.SingletonDataMap("dbls", new double?[3]), "MyEvent");
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(new double?[] { null, 1d, null }, (double?[])@event.Get("c0")));
+                    @event => ClassicAssert.AreEqual(new double?[] { null, 1d, null }, (double?[])@event.Get("c0")));
 
                 env.UndeployAll();
             }
@@ -513,7 +513,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "set IntPrimitive=myvar, IntBoxed=IntPrimitive");
                 env.AssertStatement(
                     "update",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.UPDATE,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -653,7 +653,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsNew("insert", fields, new object[] { "E7", 2 });
                 env.AssertPropsIRPair("update_2", fields, new object[] { "E7", 1002 }, new object[] { "E7", 2 });
                 env.ListenerReset("update_2");
-                env.AssertIterator("update_2", iterator => Assert.IsFalse(iterator.MoveNext()));
+                env.AssertIterator("update_2", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
                 env.SendEventBean(new SupportBean("E8", 2));
                 env.AssertPropsNew("s0", fields, new object[] { "E8", 1002 });
@@ -953,7 +953,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     Expressions.Eq(Expressions.Property("P1"), Expressions.Constant("newvalue")));
                 model.UpdateClause.OptionalAsClauseStreamName = "mytype";
                 model.UpdateClause.OptionalWhereClause = Expressions.Eq("P0", "E1");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "update istream MyMapTypeSODA as mytype set P1=\"newvalue\" where P0=\"E1\"",
                     model.ToEPL());
 
@@ -1164,7 +1164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNew(), fields, new object[] { "A", 1, "a" });
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] { "A", 1, "a" });
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNew(), fields, new object[] { "B", 1, "b" });
-                Assert.IsFalse(listeners[2].IsInvoked);
+                ClassicAssert.IsFalse(listeners[2].IsInvoked);
                 env.AssertPropsNew("s0", fields, new object[] { "B", 1, "b" });
                 Reset(listeners);
 
@@ -1172,7 +1172,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsNew("insert", fields, new object[] { "E2", 2, "orig" });
                 EPAssertionUtil.AssertProps(listeners[0].AssertOneGetOld(), fields, new object[] { "E2", 2, "orig" });
                 EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNew(), fields, new object[] { "A", 2, "a" });
-                Assert.IsFalse(listeners[1].IsInvoked);
+                ClassicAssert.IsFalse(listeners[1].IsInvoked);
                 EPAssertionUtil.AssertProps(listeners[2].AssertOneGetOld(), fields, new object[] { "A", 2, "a" });
                 EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNew(), fields, new object[] { "C", 2, "c" });
                 env.AssertPropsNew("s0", fields, new object[] { "C", 2, "c" });
@@ -1180,7 +1180,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.SendEventBean(new SupportBean("E3", 3));
                 env.AssertPropsNew("insert", fields, new object[] { "E3", 3, "orig" });
-                Assert.IsFalse(listeners[0].IsInvoked);
+                ClassicAssert.IsFalse(listeners[0].IsInvoked);
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] { "E3", 3, "orig" });
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNew(), fields, new object[] { "B", 3, "b" });
                 EPAssertionUtil.AssertProps(listeners[2].AssertOneGetOld(), fields, new object[] { "B", 3, "b" });
@@ -1228,13 +1228,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.SendEventBean(new SupportBean("E4", 4));
                 env.AssertPropsNew("insert", fields, new object[] { "E4", 4, "orig" });
-                Assert.IsFalse(listeners[0].IsInvoked);
+                ClassicAssert.IsFalse(listeners[0].IsInvoked);
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetOld(), fields, new object[] { "A", 4, "a" });
                 EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNew(), fields, new object[] { "B", 4, "b" });
-                Assert.IsFalse(listeners[2].IsInvoked);
+                ClassicAssert.IsFalse(listeners[2].IsInvoked);
                 EPAssertionUtil.AssertProps(listeners[3].AssertOneGetOld(), fields, new object[] { "C", 4, "c" });
                 EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNew(), fields, new object[] { "D", 4, "d" });
-                Assert.IsFalse(listeners[4].IsInvoked);
+                ClassicAssert.IsFalse(listeners[4].IsInvoked);
                 env.AssertPropsNew("s0", fields, new object[] { "E", 4, "e" });
                 Reset(listeners);
 
@@ -1247,9 +1247,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertPropsNew("insert", fields, new object[] { "E5", 5, "orig" });
                 EPAssertionUtil.AssertProps(listeners[0].AssertOneGetOld(), fields, new object[] { "E5", 5, "orig" });
                 EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNew(), fields, new object[] { "A", 5, "a" });
-                Assert.IsFalse(listeners[1].IsInvoked);
-                Assert.IsFalse(listeners[2].IsInvoked);
-                Assert.IsFalse(listeners[3].IsInvoked);
+                ClassicAssert.IsFalse(listeners[1].IsInvoked);
+                ClassicAssert.IsFalse(listeners[2].IsInvoked);
+                ClassicAssert.IsFalse(listeners[3].IsInvoked);
                 EPAssertionUtil.AssertProps(listeners[4].AssertOneGetOld(), fields, new object[] { "D", 5, "d" });
                 EPAssertionUtil.AssertProps(listeners[4].AssertOneGetNew(), fields, new object[] { "E", 5, "e" });
                 env.AssertPropsNew("s0", fields, new object[] { "E", 5, "e" });
@@ -1533,7 +1533,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy("@name('s0') select * from MyStream", path).AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             env.SendEventBean(new SupportBean("D1", -2));
             env.AssertPropsNew("s0", fields, new object[] { "D1", -2 });

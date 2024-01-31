@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorEvery
@@ -104,12 +106,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.UndeployModuleContaining("s0");
 
                 SendSupportBean(env, "E5", 0);
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 env.Milestone(4);
 
                 SendSupportBean(env, "E6", 0);
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 env.UndeployAll();
             }

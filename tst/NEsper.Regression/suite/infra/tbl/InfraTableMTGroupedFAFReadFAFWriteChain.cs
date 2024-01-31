@@ -18,6 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -94,8 +95,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // assert
             foreach (var runnable in runnables) {
-                Assert.IsNull(runnable.Exception);
-                Assert.AreEqual(
+                ClassicAssert.IsNull(runnable.Exception);
+                ClassicAssert.AreEqual(
                     numInserted + 1,
                     runnable.NumberOfOperations,
                     "failed for " + runnable); // account for -1 indicator
@@ -215,8 +216,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             {
                 q.SetObject(1, id);
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(q);
-                Assert.AreEqual(1, result.Array.Length, "failed for Id " + id);
-                Assert.AreEqual(id, result.Array[0].Get("p0"));
+                ClassicAssert.AreEqual(1, result.Array.Length, "failed for Id " + id);
+                ClassicAssert.AreEqual(id, result.Array[0].Get("p0"));
                 stageOutput.Push(id);
                 numberOfOperations++;
             }

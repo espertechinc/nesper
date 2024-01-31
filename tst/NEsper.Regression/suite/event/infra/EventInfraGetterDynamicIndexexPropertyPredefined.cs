@@ -23,7 +23,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
@@ -165,8 +165,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                         var eventType = statement.EventType;
                         var g0 = eventType.GetGetter("Array[0]?");
                         var g1 = eventType.GetGetter("Array[1]?");
-                        Assert.IsNull(g0);
-                        Assert.IsNull(g1);
+                        ClassicAssert.IsNull(g0);
+                        ClassicAssert.IsNull(g1);
                     });
                 env.UndeployAll();
                 return;
@@ -216,11 +216,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             EventPropertyGetter getter,
             bool exists)
         {
-            Assert.AreEqual(exists, getter.IsExistsProperty(@event));
-            Assert.AreEqual(exists, getter.Get(@event) != null);
+            ClassicAssert.AreEqual(exists, getter.IsExistsProperty(@event));
+            ClassicAssert.AreEqual(exists, getter.Get(@event) != null);
             var beanBacked = @event.EventType is BeanEventType ||
                              SupportJsonEventTypeUtil.IsBeanBackedJson(@event.EventType);
-            Assert.AreEqual(beanBacked && exists, getter.GetFragment(@event) != null);
+            ClassicAssert.AreEqual(beanBacked && exists, getter.GetFragment(@event) != null);
         }
 
         private void AssertProps(
@@ -231,12 +231,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertEventNew(
                 "s1",
                 @event => {
-                    Assert.AreEqual(hasA, @event.Get("c0") != null);
-                    Assert.AreEqual(hasB, @event.Get("c1") != null);
-                    Assert.AreEqual(hasA, @event.Get("c2"));
-                    Assert.AreEqual(hasB, @event.Get("c3"));
-                    Assert.AreEqual(hasA, @event.Get("c4") != null);
-                    Assert.AreEqual(hasB, @event.Get("c5") != null);
+                    ClassicAssert.AreEqual(hasA, @event.Get("c0") != null);
+                    ClassicAssert.AreEqual(hasB, @event.Get("c1") != null);
+                    ClassicAssert.AreEqual(hasA, @event.Get("c2"));
+                    ClassicAssert.AreEqual(hasB, @event.Get("c3"));
+                    ClassicAssert.AreEqual(hasA, @event.Get("c4") != null);
+                    ClassicAssert.AreEqual(hasB, @event.Get("c5") != null);
                 });
         }
 

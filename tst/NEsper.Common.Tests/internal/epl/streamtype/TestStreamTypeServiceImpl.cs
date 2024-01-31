@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.streamtype
 {
@@ -86,11 +87,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         {
             // Test lookup by stream name and prop name
             var desc = service.ResolveByStreamAndPropName("s4", "Volume", false);
-            Assert.AreEqual(3, desc.StreamNum);
-            Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("Volume", desc.PropertyName);
-            Assert.AreEqual("s4", desc.StreamName);
-            Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
+            ClassicAssert.AreEqual(3, desc.StreamNum);
+            ClassicAssert.AreEqual(typeof(long?), desc.PropertyType);
+            ClassicAssert.AreEqual("Volume", desc.PropertyName);
+            ClassicAssert.AreEqual("s4", desc.StreamName);
+            ClassicAssert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
             try
             {
@@ -117,11 +118,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         {
             // Test lookup by property name only
             var desc = service.ResolveByPropertyName("Volume", false);
-            Assert.AreEqual(3, desc.StreamNum);
-            Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("Volume", desc.PropertyName);
-            Assert.AreEqual("s4", desc.StreamName);
-            Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
+            ClassicAssert.AreEqual(3, desc.StreamNum);
+            ClassicAssert.AreEqual(typeof(long?), desc.PropertyType);
+            ClassicAssert.AreEqual("Volume", desc.PropertyName);
+            ClassicAssert.AreEqual("s4", desc.StreamName);
+            ClassicAssert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
             try
             {
@@ -148,11 +149,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
         {
             // Test lookup by stream name and prop name
             var desc = service.ResolveByStreamAndPropName("s4.Volume", false);
-            Assert.AreEqual(3, desc.StreamNum);
-            Assert.AreEqual(typeof(long?), desc.PropertyType);
-            Assert.AreEqual("Volume", desc.PropertyName);
-            Assert.AreEqual("s4", desc.StreamName);
-            Assert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
+            ClassicAssert.AreEqual(3, desc.StreamNum);
+            ClassicAssert.AreEqual(typeof(long?), desc.PropertyType);
+            ClassicAssert.AreEqual("Volume", desc.PropertyName);
+            ClassicAssert.AreEqual("s4", desc.StreamName);
+            ClassicAssert.AreEqual(typeof(SupportMarketDataBean), desc.StreamEventType.UnderlyingType);
 
             try
             {
@@ -176,11 +177,11 @@ namespace com.espertech.esper.common.@internal.epl.streamtype
 
             // resolve by event type alias (table name)
             desc = service.ResolveByStreamAndPropName("SupportMarketDataBean.Volume", false);
-            Assert.AreEqual(3, desc.StreamNum);
+            ClassicAssert.AreEqual(3, desc.StreamNum);
 
             // resolve by engine URI plus event type alias
             desc = service.ResolveByStreamAndPropName("default.SupportMarketDataBean.Volume", false);
-            Assert.AreEqual(3, desc.StreamNum);
+            ClassicAssert.AreEqual(3, desc.StreamNum);
         }
     }
 } // end of namespace

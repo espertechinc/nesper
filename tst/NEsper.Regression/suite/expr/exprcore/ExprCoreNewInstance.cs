@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertProps
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -130,19 +131,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     statement => {
                         var @out = statement.EventType;
-                        Assert.AreEqual(typeof(char[][]), @out.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(double[][]), @out.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(int[][]), @out.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(float[][]), @out.GetPropertyType("c3"));
-                        Assert.AreEqual(typeof(long[][]), @out.GetPropertyType("c4"));
-                        Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c5"));
-                        Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c6"));
-                        Assert.AreEqual(typeof(string[][]), @out.GetPropertyType("c7"));
-                        Assert.AreEqual(typeof(int[][]), @out.GetPropertyType("c8"));
-                        Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c9"));
-                        Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c10"));
-                        Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c11"));
-                        Assert.AreEqual(typeof(object[][]), @out.GetPropertyType("c12"));
+                        ClassicAssert.AreEqual(typeof(char[][]), @out.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(double[][]), @out.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(int[][]), @out.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(float[][]), @out.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(long[][]), @out.GetPropertyType("c4"));
+                        ClassicAssert.AreEqual(typeof(string[][]), @out.GetPropertyType("c5"));
+                        ClassicAssert.AreEqual(typeof(string[][]), @out.GetPropertyType("c6"));
+                        ClassicAssert.AreEqual(typeof(string[][]), @out.GetPropertyType("c7"));
+                        ClassicAssert.AreEqual(typeof(int[][]), @out.GetPropertyType("c8"));
+                        ClassicAssert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c9"));
+                        ClassicAssert.AreEqual(typeof(object[][]), @out.GetPropertyType("c10"));
+                        ClassicAssert.AreEqual(typeof(object[][]), @out.GetPropertyType("c11"));
+                        ClassicAssert.AreEqual(typeof(object[][]), @out.GetPropertyType("c12"));
                     });
 
                 env.SendEventBean(new SupportBean("E1", 2));
@@ -207,19 +208,19 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         var @out = stmt.EventType;
-                        Assert.AreEqual(typeof(char[]), @out.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(double[]), @out.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(float[]), @out.GetPropertyType("c3"));
-                        Assert.AreEqual(typeof(long[]), @out.GetPropertyType("c4"));
-                        Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c5"));
-                        Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c6"));
-                        Assert.AreEqual(typeof(string[]), @out.GetPropertyType("c7"));
-                        Assert.AreEqual(typeof(int[]), @out.GetPropertyType("c8"));
-                        Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c9"));
-                        Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c10"));
-                        Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c11"));
-                        Assert.AreEqual(typeof(object[]), @out.GetPropertyType("c12"));
+                        ClassicAssert.AreEqual(typeof(char[]), @out.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(double[]), @out.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(int[]), @out.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(float[]), @out.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(long[]), @out.GetPropertyType("c4"));
+                        ClassicAssert.AreEqual(typeof(string[]), @out.GetPropertyType("c5"));
+                        ClassicAssert.AreEqual(typeof(string[]), @out.GetPropertyType("c6"));
+                        ClassicAssert.AreEqual(typeof(string[]), @out.GetPropertyType("c7"));
+                        ClassicAssert.AreEqual(typeof(int[]), @out.GetPropertyType("c8"));
+                        ClassicAssert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c9"));
+                        ClassicAssert.AreEqual(typeof(object[]), @out.GetPropertyType("c10"));
+                        ClassicAssert.AreEqual(typeof(object[]), @out.GetPropertyType("c11"));
+                        ClassicAssert.AreEqual(typeof(object[]), @out.GetPropertyType("c12"));
                     });
 
                 builder
@@ -273,38 +274,38 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         var @out = stmt.EventType;
-                        Assert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(IDictionary<string, int>), @out.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c3"));
-                        Assert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c4"));
-                        Assert.AreEqual(typeof(IList<string>[][]), @out.GetPropertyType("c5"));
+                        ClassicAssert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, int>), @out.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(IList<string>), @out.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(IList<string>[]), @out.GetPropertyType("c4"));
+                        ClassicAssert.AreEqual(typeof(IList<string>[][]), @out.GetPropertyType("c5"));
                     });
 
                 builder.WithAssertion(new SupportBean("E1", 2))
-                    .Verify("c0", Assert.IsInstanceOf<IList<object>>)
-                    .Verify("c1", Assert.IsInstanceOf<IDictionary<string, object>>)
-                    .Verify("c2", Assert.IsInstanceOf<IList<string>>)
+                    .Verify("c0", ClassicAssert.IsInstanceOf<IList<object>>)
+                    .Verify("c1", ClassicAssert.IsInstanceOf<IDictionary<string, object>>)
+                    .Verify("c2", ClassicAssert.IsInstanceOf<IList<string>>)
                     .Verify(
                         "c3",
                         value => {
                             var array = (IList<string>[])value;
-                            Assert.AreEqual(5, array.Length);
+                            ClassicAssert.AreEqual(5, array.Length);
                         })
                     .Verify(
                         "c4",
                         value => {
                             var array = (IList<string>[])value;
-                            Assert.AreEqual(2, array.Length);
+                            ClassicAssert.AreEqual(2, array.Length);
                             for (var i = 0; i < 2; i++) {
-                                Assert.IsInstanceOf<IList<string>>(array[i]);
+                                ClassicAssert.IsInstanceOf<IList<string>>(array[i]);
                             }
                         })
                     .Verify(
                         "c5",
                         value => {
                             var array = (IList<string>[][])value;
-                            Assert.AreEqual(2, array.Length);
+                            ClassicAssert.AreEqual(2, array.Length);
                         });
 
                 builder.Run(env, soda);
@@ -340,11 +341,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         var @out = stmt.EventType;
-                        Assert.AreEqual(typeof(double[]), @out.GetPropertyType("new double[1]"));
-                        Assert.AreEqual(typeof(int?[]), @out.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(double[][]), @out.GetPropertyType("new double[1][2]"));
-                        Assert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c4"));
+                        ClassicAssert.AreEqual(typeof(double[]), @out.GetPropertyType("new double[1]"));
+                        ClassicAssert.AreEqual(typeof(int?[]), @out.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(DateTimeEx[]), @out.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(double[][]), @out.GetPropertyType("new double[1][2]"));
+                        ClassicAssert.AreEqual(typeof(DateTimeEx[][]), @out.GetPropertyType("c4"));
                     });
 
                 builder.WithAssertion(new SupportBean("E1", 2))
@@ -421,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 }
                 catch (Exception ex) {
                     // expected, rethrown
-                    Assert.IsTrue(ex.Message.Contains("new-array received a null value for dimension"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("new-array received a null value for dimension"));
                 }
 
                 env.UndeployAll();
@@ -434,7 +435,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 }
                 catch (Exception ex) {
                     // expected, rethrown
-                    Assert.IsTrue(ex.Message.Contains("new-array received a null value"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("new-array received a null value"));
                 }
 
                 env.UndeployAll();
@@ -473,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var sb = new SupportBean();
                 builder.WithAssertion(sb)
-                    .Verify("c0", result => Assert.AreSame(sb, ((SupportObjectCtor)result).Object));
+                    .Verify("c0", result => ClassicAssert.AreSame(sb, ((SupportObjectCtor)result).Object));
 
                 builder.Run(env);
                 env.UndeployAll();
@@ -522,7 +523,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                             @event.Underlying.AsStringDictionary().Get("new SupportBean(\"B\",IntPrimitive+10)"),
                             new object[] { "B", 20 });
                         AssertSupportBean(@event.Get("c2"), new object[] { null, 0 });
-                        Assert.AreEqual("ABC", @event.Get("c3"));
+                        ClassicAssert.AreEqual("ABC", @event.Get("c3"));
                     });
 
                 env.UndeployAll();
@@ -538,8 +539,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 object[] objects)
             {
                 var b = (SupportBean)bean;
-                Assert.AreEqual(objects[0], b.TheString);
-                Assert.AreEqual(objects[1], b.IntPrimitive);
+                ClassicAssert.AreEqual(objects[0], b.TheString);
+                ClassicAssert.AreEqual(objects[1], b.IntPrimitive);
             }
         }
     }

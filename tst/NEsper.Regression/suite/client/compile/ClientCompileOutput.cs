@@ -12,7 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.compiler.@internal.util.CompilerVersion;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
@@ -42,8 +42,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var compiled = env.Compile("select * from SupportBean");
 
                 var manifest = compiled.Manifest;
-                Assert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
-                Assert.IsNotNull(manifest.ModuleProviderClassName);
+                ClassicAssert.AreEqual(COMPILER_VERSION, manifest.CompilerVersion);
+                ClassicAssert.IsNotNull(manifest.ModuleProviderClassName);
             }
 
             public ISet<RegressionFlag> Flags()

@@ -23,6 +23,7 @@ using com.espertech.esper.regressionlib.framework;
 using static
     com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder; // constantNull
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -95,11 +96,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "@name('flow') create dataflow MyGraph MyOperatorFourForge {" +
                     "    myTestParameter: 'abc' \n" +
                     "}");
-                Assert.AreEqual(1, MyOperatorFourForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorFourForge.Operators.Count);
                 var instance = MyOperatorFourForge.Operators[0];
 
                 var node = instance.AllProperties.Get("myTestParameter");
-                Assert.AreEqual("abc", node.Forge.ExprEvaluator.Evaluate(null, true, null));
+                ClassicAssert.AreEqual("abc", node.Forge.ExprEvaluator.Evaluate(null, true, null));
             }
 
             public ISet<RegressionFlag> Flags()
@@ -120,11 +121,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "      parameterOne : 'ValueOne'" +
                     "    }\n" +
                     "}");
-                Assert.AreEqual(1, MyOperatorThreeForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorThreeForge.Operators.Count);
                 var instance = MyOperatorThreeForge.Operators[0];
 
                 var abc = (MyOperatorThreeSettingsABC)instance.Settings;
-                Assert.AreEqual("ValueOne", abc.parameterOne.Forge.ExprEvaluator.Evaluate(null, true, null));
+                ClassicAssert.AreEqual("ValueOne", abc.parameterOne.Forge.ExprEvaluator.Evaluate(null, true, null));
             }
 
             public ISet<RegressionFlag> Flags()
@@ -154,21 +155,21 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "  TheStringWithSetter: 'b'," +
                     "  theSystemProperty: systemProperties('log4j.configuration')" +
                     "}");
-                Assert.AreEqual(1, MyOperatorOneForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorOneForge.Operators.Count);
                 var instanceOne = MyOperatorOneForge.Operators[0];
 
-                Assert.AreEqual("a", instanceOne.TheString);
-                Assert.AreEqual(null, instanceOne.TheNotSetString);
-                Assert.AreEqual(1, instanceOne.TheInt);
-                Assert.AreEqual(true, instanceOne.TheBool);
-                Assert.AreEqual(1L, (long)instanceOne.TheLongOne);
-                Assert.AreEqual(2, instanceOne.TheLongTwo);
-                Assert.AreEqual(null, instanceOne.TheLongThree);
-                Assert.AreEqual(1.0, instanceOne.TheDoubleOne, 0);
+                ClassicAssert.AreEqual("a", instanceOne.TheString);
+                ClassicAssert.AreEqual(null, instanceOne.TheNotSetString);
+                ClassicAssert.AreEqual(1, instanceOne.TheInt);
+                ClassicAssert.AreEqual(true, instanceOne.TheBool);
+                ClassicAssert.AreEqual(1L, (long)instanceOne.TheLongOne);
+                ClassicAssert.AreEqual(2, instanceOne.TheLongTwo);
+                ClassicAssert.AreEqual(null, instanceOne.TheLongThree);
+                ClassicAssert.AreEqual(1.0, instanceOne.TheDoubleOne, 0);
                 Assert.That(instanceOne.TheDoubleTwo, Is.EqualTo(2.0d));
-                Assert.AreEqual(1f, instanceOne.TheFloatOne, 0);
+                ClassicAssert.AreEqual(1f, instanceOne.TheFloatOne, 0);
                 Assert.That(instanceOne.TheFloatTwo, Is.EqualTo(2.0f));
-                Assert.AreEqual(">b<", instanceOne.TheStringWithSetter);
+                ClassicAssert.AreEqual(">b<", instanceOne.TheStringWithSetter);
 
                 // test array etc. properties
                 MyOperatorTwoForge.Operators.Clear();
@@ -191,16 +192,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     "'\n" +
                     "  },\n" + // NOTE the last comma here, it's acceptable
                     "}");
-                Assert.AreEqual(1, MyOperatorTwoForge.Operators.Count);
+                ClassicAssert.AreEqual(1, MyOperatorTwoForge.Operators.Count);
                 var instanceTwo = MyOperatorTwoForge.Operators[0];
 
                 EPAssertionUtil.AssertEqualsExactOrder(new string[] { "a", "b" }, instanceTwo.TheStringArray);
                 EPAssertionUtil.AssertEqualsExactOrder(new int[] { 1, 2, 3 }, instanceTwo.TheIntArray);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { "a", 1 }, instanceTwo.TheObjectArray);
                 EPAssertionUtil.AssertPropsMap(instanceTwo.TheMap, "a,b".SplitCsv(), new object[] { 10, "xyz" });
-                Assert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);
-                Assert.AreEqual(2, instanceTwo.TheInnerOp.fieldTwo);
-                Assert.IsTrue(instanceTwo.TheInnerOpInterface is MyOperatorTwoInterfaceImplTwo);
+                ClassicAssert.AreEqual("x", instanceTwo.TheInnerOp.fieldOne);
+                ClassicAssert.AreEqual(2, instanceTwo.TheInnerOp.fieldTwo);
+                ClassicAssert.IsTrue(instanceTwo.TheInnerOpInterface is MyOperatorTwoInterfaceImplTwo);
             }
 
             public ISet<RegressionFlag> Flags()

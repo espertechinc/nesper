@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -171,9 +172,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     @event => {
                         var maps = GetSortMapMultiRow("e1", @event, "c1");
                         CollectionAssert.AreEqual(new int[] { 1, 2 }, (int[])maps[0].Get("c0"));
-                        Assert.AreEqual(21, maps[0].Get("c1"));
+                        ClassicAssert.AreEqual(21, maps[0].Get("c1"));
                         CollectionAssert.AreEqual(new int[] { 1 }, (int[])maps[1].Get("c0"));
-                        Assert.AreEqual(41, maps[1].Get("c1"));
+                        ClassicAssert.AreEqual(41, maps[1].Get("c1"));
                     });
 
                 env.UndeployAll();
@@ -331,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 // try SODA
                 var model = env.EplToModel(eplNoDelete);
-                Assert.AreEqual(eplNoDelete, model.ToEPL());
+                ClassicAssert.AreEqual(eplNoDelete, model.ToEPL());
                 env.CompileDeploy(model, path).AddListener("s0").MilestoneInc(milestone);
                 RunAssertionNoDelete(env, fieldName, fields);
                 env.UndeployAll();

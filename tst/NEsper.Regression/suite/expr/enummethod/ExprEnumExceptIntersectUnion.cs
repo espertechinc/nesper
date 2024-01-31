@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.support.expreval;
 using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumExceptIntersectUnion
@@ -351,7 +353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                 "s0",
                 @event => {
                     var result = @event.Get("val").Unwrap<object>();
-                    Assert.AreEqual(2, result.Count);
+                    ClassicAssert.AreEqual(2, result.Count);
                 });
 
             env.UndeployAll();

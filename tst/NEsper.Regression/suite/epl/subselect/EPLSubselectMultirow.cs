@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -67,8 +68,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         for (var i = 0; i < rows.Length; i++) {
                             var message = "Failed assertion for " + rows[i][0];
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, message);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, message);
                         }
                     });
 
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.IsTrue(@event.Get("val") is int?[]);
+                        ClassicAssert.IsTrue(@event.Get("val") is int?[]);
                         EPAssertionUtil.AssertProps(@event, fields, new object[] { null, new int?[] { 5, 10, 15, 6 } });
                     });
 
@@ -121,8 +122,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         for (var i = 0; i < rows.Length; i++) {
                             var message = "Failed assertion for " + rows[i][0];
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, message);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, message);
                         }
                     });
 
@@ -136,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(typeof(SupportBean[]), received.Get("val").GetType());
+                        ClassicAssert.AreEqual(typeof(SupportBean[]), received.Get("val").GetType());
                         EPAssertionUtil.AssertEqualsAnyOrder((object[])received.Get("val"), new object[] { sb1 });
                     });
 

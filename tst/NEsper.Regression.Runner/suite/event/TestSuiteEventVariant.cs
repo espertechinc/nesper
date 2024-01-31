@@ -18,7 +18,7 @@ using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionrun.suite.@event
@@ -55,7 +55,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var myVariantAnyTyped = new ConfigurationCommonVariantStream();
             myVariantAnyTyped.TypeVariance = TypeVariance.ANY;
             configuration.Common.AddVariantStream("MyVariantAnyTyped", myVariantAnyTyped);
-            Assert.IsTrue(configuration.Common.IsVariantStreamExists("MyVariantAnyTyped"));
+            ClassicAssert.IsTrue(configuration.Common.IsVariantStreamExists("MyVariantAnyTyped"));
             
             var myVariantTwoTyped = new ConfigurationCommonVariantStream();
             myVariantTwoTyped.AddEventTypeName("MyEvent");

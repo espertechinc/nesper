@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.extend.aggmultifunc;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -395,7 +396,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 SupportAggMFMultiRTForge.Reset();
                 SupportAggMFMultiRTHandler.Reset();
                 SupportAggMFMultiRTSingleEventStateFactory.Reset();
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
                 TryAssertion(env);
             }
@@ -410,9 +411,9 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 statement => {
                     var eventType = statement.EventType;
                     foreach (var prop in fields) {
-                        Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyDescriptor(prop).PropertyType);
-                        Assert.AreEqual(true, eventType.GetPropertyDescriptor(prop).IsFragment);
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(typeof(SupportBean), eventType.GetPropertyDescriptor(prop).PropertyType);
+                        ClassicAssert.AreEqual(true, eventType.GetPropertyDescriptor(prop).IsFragment);
+                        ClassicAssert.AreEqual(
                             typeof(SupportBean).FullName,
                             eventType.GetFragmentType(prop).FragmentType.Name);
                     }
@@ -421,35 +422,35 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AssertThat(
                 () => {
                     // there should be just 1 forge instance for all of the registered functions for this statement
-                    Assert.AreEqual(1, SupportAggMFMultiRTForge.Forges.Count);
-                    Assert.AreEqual(2, SupportAggMFMultiRTForge.FunctionDeclContexts.Count);
+                    ClassicAssert.AreEqual(1, SupportAggMFMultiRTForge.Forges.Count);
+                    ClassicAssert.AreEqual(2, SupportAggMFMultiRTForge.FunctionDeclContexts.Count);
                     for (var i = 0; i < 2; i++) {
                         var contextDecl =
                             SupportAggMFMultiRTForge.FunctionDeclContexts[i];
-                        Assert.AreEqual(i == 0 ? "se1" : "se2", contextDecl.FunctionName);
-                        Assert.IsFalse(contextDecl.IsDistinct);
-                        Assert.IsNotNull(contextDecl.Configuration);
+                        ClassicAssert.AreEqual(i == 0 ? "se1" : "se2", contextDecl.FunctionName);
+                        ClassicAssert.IsFalse(contextDecl.IsDistinct);
+                        ClassicAssert.IsNotNull(contextDecl.Configuration);
 
                         var contextValid =
                             SupportAggMFMultiRTForge.FunctionHandlerValidationContexts[i];
-                        Assert.AreEqual(i == 0 ? "se1" : "se2", contextValid.FunctionName);
-                        Assert.IsNotNull(contextValid.ParameterExpressions);
-                        Assert.IsNotNull(contextValid.AllParameterExpressions);
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(i == 0 ? "se1" : "se2", contextValid.FunctionName);
+                        ClassicAssert.IsNotNull(contextValid.ParameterExpressions);
+                        ClassicAssert.IsNotNull(contextValid.AllParameterExpressions);
+                        ClassicAssert.AreEqual(
                             "someinfovalue",
                             contextValid.Config.AdditionalConfiguredProperties.Get("someinfokey"));
-                        Assert.IsNotNull(contextValid.EventTypes);
-                        Assert.IsNotNull(contextValid.ValidationContext);
-                        Assert.IsNotNull(contextValid.StatementName);
+                        ClassicAssert.IsNotNull(contextValid.EventTypes);
+                        ClassicAssert.IsNotNull(contextValid.ValidationContext);
+                        ClassicAssert.IsNotNull(contextValid.StatementName);
                     }
 
-                    Assert.AreEqual(2, SupportAggMFMultiRTHandler.ProviderKeys.Count);
+                    ClassicAssert.AreEqual(2, SupportAggMFMultiRTHandler.ProviderKeys.Count);
                     if (!SupportAggMFMultiRTHandler.AccessorModes.IsEmpty()) {
-                        Assert.AreEqual(2, SupportAggMFMultiRTHandler.AccessorModes.Count);
-                        Assert.AreEqual(1, SupportAggMFMultiRTHandler.StateFactoryModes.Count);
+                        ClassicAssert.AreEqual(2, SupportAggMFMultiRTHandler.AccessorModes.Count);
+                        ClassicAssert.AreEqual(1, SupportAggMFMultiRTHandler.StateFactoryModes.Count);
                     }
 
-                    Assert.AreEqual(0, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
+                    ClassicAssert.AreEqual(0, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
                 });
 
             // group 1
@@ -457,10 +458,10 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.SendEventBean(eventOne);
             env.AssertPropsNew("s0", fields, new object[] { eventOne, eventOne });
             if (!SupportAggMFMultiRTSingleEventStateFactory.StateContexts.IsEmpty()) {
-                Assert.AreEqual(1, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
+                ClassicAssert.AreEqual(1, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
                 var context =
                     SupportAggMFMultiRTSingleEventStateFactory.StateContexts[0];
-                // Not available: Assert.AreEqual("E1", context.getGroupKey());
+                // Not available: ClassicAssert.AreEqual("E1", context.getGroupKey());
             }
 
             // group 2
@@ -468,7 +469,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.SendEventBean(eventTwo);
             env.AssertPropsNew("s0", fields, new object[] { eventTwo, eventTwo });
             if (!SupportAggMFMultiRTSingleEventStateFactory.StateContexts.IsEmpty()) {
-                Assert.AreEqual(2, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
+                ClassicAssert.AreEqual(2, SupportAggMFMultiRTSingleEventStateFactory.StateContexts.Count);
             }
 
             env.UndeployAll();

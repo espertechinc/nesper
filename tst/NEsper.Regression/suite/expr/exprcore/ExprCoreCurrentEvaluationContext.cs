@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreCurrentEvaluationContext
@@ -65,11 +67,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     @event => {
                         var ctx = (EPLExpressionEvaluationContext)@event.Get("c0");
-                        Assert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
-                        Assert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
-                        Assert.AreEqual(-1, ctx.ContextPartitionId);
-                        Assert.AreEqual("my_user_object", ctx.StatementUserObject);
-                        Assert.AreEqual(env.RuntimeURI, @event.Get("c2"));
+                        ClassicAssert.AreEqual(env.RuntimeURI, ctx.RuntimeURI);
+                        ClassicAssert.AreEqual(env.Statement("s0").Name, ctx.StatementName);
+                        ClassicAssert.AreEqual(-1, ctx.ContextPartitionId);
+                        ClassicAssert.AreEqual("my_user_object", ctx.StatementUserObject);
+                        ClassicAssert.AreEqual(env.RuntimeURI, @event.Get("c2"));
                     });
 
                 env.UndeployAll();

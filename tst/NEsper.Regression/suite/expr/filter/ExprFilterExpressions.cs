@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.multistmtassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.RegressionFlag;
 
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
@@ -400,7 +400,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
 
                 SupportStaticMethodLib.Invocations.Clear();
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.IsTrue(SupportStaticMethodLib.Invocations.IsEmpty());
+                ClassicAssert.IsTrue(SupportStaticMethodLib.Invocations.IsEmpty());
 
                 env.UndeployAll();
             }
@@ -792,7 +792,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.SendEventBean(new SupportRuntimeExBean());
                 env.AssertListener(
                     "s0",
-                    listener => Assert.IsFalse(
+                    listener => ClassicAssert.IsFalse(
                         listener.IsInvoked,
                         "Subscriber should not have received result(s)"));
 
@@ -1580,7 +1580,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var theEvent = SendEvent(env, "b");
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreSame(theEvent, listener.GetAndResetLastNewData()[0].Underlying));
+                    listener => ClassicAssert.AreSame(theEvent, listener.GetAndResetLastNewData()[0].Underlying));
 
                 SendEvent(env, "a");
                 env.AssertListenerNotInvoked("s0");
@@ -1612,7 +1612,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var theEvent = SendEvent(env, "x", 0);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreSame(theEvent, listener.GetAndResetLastNewData()[0].Underlying));
+                    listener => ClassicAssert.AreSame(theEvent, listener.GetAndResetLastNewData()[0].Underlying));
 
                 SendEvent(env, null, 0);
                 env.AssertListenerNotInvoked("s0");
@@ -1741,7 +1741,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var eventTwo = SupportBeanComplexProps.MakeDefaultBean();
                 eventTwo.SimpleProperty = ("2");
 
-                Assert.AreEqual(eventOne.Nested, eventTwo.Nested);
+                ClassicAssert.AreEqual(eventOne.Nested, eventTwo.Nested);
 
                 env.SendEventBean(eventOne);
                 env.AssertListenerNotInvoked("s0");
@@ -1840,7 +1840,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var index = i;
                 env.AssertListener(
                     statementNames[i],
-                    listener => Assert.AreEqual(
+                    listener => ClassicAssert.AreEqual(
                         invoked[index],
                         listener.GetAndClearIsInvoked(),
                         "Failed for statement " + index + " name " + statementNames[index]));
@@ -1867,12 +1867,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             double?[] doubleBoxedC,
             bool[] expected)
         {
-            Assert.AreEqual(intBoxedA.Length, doubleBoxedA.Length);
-            Assert.AreEqual(intBoxedB.Length, doubleBoxedB.Length);
-            Assert.AreEqual(expected.Length, doubleBoxedA.Length);
-            Assert.AreEqual(intBoxedA.Length, doubleBoxedB.Length);
-            Assert.AreEqual(intBoxedC.Length, doubleBoxedC.Length);
-            Assert.AreEqual(intBoxedB.Length, doubleBoxedC.Length);
+            ClassicAssert.AreEqual(intBoxedA.Length, doubleBoxedA.Length);
+            ClassicAssert.AreEqual(intBoxedB.Length, doubleBoxedB.Length);
+            ClassicAssert.AreEqual(expected.Length, doubleBoxedA.Length);
+            ClassicAssert.AreEqual(intBoxedA.Length, doubleBoxedB.Length);
+            ClassicAssert.AreEqual(intBoxedC.Length, doubleBoxedC.Length);
+            ClassicAssert.AreEqual(intBoxedB.Length, doubleBoxedC.Length);
 
             for (var i = 0; i < intBoxedA.Length; i++) {
                 env.CompileDeployAddListenerMile("@name('s0')" + text, "s0", milestone.GetAndIncrement());
@@ -1883,7 +1883,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var index = i;
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreEqual(
+                    listener => ClassicAssert.AreEqual(
                         expected[index],
                         listener.GetAndClearIsInvoked(),
                         "failed at index " + index));
@@ -1903,15 +1903,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
         {
             env.CompileDeployAddListenerMile("@name('s0')" + text, "s0", milestone.IncrementAndGet());
 
-            Assert.AreEqual(intPrimitive.Length, doubleBoxed.Length);
-            Assert.AreEqual(intBoxed.Length, doubleBoxed.Length);
-            Assert.AreEqual(expected.Length, doubleBoxed.Length);
+            ClassicAssert.AreEqual(intPrimitive.Length, doubleBoxed.Length);
+            ClassicAssert.AreEqual(intBoxed.Length, doubleBoxed.Length);
+            ClassicAssert.AreEqual(expected.Length, doubleBoxed.Length);
             for (var i = 0; i < intBoxed.Length; i++) {
                 SendBeanIntIntDouble(env, intPrimitive[i], intBoxed[i], doubleBoxed[i]);
                 var index = i;
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreEqual(
+                    listener => ClassicAssert.AreEqual(
                         expected[index],
                         listener.GetAndClearIsInvoked(),
                         "failed at index " + index));
@@ -1933,10 +1933,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             double?[] doubleBoxedB,
             bool[] expected)
         {
-            Assert.AreEqual(intBoxedA.Length, doubleBoxedA.Length);
-            Assert.AreEqual(intBoxedB.Length, doubleBoxedB.Length);
-            Assert.AreEqual(expected.Length, doubleBoxedA.Length);
-            Assert.AreEqual(intBoxedA.Length, doubleBoxedB.Length);
+            ClassicAssert.AreEqual(intBoxedA.Length, doubleBoxedA.Length);
+            ClassicAssert.AreEqual(intBoxedB.Length, doubleBoxedB.Length);
+            ClassicAssert.AreEqual(expected.Length, doubleBoxedA.Length);
+            ClassicAssert.AreEqual(intBoxedA.Length, doubleBoxedB.Length);
 
             for (var i = 0; i < intBoxedA.Length; i++) {
                 env.CompileDeploy("@name('s0') " + text).AddListener("s0");
@@ -1949,7 +1949,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 var index = i;
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreEqual(
+                    listener => ClassicAssert.AreEqual(
                         expected[index],
                         listener.GetAndClearIsInvoked(),
                         "failed at index " + index));

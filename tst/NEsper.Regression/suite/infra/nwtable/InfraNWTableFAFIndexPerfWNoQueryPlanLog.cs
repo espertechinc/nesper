@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -262,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test no value returned
                 var query = Prepare(env, path, "select * from MyInfraFAFKR where TheString = 'A' and IntPrimitive < 0");
                 var result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 env.UndeployAll();
             }
@@ -392,7 +393,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test no value returned
                 var query = Prepare(env, path, "select * from MyInfraRP where IntPrimitive < 0");
                 var result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 env.UndeployAll();
             }
@@ -453,8 +454,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 for (var i = 0; i < loops; i++) {
                     result = query.Execute();
-                    Assert.AreEqual(1, result.Array.Length);
-                    Assert.AreEqual("K10", result.Array[0].Get("f1"));
+                    ClassicAssert.AreEqual(1, result.Array.Length);
+                    ClassicAssert.AreEqual("K10", result.Array[0].Get("f1"));
                 }
 
                 var end = PerformanceObserver.MilliTime;
@@ -465,26 +466,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 queryText = "select * from MyInfraOne where f1='KX'";
                 query = Prepare(env, path, queryText);
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // test query null
                 queryText = "select * from MyInfraOne where f1=null";
                 query = Prepare(env, path, queryText);
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // insert null and test null
                 env.SendEventBean(new SupportBean(null, -2));
                 result = query.Execute();
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
 
                 // test two values
                 env.SendEventBean(new SupportBean(null, -1));
                 query = Prepare(env, path, "select * from MyInfraOne where f1 is null order by f2 asc");
                 result = query.Execute();
-                Assert.AreEqual(2, result.Array.Length);
-                Assert.AreEqual(-2, result.Array[0].Get("f2"));
-                Assert.AreEqual(-1, result.Array[1].Get("f2"));
+                ClassicAssert.AreEqual(2, result.Array.Length);
+                ClassicAssert.AreEqual(-2, result.Array[0].Get("f2"));
+                ClassicAssert.AreEqual(-1, result.Array[1].Get("f2"));
 
                 env.UndeployAll();
             }
@@ -531,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 InvocationCounter.SetCount(0);
                 var fafEPL = "select * from MyInfraIKW as mw where justCount(mw) and TheString in ('notfound')";
                 env.CompileExecuteFAF(fafEPL, path);
-                Assert.AreEqual(0, InvocationCounter.GetCount());
+                ClassicAssert.AreEqual(0, InvocationCounter.GetCount());
 
                 env.UndeployAll();
             }
@@ -570,8 +571,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             int? expectedValue)
         {
             var result = query.Execute();
-            Assert.AreEqual(1, result.Array.Length);
-            Assert.AreEqual(expectedValue, result.Array[0].Get("sumi"));
+            ClassicAssert.AreEqual(1, result.Array.Length);
+            ClassicAssert.AreEqual(expectedValue, result.Array[0].Get("sumi"));
         }
 
         private static EPFireAndForgetPreparedQuery Prepare(

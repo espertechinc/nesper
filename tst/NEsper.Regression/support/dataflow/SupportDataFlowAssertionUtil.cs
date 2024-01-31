@@ -13,6 +13,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.dataflow
 {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.regressionlib.support.dataflow
             }
 
             if (message.StartsWith(expected)) {
-                Assert.IsFalse(string.IsNullOrEmpty(expected.Trim()), "empty expected message, received:\n" + message);
+                ClassicAssert.IsFalse(string.IsNullOrEmpty(expected.Trim()), "empty expected message, received:\n" + message);
                 return;
             }
 

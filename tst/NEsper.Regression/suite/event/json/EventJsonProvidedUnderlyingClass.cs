@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -134,11 +135,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "s0",
                     @event => {
                         var @out = (MyLocalJsonProvidedEventOut)@event.Underlying;
-                        Assert.AreEqual("G1", @out.startEvent.id);
-                        Assert.AreEqual("G1", @out.endEvents[0].id);
-                        Assert.AreEqual(2, @out.endEvents[0].val);
-                        Assert.AreEqual("G1", @out.endEvents[1].id);
-                        Assert.AreEqual(3, @out.endEvents[1].val);
+                        ClassicAssert.AreEqual("G1", @out.startEvent.id);
+                        ClassicAssert.AreEqual("G1", @out.endEvents[0].id);
+                        ClassicAssert.AreEqual(2, @out.endEvents[0].val);
+                        ClassicAssert.AreEqual("G1", @out.endEvents[1].id);
+                        ClassicAssert.AreEqual(3, @out.endEvents[1].val);
                     });
 
                 env.UndeployAll();
@@ -288,7 +289,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "s0",
                     theEvent => {
                         var @event = (JsonEventObject)theEvent.Underlying;
-                        Assert.AreEqual(ClientsJsonReplaceWhitespace, @event.ToString());
+                        ClassicAssert.AreEqual(ClientsJsonReplaceWhitespace, @event.ToString());
                     });
 
                 env.UndeployAll();
@@ -335,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "s0",
                     theEvent => {
                         var @event = (JsonEventObject)theEvent.Underlying;
-                        Assert.AreEqual(UsersJsonReplaceWhitespace, @event.ToString());
+                        ClassicAssert.AreEqual(UsersJsonReplaceWhitespace, @event.ToString());
                     });
 
                 env.UndeployAll();
@@ -364,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     @event => {
                         AssertClientsPremade((SupportClientsEvent)@event.Underlying);
                         var render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
-                        Assert.AreEqual(ClientsJsonReplaceWhitespace, render.Render(@event));
+                        ClassicAssert.AreEqual(ClientsJsonReplaceWhitespace, render.Render(@event));
                     });
 
                 env.UndeployAll();
@@ -372,9 +373,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
             private void AssertClientsPremade(SupportClientsEvent clients)
             {
-                Assert.AreEqual(1, clients.clients.Count);
+                ClassicAssert.AreEqual(1, clients.clients.Count);
                 var first = clients.clients[0];
-                Assert.AreEqual(ClientObject.clients[0], first);
+                ClassicAssert.AreEqual(ClientObject.clients[0], first);
             }
 
             public ISet<RegressionFlag> Flags()
@@ -407,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
                         // try write
                         var render = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType);
-                        Assert.AreEqual(UsersJsonReplaceWhitespace, render.Render(@event));
+                        ClassicAssert.AreEqual(UsersJsonReplaceWhitespace, render.Render(@event));
                     });
 
                 env.UndeployAll();
@@ -420,11 +421,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
             private void AssertUsersPremade(SupportUsersEvent users)
             {
-                Assert.AreEqual(2, users.users.Count);
+                ClassicAssert.AreEqual(2, users.users.Count);
                 var first = users.users[0];
-                Assert.AreEqual("45166552176594981065", first._id);
+                ClassicAssert.AreEqual("45166552176594981065", first._id);
                 var second = users.users[1];
-                Assert.AreEqual("23504426278646846580", second._id);
+                ClassicAssert.AreEqual("23504426278646846580", second._id);
                 EPAssertionUtil.AssertEqualsExactOrder(UserObject.users.ToArray(), users.users.ToArray());
             }
         }

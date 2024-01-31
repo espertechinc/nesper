@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -113,11 +114,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.UndeployAll();
 
             // assert
-            Assert.IsNull(writeRunnable.Exception);
-            Assert.IsTrue(writeRunnable.numEvents > 100);
+            ClassicAssert.IsNull(writeRunnable.Exception);
+            ClassicAssert.IsTrue(writeRunnable.numEvents > 100);
             foreach (var readRunnable in readRunnables) {
-                Assert.IsNull(readRunnable.Exception);
-                Assert.IsTrue(readRunnable.numQueries > 100);
+                ClassicAssert.IsNull(readRunnable.Exception);
+                ClassicAssert.IsTrue(readRunnable.numQueries > 100);
             }
         }
 
@@ -199,8 +200,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         using (var iterator = iterateStatement.GetSafeEnumerator()) {
                             var @event = iterator.Advance();
                             var c0 = @event.Get("c0").AsInt32();
-                            Assert.AreEqual((double)c0, @event.Get("c1"));
-                            Assert.AreEqual((long)c0, @event.Get("c2"));
+                            ClassicAssert.AreEqual((double)c0, @event.Get("c1"));
+                            ClassicAssert.AreEqual((long)c0, @event.Get("c2"));
                         }
 
                         numQueries++;

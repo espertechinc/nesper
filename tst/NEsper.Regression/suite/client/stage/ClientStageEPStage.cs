@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.stage;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil;
 
@@ -85,13 +85,13 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                     Assert.Fail();
                 }
                 catch (EPException ex) {
-                    Assert.AreEqual("Failed to destroy stage 'ST': The stage has existing deployments", ex.Message);
+                    ClassicAssert.AreEqual("Failed to destroy stage 'ST': The stage has existing deployments", ex.Message);
                 }
 
                 UnstageIt(env, "ST", deploymentId);
 
                 stageA.Destroy();
-                Assert.AreEqual("ST", stageA.URI);
+                ClassicAssert.AreEqual("ST", stageA.URI);
 
                 TryInvalidDestroyed(() => Noop(stageA.EventService));
                 TryInvalidDestroyed(() => Noop(stageA.DeploymentService));

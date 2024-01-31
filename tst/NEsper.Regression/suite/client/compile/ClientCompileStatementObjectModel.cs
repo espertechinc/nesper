@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var theEvent = new SupportBean();
                 env.SendEventBean(theEvent);
-                env.AssertEventNew("s0", @event => Assert.AreEqual(theEvent, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(theEvent, @event.Underlying));
 
                 env.UndeployAll();
             }
@@ -109,7 +110,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     OutputLimitClause.Create(Expressions.TimePeriod(null, null, null, 10, null)));
                 model.WithOrderByClause(OrderByClause.Create("line"));
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "insert into ReadyStreamAvg(line, avgAge) select line, avg(age) as avgAge from " +
                     typeof(SupportBean).CleanName() +
                     "(line in (1,8,10))#time(10) as RS where waverId is not null group by line having avg(age)<0 output every 10.0d seconds order by line",
@@ -132,10 +133,10 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 object theEvent = new SupportBean();
                 env.SendEventBean(theEvent);
 
-                env.AssertEventNew("s0", @event => Assert.AreEqual(theEvent, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(theEvent, @event.Underlying));
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "@Name('s0') " + stmtText,
                         statement.GetProperty(StatementProperty.EPL)));
 
@@ -174,17 +175,17 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     var eplAfter = modelBefore.ToEPL();
 
                     if (expected == null) {
-                        Assert.AreEqual(epl, eplAfter);
+                        ClassicAssert.AreEqual(epl, eplAfter);
                     }
                     else {
                         var expectedEPL = "select * from System.Object where " + expected;
-                        Assert.AreEqual(expectedEPL, eplAfter);
+                        ClassicAssert.AreEqual(expectedEPL, eplAfter);
                     }
 
                     // get where clause root expression of both models
                     var modelAfter = env.EplToModel(eplAfter);
-                    Assert.AreEqual(modelAfter.WhereClause.GetType(), modelBefore.WhereClause.GetType());
-                    Assert.AreEqual(expressionLowestPrecedenceClass, modelAfter.WhereClause.GetType().Name);
+                    ClassicAssert.AreEqual(modelAfter.WhereClause.GetType(), modelBefore.WhereClause.GetType());
+                    ClassicAssert.AreEqual(expressionLowestPrecedenceClass, modelAfter.WhereClause.GetType().Name);
                 }
             }
         }
@@ -221,20 +222,20 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     var eplAfter = modelBefore.ToEPL();
 
                     if (expected == null) {
-                        Assert.AreEqual(epl, eplAfter, failText);
+                        ClassicAssert.AreEqual(epl, eplAfter, failText);
                     }
                     else {
                         var expectedEPL = "select * from pattern [" + expected + "]";
-                        Assert.AreEqual(expectedEPL, eplAfter, failText);
+                        ClassicAssert.AreEqual(expectedEPL, eplAfter, failText);
                     }
 
                     // get where clause root expression of both models
                     var modelAfter = env.EplToModel(eplAfter);
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         GetPatternRootExpr(modelAfter).GetType(),
                         GetPatternRootExpr(modelBefore).GetType(),
                         failText);
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         expressionLowestPrecedenceClass,
                         GetPatternRootExpr(modelAfter).GetType().Name,
                         failText);

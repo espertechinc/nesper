@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -92,10 +93,10 @@ namespace com.espertech.esper.regressionlib.support.subscriber
 
         public void AssertNoneReceived()
         {
-            Assert.IsTrue(indicateStart.IsEmpty());
-            Assert.IsTrue(indicateIStream.IsEmpty());
-            Assert.IsTrue(indicateRStream.IsEmpty());
-            Assert.IsTrue(indicateEnd.IsEmpty());
+            ClassicAssert.IsTrue(indicateStart.IsEmpty());
+            ClassicAssert.IsTrue(indicateIStream.IsEmpty());
+            ClassicAssert.IsTrue(indicateRStream.IsEmpty());
+            ClassicAssert.IsTrue(indicateEnd.IsEmpty());
         }
 
         public void AssertOneReceivedAndReset(
@@ -108,15 +109,15 @@ namespace com.espertech.esper.regressionlib.support.subscriber
             var stmtCount = 2 + expectedLenIStream + expectedLenRStream;
             AssertStmtMultipleReceived(stmt, stmtCount);
 
-            Assert.AreEqual(1, indicateStart.Count);
+            ClassicAssert.AreEqual(1, indicateStart.Count);
             var pairLength = indicateStart[0];
-            Assert.AreEqual(expectedLenIStream, (int) pairLength.First);
-            Assert.AreEqual(expectedLenRStream, (int) pairLength.Second);
+            ClassicAssert.AreEqual(expectedLenIStream, (int) pairLength.First);
+            ClassicAssert.AreEqual(expectedLenRStream, (int) pairLength.Second);
 
             EPAssertionUtil.AssertEqualsExactOrder(expectedIStream, indicateIStream);
             EPAssertionUtil.AssertEqualsExactOrder(expectedRStream, indicateRStream);
 
-            Assert.AreEqual(1, indicateEnd.Count);
+            ClassicAssert.AreEqual(1, indicateEnd.Count);
 
             Reset();
         }

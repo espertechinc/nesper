@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -318,7 +318,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                                 new object[] { "E2", "E1", "E1", "E2", 3L, win },
                                 new object[] { "E3", "E2", "E1", "E2", 3L, win }
                             });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -458,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         if (runType == ViewLengthBatchNormalRunType.VIEW) {
                             EPAssertionUtil.AssertPropsPerRow(
                                 listener.LastNewData,

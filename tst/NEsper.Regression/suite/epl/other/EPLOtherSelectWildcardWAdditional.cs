@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model = env.CopyMayFail(model);
 
                 var text = "select *, MyString||MyString as concat from SupportBeanSimple#length(5)";
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -306,8 +306,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     IDictionary<string, object> properties = new Dictionary<string, object>();
                     properties.Put("concat", "stringstring");
                     AssertProperties(env, "s0", properties);
-                    Assert.AreSame(eventSimple, theEvent.Get("eventOne"));
-                    Assert.AreSame(eventMarket, theEvent.Get("eventTwo"));
+                    ClassicAssert.AreSame(eventSimple, theEvent.Get("eventOne"));
+                    ClassicAssert.AreSame(eventMarket, theEvent.Get("eventTwo"));
                 });
         }
 
@@ -318,20 +318,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual("stringstring", listener.LastNewData[0].Get("concat"));
+                    ClassicAssert.AreEqual("stringstring", listener.LastNewData[0].Get("concat"));
                     IDictionary<string, object> properties = new Dictionary<string, object>();
                     properties.Put("concat", "stringstring");
                     properties.Put("MyString", "string");
                     properties.Put("MyInt", 0);
                     AssertProperties(env, "s0", properties);
 
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         typeof(Pair<object, IDictionary<string, object>>),
                         listener.LastNewData[0].EventType.UnderlyingType);
-                    Assert.IsTrue(listener.LastNewData[0].Underlying is Pair<object, IDictionary<string, object>>);
+                    ClassicAssert.IsTrue(listener.LastNewData[0].Underlying is Pair<object, IDictionary<string, object>>);
                     var pair = (Pair<object, IDictionary<string, object>>)listener.LastNewData[0].Underlying;
-                    Assert.AreEqual(theEvent, pair.First);
-                    Assert.AreEqual("stringstring", pair.Second.Get("concat"));
+                    ClassicAssert.AreEqual(theEvent, pair.First);
+                    ClassicAssert.AreEqual("stringstring", pair.Second.Get("concat"));
                 });
         }
 
@@ -345,8 +345,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     IDictionary<string, object> properties = new Dictionary<string, object>();
                     properties.Put("concat", "stringstring");
                     AssertProperties(env, "s0", properties);
-                    Assert.IsNotNull(theEvent.Get("eventOne"));
-                    Assert.IsNotNull(theEvent.Get("eventTwo"));
+                    ClassicAssert.IsNotNull(theEvent.Get("eventOne"));
+                    ClassicAssert.IsNotNull(theEvent.Get("eventTwo"));
                 });
         }
 
@@ -358,15 +358,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 listener => {
                     var eventBean = listener.LastNewData[0];
 
-                    Assert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
-                    Assert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
-                    Assert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
-                    Assert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
+                    ClassicAssert.AreEqual("0ma0", eventBean.Get("Indexed[0].Mapped('0ma').Value"));
+                    ClassicAssert.AreEqual("0ma1", eventBean.Get("Indexed[0].Mapped('0mb').Value"));
+                    ClassicAssert.AreEqual("1ma0", eventBean.Get("Indexed[1].Mapped('1ma').Value"));
+                    ClassicAssert.AreEqual("1ma1", eventBean.Get("Indexed[1].Mapped('1mb').Value"));
 
-                    Assert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
-                    Assert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
+                    ClassicAssert.AreEqual("0ma0", eventBean.Get("Array[0].Mapped('0ma').Value"));
+                    ClassicAssert.AreEqual("1ma1", eventBean.Get("Array[1].Mapped('1mb').Value"));
 
-                    Assert.AreEqual("0ma00ma1", eventBean.Get("concat"));
+                    ClassicAssert.AreEqual("0ma00ma1", eventBean.Get("concat"));
                 });
         }
 
@@ -380,7 +380,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 listener => {
                     var theEvent = listener.LastNewData[0];
                     foreach (var property in properties.Keys) {
-                        Assert.AreEqual(properties.Get(property), theEvent.Get(property));
+                        ClassicAssert.AreEqual(properties.Get(property), theEvent.Get(property));
                     }
                 });
         }

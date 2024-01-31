@@ -15,6 +15,8 @@ using com.espertech.esper.compiler.@internal.parse;
 using com.espertech.esper.compiler.@internal.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.compiler.@internal.rowrecog
 {
 	[TestFixture]
@@ -60,8 +62,8 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 				              " multiple " +
 				              multiples.RenderAny();
 
-				Assert.AreEqual(patternTests[i][1], singles.RenderAny(), outText);
-				Assert.AreEqual(patternTests[i][2], multiples.RenderAny(), outText);
+				ClassicAssert.AreEqual(patternTests[i][1], singles.RenderAny(), outText);
+				ClassicAssert.AreEqual(patternTests[i][2], multiples.RenderAny(), outText);
 			}
 		}
 
@@ -107,7 +109,7 @@ namespace com.espertech.esper.compiler.@internal.rowrecog
 				}
 
 				var visibilityAsString = visibilitySorted.RenderAny();
-				Assert.AreEqual(expected, visibilityAsString, "Failed in :" + pattern);
+				ClassicAssert.AreEqual(expected, visibilityAsString, "Failed in :" + pattern);
 			}
 		}
 	}

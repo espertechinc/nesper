@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -23,7 +24,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
         {
             env.AssertThat(
                 () =>
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         typeof(object[]),
                         env.Runtime.EventTypeService.GetEventTypePreconfigured("MyMapNestedObjectArray")
                             .UnderlyingType));
@@ -45,7 +46,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                         Assert.Fail();
                     }
                     catch (EPException ex) {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             "Event type named 'MyMapNestedObjectArray' has not been defined or is not a Map-type event type, the name 'MyMapNestedObjectArray' refers to a System.Object[] event type",
                             ex.Message);
                     }

@@ -17,6 +17,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace NEsper.Avro.Core
 {
@@ -34,9 +35,9 @@ namespace NEsper.Avro.Core
 	        record.Put("myInt", 99);
 	        var eventBean = new AvroGenericDataEventBean(record, eventType);
 
-	        Assert.AreEqual(eventType, eventBean.EventType);
-	        Assert.AreEqual(record, eventBean.Underlying);
-	        Assert.AreEqual(99, eventBean.Get("myInt"));
+	        ClassicAssert.AreEqual(eventType, eventBean.EventType);
+	        ClassicAssert.AreEqual(record, eventBean.Underlying);
+	        ClassicAssert.AreEqual(99, eventBean.Get("myInt"));
 
 	        // test wrong property name
 	        try {

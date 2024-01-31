@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 
@@ -303,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           " from SupportMarketDataBean#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -507,10 +507,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countAll"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countDistVol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countVol"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countAll"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countDistVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("countVol"));
                 });
 
             SendEvent(env, SYMBOL_DELL, 50L);
@@ -617,18 +617,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var newData = listener.LastNewData;
                     listener.Reset();
 
-                    Assert.AreEqual(1, oldData.Length);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(1, oldData.Length);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
-                    Assert.AreEqual(countAllOld, oldData[0].Get("countAll"));
-                    Assert.AreEqual(countDistVolOld, oldData[0].Get("countDistVol"));
-                    Assert.AreEqual(countVolOld, oldData[0].Get("countVol"));
+                    ClassicAssert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(countAllOld, oldData[0].Get("countAll"));
+                    ClassicAssert.AreEqual(countDistVolOld, oldData[0].Get("countDistVol"));
+                    ClassicAssert.AreEqual(countVolOld, oldData[0].Get("countVol"));
 
-                    Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
-                    Assert.AreEqual(countAllNew, newData[0].Get("countAll"));
-                    Assert.AreEqual(countDistVolNew, newData[0].Get("countDistVol"));
-                    Assert.AreEqual(countVolNew, newData[0].Get("countVol"));
+                    ClassicAssert.AreEqual(symbolNew, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(countAllNew, newData[0].Get("countAll"));
+                    ClassicAssert.AreEqual(countDistVolNew, newData[0].Get("countDistVol"));
+                    ClassicAssert.AreEqual(countVolNew, newData[0].Get("countVol"));
                 });
         }
 

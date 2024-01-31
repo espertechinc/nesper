@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
@@ -91,7 +91,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         for (var i = 0; i < fields.Length; i++) {
-                            Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType(fields[i]));
+                            ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType(fields[i]));
                         }
                     });
 
@@ -122,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Add(Expressions.InstanceOf(Expressions.Property("TheString"), "float", "string", "int"), "t1");
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
@@ -131,16 +131,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.IsTrue((bool)theEvent.Get("t0"));
-                        Assert.IsTrue((bool)theEvent.Get("t1"));
+                        ClassicAssert.IsTrue((bool)theEvent.Get("t0"));
+                        ClassicAssert.IsTrue((bool)theEvent.Get("t1"));
                     });
 
                 env.SendEventBean(new SupportBean(null, 100));
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.IsFalse((bool)theEvent.Get("t0"));
-                        Assert.IsFalse((bool)theEvent.Get("t1"));
+                        ClassicAssert.IsFalse((bool)theEvent.Get("t0"));
+                        ClassicAssert.IsFalse((bool)theEvent.Get("t1"));
                     });
 
                 env.UndeployAll();
@@ -160,16 +160,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.IsTrue((bool)theEvent.Get("t0"));
-                        Assert.IsTrue((bool)theEvent.Get("t1"));
+                        ClassicAssert.IsTrue((bool)theEvent.Get("t0"));
+                        ClassicAssert.IsTrue((bool)theEvent.Get("t1"));
                     });
 
                 env.SendEventBean(new SupportBean(null, 100));
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.IsFalse((bool)theEvent.Get("t0"));
-                        Assert.IsFalse((bool)theEvent.Get("t1"));
+                        ClassicAssert.IsFalse((bool)theEvent.Get("t0"));
+                        ClassicAssert.IsFalse((bool)theEvent.Get("t1"));
                     });
 
                 env.UndeployAll();
@@ -312,7 +312,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             bool[] result)
         {
             for (var i = 0; i < result.Length; i++) {
-                Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+                ClassicAssert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
             }
         }
     }

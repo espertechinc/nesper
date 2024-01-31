@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.property
 {
@@ -50,12 +51,12 @@ namespace com.espertech.esper.common.@internal.@event.property
                         eventType,
                         EventBeanTypedEventFactoryCompileTime.INSTANCE,
                         supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-                Assert.AreEqual(expected[i], getter.Get(theEvent));
+                ClassicAssert.AreEqual(expected[i], getter.Get(theEvent));
             }
 
             // try invalid case
             var ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 ind.GetGetter(
                     eventType,
                     EventBeanTypedEventFactoryCompileTime.INSTANCE,
@@ -66,7 +67,7 @@ namespace com.espertech.esper.common.@internal.@event.property
         public void TestGetPropertyType()
         {
             for (var i = 0; i < indexed.Length; i++) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     typeof(int),
                     indexed[i]
                         .GetPropertyType(
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.@event.property
 
             // try invalid case
             var ind = new IndexedProperty("dummy", 0);
-            Assert.IsNull(
+            ClassicAssert.IsNull(
                 ind.GetPropertyType(
                     eventType,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));

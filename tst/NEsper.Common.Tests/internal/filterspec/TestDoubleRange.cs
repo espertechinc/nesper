@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -17,12 +18,12 @@ namespace com.espertech.esper.common.@internal.filterspec
         public void TestNew()
         {
             var range = new DoubleRange(10d, 20d);
-            Assert.AreEqual(20d, range.Max);
-            Assert.AreEqual(10d, range.Min);
+            ClassicAssert.AreEqual(20d, range.Max);
+            ClassicAssert.AreEqual(10d, range.Min);
 
             range = new DoubleRange(20d, 10d);
-            Assert.AreEqual(20d, range.Max);
-            Assert.AreEqual(10d, range.Min);
+            ClassicAssert.AreEqual(20d, range.Max);
+            ClassicAssert.AreEqual(10d, range.Min);
         }
 
         [Test]
@@ -33,11 +34,11 @@ namespace com.espertech.esper.common.@internal.filterspec
             var rangeThree = new DoubleRange(20d, 11d);
             var rangeFour = new DoubleRange(21d, 10d);
 
-            Assert.AreEqual(rangeOne, rangeTwo);
-            Assert.AreEqual(rangeTwo, rangeOne);
-            Assert.IsFalse(rangeOne.Equals(rangeThree));
-            Assert.IsFalse(rangeOne.Equals(rangeFour));
-            Assert.IsFalse(rangeThree.Equals(rangeFour));
+            ClassicAssert.AreEqual(rangeOne, rangeTwo);
+            ClassicAssert.AreEqual(rangeTwo, rangeOne);
+            ClassicAssert.IsFalse(rangeOne.Equals(rangeThree));
+            ClassicAssert.IsFalse(rangeOne.Equals(rangeFour));
+            ClassicAssert.IsFalse(rangeThree.Equals(rangeFour));
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.filterspec
             hashCode *= 31;
             hashCode ^= 20.0d.GetHashCode();
 
-            Assert.AreEqual(hashCode, range.GetHashCode());
+            ClassicAssert.AreEqual(hashCode, range.GetHashCode());
         }
     }
 } // end of namespace

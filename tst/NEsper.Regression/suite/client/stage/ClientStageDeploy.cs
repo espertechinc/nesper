@@ -12,7 +12,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
@@ -47,7 +47,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                     Assert.Fail();
                 }
                 catch (EPUndeployPreconditionException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         ex.Message,
                         "A precondition is not satisfied: Deployment Id '" +
                         deploymentId +

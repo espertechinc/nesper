@@ -27,7 +27,7 @@ using com.espertech.esper.runtime.client.scopetest;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // tryInvalidDeploy;
@@ -854,7 +854,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                           "insert into MyWindowDSI select * from SupportOverrideOneA;\n";
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportOverrideOneA("1a", "1", "base"));
-                env.AssertIterator("create", iterator => Assert.AreEqual("1a", iterator.Advance().Get("Val")));
+                env.AssertIterator("create", iterator => ClassicAssert.AreEqual("1a", iterator.Advance().Get("Val")));
                 env.UndeployAll();
             }
         }
@@ -2078,7 +2078,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     listener => {
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(3, oldData.Length);
+                        ClassicAssert.AreEqual(3, oldData.Length);
                         EPAssertionUtil.AssertProps(oldData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(oldData[1], fields, new object[] { "E3", 3L });
                         EPAssertionUtil.AssertProps(oldData[2], fields, new object[] { "E4", 4L });
@@ -2128,9 +2128,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(2, oldData.Length);
+                        ClassicAssert.AreEqual(2, oldData.Length);
                         EPAssertionUtil.AssertProps(oldData[0], fields, new object[] { "E5", 5L });
                         EPAssertionUtil.AssertProps(oldData[1], fields, new object[] { "E6", 6L });
                         listener.Reset();
@@ -2328,10 +2328,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "G5", 5 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "G7", 7 });
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         listener.Reset();
                     });
 
@@ -2404,9 +2404,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(2, newData.Length);
+                        ClassicAssert.AreEqual(2, newData.Length);
                         EPAssertionUtil.AssertProps(newData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(newData[1], fields, new object[] { "E3", 3L });
                         listener.Reset();
@@ -2418,9 +2418,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(2, oldData.Length);
+                        ClassicAssert.AreEqual(2, oldData.Length);
                         EPAssertionUtil.AssertProps(oldData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(oldData[1], fields, new object[] { "E3", 3L });
                         listener.Reset();
@@ -2532,11 +2532,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G3", 3 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "G4", 4 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "G6", 6 });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         env.ListenerReset("create");
                     });
                 env.AssertPropsPerRowIterator("create", fields, null);
@@ -2564,9 +2564,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G8", 8 });
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "G3", 3 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "G4", 4 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[2], fields, new object[] { "G6", 6 });
@@ -2671,9 +2671,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(3, newData.Length);
+                        ClassicAssert.AreEqual(3, newData.Length);
                         EPAssertionUtil.AssertProps(newData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(newData[1], fields, new object[] { "E3", 3L });
                         EPAssertionUtil.AssertProps(newData[2], fields, new object[] { "E4", 4L });
@@ -2698,8 +2698,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     listener => {
                         var oldData = listener.LastOldData;
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(3, newData.Length);
-                        Assert.AreEqual(3, oldData.Length);
+                        ClassicAssert.AreEqual(3, newData.Length);
+                        ClassicAssert.AreEqual(3, oldData.Length);
                         EPAssertionUtil.AssertProps(newData[0], fields, new object[] { "E7", 7L });
                         EPAssertionUtil.AssertProps(newData[1], fields, new object[] { "E8", 8L });
                         EPAssertionUtil.AssertProps(newData[2], fields, new object[] { "E9", 9L });
@@ -2722,8 +2722,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                     });
 
                 env.UndeployAll();
@@ -2830,7 +2830,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G3", 30 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "G5", 50 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "G6", 60 });
@@ -2881,11 +2881,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G8", 80 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "G9", 90 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "G10", 100 });
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "G3", 30 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "G5", 50 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[2], fields, new object[] { "G6", 60 });
@@ -2923,11 +2923,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G11", 110 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "G13", 130 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "G14", 140 });
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "G8", 80 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "G9", 90 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[2], fields, new object[] { "G10", 100 });
@@ -3205,9 +3205,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(3, newData.Length);
+                        ClassicAssert.AreEqual(3, newData.Length);
                         EPAssertionUtil.AssertProps(newData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(newData[1], fields, new object[] { "E3", 3L });
                         EPAssertionUtil.AssertProps(newData[2], fields, new object[] { "E4", 4L });
@@ -3238,10 +3238,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     listener => {
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(1, newData.Length);
+                        ClassicAssert.AreEqual(1, newData.Length);
                         EPAssertionUtil.AssertProps(newData[0], fields, new object[] { "E6", 6L });
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(3, oldData.Length);
+                        ClassicAssert.AreEqual(3, oldData.Length);
                         EPAssertionUtil.AssertProps(oldData[0], fields, new object[] { "E1", 1L });
                         EPAssertionUtil.AssertProps(oldData[1], fields, new object[] { "E3", 3L });
                         EPAssertionUtil.AssertProps(oldData[2], fields, new object[] { "E4", 4L });
@@ -3357,11 +3357,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G3", 3 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "G4", 4 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "G6", 6 });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
                 env.AssertPropsPerRowIterator("create", fields, null);
@@ -3395,9 +3395,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "G8", 8 });
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "G3", 3 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "G4", 4 });
                         EPAssertionUtil.AssertProps(listener.LastOldData[2], fields, new object[] { "G6", 6 });
@@ -3595,7 +3595,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(listener.LastNewData.Length, 4);
+                        ClassicAssert.AreEqual(listener.LastNewData.Length, 4);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "E1", 10L });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "E4", 10L });
                         EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "E2", 20L });
@@ -3632,10 +3632,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "create",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count); // listener to window gets 2 individual events
-                        Assert.AreEqual(2, listener.NewDataList.Count); // listener to statement gets 1 individual event
-                        Assert.AreEqual(2, listener.NewDataListFlattened.Length);
-                        Assert.AreEqual(2, listener.NewDataListFlattened.Length);
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count); // listener to window gets 2 individual events
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count); // listener to statement gets 1 individual event
+                        ClassicAssert.AreEqual(2, listener.NewDataListFlattened.Length);
+                        ClassicAssert.AreEqual(2, listener.NewDataListFlattened.Length);
                     });
                 env.AssertPropsPerRowNewFlattened(
                     "s0",
@@ -3734,7 +3734,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.Milestone(2);
 
-                env.AssertIterator("create", iterator => Assert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertIterator("create", iterator => ClassicAssert.AreEqual(0, EPAssertionUtil.EnumeratorCount(iterator)));
                 SendBeanInt(env, "G3", 3);
                 env.AssertPropsNew("create", fields, new object[] { "G3", 3 });
 
@@ -4096,7 +4096,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(12, received.Length);
+                        ClassicAssert.AreEqual(12, received.Length);
                     });
 
                 // create select stmt
@@ -4107,7 +4107,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "s0",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(10, received.Length);
+                        ClassicAssert.AreEqual(10, received.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
                             "TheString,IntPrimitive,count(*)".SplitCsv(),
@@ -4170,7 +4170,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(10, received.Length);
+                        ClassicAssert.AreEqual(10, received.Length);
                     });
 
                 // create select stmt
@@ -4187,7 +4187,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "s0",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(3, received.Length);
+                        ClassicAssert.AreEqual(3, received.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
                             "TheString,IntPrimitive,avgLong,cntBool".SplitCsv(),
@@ -4205,7 +4205,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "s0",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(3, received.Length);
+                        ClassicAssert.AreEqual(3, received.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
                             "TheString,IntPrimitive,avgLong,cntBool".SplitCsv(),
@@ -4367,8 +4367,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "create",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
                     });
 
                 // send events
@@ -4411,8 +4411,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "create",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
                     });
 
                 var stmtTextInsert =
@@ -4466,8 +4466,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "create",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
                     });
 
                 var stmtTextInsert =
@@ -4496,7 +4496,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "s2",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         if (listener.LastNewData[0].Get("key").Equals("E1")) {
                             EPAssertionUtil.AssertProps(
                                 listener.LastNewData[0],
@@ -4756,7 +4756,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AddListener("create");
             env.AssertStatement(
                 "create",
-                statement => Assert.IsTrue(rep.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(rep.MatchesClass(statement.EventType.UnderlyingType)));
             env.CompileDeploy("insert into MyWindowBC select bean.* as bean from SupportBean_S0 as bean", path);
 
             env.SendEventBean(new SupportBean_S0(1, "E1"));
@@ -4785,8 +4785,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertStatement(
                 "create",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("key"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("value"));
                 });
 
             // send events
@@ -4917,10 +4917,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             EventBean theEvent,
             string name)
         {
-            Assert.IsTrue(theEvent.EventType is BeanEventType);
-            Assert.IsTrue(theEvent.Underlying is SupportBean);
-            Assert.AreEqual(EventTypeTypeClass.NAMED_WINDOW, theEvent.EventType.Metadata.TypeClass);
-            Assert.AreEqual(name, theEvent.EventType.Name);
+            ClassicAssert.IsTrue(theEvent.EventType is BeanEventType);
+            ClassicAssert.IsTrue(theEvent.Underlying is SupportBean);
+            ClassicAssert.AreEqual(EventTypeTypeClass.NAMED_WINDOW, theEvent.EventType.Metadata.TypeClass);
+            ClassicAssert.AreEqual(name, theEvent.EventType.Name);
         }
 
         public static Schema GetSupportBeanS0Schema()

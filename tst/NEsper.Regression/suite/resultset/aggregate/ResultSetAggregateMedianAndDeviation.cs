@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
@@ -144,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "where (Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\") " +
                           "and one.TheString=two.Symbol " +
                           "group by Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -193,11 +194,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myMedian"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myDistMedian"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myStdev"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvedev"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myMedian"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myDistMedian"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myStdev"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvedev"));
                 });
 
             SendEvent(env, SYMBOL_DELL, 10);
@@ -316,37 +317,37 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.AreEqual(1, oldData.Length);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(1, oldData.Length);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
-                    Assert.AreEqual(oldMedian, oldData[0].Get("myMedian"), "oldData.myMedian wrong");
-                    Assert.AreEqual(oldDistMedian, oldData[0].Get("myDistMedian"), "oldData.myDistMedian wrong");
-                    Assert.AreEqual(oldAvedev, oldData[0].Get("myAvedev"), "oldData.myAvedev wrong");
+                    ClassicAssert.AreEqual(symbol, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(oldMedian, oldData[0].Get("myMedian"), "oldData.myMedian wrong");
+                    ClassicAssert.AreEqual(oldDistMedian, oldData[0].Get("myDistMedian"), "oldData.myDistMedian wrong");
+                    ClassicAssert.AreEqual(oldAvedev, oldData[0].Get("myAvedev"), "oldData.myAvedev wrong");
 
                     var oldStdevResult = (double?)oldData[0].Get("myStdev");
                     if (oldStdevResult == null) {
-                        Assert.IsNull(oldStdev);
+                        ClassicAssert.IsNull(oldStdev);
                     }
                     else {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             Math.Round(oldStdev!.Value * 1000),
                             Math.Round(oldStdevResult.Value * 1000),
                             "oldData.myStdev wrong");
                     }
 
-                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-                    Assert.AreEqual(newMedian, newData[0].Get("myMedian"), "newData.myMedian wrong");
-                    Assert.AreEqual(newDistMedian, newData[0].Get("myDistMedian"), "newData.myDistMedian wrong");
-                    Assert.AreEqual(newAvedev, newData[0].Get("myAvedev"), "newData.myAvedev wrong");
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(newMedian, newData[0].Get("myMedian"), "newData.myMedian wrong");
+                    ClassicAssert.AreEqual(newDistMedian, newData[0].Get("myDistMedian"), "newData.myDistMedian wrong");
+                    ClassicAssert.AreEqual(newAvedev, newData[0].Get("myAvedev"), "newData.myAvedev wrong");
 
                     var newStdevResult = (double?)newData[0].Get("myStdev");
                     if (newStdevResult == null) {
-                        Assert.IsNull(newStdev);
+                        ClassicAssert.IsNull(newStdev);
                     }
                     else {
                         Assert.That(newStdevResult, Is.InstanceOf<double>());
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             Math.Round(newStdev!.Value * 1000),
                             Math.Round(newStdevResult.Value * 1000),
                             "newData.myStdev wrong");

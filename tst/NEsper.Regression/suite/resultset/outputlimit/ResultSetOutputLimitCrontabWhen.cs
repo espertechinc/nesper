@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -198,7 +199,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 model.OutputLimitClause = OutputLimitClause.CreateSchedule(crontabParams);
 
                 var epl = model.ToEPL();
-                Assert.AreEqual(expression, epl);
+                ClassicAssert.AreEqual(expression, epl);
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -258,7 +259,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         Expressions.Eq(Expressions.Property("count_insert_var"), Expressions.Property("count_insert")));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 var epl = model.ToEPL();
-                Assert.AreEqual(expression, epl);
+                ClassicAssert.AreEqual(expression, epl);
                 env.RuntimeSetVariable(null, "myvar", 0);
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -378,30 +379,30 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertRuntime(
                     runtime => {
-                        Assert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
-                        Assert.AreEqual("E1", runtime.VariableService.GetVariableValue(null, "mystring"));
+                        ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("E1", runtime.VariableService.GetVariableValue(null, "mystring"));
                     });
 
                 SendEvent(env, "S2", 0);
                 SendTimeEvent(env, 1, 8, 0, 1, 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 env.SendEventBean(new SupportBean("F1", 0));
                 env.AssertRuntime(
                     runtime => {
-                        Assert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myint"));
-                        Assert.AreEqual("F1", runtime.VariableService.GetVariableValue(null, "mystring"));
+                        ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("F1", runtime.VariableService.GetVariableValue(null, "mystring"));
                     });
 
                 SendTimeEvent(env, 1, 8, 0, 2, 0);
                 SendEvent(env, "S3", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 env.SendEventBean(new SupportBean("F2", 1));
                 env.AssertRuntime(
                     runtime => {
-                        Assert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
-                        Assert.AreEqual("F2", runtime.VariableService.GetVariableValue(null, "mystring"));
+                        ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "myint"));
+                        ClassicAssert.AreEqual("F2", runtime.VariableService.GetVariableValue(null, "mystring"));
                     });
 
                 SendEvent(env, "S4", 0);
@@ -425,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendEvent(env, "S1", 0);
                 SendEvent(env, "S2", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendEvent(env, "S3", 0);
                 env.AssertSubscriber(
@@ -436,7 +437,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendEvent(env, "S4", 0);
                 SendEvent(env, "S5", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendEvent(env, "S6", 0);
                 env.AssertSubscriber(
@@ -446,7 +447,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         subscriber.GetAndResetLastNewData()));
 
                 SendEvent(env, "S7", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 env.UndeployAll();
             }
@@ -463,7 +464,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendEvent(env, "S1", 0);
                 SendEvent(env, "S2", 0);
                 SendEvent(env, "S3", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendEvent(env, "S4", 0);
                 env.AssertSubscriber(
@@ -473,7 +474,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         subscriber.GetAndResetLastNewData()));
 
                 SendEvent(env, "S5", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendEvent(env, "S6", 0);
                 env.AssertSubscriber(
@@ -483,7 +484,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         subscriber.GetAndResetLastNewData()));
 
                 SendEvent(env, "S7", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 env.UndeployAll();
             }
@@ -504,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendEvent(env, "S2", 0);
 
                 SendTimeEvent(env, 1, 8, 0, 2, 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendEvent(env, "S3", 0);
                 env.AssertSubscriber(
@@ -518,7 +519,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 SendTimeEvent(env, 1, 8, 0, 3, 500);
                 SendEvent(env, "S5", 0);
-                env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
                 SendTimeEvent(env, 1, 8, 0, 4, 0);
                 SendEvent(env, "S6", 0);
@@ -628,8 +629,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             // now scheduled for output
             env.SendEventBean(new SupportBean("E1", 1));
             env.AssertRuntime(
-                runtime => Assert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar")));
-            env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+                runtime => ClassicAssert.AreEqual(0, env.Runtime.VariableService.GetVariableValue(null, "myvar")));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
             SendTimeEvent(env, days, 8, 0, 1, 0);
             env.AssertSubscriber(
@@ -639,8 +640,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     subscriber.GetAndResetLastNewData()));
             env.AssertRuntime(
                 runtime => {
-                    Assert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
-                    Assert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+                    ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
+                    ClassicAssert.AreEqual(1, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
                 });
 
             SendEvent(env, "S2", 0);
@@ -650,24 +651,24 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.SendEventBean(new SupportBean("E2", 1));
             env.AssertRuntime(
                 runtime => {
-                    Assert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
-                    Assert.AreEqual(2, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
+                    ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar"));
+                    ClassicAssert.AreEqual(2, runtime.VariableService.GetVariableValue(null, "count_insert_var"));
                 });
 
-            env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
             SendTimeEvent(env, days, 8, 0, 4, 0);
             env.AssertSubscriber(
                 "s0",
                 subscriber => EPAssertionUtil.AssertEqualsExactOrder(
                     new object[] { "S2", "S3" },
                     subscriber.GetAndResetLastNewData()));
-            env.AssertRuntime(runtime => Assert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
+            env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
 
             SendTimeEvent(env, days, 8, 0, 5, 0);
-            env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
             env.SendEventBean(new SupportBean("E1", 1));
-            env.AssertRuntime(runtime => Assert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
-            env.AssertSubscriber("s0", subscriber => Assert.IsFalse(subscriber.IsInvoked));
+            env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, runtime.VariableService.GetVariableValue(null, "myvar")));
+            env.AssertSubscriber("s0", subscriber => ClassicAssert.IsFalse(subscriber.IsInvoked));
 
             env.UndeployAll();
         }

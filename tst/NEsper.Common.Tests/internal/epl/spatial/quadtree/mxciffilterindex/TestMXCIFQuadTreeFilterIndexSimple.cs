@@ -9,7 +9,7 @@
 using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex.SupportMXCIFQuadTreeFilterIndexUtil;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
@@ -65,26 +65,26 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             AssertCollect(tree, beginX, beginY, endX - beginX, endY - beginY, "R1");
             AssertCollectAll(tree, "R0,R1,R2,R3,R4");
 
-            Assert.AreEqual("R0", Get(73.32704983331149, 23.46990952575032, 1, 1, tree));
-            Assert.AreEqual("R1", Get(53.09747562396894, 17.100976152185034, 1, 1, tree));
-            Assert.AreEqual("R2", Get(56.75757294858788, 25.508506696809608, 1, 1, tree));
-            Assert.AreEqual("R3", Get(83.66639067675291, 76.53772974832937, 1, 1, tree));
-            Assert.AreEqual("R4", Get(51.01654641861326, 43.49009281983866, 1, 1, tree));
+            ClassicAssert.AreEqual("R0", Get(73.32704983331149, 23.46990952575032, 1, 1, tree));
+            ClassicAssert.AreEqual("R1", Get(53.09747562396894, 17.100976152185034, 1, 1, tree));
+            ClassicAssert.AreEqual("R2", Get(56.75757294858788, 25.508506696809608, 1, 1, tree));
+            ClassicAssert.AreEqual("R3", Get(83.66639067675291, 76.53772974832937, 1, 1, tree));
+            ClassicAssert.AreEqual("R4", Get(51.01654641861326, 43.49009281983866, 1, 1, tree));
         }
 
         [Test]
         public void TestGetSetRemove()
         {
             tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100);
-            Assert.IsNull(Get(10, 20, 30, 40, tree));
+            ClassicAssert.IsNull(Get(10, 20, 30, 40, tree));
             AssertCollectAll(tree, "");
 
             Set(10, 20, 30, 40, "R0", tree);
-            Assert.AreEqual("R0", Get(10, 20, 30, 40, tree));
+            ClassicAssert.AreEqual("R0", Get(10, 20, 30, 40, tree));
             AssertCollectAll(tree, "R0");
 
             Delete(10, 20, 30, 40, tree);
-            Assert.IsNull(Get(10, 20, 30, 40, tree));
+            ClassicAssert.IsNull(Get(10, 20, 30, 40, tree));
             AssertCollectAll(tree, "");
         }
 

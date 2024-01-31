@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil; // stageIt, unstageIt
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
@@ -248,7 +249,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 env.Milestone(0);
 
                 SendEvent(env, "ST", "E2", 20);
-                Assert.AreEqual(-1, env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
+                ClassicAssert.AreEqual(-1, env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Get("IntPrimitive"));
 
                 UnstageIt(env, "ST", deploymentId);
 
@@ -927,7 +928,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
                 SendEvent(env, "ST", "b");
                 SendEvent(env, "ST", "a");
-                Assert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
 
                 UnstageIt(env, "ST", deploymentId);
 
@@ -949,7 +950,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
                 SendEvent(env, "ST", "b");
                 SendEvent(env, "ST", "a");
-                Assert.IsTrue(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsTrue(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
 
                 UnstageIt(env, "ST", deploymentId);
 
@@ -1082,8 +1083,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
             env.Milestone(1);
 
-            Assert.IsNull(env.Deployment.GetDeployment(deploymentId));
-            Assert.IsNotNull(env.StageService.GetExistingStage("P1").DeploymentService.GetDeployment(deploymentId));
+            ClassicAssert.IsNull(env.Deployment.GetDeployment(deploymentId));
+            ClassicAssert.IsNotNull(env.StageService.GetExistingStage("P1").DeploymentService.GetDeployment(deploymentId));
             AssertEqualsAnyOrder(
                 new string[] { deploymentId },
                 env.StageService.GetExistingStage("P1").DeploymentService.Deployments);
@@ -1097,8 +1098,8 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
             env.Milestone(3);
 
-            Assert.IsNotNull(env.Deployment.GetDeployment(deploymentId));
-            Assert.IsNull(env.StageService.GetExistingStage("P1").DeploymentService.GetDeployment(deploymentId));
+            ClassicAssert.IsNotNull(env.Deployment.GetDeployment(deploymentId));
+            ClassicAssert.IsNull(env.StageService.GetExistingStage("P1").DeploymentService.GetDeployment(deploymentId));
             SendEvent(env, null, "E5", 31);
             SendEvent(env, "P1", "E6", 32);
             AssertTotal(env, null, 10 + 22 + 31);
@@ -1109,7 +1110,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                     env.UndeployAll();
 
                     SendEvent(env, null, "end", 99);
-                    Assert.IsFalse(listener.GetAndClearIsInvoked());
+                    ClassicAssert.IsFalse(listener.GetAndClearIsInvoked());
                 });
             env.UndeployAll();
         }
@@ -1184,7 +1185,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             int intPrimitive)
         {
             SendEvent(env, stageUri, theString, intPrimitive);
-            Assert.IsFalse(env.ListenerStage(stageUri, "s0").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.ListenerStage(stageUri, "s0").GetAndClearIsInvoked());
         }
 
         private static void SendEventAssertNoOutput(
@@ -1196,7 +1197,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             long longPrimitive)
         {
             SendEvent(env, stageSendEvent, theString, intPrimitive, longPrimitive);
-            Assert.IsFalse(env.ListenerStage(stageListener, "s0").GetAndClearIsInvoked());
+            ClassicAssert.IsFalse(env.ListenerStage(stageListener, "s0").GetAndClearIsInvoked());
         }
 
         private static void AssertTotal(
@@ -1218,7 +1219,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             int expected)
         {
             env.SendEventBeanStage(stageUri, new SupportBean(theString, intPrimitive));
-            Assert.AreEqual(expected, env.ListenerStage(stageUri, "s0").AssertOneGetNewAndReset().Get("thesum"));
+            ClassicAssert.AreEqual(expected, env.ListenerStage(stageUri, "s0").AssertOneGetNewAndReset().Get("thesum"));
         }
 
         private static void SendEventAssertSum(
@@ -1230,7 +1231,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             long expected)
         {
             SendEvent(env, stageUri, theString, intPrimitive, longPrimitive);
-            Assert.AreEqual(expected, env.ListenerStage(stageUri, "s0").AssertOneGetNewAndReset().Get("thesum"));
+            ClassicAssert.AreEqual(expected, env.ListenerStage(stageUri, "s0").AssertOneGetNewAndReset().Get("thesum"));
         }
     }
 } // end of namespace

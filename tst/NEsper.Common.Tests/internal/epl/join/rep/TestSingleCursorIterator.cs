@@ -9,6 +9,7 @@
 using System.Collections.Generic;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.rep
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.epl.join.rep
         public void TestNext()
         {
             Assert.That(filledIterator.MoveNext(), Is.True);
-            Assert.AreSame(cursor, filledIterator.Current);
+            ClassicAssert.AreSame(cursor, filledIterator.Current);
 
             Assert.That(filledIterator.MoveNext(), Is.False);
             //Assert.That(() => filledIterator.Current, Throws.InstanceOf<NoSuchElementException>());

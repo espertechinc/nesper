@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreMinMaxNonAgg
@@ -70,10 +72,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 builder.WithStatementConsumer(
                     stmt => {
                         var type = stmt.EventType;
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("myMax"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("myMin"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("myMinEx"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("myMaxEx"));
                     });
 
                 builder.WithAssertion(MakeBoxedEvent(10L, 20, 4)).Expect(fields, 20L, 20L, 10L, 4L);
@@ -110,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(3)));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(EPL, model.ToEPL());
+                ClassicAssert.AreEqual(EPL, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -138,10 +140,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 "s0",
                 listener => {
                     var received = listener.GetAndResetLastNewData()[0];
-                    Assert.AreEqual(20L, received.Get("myMax"));
-                    Assert.AreEqual(10L, received.Get("myMin"));
-                    Assert.AreEqual(4L, received.Get("myMinEx"));
-                    Assert.AreEqual(20L, received.Get("myMaxEx"));
+                    ClassicAssert.AreEqual(20L, received.Get("myMax"));
+                    ClassicAssert.AreEqual(10L, received.Get("myMin"));
+                    ClassicAssert.AreEqual(4L, received.Get("myMinEx"));
+                    ClassicAssert.AreEqual(20L, received.Get("myMaxEx"));
                 });
 
             SendEvent(env, -10, -20, -30);
@@ -149,10 +151,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 "s0",
                 listener => {
                     var received = listener.GetAndResetLastNewData()[0];
-                    Assert.AreEqual(-10L, received.Get("myMax"));
-                    Assert.AreEqual(-20L, received.Get("myMin"));
-                    Assert.AreEqual(-30L, received.Get("myMinEx"));
-                    Assert.AreEqual(-10L, received.Get("myMaxEx"));
+                    ClassicAssert.AreEqual(-10L, received.Get("myMax"));
+                    ClassicAssert.AreEqual(-20L, received.Get("myMin"));
+                    ClassicAssert.AreEqual(-30L, received.Get("myMinEx"));
+                    ClassicAssert.AreEqual(-10L, received.Get("myMaxEx"));
                 });
         }
 

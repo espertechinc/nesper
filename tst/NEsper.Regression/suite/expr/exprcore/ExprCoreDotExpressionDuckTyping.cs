@@ -11,6 +11,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreDotExpressionDuckTyping : RegressionExecution
@@ -38,8 +40,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 statement => {
                     for (var i = 0; i < rows.Length; i++) {
                         var prop = statement.EventType.PropertyDescriptors[i];
-                        Assert.AreEqual(rows[i][0], prop.PropertyName);
-                        Assert.AreEqual(rows[i][1], prop.PropertyType);
+                        ClassicAssert.AreEqual(rows[i][0], prop.PropertyName);
+                        ClassicAssert.AreEqual(rows[i][1], prop.PropertyType);
                     }
                 });
 

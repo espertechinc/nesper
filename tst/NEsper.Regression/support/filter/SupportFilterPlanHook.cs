@@ -18,7 +18,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.filterspec.FilterOperator;
 
 namespace com.espertech.esper.regressionlib.support.filter
@@ -93,7 +93,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 found = entry;
             }
 
-            Assert.IsNotNull(found);
+            ClassicAssert.IsNotNull(found);
             Reset();
             return found.GetAssertSingle(typeName);
         }
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 
         public static SupportFilterPlanEntry AssertPlanSingleAndReset()
         {
-            Assert.AreEqual(1, _entries.Count);
+            ClassicAssert.AreEqual(1, _entries.Count);
             var entry = _entries[0];
             Reset();
             return entry;
@@ -116,7 +116,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             SupportFilterPlan expected,
             FilterSpecPlanForge received)
         {
-            Assert.AreEqual(expected.Paths.Length, received.Paths.Length);
+            ClassicAssert.AreEqual(expected.Paths.Length, received.Paths.Length);
             AssertExpressionOpt(expected.ControlConfirm, received.FilterConfirm);
             AssertExpressionOpt(expected.ControlNegate, received.FilterNegate);
 
@@ -196,10 +196,10 @@ namespace com.espertech.esper.regressionlib.support.filter
             ExprNode expression)
         {
             if (expected == null) {
-                Assert.IsNull(expression);
+                ClassicAssert.IsNull(expression);
             }
             else {
-                Assert.AreEqual(expected, ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression));
+                ClassicAssert.AreEqual(expected, ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(expression));
             }
         }
 
@@ -208,7 +208,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             FilterSpecPlanPathForge pathReceived)
         {
             AssertExpressionOpt(pathExpected.ControlNegate, pathReceived.PathNegate);
-            Assert.AreEqual(pathExpected.Triplets.Length, pathReceived.Triplets.Length);
+            ClassicAssert.AreEqual(pathExpected.Triplets.Length, pathReceived.Triplets.Length);
 
             var tripletsReceived = SortTriplets(pathReceived.Triplets);
             var tripletsExpected = SortTriplets(pathExpected.Triplets);
@@ -263,17 +263,17 @@ namespace com.espertech.esper.regressionlib.support.filter
             FilterSpecPlanPathTripletForge tripletReceived)
         {
             AssertExpressionOpt(tripletExpected.ControlConfirm, tripletReceived.TripletConfirm);
-            Assert.AreEqual(tripletExpected.Lookupable, tripletReceived.Param.Lookupable.Expression);
-            Assert.AreEqual(tripletExpected.Op, tripletReceived.Param.FilterOperator);
+            ClassicAssert.AreEqual(tripletExpected.Lookupable, tripletReceived.Param.Lookupable.Expression);
+            ClassicAssert.AreEqual(tripletExpected.Op, tripletReceived.Param.FilterOperator);
             var @out = new StringBuilder();
             tripletReceived.Param.ValueExprToString(@out, 0);
             if (tripletExpected.Op == EQUAL) {
                 var expected = FilterSpecParamConstantForge.ValueExprToString(tripletExpected.Value);
-                Assert.AreEqual(expected, @out.ToString());
+                ClassicAssert.AreEqual(expected, @out.ToString());
             }
             else if (tripletExpected.Op == BOOLEAN_EXPRESSION || tripletExpected.Op == REBOOL) {
                 var expected = FilterSpecParamExprNodeForge.ValueExprToString(tripletExpected.Value);
-                Assert.AreEqual(expected, @out.ToString());
+                ClassicAssert.AreEqual(expected, @out.ToString());
             }
             else {
                 Assert.Fail("operator value to-string not supported yet");

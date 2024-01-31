@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.property
 {
@@ -45,12 +46,12 @@ namespace com.espertech.esper.common.@internal.@event.property
             {
                 EventPropertyGetter getter = mapped[i].GetGetter(eventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY);
-                Assert.AreEqual(expected[i], getter.Get(theEvent));
+                ClassicAssert.AreEqual(expected[i], getter.Get(theEvent));
             }
 
             // try invalid case
             MappedProperty mpd = new MappedProperty("dummy", "dummy");
-            Assert.IsNull(mpd.GetGetter(eventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
+            ClassicAssert.IsNull(mpd.GetGetter(eventType, EventBeanTypedEventFactoryCompileTime.INSTANCE,
                 supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
 
@@ -59,15 +60,15 @@ namespace com.espertech.esper.common.@internal.@event.property
         {
             for (int i = 0; i < mapped.Length; i++)
             {
-                Assert.AreEqual(typeof(string), mapped[i].GetPropertyType(eventType,
+                ClassicAssert.AreEqual(typeof(string), mapped[i].GetPropertyType(eventType,
                     supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             }
 
             // try invalid case
             MappedProperty mpd = new MappedProperty("dummy", "dummy");
-            Assert.IsNull(mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.IsNull(mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
             mpd = new MappedProperty("MapProperty", "dummy");
-            Assert.AreEqual(typeof(string), mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
+            ClassicAssert.AreEqual(typeof(string), mpd.GetPropertyType(eventType, supportEventTypeFactory.BEAN_EVENT_TYPE_FACTORY));
         }
     }
 } // end of namespace

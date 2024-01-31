@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using com.espertech.esper.compat.collections;
 
 namespace com.espertech.esper.common.@internal.util.serde
 {
@@ -33,30 +34,74 @@ namespace com.espertech.esper.common.@internal.util.serde
             _typeResultCache[typeToConvert] = result;
             return result;
         }
+        
+        private static void TryExpect(ref Utf8JsonReader reader, JsonTokenType tokenType)
+        {
+            if (reader.Read()) {
+                if (reader.TokenType == tokenType) {
+                    return;
+                }
+                throw new JsonException($"invalid content; expecting {tokenType}, but received {reader.TokenType}");
+            }
+
+            throw new JsonException($"invalid content; expecting {tokenType}, but received end of stream");
+        }
+
+        private object ReadValue(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            if (reader.Read()) {
+                if (reader.TokenType == JsonTokenType.String) {
+                    var valueTypeName = reader.GetString();
+                    var valueType = Type.GetType(valueTypeName);
+                    if (reader.Read()) {
+                        var value = JsonSerializer.Deserialize(ref reader, valueType, options);
+                        return value;
+                    }
+                    
+                    throw new JsonException($"invalid content; expecting token, but received end of stream");
+                }
+
+                throw new JsonException($"invalid content; expecting {JsonTokenType.String}, but received {reader.TokenType}");
+            }
+
+            throw new JsonException($"invalid content; expecting {JsonTokenType.String}, but received end of stream");
+        }
 
         public override IList<object> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            var list = new List<object>();
+            if (reader.TokenType == JsonTokenType.Null) {
+                return null;
+            } 
+            
+            if (reader.TokenType == JsonTokenType.StartArray) {
+                TryExpect(ref reader, JsonTokenType.String);
+                var listTypeName = reader.GetString();
+                var listType = Type.GetType(listTypeName);
+                var list = listType.IsArray ? new List<object>() : TypeHelper.Instantiate<IList<object>>(listType);
 
-            using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                    if (reader.TokenType == JsonTokenType.Null) {
+                        list.Add(null);
+                    }
+                    else if (reader.TokenType == JsonTokenType.StartArray) {
+                        var value = ReadValue(ref reader, options);
+                        list.Add(value);
+                        TryExpect(ref reader, JsonTokenType.EndArray);
+                    }
+                }
 
-            foreach (JsonElement values in doc.RootElement.EnumerateArray()) {
-                if (values.ValueKind == JsonValueKind.Null) {
-                    list.Add(null);
+                if (listType.IsArray) {
+                    // convert the "List<>" to an array to match the expected return
+                    return list.ToArray();
                 }
-                else if (values.ValueKind == JsonValueKind.Object) {
-                    var typeElement = values.GetProperty("__type");
-                    var valueElement = values.GetProperty("__value");
-                    var valueType = Type.GetType(typeElement.GetString());
-                    var value = JsonSerializer.Deserialize(valueElement.GetRawText(), valueType, options);
-                    list.Add(value);
-                }
+
+                return list;
             }
 
-            return list;
+            throw new JsonException($"invalid content; expecting {JsonTokenType.StartArray}, but received end of stream");
         }
 
         public override void Write(
@@ -64,18 +109,23 @@ namespace com.espertech.esper.common.@internal.util.serde
             IList<object> values,
             JsonSerializerOptions options)
         {
+            if (values == null) {
+                writer.WriteNullValue();
+                return;
+            }
+            
             writer.WriteStartArray();
+            writer.WriteStringValue(values.GetType().AssemblyQualifiedName);
 
             foreach (var value in values) {
                 if (value == null) {
                     writer.WriteNullValue();
                 }
                 else {
-                    writer.WriteStartObject();
-                    writer.WriteString("__type", value.GetType().AssemblyQualifiedName);
-                    writer.WritePropertyName("__value");
+                    writer.WriteStartArray();
+                    writer.WriteStringValue(value.GetType().AssemblyQualifiedName);
                     JsonSerializer.Serialize(writer, value, value.GetType(), options);
-                    writer.WriteEndObject();
+                    writer.WriteEndArray();
                 }
             }
 

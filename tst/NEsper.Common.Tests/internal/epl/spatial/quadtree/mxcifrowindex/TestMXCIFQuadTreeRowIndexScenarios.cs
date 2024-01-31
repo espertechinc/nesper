@@ -10,7 +10,7 @@ using com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcif.SupportMXCIFQuadTreeUtil;
 using static com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex.SupportMXCIFQuadTreeRowIndexUtil;
 
@@ -26,16 +26,16 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AddNonUnique(tree, 0, 0, 10, 10, "R1");
             AddNonUnique(tree, 0, 0, 10, 10, "R2");
             AddNonUnique(tree, 0, 0, 10, 10, "R3");
-            Assert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "nw,nw").Count);
         }
 
         [Test]
         public void TestDimension()
         {
             var tree = MXCIFQuadTreeFactory.Make(1000, 100000, 9000, 900000);
-            Assert.IsFalse(AddNonUnique(tree, 10, 90, 1, 1, "R1"));
-            Assert.IsFalse(AddNonUnique(tree, 10999999, 90, 1, 1, "R2"));
-            Assert.IsTrue(AddNonUnique(tree, 5000, 800000, 1, 1, "R3"));
+            ClassicAssert.IsFalse(AddNonUnique(tree, 10, 90, 1, 1, "R1"));
+            ClassicAssert.IsFalse(AddNonUnique(tree, 10999999, 90, 1, 1, "R2"));
+            ClassicAssert.IsTrue(AddNonUnique(tree, 5000, 800000, 1, 1, "R3"));
 
             AssertFound(tree, 0, 0, 10000000, 10000000, "R3");
             AssertFound(tree, 4000, 790000, 1200, 11000, "R3");
@@ -68,29 +68,29 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             NavigateLeaf(tree, "se");
             NavigateLeaf(tree, "sw");
             var ne = NavigateBranch(tree, "ne");
-            Assert.AreEqual(2, ne.Level);
+            ClassicAssert.AreEqual(2, ne.Level);
 
             var nw = NavigateLeaf(ne, "nw");
             Compare(60, 10, 1, 1, "[\"R1\", \"R4\"]", (XYWHRectangleMultiType) nw.Data);
-            Assert.AreEqual(2, nw.Count);
+            ClassicAssert.AreEqual(2, nw.Count);
 
             var se = NavigateLeaf(ne, "se");
             Compare(90, 45, 1, 1, "\"R5\"", (XYWHRectangleMultiType) se.Data);
-            Assert.AreEqual(1, se.Count);
+            ClassicAssert.AreEqual(1, se.Count);
 
             var sw = NavigateLeaf(ne, "sw");
             var collection = sw.Data.UnwrapIntoList<XYWHRectangleMultiType>();
             Compare(60, 40, 1, 1, "\"R2\"", collection[0]);
             Compare(70, 30, 1, 1, "\"R3\"", collection[1]);
-            Assert.AreEqual(2, sw.Count);
+            ClassicAssert.AreEqual(2, sw.Count);
 
             Remove(tree, 60, 10, 1, 1, "R1");
             Remove(tree, 60, 40, 1, 1, "R2");
 
             var root = NavigateLeaf(tree, "");
             collection = root.Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(3, root.Count);
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, root.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(60, 10, 1, 1, "[\"R4\"]", collection[0]);
             Compare(70, 30, 1, 1, "\"R3\"", collection[1]);
             Compare(90, 45, 1, 1, "\"R5\"", collection[2]);
@@ -109,30 +109,30 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AddNonUnique(tree, 10, 80, 1, 1, "R2");
             AddNonUnique(tree, 20, 70, 1, 1, "R3");
             AddNonUnique(tree, 10, 80, 1, 1, "R4");
-            Assert.AreEqual(4, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "R1,R2,R3,R4");
 
             Remove(tree, 10, 61, 1, 1, "R1");
             Remove(tree, 9, 60, 1, 1, "R1");
             Remove(tree, 10, 60, 1, 1, "R2");
             Remove(tree, 10, 80, 1, 1, "R1");
-            Assert.AreEqual(4, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "R1,R2,R3,R4");
 
             Remove(tree, 10, 80, 1, 1, "R4");
-            Assert.AreEqual(3, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "R1,R2,R3");
 
             Remove(tree, 10, 80, 1, 1, "R2");
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "R1,R3");
 
             Remove(tree, 10, 60, 1, 1, "R1");
-            Assert.AreEqual(1, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(1, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "R3");
 
             Remove(tree, 20, 70, 1, 1, "R3");
-            Assert.AreEqual(0, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(0, NavigateLeaf(tree, "").Count);
             AssertFound(tree, 10, 60, 10000, 10000, "");
         }
 
@@ -146,10 +146,10 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AddNonUnique(tree, 80, 60, 1, 1, "P4");
             AssertFound(tree, 60, 60, 21, 21, "P1,P2,P3,P4");
 
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
-            Assert.AreEqual(4, NavigateLeaf(tree, "se").Count);
+            ClassicAssert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
+            ClassicAssert.AreEqual(4, NavigateLeaf(tree, "se").Count);
             var collection = NavigateLeaf(tree, "se").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(65, 75, 1, 1, "\"P1\"", collection[0]);
             Compare(80, 75, 1, 1, "\"P2\"", collection[1]);
             Compare(80, 60, 1, 1, "[\"P3\", \"P4\"]", collection[2]);
@@ -159,9 +159,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Remove(tree, 80, 60, 1, 1, "P3");
 
             collection = NavigateLeaf(tree, "se").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(3, NavigateLeaf(tree, "se").Count);
+            ClassicAssert.AreEqual(3, NavigateLeaf(tree, "se").Count);
             AssertFound(tree, 60, 60, 21, 21, "P2,P4,P5");
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(80, 75, 1, 1, "\"P2\"", collection[0]);
             Compare(80, 60, 1, 1, "[\"P4\"]", collection[1]);
             Compare(66, 78, 1, 1, "\"P5\"", collection[2]);
@@ -169,9 +169,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             Remove(tree, 66, 78, 1, 1, "P5");
 
             AssertFound(tree, 60, 60, 21, 21, "P2,P4");
-            Assert.AreEqual(2, NavigateLeaf(tree, "").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "").Count);
             collection = NavigateLeaf(tree, "").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(2, collection.Count);
+            ClassicAssert.AreEqual(2, collection.Count);
             Compare(80, 75, 1, 1, "\"P2\"", collection[0]);
             Compare(80, 60, 1, 1, "[\"P4\"]", collection[1]);
         }
@@ -180,14 +180,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
         public void TestSubdivideMultitypeMerge()
         {
             var tree = MXCIFQuadTreeFactory.Make(0, 0, 100, 100, 6, 2);
-            Assert.AreEqual(1, tree.Root.Level);
+            ClassicAssert.AreEqual(1, tree.Root.Level);
             AddNonUnique(tree, 10, 10, 0, 0, "P1");
             AddNonUnique(tree, 9.9, 10, 0, 0, "P2");
             AddNonUnique(tree, 10, 9.9, 0, 0, "P3");
             AddNonUnique(tree, 10, 10, 0, 0, "P4");
             AddNonUnique(tree, 10, 9.9, 0, 0, "P5");
             AddNonUnique(tree, 9.9, 10, 0, 0, "P6");
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
             AssertFound(tree, 9, 10, 0.99, 0.99, "P2,P6");
             AssertFound(tree, 10, 9, 0.99, 0.99, "P3,P5");
             AssertFound(tree, 10, 10, 0, 0, "P1,P4");
@@ -195,11 +195,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
 
             AddNonUnique(tree, 10, 10, 0, 0, "P7");
 
-            Assert.IsNotInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
-            Assert.AreEqual(1, tree.Root.Level);
-            Assert.AreEqual(7, NavigateLeaf(tree, "nw").Count);
+            ClassicAssert.IsNotInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.AreEqual(1, tree.Root.Level);
+            ClassicAssert.AreEqual(7, NavigateLeaf(tree, "nw").Count);
             var collection = NavigateLeaf(tree, "nw").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(10, 10, 0, 0, "[\"P1\", \"P4\", \"P7\"]", collection[0]);
             Compare(9.9, 10, 0, 0, "[\"P2\", \"P6\"]", collection[1]);
             Compare(10, 9.9, 0, 0, "[\"P3\", \"P5\"]", collection[2]);
@@ -214,9 +214,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AddNonUnique(tree, 10, 10, 0, 0, "P11");
             AddNonUnique(tree, 10, 10, 0, 0, "P12");
 
-            Assert.AreEqual(12, NavigateLeaf(tree, "nw").Count);
-            Assert.AreEqual(2, NavigateLeaf(tree, "nw").Level);
-            Assert.AreEqual(3, collection.Count);
+            ClassicAssert.AreEqual(12, NavigateLeaf(tree, "nw").Count);
+            ClassicAssert.AreEqual(2, NavigateLeaf(tree, "nw").Level);
+            ClassicAssert.AreEqual(3, collection.Count);
             Compare(10, 10, 0, 0, "[\"P1\", \"P4\", \"P7\", \"P10\", \"P11\", \"P12\"]", collection[0]);
             Compare(9.9, 10, 0, 0, "[\"P2\", \"P6\", \"P8\"]", collection[1]);
             Compare(10, 9.9, 0, 0, "[\"P3\", \"P5\", \"P9\"]", collection[2]);
@@ -235,19 +235,19 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             AssertFound(tree, 9, 9, 2, 2, "P1,P2,P4,P6,P7,P10,P11,P12");
 
             collection = NavigateLeaf(tree, "nw").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(8, NavigateLeaf(tree, "nw").Count);
-            Assert.AreEqual(2, collection.Count);
+            ClassicAssert.AreEqual(8, NavigateLeaf(tree, "nw").Count);
+            ClassicAssert.AreEqual(2, collection.Count);
             Compare(10, 10, 0, 0, "[\"P1\", \"P4\", \"P7\", \"P10\", \"P11\", \"P12\"]", collection[0]);
             Compare(9.9, 10, 0, 0, "[\"P2\", \"P6\"]", collection[1]);
-            Assert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
+            ClassicAssert.IsFalse(tree.Root is MXCIFQuadTreeNodeLeaf);
 
             Remove(tree, 9.9, 10, 0, 0, "P2");
             Remove(tree, 10, 10, 0, 0, "P1");
             Remove(tree, 10, 10, 0, 0, "P10");
-            Assert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
-            Assert.AreEqual(5, NavigateLeaf(tree, "").Count);
+            ClassicAssert.IsInstanceOf<MXCIFQuadTreeNodeLeaf>(tree.Root);
+            ClassicAssert.AreEqual(5, NavigateLeaf(tree, "").Count);
             collection = NavigateLeaf(tree, "").Data.UnwrapIntoList<XYWHRectangleMultiType>();
-            Assert.AreEqual(2, collection.Count);
+            ClassicAssert.AreEqual(2, collection.Count);
             Compare(10, 10, 0, 0, "[\"P4\", \"P7\", \"P11\", \"P12\"]", collection[0]);
             Compare(9.9, 10, 0, 0, "[\"P6\"]", collection[1]);
             AssertFound(tree, 9, 10, 0.99, 0.99, "P6");

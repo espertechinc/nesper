@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
@@ -67,7 +68,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         {
             if (expected.IsEmpty())
             {
-                Assert.IsNull(receivedObjects);
+                ClassicAssert.IsNull(receivedObjects);
                 return;
             }
 
@@ -92,7 +93,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                 Log.Info("Received:" + receivedText);
             }
 
-            Assert.AreEqual(expectedText, receivedText);
+            ClassicAssert.AreEqual(expectedText, receivedText);
         }
 
         public static void RandomQuery<L>(

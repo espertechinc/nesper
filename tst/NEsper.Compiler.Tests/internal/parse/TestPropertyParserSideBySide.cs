@@ -22,7 +22,7 @@ using com.espertech.esper.grammar.@internal.generated;
 using com.espertech.esper.grammar.@internal.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.grammar.@internal.generated.EsperEPL2GrammarParser;
 
 namespace com.espertech.esper.compiler.@internal.parse
@@ -249,10 +249,10 @@ namespace com.espertech.esper.compiler.@internal.parse
 	        public void Accept(Property property) {
 	            if (_dynamic) {
 	                var dyn = (DynamicSimpleProperty) property;
-	                Assert.AreEqual(_name, dyn.PropertyNameAtomic);
+	                ClassicAssert.AreEqual(_name, dyn.PropertyNameAtomic);
 	            } else {
 	                var prop = (SimpleProperty) property;
-	                Assert.AreEqual(_name, prop.PropertyNameAtomic);
+	                ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
 	            }
 	        }
 	    }
@@ -283,13 +283,13 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    {
 			    if (_dynamic) {
 				    var prop = (DynamicIndexedProperty) property;
-				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(_index, prop.Index);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_index, prop.Index);
 			    }
 			    else {
 				    var prop = (IndexedProperty) property;
-				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(_index, prop.Index);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_index, prop.Index);
 			    }
 		    }
 	    }
@@ -320,13 +320,13 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    {
 			    if (_dynamic) {
 				    var prop = (DynamicMappedProperty) property;
-				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(_key, prop.Key);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_key, prop.Key);
 			    }
 			    else {
 				    var prop = (MappedProperty) property;
-				    Assert.AreEqual(_name, prop.PropertyNameAtomic);
-				    Assert.AreEqual(_key, prop.Key);
+				    ClassicAssert.AreEqual(_name, prop.PropertyNameAtomic);
+				    ClassicAssert.AreEqual(_key, prop.Key);
 			    }
 		    }
 	    }
@@ -345,7 +345,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 		    public void Accept(Property property)
 		    {
 			    var nested = (NestedProperty) property;
-			    Assert.AreEqual(_consumers.Length, nested.Properties.Count);
+			    ClassicAssert.AreEqual(_consumers.Length, nested.Properties.Count);
 			    for (var i = 0; i < nested.Properties.Count; i++) {
 				    _consumers[i].Invoke(nested.Properties[i]);
 			    }

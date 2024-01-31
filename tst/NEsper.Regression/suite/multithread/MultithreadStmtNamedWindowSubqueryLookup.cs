@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -78,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.AssertFutures(future);
 
             var events = EPAssertionUtil.EnumeratorToArray(env.GetEnumerator("window"));
-            Assert.AreEqual(0, events.Length);
+            ClassicAssert.AreEqual(0, events.Length);
 
             env.UndeployAll();
         }

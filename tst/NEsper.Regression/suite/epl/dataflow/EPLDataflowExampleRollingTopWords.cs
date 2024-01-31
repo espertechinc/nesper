@@ -19,6 +19,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -58,10 +59,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 emitter.Submit(new object[] { word });
             }
 
-            Assert.AreEqual(0, capture.GetCurrentAndReset().Length);
+            ClassicAssert.AreEqual(0, capture.GetCurrentAndReset().Length);
 
             env.AdvanceTime(2000);
-            Assert.AreEqual(1, capture.Current.Length);
+            ClassicAssert.AreEqual(1, capture.Current.Length);
             var row = capture.Current[0].UnwrapIntoArray<object>();
             var rows = row[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertPropsPerRow(

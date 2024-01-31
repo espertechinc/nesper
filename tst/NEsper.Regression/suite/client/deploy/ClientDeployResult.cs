@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.compiler.@internal.parse.ParseHelper;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
@@ -67,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             string[] deploymentIds,
             string[] statementNames)
         {
-            Assert.AreEqual(deploymentIds.Length, statementNames.Length);
+            ClassicAssert.AreEqual(deploymentIds.Length, statementNames.Length);
             var statements = new EPStatement[statementNames.Length];
             var compiled = env.Compile("select * from SupportBean");
 
@@ -98,13 +98,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
             int numStatements,
             int rolloutItemNumber)
         {
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 isDeploy ? typeof(DeploymentStateEventDeployed) : typeof(DeploymentStateEventUndeployed),
                 @event.GetType());
-            Assert.AreEqual(deploymentId, @event.DeploymentId);
-            Assert.AreEqual(runtimeURI, @event.RuntimeURI);
-            Assert.AreEqual(numStatements, @event.Statements.Length);
-            Assert.AreEqual(rolloutItemNumber, @event.RolloutItemNumber);
+            ClassicAssert.AreEqual(deploymentId, @event.DeploymentId);
+            ClassicAssert.AreEqual(runtimeURI, @event.RuntimeURI);
+            ClassicAssert.AreEqual(numStatements, @event.Statements.Length);
+            ClassicAssert.AreEqual(rolloutItemNumber, @event.RolloutItemNumber);
         }
 
         internal class ClientDeploySameDeploymentId : RegressionExecution
@@ -146,26 +146,26 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     throw new EPException(ex);
                 }
 
-                Assert.IsNotNull(result.DeploymentId);
-                Assert.AreEqual(2, result.Statements.Length);
-                Assert.AreEqual(1, env.Deployment.Deployments.Length);
+                ClassicAssert.IsNotNull(result.DeploymentId);
+                ClassicAssert.AreEqual(2, result.Statements.Length);
+                ClassicAssert.AreEqual(1, env.Deployment.Deployments.Length);
 
                 env.AssertStatement(
                     "StmtOne",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "@Name(\"StmtOne\")" +
                         NEWLINE +
                         "create schema MyEvent(id String, val1 int, val2 int)",
                         statement.GetProperty(StatementProperty.EPL)));
                 env.AssertStatement(
                     "StmtTwo",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "@Name(\"StmtTwo\")" +
                         NEWLINE +
                         "select * from MyEvent",
                         statement.GetProperty(StatementProperty.EPL)));
 
-                Assert.AreEqual(0, result.DeploymentIdDependencies.Length);
+                ClassicAssert.AreEqual(0, result.DeploymentIdDependencies.Length);
 
                 env.UndeployAll();
             }
@@ -205,11 +205,11 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 Assert.That(() => env.Deployment.DeploymentStateListeners.Current, Throws.Nothing);
                 env.Deployment.RemoveDeploymentStateListener(listener);
-                Assert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
+                ClassicAssert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
 
                 env.Deployment.AddDeploymentStateListener(listener);
                 env.Deployment.RemoveAllDeploymentStateListeners();
-                Assert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
+                ClassicAssert.IsFalse(env.Deployment.DeploymentStateListeners.MoveNext());
 
                 env.Deployment.AddDeploymentStateListener(listener);
                 var compiledOne = env.Compile(
@@ -243,19 +243,19 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 var stmts = CreateStmts(env, deploymentIds, names);
                 for (var i = 0; i < stmts.Length; i++) {
-                    Assert.AreSame(stmts[i], env.Deployment.GetStatement(deploymentIds[i], names[i]));
+                    ClassicAssert.AreSame(stmts[i], env.Deployment.GetStatement(deploymentIds[i], names[i]));
                 }
 
                 // test statement name trim
                 env.CompileDeploy("@name(' stmt0  ') select * from SupportBean_S0");
-                Assert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
+                ClassicAssert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
 
                 try {
                     env.Deployment.GetStatement(null, null);
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual("Missing deployment-id parameter", ex.Message);
+                    ClassicAssert.AreEqual("Missing deployment-id parameter", ex.Message);
                 }
 
                 try {
@@ -263,13 +263,13 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual("Missing statement-name parameter", ex.Message);
+                    ClassicAssert.AreEqual("Missing statement-name parameter", ex.Message);
                 }
 
-                Assert.IsNull(env.Deployment.GetStatement("x", "y"));
-                Assert.IsNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "y"));
-                Assert.IsNull(env.Deployment.GetStatement("x", "stmt0"));
-                Assert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
+                ClassicAssert.IsNull(env.Deployment.GetStatement("x", "y"));
+                ClassicAssert.IsNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "y"));
+                ClassicAssert.IsNull(env.Deployment.GetStatement("x", "stmt0"));
+                ClassicAssert.IsNotNull(env.Deployment.GetStatement(env.DeploymentId("stmt0"), "stmt0"));
 
                 env.UndeployAll();
             }

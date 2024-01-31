@@ -20,6 +20,7 @@ using com.espertech.esper.regressionrun.runner;
 using com.espertech.esper.regressionrun.suite.core;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionrun.suite.@event
 {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionrun.suite.@event
             var schemaStream = resourceManager
                 .GetResourceAsStream("regression/simpleSchemaWithRestriction.xsd");
             var schemaReader = new StreamReader(schemaStream);
-            Assert.IsNotNull(schemaStream);
+            ClassicAssert.IsNotNull(schemaStream);
             var schemaTextSimpleSchemaWithRestriction = FileUtil.LinesToText(
                 FileUtil.ReadFile(schemaReader));
 

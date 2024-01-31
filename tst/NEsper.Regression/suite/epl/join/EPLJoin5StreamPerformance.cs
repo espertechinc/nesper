@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -52,13 +53,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
             var endTime = PerformanceObserver.MilliTime;
             Log.Info($".testPerfAllProps delta={(endTime - startTime)}");
-            Assert.IsTrue(endTime - startTime < 1500);
+            ClassicAssert.IsTrue(endTime - startTime < 1500);
 
             // test if join returns data
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsNull(listener.LastNewData);
+                    ClassicAssert.IsNull(listener.LastNewData);
                     string[] propertyValues = { "x", "x", "x", "x", "x" };
                     int[] ids = { 1, 2, 3, 4, 5 };
                     SendEvents(env, ids, propertyValues);
@@ -72,14 +73,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             SupportListener updateListener,
             int[] expectedIds)
         {
-            Assert.AreEqual(1, updateListener.LastNewData.Length);
-            Assert.IsNull(updateListener.LastOldData);
+            ClassicAssert.AreEqual(1, updateListener.LastNewData.Length);
+            ClassicAssert.IsNull(updateListener.LastOldData);
             var theEvent = updateListener.LastNewData[0];
-            Assert.AreEqual(expectedIds[0], ((SupportBean_S0)theEvent.Get("S0")).Id);
-            Assert.AreEqual(expectedIds[1], ((SupportBean_S1)theEvent.Get("S1")).Id);
-            Assert.AreEqual(expectedIds[2], ((SupportBean_S2)theEvent.Get("S2")).Id);
-            Assert.AreEqual(expectedIds[3], ((SupportBean_S3)theEvent.Get("S3")).Id);
-            Assert.AreEqual(expectedIds[4], ((SupportBean_S4)theEvent.Get("S4")).Id);
+            ClassicAssert.AreEqual(expectedIds[0], ((SupportBean_S0)theEvent.Get("S0")).Id);
+            ClassicAssert.AreEqual(expectedIds[1], ((SupportBean_S1)theEvent.Get("S1")).Id);
+            ClassicAssert.AreEqual(expectedIds[2], ((SupportBean_S2)theEvent.Get("S2")).Id);
+            ClassicAssert.AreEqual(expectedIds[3], ((SupportBean_S3)theEvent.Get("S3")).Id);
+            ClassicAssert.AreEqual(expectedIds[4], ((SupportBean_S4)theEvent.Get("S4")).Id);
         }
 
         private static void SendEvent(

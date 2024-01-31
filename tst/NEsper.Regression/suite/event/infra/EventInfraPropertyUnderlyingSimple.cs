@@ -24,6 +24,7 @@ using com.espertech.esper.regressionlib.support.util;
 using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using Formatting = Newtonsoft.Json.Formatting;
 using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
@@ -113,8 +114,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("MyInt")));
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("MyString"));
+                    ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("MyInt")));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("MyString"));
                 });
 
             var eventOne = send.Invoke(typename, env, 3, "some string");
@@ -144,13 +145,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             object received)
         {
             if (typename.Equals(JSONPROVIDEDBEAN_TYPENAME)) {
-                Assert.IsTrue(received is MyLocalJsonProvided);
+                ClassicAssert.IsTrue(received is MyLocalJsonProvided);
             }
             else if (typename.Equals(JSON_TYPENAME)) {
-                Assert.AreEqual(expected, received.ToString());
+                ClassicAssert.AreEqual(expected, received.ToString());
             }
             else {
-                Assert.AreEqual(expected, received);
+                ClassicAssert.AreEqual(expected, received);
             }
         }
 
@@ -171,10 +172,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("MyInt")));
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
-                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyInt"));
-                    Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyString"));
+                    ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("MyInt")));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("MyString"));
+                    ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyInt"));
+                    ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_MyString"));
                 });
 
             send.Invoke(typename, env, 3, "some string");
@@ -225,9 +226,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                     EPAssertionUtil.AssertEqualsAnyOrder(new string[] { "MyString", "MyInt" }, eventType.PropertyNames);
 
-                    Assert.IsNotNull(eventType.GetGetter("MyInt"));
-                    Assert.IsTrue(eventType.IsProperty("MyInt"));
-                    Assert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
+                    ClassicAssert.IsNotNull(eventType.GetGetter("MyInt"));
+                    ClassicAssert.IsTrue(eventType.IsProperty("MyInt"));
+                    ClassicAssert.AreEqual(intType, eventType.GetPropertyType("MyInt"));
                     SupportEventPropUtil.AssertPropEquals(
                         new SupportEventPropDesc("MyString", typeof(string)),
                         eventType.GetPropertyDescriptor("MyString"));
@@ -249,7 +250,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                                  "MyString.x",
                                  "MyString.x.y",
                                  "MyString.x")) {
-                        Assert.AreEqual(false, eventType.IsProperty(prop));
+                        ClassicAssert.AreEqual(false, eventType.IsProperty(prop));
                         Type expected = null;
                         if (xml) {
                             if (prop.Equals("MyString.x?")) {
@@ -257,9 +258,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                             }
                         }
 
-                        Assert.AreEqual(expected, eventType.GetPropertyType(prop));
-                        Assert.IsNull(eventType.GetPropertyDescriptor(prop));
-                        Assert.IsNull(eventType.GetFragmentType(prop));
+                        ClassicAssert.AreEqual(expected, eventType.GetPropertyType(prop));
+                        ClassicAssert.IsNull(eventType.GetPropertyDescriptor(prop));
+                        ClassicAssert.IsNull(eventType.GetFragmentType(prop));
                     }
                 });
         }

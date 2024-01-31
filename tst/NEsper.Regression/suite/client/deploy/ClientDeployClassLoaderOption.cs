@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
                 env.Deployment.Deploy(compiled, options);
 
-                Assert.IsFalse(mySupportTypeResolver.Names.IsEmpty());
+                ClassicAssert.IsFalse(mySupportTypeResolver.Names.IsEmpty());
 
                 env.UndeployAll();
             }

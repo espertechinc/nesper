@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
@@ -155,7 +156,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 try {
                     for (var i = 0; i < 1000; i++) {
                         var result = prepared.Execute();
-                        Assert.AreEqual(1, result.Array.Length);
+                        ClassicAssert.AreEqual(1, result.Array.Length);
                     }
                 }
                 finally {
@@ -261,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 var epl =
                     "select col as c0 from sql:MyDBPooled[\"select myvarchar as col from mytesttable where myint between 20 and 30\"]";
                 var model = env.EplToModel(epl);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 var rows = env.CompileExecuteFAF(model, new RegressionPath()).Array;
                 EPAssertionUtil.AssertPropsPerRow(
                     rows,
@@ -347,7 +348,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     Assert.Fail();
                 }
                 catch (EPException ex) {
-                    Assert.AreEqual("Prepared fire-and-forget query is already closed", ex.Message);
+                    ClassicAssert.AreEqual("Prepared fire-and-forget query is already closed", ex.Message);
                 }
 
                 env.UndeployAll();
@@ -370,7 +371,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 result.Array,
                 new string[] { columnName },
                 new object[][] { new object[] { expected } });
-            Assert.AreEqual(expected.GetType(), result.Array[0].EventType.GetPropertyType(columnName));
+            ClassicAssert.AreEqual(expected.GetType(), result.Array[0].EventType.GetPropertyType(columnName));
         }
     }
 } // end of namespace

@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -276,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(epl);
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(expected, statement.EventType.GetPropertyType("thecase")));
+                    statement => ClassicAssert.AreEqual(expected, statement.EventType.GetPropertyType("thecase")));
                 env.UndeployAll();
             }
 
@@ -421,7 +422,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           " when Symbol=\"DELL\" then sum(Price) " +
                           "end as p1 from SupportMarketDataBean.win:length(10)";
 
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
 
@@ -508,7 +509,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                           "when Symbol=\"DELL\" then Volume*3 " +
                           "else Volume " +
                           "end as p1 from SupportMarketDataBean#length(10)";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
@@ -561,7 +562,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         " when (Symbol='MSFT') then Volume / 3.0 " +
                         " end")
                     .WithStatementConsumer(
-                        stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
+                        stmt => ClassicAssert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
                 builder.WithAssertion(MakeMarketDataEvent("DELL", 10000, 0)).Expect(fields, 10000 / 2.0);
                 builder.WithAssertion(MakeMarketDataEvent("MSFT", 10000, 0)).Expect(fields, 10000 / 3.0);
@@ -586,7 +587,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         " when FloatPrimitive then FloatPrimitive / DoublePrimitive " +
                         " else (IntPrimitive + LongPrimitive + FloatPrimitive + DoublePrimitive) end")
                     .WithStatementConsumer(
-                        stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
+                        stmt => ClassicAssert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
                 // intPrimitive = longPrimitive
                 // case result is intPrimitive + longPrimitive
@@ -1047,7 +1048,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     listener => {
                         var theEvent = listener.GetAndResetLastNewData()[0];
-                        Assert.AreEqual(expected, theEvent.Get("p1"));
+                        ClassicAssert.AreEqual(expected, theEvent.Get("p1"));
                     });
             }
         }
@@ -1134,7 +1135,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(100)));
                 model = copier.Copy(model);
 
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
                 env.AssertStmtType("s0", "p1", typeof(double?));

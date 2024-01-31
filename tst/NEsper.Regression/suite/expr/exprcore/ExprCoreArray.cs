@@ -23,7 +23,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using Array = System.Array;
@@ -104,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Verify(
                         "c0",
                         value => {
-                            Assert.AreEqual(typeof(int[]), value.GetType());
+                            ClassicAssert.AreEqual(typeof(int[]), value.GetType());
                             EPAssertionUtil.AssertEqualsExactOrder(new int[] { 1, 2 }, value.Unwrap<int>());
                         });
 
@@ -219,8 +219,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         "c0",
                         result => {
                             var arr = (object[])result;
-                            Assert.AreSame(bean.ArrayProperty, arr[0]);
-                            Assert.AreSame(bean.Nested, arr[1]);
+                            ClassicAssert.AreSame(bean.ArrayProperty, arr[0]);
+                            ClassicAssert.AreSame(bean.Nested, arr[1]);
                         });
 
                 builder.Run(env);
@@ -248,7 +248,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     .Add(Expressions.Array().Add(Expressions.Constant(1)).Add(2).Add(3), "IntArray");
 
                 model.FromClause = FromClause.Create(FilterStream.Create(nameof(SupportBean)));
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
 
                 var bean = new SupportBean("a", 10);

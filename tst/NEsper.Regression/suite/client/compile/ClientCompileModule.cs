@@ -26,6 +26,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -104,12 +105,12 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var epl = "@name('s0') select * from SupportBean";
                 env.CompileDeploy(epl);
                 deployment = env.Deployment.GetDeployment(env.DeploymentId("s0"));
-                Assert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
                 env.UndeployAll();
 
                 env.EplToModelCompileDeploy(epl);
                 deployment = env.Deployment.GetDeployment(env.DeploymentId("s0"));
-                Assert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.AreEqual(epl, deployment.ModuleProperties.Get(ModuleProperty.MODULETEXT));
                 env.UndeployAll();
             }
 
@@ -142,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             {
                 var resource = "regression/test_module_12.epl";
                 var input = env.Container.ResourceManager().GetResourceAsStream(resource);
-                Assert.IsNotNull(input);
+                ClassicAssert.IsNotNull(input);
 
                 Module module;
                 try {
@@ -165,9 +166,9 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
 
                 var deplomentInfo = env.Deployment.GetDeployment(deployed.DeploymentId);
-                Assert.AreEqual("regression.test", deplomentInfo.ModuleName);
-                Assert.AreEqual(2, deplomentInfo.Statements.Length);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual("regression.test", deplomentInfo.ModuleName);
+                ClassicAssert.AreEqual(2, deplomentInfo.Statements.Length);
+                ClassicAssert.AreEqual(
                     "create schema MyType(col1 integer)",
                     deplomentInfo.Statements[0].GetProperty(StatementProperty.EPL));
 
@@ -188,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Deploy(compiledTwo);
 
                 var deploymentIds = env.Deployment.Deployments;
-                Assert.AreEqual(2, deploymentIds.Length);
+                ClassicAssert.AreEqual(2, deploymentIds.Length);
 
                 var infoList = deploymentIds
                     .Select(_ => env.Deployment.GetDeployment(_))
@@ -197,19 +198,19 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
 
                 var infoOne = infoList[0];
                 var infoTwo = infoList[1];
-                Assert.AreEqual("regression.test", infoOne.ModuleName);
-                Assert.AreEqual("uri1", infoOne.ModuleProperties.Get(ModuleProperty.URI));
-                Assert.AreEqual("archive1", infoOne.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
-                Assert.AreEqual("obj1", infoOne.ModuleProperties.Get(ModuleProperty.USEROBJECT));
-                Assert.IsNull(infoOne.ModuleProperties.Get(ModuleProperty.USES));
-                Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
-                Assert.IsNotNull(infoOne.LastUpdateDate);
-                Assert.AreEqual("regression.test.two", infoTwo.ModuleName);
-                Assert.AreEqual("uri2", infoTwo.ModuleProperties.Get(ModuleProperty.URI));
-                Assert.AreEqual("archive2", infoTwo.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
-                Assert.AreEqual("obj2", infoTwo.ModuleProperties.Get(ModuleProperty.USEROBJECT));
-                Assert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
-                Assert.IsNotNull(infoTwo.LastUpdateDate);
+                ClassicAssert.AreEqual("regression.test", infoOne.ModuleName);
+                ClassicAssert.AreEqual("uri1", infoOne.ModuleProperties.Get(ModuleProperty.URI));
+                ClassicAssert.AreEqual("archive1", infoOne.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
+                ClassicAssert.AreEqual("obj1", infoOne.ModuleProperties.Get(ModuleProperty.USEROBJECT));
+                ClassicAssert.IsNull(infoOne.ModuleProperties.Get(ModuleProperty.USES));
+                ClassicAssert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.IsNotNull(infoOne.LastUpdateDate);
+                ClassicAssert.AreEqual("regression.test.two", infoTwo.ModuleName);
+                ClassicAssert.AreEqual("uri2", infoTwo.ModuleProperties.Get(ModuleProperty.URI));
+                ClassicAssert.AreEqual("archive2", infoTwo.ModuleProperties.Get(ModuleProperty.ARCHIVENAME));
+                ClassicAssert.AreEqual("obj2", infoTwo.ModuleProperties.Get(ModuleProperty.USEROBJECT));
+                ClassicAssert.IsNotNull(infoOne.ModuleProperties.Get(ModuleProperty.MODULETEXT));
+                ClassicAssert.IsNotNull(infoTwo.LastUpdateDate);
 
                 CollectionAssert.AreEquivalent(
                     new string[] {"a", "b"},
@@ -239,11 +240,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                                  "select * from DEF";
 
                 var module = env.ParseModule(moduleText);
-                Assert.AreEqual(2, module.Items.Count);
-                Assert.AreEqual(3, module.Items[0].LineNumber);
-                Assert.AreEqual(3, module.Items[0].LineNumberEnd);
-                Assert.AreEqual(4, module.Items[1].LineNumber);
-                Assert.AreEqual(4, module.Items[1].LineNumberEnd);
+                ClassicAssert.AreEqual(2, module.Items.Count);
+                ClassicAssert.AreEqual(3, module.Items[0].LineNumber);
+                ClassicAssert.AreEqual(3, module.Items[0].LineNumberEnd);
+                ClassicAssert.AreEqual(4, module.Items[1].LineNumber);
+                ClassicAssert.AreEqual(4, module.Items[1].LineNumberEnd);
 
                 module = env.ParseModule("/* abc */");
                 var compiled = env.Compile(module);
@@ -255,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(0, resultOne.Statements.Length);
+                ClassicAssert.AreEqual(0, resultOne.Statements.Length);
 
                 module = env.ParseModule("select * from SupportBean; \r\n/* abc */\r\n");
                 compiled = env.Compile(module);
@@ -267,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(1, resultTwo.Statements.Length);
+                ClassicAssert.AreEqual(1, resultTwo.Statements.Length);
 
                 env.UndeployAll();
             }
@@ -291,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.Deploy(compiled).AddListener("A");
 
                 env.SendEventBean(new SupportBean("E1", 4));
-                Assert.AreEqual(5, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
+                ClassicAssert.AreEqual(5, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
 
                 env.UndeployAll();
 
@@ -302,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.CompileDeploy(epl).AddListener("A");
 
                 env.SendEventBean(new SupportBean("E1", 6));
-                Assert.AreEqual(7, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
+                ClassicAssert.AreEqual(7, env.Listener("A").AssertOneGetNewAndReset().Get("val"));
 
                 env.UndeployAll();
             }
@@ -415,29 +416,29 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     }
                 );
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "org.mycompany.events",
                     env.ParseModule("module org.mycompany.events; select * from System.Object;").Name);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "glob.update.me",
                     env.ParseModule("module glob.update.me; select * from System.Object;").Name);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "seconds.until.every.where",
                     env.ParseModule("uses seconds.until.every.where; select * from System.Object;").Uses.ToArray()[0]);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     new ImportType("seconds.until.every.where"),
                     env.ParseModule("import seconds.until.every.where; select * from System.Object;")
                         .Imports.ToArray()[0]);
 
                 // Test script square brackets
                 module = env.ReadModule("regression/test_module_13.epl");
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
 
                 module = env.ReadModule("regression/test_module_14.epl");
-                Assert.AreEqual(4, module.Items.Count);
+                ClassicAssert.AreEqual(4, module.Items.Count);
 
                 module = env.ReadModule("regression/test_module_15.epl");
-                Assert.AreEqual(1, module.Items.Count);
+                ClassicAssert.AreEqual(1, module.Items.Count);
             }
 
             public ISet<RegressionFlag> Flags()
@@ -528,7 +529,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.Fail();
             }
             catch (IOException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
             catch (ParseException ex) {
                 throw new EPRuntimeException(ex);
@@ -548,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 throw new EPRuntimeException(ex);
             }
             catch (ParseException ex) {
-                Assert.AreEqual(message, ex.Message);
+                ClassicAssert.AreEqual(message, ex.Message);
             }
         }
 
@@ -559,7 +560,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             Import[] expectedImports,
             string[] statements)
         {
-            Assert.AreEqual(name, module.Name);
+            ClassicAssert.AreEqual(name, module.Name);
 
             var expectedUses = usesCSV == null ? Array.Empty<string>() : usesCSV.SplitCsv();
             CollectionAssert.AreEqual(expectedUses, module.Uses);
@@ -577,16 +578,16 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             Module module,
             params ModuleItem[] expecteds)
         {
-            Assert.AreEqual(expecteds.Length, module.Items.Count);
+            ClassicAssert.AreEqual(expecteds.Length, module.Items.Count);
             for (var i = 0; i < expecteds.Length; i++) {
                 var expected = expecteds[i];
                 var actual = module.Items[i];
                 var message = "Failed to Item#" + i;
-                Assert.AreEqual(expected.IsCommentOnly, actual.IsCommentOnly, message);
-                Assert.AreEqual(expected.LineNumber, actual.LineNumber, message);
-                Assert.AreEqual(expected.LineNumberEnd, actual.LineNumberEnd, message);
-                Assert.AreEqual(expected.LineNumberContent, actual.LineNumberContent, message);
-                Assert.AreEqual(expected.LineNumberContentEnd, actual.LineNumberContent, message);
+                ClassicAssert.AreEqual(expected.IsCommentOnly, actual.IsCommentOnly, message);
+                ClassicAssert.AreEqual(expected.LineNumber, actual.LineNumber, message);
+                ClassicAssert.AreEqual(expected.LineNumberEnd, actual.LineNumberEnd, message);
+                ClassicAssert.AreEqual(expected.LineNumberContent, actual.LineNumberContent, message);
+                ClassicAssert.AreEqual(expected.LineNumberContentEnd, actual.LineNumberContent, message);
             }
         }
 

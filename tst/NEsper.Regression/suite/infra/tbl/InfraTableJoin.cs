@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
 using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
@@ -612,8 +612,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             tableLookupPlan = lqp.LookupInstructions[0].LookupPlans[0];
                         }
 
-                        Assert.AreEqual(assertion.ExpectedIndexName, tableLookupPlan.IndexNum[0].IndexName);
-                        Assert.AreEqual(assertion.ExpectedStrategy, tableLookupPlan.GetType());
+                        ClassicAssert.AreEqual(assertion.ExpectedIndexName, tableLookupPlan.IndexNum[0].IndexName);
+                        ClassicAssert.AreEqual(assertion.ExpectedStrategy, tableLookupPlan.GetType());
                     });
 
                 env.UndeployModuleContaining("s0");
@@ -637,7 +637,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     var index = i;
                     env.AssertEventNew(
                         "s0",
-                        @event => Assert.AreEqual(
+                        @event => ClassicAssert.AreEqual(
                             values[index],
                             @event.Get("value"),
                             "Failed for key '" + keyarr[index] + "'"));

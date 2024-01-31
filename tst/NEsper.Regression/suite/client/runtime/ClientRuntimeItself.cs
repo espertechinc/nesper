@@ -20,6 +20,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -81,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             {
                 var beanEventType = new EPRuntimeBeanAnonymousTypeService(env.Container)
                     .MakeBeanEventTypeAnonymous(typeof(MyBeanAnonymousType));
-                Assert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
+                ClassicAssert.AreEqual(typeof(int), beanEventType.GetPropertyType("Prop"));
             }
         }
 
@@ -132,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     Assert.Fail();
                 }
                 catch (EPDeployException ex) {
-                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                    ClassicAssert.AreEqual(msgInvalidDeployFAF, ex.Message);
                 }
 
                 try {
@@ -141,7 +142,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     Assert.Fail();
                 }
                 catch (EPDeployException ex) {
-                    Assert.AreEqual(msgInvalidDeployFAF, ex.Message);
+                    ClassicAssert.AreEqual(msgInvalidDeployFAF, ex.Message);
                 }
 
                 try {
@@ -149,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     Assert.Fail();
                 }
                 catch (EPException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Cannot execute a fire-and-forget query that was compiled as module EPL, make sure to use the 'compileQuery' method of the compiler",
                         ex.Message);
                 }
@@ -174,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
                 var spi = (EPRuntimeSPI)env.Runtime;
                 var svc = spi.ReflectiveCompileSvc;
-                Assert.IsTrue(svc.IsCompilerAvailable);
+                ClassicAssert.IsTrue(svc.IsCompilerAvailable);
 
                 var compiledFAF = svc.ReflectiveCompileFireAndForget("select * from MyWindow");
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiledFAF);
@@ -200,14 +201,14 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     new object[][] { new object[] { "E1" } });
 
                 var node = svc.ReflectiveCompileExpression("1*1", null, null);
-                Assert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
+                ClassicAssert.AreEqual(1, node.Forge.ExprEvaluator.Evaluate(null, true, null));
 
                 var model = spi.ReflectiveCompileSvc.ReflectiveEPLToModel("select * from MyWindow");
-                Assert.IsNotNull(model);
+                ClassicAssert.IsNotNull(model);
 
                 var moduleParsed = spi.ReflectiveCompileSvc.ReflectiveParseModule("select * from MyWindow");
-                Assert.AreEqual(1, moduleParsed.Items.Count);
-                Assert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
+                ClassicAssert.AreEqual(1, moduleParsed.Items.Count);
+                ClassicAssert.AreEqual("select * from MyWindow", moduleParsed.Items[0].Expression);
 
                 env.UndeployAll();
             }
@@ -227,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.Statement("s0").AddListener(listener);
 
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
+                ClassicAssert.AreEqual(TEST_SECRET_VALUE, listener.SecretValue);
 
                 env.UndeployAll();
             }

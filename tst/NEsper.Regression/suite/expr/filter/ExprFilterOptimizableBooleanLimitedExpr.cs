@@ -25,6 +25,7 @@ using static
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -204,8 +205,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         "s0",
                         statement => {
                             var @params = GetFilterSvcMultiAssertNonEmpty(statement);
-                            Assert.AreEqual(EQUAL, @params[0].Op);
-                            Assert.AreEqual(EQUAL, @params[1].Op);
+                            ClassicAssert.AreEqual(EQUAL, @params[0].Op);
+                            ClassicAssert.AreEqual(EQUAL, @params[1].Op);
                         });
                 }
 
@@ -236,12 +237,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                             var filters = GetFilterSvcAllStmtForTypeMulti(env.Runtime, "SupportBean_S0");
                             var s0 = filters.Get("s0");
                             var s1 = filters.Get("s1");
-                            Assert.AreEqual(REBOOL, s0[0].Op);
-                            Assert.AreEqual(".P00 regexp ?", s0[0].Name);
-                            Assert.AreEqual(REBOOL, s0[1].Op);
-                            Assert.AreEqual(".P01 regexp ?", s0[1].Name);
-                            Assert.AreEqual(s0[0], s1[0]);
-                            Assert.AreEqual(s0[1], s1[1]);
+                            ClassicAssert.AreEqual(REBOOL, s0[0].Op);
+                            ClassicAssert.AreEqual(".P00 regexp ?", s0[0].Name);
+                            ClassicAssert.AreEqual(REBOOL, s0[1].Op);
+                            ClassicAssert.AreEqual(".P01 regexp ?", s0[1].Name);
+                            ClassicAssert.AreEqual(s0[0], s1[0]);
+                            ClassicAssert.AreEqual(s0[1], s1[1]);
                         });
                 }
 
@@ -399,11 +400,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     var s0 = filters.Get("s0");
                     foreach (var name in statementNames) {
                         var sn = filters.Get(name);
-                        Assert.AreEqual(FilterOperator.REBOOL, sn.Op);
-                        Assert.IsNotNull(s0.OptionalValue);
-                        Assert.IsNotNull(s0.Index);
-                        Assert.AreSame(s0.Index, sn.Index);
-                        Assert.AreSame(s0.OptionalValue, sn.OptionalValue);
+                        ClassicAssert.AreEqual(FilterOperator.REBOOL, sn.Op);
+                        ClassicAssert.IsNotNull(s0.OptionalValue);
+                        ClassicAssert.IsNotNull(s0.Index);
+                        ClassicAssert.AreSame(s0.Index, sn.Index);
+                        ClassicAssert.AreSame(s0.OptionalValue, sn.OptionalValue);
                     }
                 }
 
@@ -428,9 +429,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.CompileDeploy(epl).AddListener("s0");
                 if (HasFilterIndexPlanAdvanced(env)) {
                     var forge = SupportFilterPlanHook.AssertPlanSingleTripletAndReset("SupportBean");
-                    Assert.AreEqual(FilterOperator.REBOOL, forge.FilterOperator);
-                    Assert.AreEqual(".TheString regexp ?", forge.Lookupable.Expression);
-                    Assert.AreEqual(typeof(string), forge.Lookupable.ReturnType);
+                    ClassicAssert.AreEqual(FilterOperator.REBOOL, forge.FilterOperator);
+                    ClassicAssert.AreEqual(".TheString regexp ?", forge.Lookupable.Expression);
+                    ClassicAssert.AreEqual(typeof(string), forge.Lookupable.ReturnType);
                     AssertFilterSvcSingle(env, "s0", ".TheString regexp ?", REBOOL);
                 }
 
@@ -448,13 +449,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     var s0 = filters.Get("s0");
                     var s1 = filters.Get("s1");
                     var s2 = filters.Get("s2");
-                    Assert.AreEqual(FilterOperator.REBOOL, s0.Op);
-                    Assert.IsNotNull(s0.OptionalValue);
-                    Assert.IsNotNull(s0.Index);
-                    Assert.AreSame(s0.Index, s1.Index);
-                    Assert.AreSame(s0.OptionalValue, s1.OptionalValue);
-                    Assert.AreSame(s0.Index, s2.Index);
-                    Assert.AreNotSame(s0.OptionalValue, s2.OptionalValue);
+                    ClassicAssert.AreEqual(FilterOperator.REBOOL, s0.Op);
+                    ClassicAssert.IsNotNull(s0.OptionalValue);
+                    ClassicAssert.IsNotNull(s0.Index);
+                    ClassicAssert.AreSame(s0.Index, s1.Index);
+                    ClassicAssert.AreSame(s0.OptionalValue, s1.OptionalValue);
+                    ClassicAssert.AreSame(s0.Index, s2.Index);
+                    ClassicAssert.AreNotSame(s0.OptionalValue, s2.OptionalValue);
                 }
 
                 SendSBAssert(env, "garden", true, true, false);
@@ -509,7 +510,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     }
                     else {
                         foreach (var listener in listeners) {
-                            Assert.IsFalse(listener.IsInvoked);
+                            ClassicAssert.IsFalse(listener.IsInvoked);
                         }
                     }
                 }
@@ -641,7 +642,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             SupportFilterPlanHook.Reset();
             env.Compile(epl, path);
             var forge = SupportFilterPlanHook.AssertPlanSingleForTypeAndReset(typeName);
-            Assert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, forge.FilterOperator);
+            ClassicAssert.AreEqual(FilterOperator.BOOLEAN_EXPRESSION, forge.FilterOperator);
         }
 
         private static void SendS0Assert(
@@ -707,10 +708,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         SupportFilterServiceHelper.GetFilterSvcAllStmtForTypeSingleFilter(env.Runtime, eventTypeName);
                     var s0 = filters.Get("s0");
                     var s1 = filters.Get("s1");
-                    Assert.AreEqual(FilterOperator.REBOOL, s0.Op);
-                    Assert.IsNotNull(s0.Index);
-                    Assert.AreSame(s0.Index, s1.Index);
-                    Assert.AreSame(s0.OptionalValue, s1.OptionalValue);
+                    ClassicAssert.AreEqual(FilterOperator.REBOOL, s0.Op);
+                    ClassicAssert.IsNotNull(s0.Index);
+                    ClassicAssert.AreSame(s0.Index, s1.Index);
+                    ClassicAssert.AreSame(s0.OptionalValue, s1.OptionalValue);
                 });
         }
 

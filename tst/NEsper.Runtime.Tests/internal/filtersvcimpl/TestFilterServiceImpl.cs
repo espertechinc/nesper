@@ -20,6 +20,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -206,7 +207,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     {
                         Log.Debug(".testEvalEvents Match failed, event=" + events[i].Underlying);
                         Log.Debug(".testEvalEvents Match failed, eventNumber=" + i + " index=" + j);
-                        Assert.IsTrue(false);
+                        ClassicAssert.IsTrue(false);
                     }
                 }
             }

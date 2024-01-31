@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypes
 
 // assertTypesAllSame
@@ -103,8 +103,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value, "E1_0_1"));
 
                 builder.WithAssertion(SupportCollection.MakeString(null))
-                    .Verify(fields[0], Assert.IsNull)
-                    .Verify(fields[1], Assert.IsNull);
+                    .Verify(fields[0], ClassicAssert.IsNull)
+                    .Verify(fields[1], ClassicAssert.IsNull);
 
                 builder.Run(env);
             }
@@ -227,8 +227,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(fields[1], value => LambdaAssertionUtil.AssertValuesArrayScalar(value));
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
-                    .Verify(fields[0], Assert.IsNull)
-                    .Verify(fields[1], Assert.IsNull);
+                    .Verify(fields[0], ClassicAssert.IsNull)
+                    .Verify(fields[1], ClassicAssert.IsNull);
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
                     .Verify(fields[0], value => LambdaAssertionUtil.AssertValuesArrayScalar(value))
@@ -255,7 +255,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value, 1));
 
                 builder.WithAssertion(SupportCollection.MakeString(null))
-                    .Verify(field, Assert.IsNull);
+                    .Verify(field, ClassicAssert.IsNull);
 
                 builder.WithAssertion(SupportCollection.MakeString(""))
                     .Verify(field, value => LambdaAssertionUtil.AssertValuesArrayScalar(value));

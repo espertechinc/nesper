@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -146,8 +147,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.IsNull(theEvent.Get("es0id"));
-                    Assert.AreEqual(10, theEvent.Get("es1id"));
+                    ClassicAssert.IsNull(theEvent.Get("es0id"));
+                    ClassicAssert.AreEqual(10, theEvent.Get("es1id"));
                 });
 
             env.Milestone(0);
@@ -156,8 +157,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(20, theEvent.Get("es0id"));
-                    Assert.IsNull(theEvent.Get("es1id"));
+                    ClassicAssert.AreEqual(20, theEvent.Get("es0id"));
+                    ClassicAssert.IsNull(theEvent.Get("es1id"));
                 });
         }
 

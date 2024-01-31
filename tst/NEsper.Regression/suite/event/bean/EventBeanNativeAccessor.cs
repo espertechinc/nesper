@@ -10,6 +10,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -30,8 +31,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     var eventType = @event.EventType;
                     foreach (var name in new[]
                                  { "IntPrimitive", "explicitFInt", "explicitMGetInt", "explicitMReadInt" }) {
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
-                        Assert.AreEqual(10, @event.Get(name));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType(name));
+                        ClassicAssert.AreEqual(10, @event.Get(name));
                     }
                 });
 

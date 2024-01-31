@@ -36,7 +36,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using Newtonsoft.Json.Linq;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.events.SupportGenericColUtil;
 
 using Exception = System.Exception;
@@ -292,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         new RegressionPath());
                 }
                 catch (Exception ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Test failed due to exception: Event type by name 'd19f2e9e82d14b96be4fa12b8a27ee9f' has a public crc32 id overlap with event type by name 'b5a7b602ab754d7ab30fb42c4fb28d82', please consider renaming either of these types",
                         ex.Message);
                 }
@@ -315,16 +315,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertStatement(
                     "schema",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             StatementType.CREATE_SCHEMA,
                             statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                        Assert.AreEqual("SimpleSchema", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                        ClassicAssert.AreEqual("SimpleSchema", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                     });
 
                 env.SendEventBean(new SupportBean("a", 20));
                 env.AssertPropsNew("s0", "p0,p1".Split(","), new object[] { "a", 20 });
 
-                env.AssertThat(() => Assert.IsNull(env.Runtime.EventTypeService.GetBusEventType("SimpleSchema")));
+                env.AssertThat(() => ClassicAssert.IsNull(env.Runtime.EventTypeService.GetBusEventType("SimpleSchema")));
 
                 env.UndeployAll();
             }
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var eventType = env.Runtime.EventTypeService.GetBusEventType("MySchema");
-                        Assert.AreEqual("MySchema", eventType.Name);
+                        ClassicAssert.AreEqual("MySchema", eventType.Name);
                     });
 
                 env.UndeployAll();
@@ -533,9 +533,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("prop1"));
-                        Assert.AreEqual(
+                        ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("prop1"));
+                        ClassicAssert.AreEqual(
                             typeof(int?),
                             Boxing.GetBoxedType(statement.EventType.GetPropertyType("prop2")));
                     });
@@ -582,9 +582,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var stmtEventType = statement.EventType;
-                        Assert.AreEqual(typeof(string), stmtEventType.GetPropertyType("prop1"));
-                        Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop2")));
-                        Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop3")));
+                        ClassicAssert.AreEqual(typeof(string), stmtEventType.GetPropertyType("prop1"));
+                        ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop2")));
+                        ClassicAssert.AreEqual(typeof(long?), Boxing.GetBoxedType(stmtEventType.GetPropertyType("prop3")));
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -615,51 +615,51 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b"));
                         if (eventRepresentationEnum.IsObjectArrayEvent()) {
-                            Assert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("c"));
-                            Assert.AreEqual(typeof(object[][]), statement.EventType.GetPropertyType("d"));
-                            Assert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("f"));
+                            ClassicAssert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("c"));
+                            ClassicAssert.AreEqual(typeof(object[][]), statement.EventType.GetPropertyType("d"));
+                            ClassicAssert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("f"));
                         }
                         else if (eventRepresentationEnum.IsMapEvent()) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(IDictionary<string, object>),
                                 statement.EventType.GetPropertyType("c"));
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(IDictionary<string, object>[]),
                                 statement.EventType.GetPropertyType("d"));
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(IDictionary<string, object>),
                                 statement.EventType.GetPropertyType("f"));
                         }
                         else if (eventRepresentationEnum.IsAvroEvent()) {
-                            Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("c"));
-                            Assert.AreEqual(typeof(GenericRecord[]), statement.EventType.GetPropertyType("d"));
-                            Assert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("f"));
+                            ClassicAssert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("c"));
+                            ClassicAssert.AreEqual(typeof(GenericRecord[]), statement.EventType.GetPropertyType("d"));
+                            ClassicAssert.AreEqual(typeof(GenericRecord), statement.EventType.GetPropertyType("f"));
                         }
                         else if (eventRepresentationEnum.IsJsonEvent()) {
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 TypeHelper.IsSubclassOrImplementsInterface(
                                     statement.EventType.GetPropertyType("c"),
                                     typeof(JsonEventObject)));
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 TypeHelper.IsSubclassOrImplementsInterface(
                                     statement.EventType.GetPropertyType("d").GetElementType(),
                                     typeof(JsonEventObject)));
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 TypeHelper.IsSubclassOrImplementsInterface(
                                     statement.EventType.GetPropertyType("f"),
                                     typeof(JsonEventObject)));
                         }
                         else if (eventRepresentationEnum.IsJsonProvidedClassEvent()) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(MyLocalJsonProvidedBaseOne),
                                 statement.EventType.GetPropertyType("c"));
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(MyLocalJsonProvidedBaseTwo[]),
                                 statement.EventType.GetPropertyType("d"));
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 typeof(MyLocalJsonProvidedBaseOne),
                                 statement.EventType.GetPropertyType("f"));
                         }
@@ -667,7 +667,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             Assert.Fail();
                         }
 
-                        Assert.AreEqual(typeof(long?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("e")));
+                        ClassicAssert.AreEqual(typeof(long?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("e")));
                     });
 
                 // invalid tests
@@ -707,10 +707,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var path = new RegressionPath();
                 env.CompileDeploy("@name('s1') @public create schema ABCType(col1 int, col2 int)", path);
                 var deploymentIdS1 = env.DeploymentId("s1");
-                Assert.IsNotNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
+                ClassicAssert.IsNotNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
                 env.UndeployAll();
 
-                Assert.IsNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
+                ClassicAssert.IsNull(env.Runtime.EventTypeService.GetEventType(deploymentIdS1, "ABCType"));
 
                 AssertTypeExistsPreconfigured(env, "SupportBean");
                 AssertTypeExistsPreconfigured(env, "MapTypeEmpty");
@@ -802,10 +802,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "create",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
-                        Assert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
-                        Assert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
-                        Assert.AreEqual(typeof(object), eventType.GetPropertyType("f4"));
+                        ClassicAssert.AreEqual(typeof(TimeSpan?), eventType.GetPropertyType("f1"));
+                        ClassicAssert.AreEqual(typeof(PointF?), eventType.GetPropertyType("f2"));
+                        ClassicAssert.AreEqual(typeof(EventHandler), eventType.GetPropertyType("f3"));
+                        ClassicAssert.AreEqual(typeof(object), eventType.GetPropertyType("f4"));
                     });
 
                 env.UndeployAll();
@@ -827,20 +827,20 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertStatement(
                     "c1",
-                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
                 env.AssertStatement(
                     "c2",
-                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
                 env.CompileDeploy("@name('s0') select * from SupportBeanOne", path).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
                 env.CompileDeploy("@name('s1') select * from SupportBeanTwo", path).AddListener("s1");
                 env.AssertStatement(
                     "s1",
-                    statement => Assert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean_ST0), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean_ST0("E1", 2), "SupportBeanOne");
                 env.AssertPropsNew("s0", "Id,P00".Split(","), new object[] { "E1", 2 });
@@ -853,7 +853,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // assert type information
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(EventTypeTypeClass.STREAM, statement.EventType.Metadata.TypeClass));
+                    statement => ClassicAssert.AreEqual(EventTypeTypeClass.STREAM, statement.EventType.Metadata.TypeClass));
 
                 // test keyword
                 env.TryInvalidCompile(
@@ -891,24 +891,24 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "child",
                     statement => {
                         var childType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), childType.GetPropertyType("col1"));
-                        Assert.AreEqual(typeof(string), childType.GetPropertyType("col2"));
-                        Assert.AreEqual(typeof(int?), childType.GetPropertyType("col3"));
+                        ClassicAssert.AreEqual(typeof(int?), childType.GetPropertyType("col1"));
+                        ClassicAssert.AreEqual(typeof(string), childType.GetPropertyType("col2"));
+                        ClassicAssert.AreEqual(typeof(int?), childType.GetPropertyType("col3"));
                     });
 
                 env.CompileDeploy("@Public create schema MyChildTypeTwo as (col4 boolean)", path);
                 var createText =
                     "@name('childchild') @public create schema MyChildChildType as (col5 short, col6 long) inherits MyChildTypeOne, MyChildTypeTwo";
                 var model = env.EplToModel(createText);
-                Assert.AreEqual(createText, model.ToEPL());
+                ClassicAssert.AreEqual(createText, model.ToEPL());
                 env.CompileDeploy(model, path);
                 env.AssertStatement(
                     "childchild",
                     statement => {
                         var stmtChildChildType = statement.EventType;
-                        Assert.AreEqual(typeof(bool?), stmtChildChildType.GetPropertyType("col4"));
-                        Assert.AreEqual(typeof(int?), stmtChildChildType.GetPropertyType("col3"));
-                        Assert.AreEqual(typeof(short?), stmtChildChildType.GetPropertyType("col5"));
+                        ClassicAssert.AreEqual(typeof(bool?), stmtChildChildType.GetPropertyType("col4"));
+                        ClassicAssert.AreEqual(typeof(int?), stmtChildChildType.GetPropertyType("col3"));
+                        ClassicAssert.AreEqual(typeof(short?), stmtChildChildType.GetPropertyType("col5"));
                     });
 
                 env.CompileDeploy(
@@ -918,8 +918,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "cc2",
                     statement => {
                         var eventTypeCC2 = statement.EventType;
-                        Assert.AreEqual(typeof(bool?), eventTypeCC2.GetPropertyType("col4"));
-                        Assert.AreEqual(typeof(int?), eventTypeCC2.GetPropertyType("col3"));
+                        ClassicAssert.AreEqual(typeof(bool?), eventTypeCC2.GetPropertyType("col4"));
+                        ClassicAssert.AreEqual(typeof(int?), eventTypeCC2.GetPropertyType("col3"));
                     });
 
                 env.UndeployAll();
@@ -944,8 +944,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "predef",
                     statement => {
                         var variantTypePredef = statement.EventType;
-                        Assert.AreEqual(typeof(int?), variantTypePredef.GetPropertyType("col1"));
-                        Assert.AreEqual(1, variantTypePredef.PropertyDescriptors.Count);
+                        ClassicAssert.AreEqual(typeof(int?), variantTypePredef.GetPropertyType("col1"));
+                        ClassicAssert.AreEqual(1, variantTypePredef.PropertyDescriptors.Count);
                     });
 
                 env.CompileDeploy("@Public insert into MyVariantPredef select * from MyTypeZero", path);
@@ -959,17 +959,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var createText =
                     "@name('predef_any') @public create variant schema MyVariantAnyModel as MyTypeZero, MyTypeOne, *";
                 var model = env.EplToModel(createText);
-                Assert.AreEqual(createText, model.ToEPL());
+                ClassicAssert.AreEqual(createText, model.ToEPL());
                 env.CompileDeploy(model, path);
                 env.AssertStatement(
                     "predef_any",
                     statement => {
                         var predefAnyType = statement.EventType;
-                        Assert.AreEqual(4, predefAnyType.PropertyDescriptors.Count);
-                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col1"));
-                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col2"));
-                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col3"));
-                        Assert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col4"));
+                        ClassicAssert.AreEqual(4, predefAnyType.PropertyDescriptors.Count);
+                        ClassicAssert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col1"));
+                        ClassicAssert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col2"));
+                        ClassicAssert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col3"));
+                        ClassicAssert.AreEqual(typeof(object), predefAnyType.GetPropertyType("col4"));
                     });
 
                 // try "any"
@@ -978,7 +978,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "any",
                     statement => {
                         var variantTypeAny = statement.EventType;
-                        Assert.AreEqual(0, variantTypeAny.PropertyDescriptors.Count);
+                        ClassicAssert.AreEqual(0, variantTypeAny.PropertyDescriptors.Count);
                     });
 
                 env.CompileDeploy("insert into MyVariantAny select * from MyTypeZero", path);
@@ -1016,8 +1016,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertStatement(
                 "create",
                 statement => {
-                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col4")));
-                    Assert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
+                    ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col4")));
+                    ClassicAssert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
                 });
             env.UndeployAll();
 
@@ -1032,9 +1032,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertStatement(
                 "create",
                 statement => {
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
-                    Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col6")));
-                    Assert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                    ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(statement.EventType.GetPropertyType("col6")));
+                    ClassicAssert.AreEqual(2, statement.EventType.PropertyDescriptors.Count);
                 });
 
             env.CompileDeploy(
@@ -1045,7 +1045,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 .AddListener("select");
             env.AssertStatement(
                 "select",
-                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             // send event
             if (eventRepresentationEnum.IsMapEvent()) {
@@ -1081,8 +1081,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "select",
                 statement => {
                     var type = statement.EventType;
-                    Assert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
-                    Assert.AreEqual(type.Name, type.Metadata.Name);
+                    ClassicAssert.AreEqual(EventTypeTypeClass.STREAM, type.Metadata.TypeClass);
+                    ClassicAssert.AreEqual(type.Name, type.Metadata.Name);
                 });
 
             // test non-enum create-schema
@@ -1094,7 +1094,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "c2",
                 statement => {
                     AssertTypeColDef(env.Statement("c2").EventType);
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
                 });
             env.UndeployModuleContaining("c2");
 
@@ -1103,7 +1103,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "c2",
                 statement => {
                     AssertTypeColDef(statement.EventType);
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType));
                 });
 
             env.UndeployAll();
@@ -1125,27 +1125,27 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 "innerType",
                 statement => {
                     var innerType = statement.EventType;
-                    Assert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
-                    Assert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
-                    Assert.AreEqual(typeof(int?[]), innerType.GetPropertyType("inn2"));
-                    Assert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
-                    Assert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
+                    ClassicAssert.AreEqual(typeof(string[]), innerType.GetPropertyType("inn1"));
+                    ClassicAssert.IsTrue(innerType.GetPropertyDescriptor("inn1").IsIndexed);
+                    ClassicAssert.AreEqual(typeof(int?[]), innerType.GetPropertyType("inn2"));
+                    ClassicAssert.IsTrue(innerType.GetPropertyDescriptor("inn2").IsIndexed);
+                    ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(innerType.UnderlyingType));
                 });
             env.AssertStatement(
                 "outerType",
                 statement => {
                     var type = statement.EventType.GetFragmentType("col1");
-                    Assert.IsFalse(type.IsIndexed);
-                    Assert.AreEqual(false, type.IsNative);
+                    ClassicAssert.IsFalse(type.IsIndexed);
+                    ClassicAssert.AreEqual(false, type.IsNative);
                     type = statement.EventType.GetFragmentType("col2");
-                    Assert.IsTrue(type.IsIndexed);
-                    Assert.AreEqual(false, type.IsNative);
+                    ClassicAssert.IsTrue(type.IsIndexed);
+                    ClassicAssert.AreEqual(false, type.IsNative);
                 });
 
             env.CompileDeploy("@name('s0') select * from MyOuterType", path).AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             if (eventRepresentationEnum.IsObjectArrayEvent()) {
                 var innerData = new object[] { "abc,def".Split(","), new int[] { 1, 2 } };
@@ -1224,15 +1224,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             RegressionEnvironment env,
             string typeName)
         {
-            Assert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
+            ClassicAssert.IsNotNull(env.Runtime.EventTypeService.GetEventTypePreconfigured(typeName));
         }
 
         private static void AssertTypeColDef(EventType eventType)
         {
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("col1"));
-            Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("col2")));
-            Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("col3col4")));
-            Assert.AreEqual(3, eventType.PropertyDescriptors.Count);
+            ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("col1"));
+            ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("col2")));
+            ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType("col3col4")));
+            ClassicAssert.AreEqual(3, eventType.PropertyDescriptors.Count);
         }
 
         // ReSharper disable UnusedMember.Global

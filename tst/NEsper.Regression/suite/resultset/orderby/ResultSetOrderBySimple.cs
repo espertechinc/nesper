@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 {
@@ -200,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                     "s0",
                     listener => {
                         var received = listener.NewDataListFlattened;
-                        Assert.AreEqual(2, received.Length);
+                        ClassicAssert.AreEqual(2, received.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             received,
                             "a.TheString".SplitCsv(),
@@ -227,7 +228,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                     "s0",
                     listener => {
                         var receivedThree = listener.NewDataListFlattened;
-                        Assert.AreEqual(3, receivedThree.Length);
+                        ClassicAssert.AreEqual(3, receivedThree.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             receivedThree,
                             "a.TheString".SplitCsv(),
@@ -252,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                     "s0",
                     listener => {
                         var receivedTwo = listener.NewDataListFlattened;
-                        Assert.AreEqual(2, receivedTwo.Length);
+                        ClassicAssert.AreEqual(2, receivedTwo.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             receivedTwo,
                             "TheString".SplitCsv(),
@@ -367,7 +368,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 model.OutputLimitClause = OutputLimitClause.Create(6);
                 model.OrderByClause = OrderByClause.Create().Add("Price", true);
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -1130,9 +1131,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                     var type = events[0].EventType;
                     IList<string> actualProperties = new List<string>(Arrays.AsList(type.PropertyNames));
                     Log.Debug(".assertOnlyProperties actualProperties==" + actualProperties);
-                    Assert.IsTrue(actualProperties.ContainsAll(requiredProperties));
+                    ClassicAssert.IsTrue(actualProperties.ContainsAll(requiredProperties));
                     actualProperties.RemoveAll(requiredProperties);
-                    Assert.IsTrue(actualProperties.IsEmpty());
+                    ClassicAssert.IsTrue(actualProperties.IsEmpty());
                 });
         }
 
@@ -1149,7 +1150,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                     Log.Debug(".assertValuesMayConvert events.length==" + events.Length);
                     for (var i = 0; i < events.Length; i++) {
                         var theEvent = (SupportMarketDataBean)events[i].Get("one");
-                        Assert.AreEqual(symbols[i], theEvent.Symbol);
+                        ClassicAssert.AreEqual(symbols[i], theEvent.Symbol);
                     }
                 });
         }
@@ -1163,11 +1164,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                 "s0",
                 listener => {
                     var events = listener.LastNewData;
-                    Assert.AreEqual(values.Count, events.Length);
+                    ClassicAssert.AreEqual(values.Count, events.Length);
                     Log.Debug(".assertValuesMayConvert values: " + values);
                     for (var i = 0; i < events.Length; i++) {
                         Log.Debug(".assertValuesMayConvert events[" + i + "]==" + events[i].Get(valueName));
-                        Assert.AreEqual(values[i], events[i].Get(valueName));
+                        ClassicAssert.AreEqual(values[i], events[i].Get(valueName));
                     }
                 });
         }

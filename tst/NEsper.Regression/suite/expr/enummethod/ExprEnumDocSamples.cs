@@ -18,6 +18,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.lrreport;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumDocSamples
@@ -122,8 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("zeroloc"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P00020", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P00020", items[0].AssetId);
                     });
 
                 env.UndeployAll();
@@ -137,8 +139,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("zeroloc"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P00020", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P00020", items[0].AssetId);
                     });
 
                 env.UndeployAll();
@@ -162,8 +164,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var zones = ToArrayZones((ICollection<Zone>)@event.Get("zones"));
-                        Assert.AreEqual(1, zones.Length);
-                        Assert.AreEqual("Z1", zones[0].Name);
+                        ClassicAssert.AreEqual(1, zones.Length);
+                        ClassicAssert.AreEqual("Z1", zones[0].Name);
                     });
 
                 // subquery with event as input
@@ -203,8 +205,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var zones = ToArrayZones((ICollection<Zone>)@event.Get("zones"));
-                        Assert.AreEqual(1, zones.Length);
-                        Assert.AreEqual("Z1", zones[0].Name);
+                        ClassicAssert.AreEqual(1, zones.Length);
+                        ClassicAssert.AreEqual("Z1", zones[0].Name);
                     });
 
                 env.UndeployModuleContaining("s0");
@@ -220,8 +222,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var zones = ToArrayZones((ICollection<Zone>)@event.Get("zones"));
-                        Assert.AreEqual(1, zones.Length);
-                        Assert.AreEqual("Z3", zones[0].Name);
+                        ClassicAssert.AreEqual(1, zones.Length);
+                        ClassicAssert.AreEqual("Z3", zones[0].Name);
                     });
 
                 env.UndeployAll();
@@ -242,8 +244,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("centeritems"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P0001", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P0001", items[0].AssetId);
                     });
 
                 env.SendEventBean(new Item("P0002", new Location(10, 1000), "P", null));
@@ -251,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("centeritems"));
-                        Assert.AreEqual(0, items.Length);
+                        ClassicAssert.AreEqual(0, items.Length);
                     });
 
                 env.UndeployAll();
@@ -272,8 +274,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("centeritems"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P0001", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P0001", items[0].AssetId);
                     });
 
                 env.SendEventBean(new Item("P0002", new Location(10, 1000), "P", null));
@@ -281,8 +283,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("centeritems"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P0001", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P0001", items[0].AssetId);
                     });
 
                 env.UndeployAll();
@@ -303,8 +305,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("centeritems"));
-                        Assert.AreEqual(1, items.Length);
-                        Assert.AreEqual("P00020", items[0].AssetId);
+                        ClassicAssert.AreEqual(1, items.Length);
+                        ClassicAssert.AreEqual("P00020", items[0].AssetId);
                     });
 
                 env.UndeployAll();
@@ -325,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var zones = ToArrayZones((ICollection<Zone>)@event.Get("zones"));
-                        Assert.AreEqual(1, zones.Length);
-                        Assert.AreEqual("Z1", zones[0].Name);
+                        ClassicAssert.AreEqual(1, zones.Length);
+                        ClassicAssert.AreEqual("Z1", zones[0].Name);
                     });
 
                 env.UndeployAll();
@@ -349,9 +351,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var items = ToArrayItems((ICollection<Item>)@event.Get("p"));
-                        Assert.AreEqual(2, items.Length);
-                        Assert.AreEqual("P00002", items[0].AssetId);
-                        Assert.AreEqual("P00020", items[1].AssetId);
+                        ClassicAssert.AreEqual(2, items.Length);
+                        ClassicAssert.AreEqual("P00002", items[0].AssetId);
+                        ClassicAssert.AreEqual("P00020", items[1].AssetId);
                     });
 
                 env.UndeployAll();
@@ -708,7 +710,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     });
             }
             else {
-                ValidateWithVerifier(env, select, result => { Assert.AreEqual(expected, result); });
+                ValidateWithVerifier(env, select, result => { ClassicAssert.AreEqual(expected, result); });
             }
         }
 

@@ -26,7 +26,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -319,7 +319,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     catch (Exception ex) {
                         if (assertion.EventSendAssertion == null) {
                             // no assertion, expected
-                            Assert.IsTrue(ex.Message.Contains("index hint busted"));
+                            ClassicAssert.IsTrue(ex.Message.Contains("index hint busted"));
                             continue;
                         }
 
@@ -367,11 +367,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "schema",
                     statement =>
-                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                        ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
                 env.AssertStatement(
                     "window",
                     statement =>
-                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                        ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
                 env.CompileDeploy("insert into ProductWin select * from Product", path);
                 env.CompileDeploy("@public create window PortfolioWin#keepall as Portfolio", path);
@@ -624,7 +624,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     iterator => {
                         var received = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(19, received.Length);
+                        ClassicAssert.AreEqual(19, received.Length);
                     });
 
                 // create select stmt
@@ -700,9 +700,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             statement.EventType.PropertyNames,
                             new string[] { "Symbol", "a", "b" });
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("b"));
                     });
 
                 SendMarketBean(env, "S1");
@@ -728,10 +728,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListenerNotInvoked("s0");
 
                 SendMarketBean(env, "S3");
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
                 SendSupportBean_A(env, "S3"); // deletes from window
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastOldData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastOldData().Length));
 
                 SendMarketBean(env, "S3");
                 env.AssertListenerNotInvoked("s0");
@@ -772,7 +772,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertPropsNew("s0", fields, new object[] { "S1", 5, "S1", 3 });
 
                 SendSupportBean(env, false, "S1", 6);
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
                 // delete and insert back in
                 SendMarketBean(env, "S0", 0);
@@ -856,7 +856,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertListener(
                     "select",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         listener.Reset();
                     });
 

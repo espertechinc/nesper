@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A; // assertEquals
 
 // assertTrue
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl, path).AddListener("select").AddListener("consumer");
                 env.AssertStatement(
                     "select",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.ON_INSERT,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -152,9 +152,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "consumer",
                     statement => {
                         var consumerType = statement.EventType;
-                        Assert.AreEqual(typeof(string), consumerType.GetPropertyType("TheString"));
-                        Assert.IsTrue(consumerType.PropertyNames.Length > 10);
-                        Assert.AreEqual(typeof(SupportBean), consumerType.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(string), consumerType.GetPropertyType("TheString"));
+                        ClassicAssert.IsTrue(consumerType.PropertyNames.Length > 10);
+                        ClassicAssert.AreEqual(typeof(SupportBean), consumerType.UnderlyingType);
                     });
 
                 // check type
@@ -162,9 +162,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "select",
                     statement => {
                         var onSelectType = statement.EventType;
-                        Assert.AreEqual(typeof(string), onSelectType.GetPropertyType("TheString"));
-                        Assert.IsTrue(onSelectType.PropertyNames.Length > 10);
-                        Assert.AreEqual(typeof(SupportBean), onSelectType.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(string), onSelectType.GetPropertyType("TheString"));
+                        ClassicAssert.IsTrue(onSelectType.PropertyNames.Length > 10);
+                        ClassicAssert.AreEqual(typeof(SupportBean), onSelectType.UnderlyingType);
                     });
 
                 // delete all from named window

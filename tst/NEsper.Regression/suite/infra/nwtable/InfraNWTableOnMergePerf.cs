@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -64,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(eplCreate, path);
                 env.AssertStatement(
                     "create",
-                    statement => Assert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
+                    statement => ClassicAssert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
 
                 // preload events
                 env.CompileDeploy(
@@ -101,11 +102,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         var count = 0;
                         for (; events.MoveNext();) {
                             var next = events.Current;
-                            Assert.AreEqual(1, next.Get("c2"));
+                            ClassicAssert.AreEqual(1, next.Get("c2"));
                             count++;
                         }
 
-                        Assert.AreEqual(totalUpdated, count);
+                        ClassicAssert.AreEqual(totalUpdated, count);
                     });
                 Assert.That(delta, Is.LessThan(500), "Delta=" + delta);
 

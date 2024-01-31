@@ -22,6 +22,7 @@ using com.espertech.esper.compat.function;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
@@ -226,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
                 model.CreateVariable = CreateVariableClause.Create("long", "var1OMCreate", null);
                 env.CompileDeploy(model, path);
-                Assert.AreEqual("@public create variable long var1OMCreate", model.ToEPL());
+                ClassicAssert.AreEqual("@public create variable long var1OMCreate", model.ToEPL());
 
                 model = new EPStatementObjectModel();
                 model.Annotations = Collections.SingletonList(new AnnotationPart("public"));
@@ -235,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "var2OMCreate",
                     Expressions.Constant("abc"));
                 env.CompileDeploy(model, path);
-                Assert.AreEqual("@public create variable string var2OMCreate = \"abc\"", model.ToEPL());
+                ClassicAssert.AreEqual("@public create variable string var2OMCreate = \"abc\"", model.ToEPL());
 
                 var stmtTextSelect = "@name('s0') select var1OMCreate, var2OMCreate from SupportBean";
                 env.CompileDeploy(stmtTextSelect, path).AddListener("s0");
@@ -275,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy("on pattern [every SupportBean] set FOO = FOO + 1", path);
                 env.SendEventBean(new SupportBean());
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         1,
                         env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
 
@@ -283,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 env.CompileDeploy(createText);
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         0,
                         env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "FOO")));
 
@@ -306,10 +307,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.AssertStatement(
                     "create-one",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             StatementType.CREATE_VARIABLE,
                             statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                        Assert.AreEqual("var1SAI", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                        ClassicAssert.AreEqual("var1SAI", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                     });
 
                 var fieldsVar1 = new string[] { "var1SAI" };
@@ -320,8 +321,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "create-one",
                     statement => {
                         var typeCreateOne = statement.EventType;
-                        Assert.AreEqual(typeof(long?), typeCreateOne.GetPropertyType("var1SAI"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(long?), typeCreateOne.GetPropertyType("var1SAI"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeCreateOne.UnderlyingType);
                         CollectionAssert.AreEqual(typeCreateOne.PropertyNames, new string[] { "var1SAI" });
                     });
 
@@ -425,7 +426,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "s0",
                     received => {
                         for (var i = 0; i < variables.Length; i++) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 variables[i][3],
                                 received.Get((string)variables[i][0]),
                                 "Failed for " + CompatExtensions.Render(variables[i]));

@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.common.@internal.support.SupportEventTypeAssertionEnum; // NAME
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
     public class ExprDefineValueParameter
@@ -335,11 +337,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 env.SendEventBean(new SupportBean("E10", -1));
                 env.AssertEqualsNew("s0", "c0", 10);
-                Assert.AreEqual(1, service.Calculations.Count);
+                ClassicAssert.AreEqual(1, service.Calculations.Count);
 
                 env.SendEventBean(new SupportBean("E10", -1));
                 env.AssertEqualsNew("s0", "c0", 10);
-                Assert.AreEqual(2, service.Calculations.Count);
+                ClassicAssert.AreEqual(2, service.Calculations.Count);
 
                 ExprDefineLocalService.services.Clear();
                 env.UndeployAll();

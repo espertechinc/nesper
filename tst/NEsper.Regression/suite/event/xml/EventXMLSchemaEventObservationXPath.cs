@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.suite.@event.xml.EventXMLSchemaEventObservationDOM;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -125,8 +125,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         env.GetEnumerator("s0").Advance(),
                         new[] { "countTags", "countTagsInt" },
                         new object[] { 2d, 2 });
-                    Assert.AreEqual("urn:epc:1:2.24.400", env.GetEnumerator("e1").Advance().Get("ID"));
-                    Assert.AreEqual("urn:epc:1:2.24.401", env.GetEnumerator("e3").Advance().Get("mytags[1].ID"));
+                    ClassicAssert.AreEqual("urn:epc:1:2.24.400", env.GetEnumerator("e1").Advance().Get("ID"));
+                    ClassicAssert.AreEqual("urn:epc:1:2.24.401", env.GetEnumerator("e3").Advance().Get("mytags[1].ID"));
                 });
 
             env.UndeployAll();

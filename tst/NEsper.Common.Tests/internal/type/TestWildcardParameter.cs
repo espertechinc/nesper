@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -24,14 +25,14 @@ namespace com.espertech.esper.common.@internal.type
         [Test]
         public void TestContainsPoint()
         {
-            Assert.IsTrue(wildcard.ContainsPoint(3));
-            Assert.IsTrue(wildcard.ContainsPoint(2));
+            ClassicAssert.IsTrue(wildcard.ContainsPoint(3));
+            ClassicAssert.IsTrue(wildcard.ContainsPoint(2));
         }
 
         [Test]
         public void TestFormat()
         {
-            Assert.AreEqual("*", wildcard.Formatted());
+            ClassicAssert.AreEqual("*", wildcard.Formatted());
         }
 
         [Test]
@@ -40,16 +41,16 @@ namespace com.espertech.esper.common.@internal.type
             var result = wildcard.GetValuesInRange(1, 10);
             for (var i = 1; i <= 10; i++)
             {
-                Assert.IsTrue(result.Contains(i));
+                ClassicAssert.IsTrue(result.Contains(i));
             }
 
-            Assert.AreEqual(10, result.Count);
+            ClassicAssert.AreEqual(10, result.Count);
         }
 
         [Test]
         public void TestIsWildcard()
         {
-            Assert.IsTrue(wildcard.IsWildcard(1, 10));
+            ClassicAssert.IsTrue(wildcard.IsWildcard(1, 10));
         }
     }
 } // end of namespace

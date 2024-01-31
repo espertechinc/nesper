@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -179,11 +180,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.AssertThat(
                     () => {
                         var context = SupportSingleRowFunction.MethodInvocationContexts[0];
-                        Assert.AreEqual("s0", context.StatementName);
-                        Assert.AreEqual(env.Runtime.URI, context.RuntimeURI);
-                        Assert.AreEqual(-1, context.ContextPartitionId);
-                        Assert.AreEqual("power3Context", context.FunctionName);
-                        Assert.AreEqual("my_user_object", context.StatementUserObject);
+                        ClassicAssert.AreEqual("s0", context.StatementName);
+                        ClassicAssert.AreEqual(env.Runtime.URI, context.RuntimeURI);
+                        ClassicAssert.AreEqual(-1, context.ContextPartitionId);
+                        ClassicAssert.AreEqual("power3Context", context.FunctionName);
+                        ClassicAssert.AreEqual("my_user_object", context.StatementUserObject);
                     });
 
                 env.UndeployAll();
@@ -203,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                             Assert.Fail();
                         }
                         catch (EPException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 "Unexpected exception in statement 's0': Invocation exception when invoking method 'Throwexception' of class '" +
                                 nameof(SupportSingleRowFunction) +
                                 "' passing parameters [] for statement 's0': com.espertech.esper.common.client.EPException : This is a 'throwexception' generated exception",
@@ -222,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                             Assert.Fail();
                         }
                         catch (EPException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 "Unexpected exception in statement 's0': NullPointerException invoking method 'ComputePower3' of class '" +
                                 nameof(SupportSingleRowFunction) +
                                 "' in parameter 0 passing parameters [null] for statement 's0': The method expects a primitive Int32 value but received a null value",

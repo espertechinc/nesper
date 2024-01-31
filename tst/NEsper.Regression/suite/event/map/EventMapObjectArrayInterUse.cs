@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
@@ -59,7 +60,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 "s0",
                 @event => {
                     Assert.That(@event, Is.InstanceOf<MappedEventBean>());
-                    Assert.AreEqual("E1", @event.Get("im"));
+                    ClassicAssert.AreEqual("E1", @event.Get("im"));
                 });
 
             env.UndeployAll();
@@ -96,9 +97,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.IsInstanceOf<ObjectArrayBackedEventBean>(@event);
-                    Assert.AreEqual("a", @event.Get("p0"));
-                    Assert.AreEqual(1, @event.Get("p1"));
+                    ClassicAssert.IsInstanceOf<ObjectArrayBackedEventBean>(@event);
+                    ClassicAssert.AreEqual("a", @event.Get("p0"));
+                    ClassicAssert.AreEqual(1, @event.Get("p1"));
                 });
 
             env.UndeployAll();

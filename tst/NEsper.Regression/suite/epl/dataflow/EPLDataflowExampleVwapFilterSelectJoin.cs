@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -58,7 +59,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             env.UndeployAll();
             var model = env.EplToModel(epl);
             var text = model.ToEPL(new EPStatementFormatter(true));
-            Assert.AreEqual(RemoveNewlines(epl), RemoveNewlines(text));
+            ClassicAssert.AreEqual(RemoveNewlines(epl), RemoveNewlines(text));
             env.CompileDeploy(model);
 
             RunAssertion(env);
@@ -88,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(t);
             }
 
-            Assert.AreEqual(1, received.Length);
+            ClassicAssert.AreEqual(1, received.Length);
 
             var receivedArray = received[0].UnwrapIntoArray<object>();
             EPAssertionUtil.AssertProps(

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -297,10 +298,10 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             var writer = new StringWriter();
             root.ToEPL(writer, PatternExpressionPrecedenceEnum.MINIMUM);
             if (expectedIfDifferent == null) {
-                Assert.AreEqual(patternText, writer.ToString());
+                ClassicAssert.AreEqual(patternText, writer.ToString());
             }
             else {
-                Assert.AreEqual(expectedIfDifferent, writer.ToString());
+                ClassicAssert.AreEqual(expectedIfDifferent, writer.ToString());
             }
         }
     }

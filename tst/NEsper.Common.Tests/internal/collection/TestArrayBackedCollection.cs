@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -26,14 +27,14 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(0, coll.Count);
-            Assert.AreEqual(5, coll.Array.Length);
+            ClassicAssert.AreEqual(0, coll.Count);
+            ClassicAssert.AreEqual(5, coll.Array.Length);
 
             coll.Add(5);
             EPAssertionUtil.AssertEqualsExactOrder(coll.Array, new int?[] { 5, null, null, null, null });
             coll.Add(4);
             EPAssertionUtil.AssertEqualsExactOrder(coll.Array, new int?[] { 5, 4, null, null, null });
-            Assert.AreEqual(2, coll.Count);
+            ClassicAssert.AreEqual(2, coll.Count);
 
             coll.Add(1);
             coll.Add(2);
@@ -41,13 +42,13 @@ namespace com.espertech.esper.common.@internal.collection
             EPAssertionUtil.AssertEqualsExactOrder(
                 coll.Array,
                 new int?[] { 5, 4, 1, 2, 3 });
-            Assert.AreEqual(5, coll.Count);
+            ClassicAssert.AreEqual(5, coll.Count);
 
             coll.Add(10);
             EPAssertionUtil.AssertEqualsExactOrder(
                 coll.Array,
                 new int?[] { 5, 4, 1, 2, 3, 10, null, null, null, null });
-            Assert.AreEqual(6, coll.Count);
+            ClassicAssert.AreEqual(6, coll.Count);
 
             coll.Add(11);
             coll.Add(12);
@@ -60,10 +61,10 @@ namespace com.espertech.esper.common.@internal.collection
                     5, 4, 1, 2, 3, 10, 11, 12, 13, 14, 15,
                     null, null, null, null, null, null, null, null, null
                 });
-            Assert.AreEqual(11, coll.Count);
+            ClassicAssert.AreEqual(11, coll.Count);
 
             coll.Clear();
-            Assert.AreEqual(0, coll.Count);
+            ClassicAssert.AreEqual(0, coll.Count);
         }
     }
 } // end of namespace

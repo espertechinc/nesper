@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -557,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     var index = i;
                     env.AssertEventNew(
                         "s0",
-                        @event => Assert.AreEqual(
+                        @event => ClassicAssert.AreEqual(
                             values[index],
                             @event.Get("c0"),
                             "Failed for key '" + keyarr[index] + "'"));
@@ -689,7 +690,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         private static void RunAssertionIntoTableUnkeyedSimple(RegressionEnvironment env)
         {
-            env.AssertIterator("tbl", iterator => Assert.IsFalse(iterator.MoveNext()));
+            env.AssertIterator("tbl", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
             env.SendEventBean(new SupportBean());
             AssertIteratorUnkeyedSimple(env, 1);
@@ -706,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             RegressionEnvironment env,
             long expected)
         {
-            env.AssertIterator("tbl", iterator => Assert.AreEqual(expected, iterator.Advance().Get("mycnt")));
+            env.AssertIterator("tbl", iterator => ClassicAssert.AreEqual(expected, iterator.Advance().Get("mycnt")));
         }
     }
 } // end of namespace

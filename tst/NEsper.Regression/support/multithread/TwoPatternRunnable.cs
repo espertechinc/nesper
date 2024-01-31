@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -62,9 +63,9 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                 // check results
                 var received = listener.NewDataListFlattened;
-                Assert.AreEqual(matches.Count, received.Length);
+                ClassicAssert.AreEqual(matches.Count, received.Length);
                 for (var i = 0; i < received.Length; i++) {
-                    Assert.AreSame(matches[i], received[i].Get("event1"));
+                    ClassicAssert.AreSame(matches[i], received[i].Get("event1"));
                 }
 
                 // Console.WriteLine("Found " + received.Length + " matches in loop #" + countLoops);

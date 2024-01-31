@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -54,9 +55,9 @@ namespace com.espertech.esper.regressionlib.support.multithread
 
                     prepared.SetObject(1, loop);
                     var queryResult = env.Runtime.FireAndForgetService.ExecuteQuery(prepared);
-                    Assert.AreEqual(1, queryResult.Array.Length);
-                    Assert.AreEqual(threadKey, queryResult.Array[0].Get("TheString"));
-                    Assert.AreEqual((long) loop, queryResult.Array[0].Get("LongPrimitive"));
+                    ClassicAssert.AreEqual(1, queryResult.Array.Length);
+                    ClassicAssert.AreEqual(threadKey, queryResult.Array[0].Get("TheString"));
+                    ClassicAssert.AreEqual((long) loop, queryResult.Array[0].Get("LongPrimitive"));
                 }
             }
             catch (Exception ex) {

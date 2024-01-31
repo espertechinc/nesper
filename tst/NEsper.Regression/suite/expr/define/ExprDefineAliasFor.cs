@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
     public class ExprDefineAliasFor
@@ -143,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     "s0",
                     statement => {
                         foreach (var field in fields) {
-                            Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(field));
+                            ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(field));
                         }
                     });
 

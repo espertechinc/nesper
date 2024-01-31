@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -543,8 +544,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     () => {
                         var plan =
                             SupportAggLevelPlanHook.GetAndReset();
-                        Assert.AreEqual(1, plan.Second.AllLevelsForges.Length);
-                        Assert.AreEqual(1, plan.Second.AllLevelsForges[0].AccessStateForges.Length);
+                        ClassicAssert.AreEqual(1, plan.Second.AllLevelsForges.Length);
+                        ClassicAssert.AreEqual(1, plan.Second.AllLevelsForges[0].AccessStateForges.Length);
                     });
             }
         }
@@ -1777,8 +1778,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 () => {
                     var plan =
                         SupportAggLevelPlanHook.GetAndReset();
-                    Assert.AreEqual(colCount, plan.First.NumColumns);
-                    Assert.AreEqual(lvlCount, plan.First.Levels.Length);
+                    ClassicAssert.AreEqual(colCount, plan.First.NumColumns);
+                    ClassicAssert.AreEqual(lvlCount, plan.First.Levels.Length);
                 });
         }
 
@@ -1788,7 +1789,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             var theEpl = PLAN_CALLBACK_HOOK + epl;
             env.Compile(theEpl);
-            Assert.IsNull(SupportAggLevelPlanHook.GetAndReset());
+            ClassicAssert.IsNull(SupportAggLevelPlanHook.GetAndReset());
         }
 
         internal class ResultSetLocalUngroupedColNameRendering : RegressionExecution
@@ -1804,10 +1805,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             "count(*,group_by:(TheString,IntPrimitive))",
                             statement.EventType.PropertyNames[0]);
-                        Assert.AreEqual("count(group_by:TheString,*)", statement.EventType.PropertyNames[1]);
+                        ClassicAssert.AreEqual("count(group_by:TheString,*)", statement.EventType.PropertyNames[1]);
                     });
 
                 env.UndeployAll();

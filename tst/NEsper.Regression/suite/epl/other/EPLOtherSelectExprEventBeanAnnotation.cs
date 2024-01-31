@@ -21,6 +21,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -157,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 eventOne = env.Listener("s1").AssertOneGetNewAndReset().Underlying;
             }
 
-            Assert.IsTrue(
+            ClassicAssert.IsTrue(
                 ((IDictionary<string, object>)env.Listener("insert").AssertOneGetNewAndReset().Underlying).Get("c0") is
                 EventBean);
             env.AssertPropsNew(
@@ -196,11 +197,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             bool indexed)
         {
             var desc = eventType.GetPropertyDescriptor(prop);
-            Assert.AreEqual(true, desc.IsFragment);
+            ClassicAssert.AreEqual(true, desc.IsFragment);
             var fragment = eventType.GetFragmentType(prop);
-            Assert.AreEqual(fragmentTypeName, fragment.FragmentType.Name);
-            Assert.AreEqual(false, fragment.IsNative);
-            Assert.AreEqual(indexed, fragment.IsIndexed);
+            ClassicAssert.AreEqual(fragmentTypeName, fragment.FragmentType.Name);
+            ClassicAssert.AreEqual(false, fragment.IsNative);
+            ClassicAssert.AreEqual(indexed, fragment.IsIndexed);
         }
 
         private static object SendEvent(

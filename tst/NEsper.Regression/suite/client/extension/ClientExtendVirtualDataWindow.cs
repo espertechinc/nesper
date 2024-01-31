@@ -24,6 +24,7 @@ using com.espertech.esper.regressionlib.support.extend.vdw;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
@@ -85,19 +86,19 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             var removeConsumerEvent = (VirtualDataWindowEventConsumerRemove)window.Events[1];
 
             foreach (var @base in new VirtualDataWindowEventConsumerBase[] { addConsumerEvent, removeConsumerEvent }) {
-                Assert.AreEqual(-1, @base.AgentInstanceId);
-                Assert.AreEqual("MyVDW", @base.NamedWindowName);
-                Assert.AreEqual("s0", @base.StatementName);
+                ClassicAssert.AreEqual(-1, @base.AgentInstanceId);
+                ClassicAssert.AreEqual("MyVDW", @base.NamedWindowName);
+                ClassicAssert.AreEqual("s0", @base.StatementName);
             }
 
-            Assert.AreSame(removeConsumerEvent.ConsumerObject, addConsumerEvent.ConsumerObject);
+            ClassicAssert.AreSame(removeConsumerEvent.ConsumerObject, addConsumerEvent.ConsumerObject);
             window.Events.Clear();
 
             // test filter criteria passed to event
             env.CompileDeploy("@name('ABC') select sum(IntPrimitive) as val0 from MyVDW(TheString = 'A')", path);
             var eventWithFilter = (VirtualDataWindowEventConsumerAdd)window.Events[0];
-            Assert.IsNotNull(eventWithFilter.Filter);
-            Assert.IsNotNull(eventWithFilter.ExprEvaluatorContext);
+            ClassicAssert.IsNotNull(eventWithFilter.Filter);
+            ClassicAssert.IsNotNull(eventWithFilter.ExprEvaluatorContext);
 
             env.UndeployAll();
         }
@@ -116,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 path);
             env.AddListener("s0");
             var spiContext = (VirtualDataWindowLookupContextSPI)window.LastRequestedLookup;
-            Assert.IsNotNull(spiContext);
+            ClassicAssert.IsNotNull(spiContext);
 
             env.UndeployAll();
         }
@@ -137,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     var fieldsOne = "TheString,IntPrimitive".SplitCsv();
                     EPAssertionUtil.AssertProps(
                         listener.GetAndResetLastNewData()[0],
@@ -205,7 +206,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     EPAssertionUtil.AssertProps(
                         listener.GetAndResetLastNewData()[0],
                         fieldsMerge,
@@ -214,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.AssertPropsNew("consume", fieldsMerge, new object[] { "key2", "abc" });
             env.AssertThat(
                 () => {
-                    Assert.IsNull(window.LastUpdateOld);
+                    ClassicAssert.IsNull(window.LastUpdateOld);
                     EPAssertionUtil.AssertProps(window.LastUpdateNew[0], fieldsMerge, new object[] { "key2", "abc" });
                 });
 
@@ -231,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             env.CompileDeploy("insert into MyVDW select * from SupportBean", path);
 
             // cannot iterate named window
-            env.AssertIterator("window", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+            env.AssertIterator("window", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
             // test data window aggregation (rows not included in aggregation)
             env.CompileDeploy("@name('s0') select window(TheString) as val0 from MyVDW", path).AddListener("s0");
@@ -258,13 +259,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             supportBean.LongPrimitive = 50;
             window.Data = Collections.SingletonSet<object>(supportBean);
 
-            Assert.IsNotNull(window.Context.EventFactory);
-            Assert.AreEqual("MyVDW", window.Context.EventType.Name);
-            Assert.IsNotNull(window.Context.StatementContext);
-            Assert.AreEqual(2, window.Context.Parameters.Length);
-            Assert.AreEqual(1, window.Context.Parameters[0]);
-            Assert.AreEqual("abc", window.Context.Parameters[1]);
-            Assert.AreEqual("MyVDW", window.Context.NamedWindowName);
+            ClassicAssert.IsNotNull(window.Context.EventFactory);
+            ClassicAssert.AreEqual("MyVDW", window.Context.EventType.Name);
+            ClassicAssert.IsNotNull(window.Context.StatementContext);
+            ClassicAssert.AreEqual(2, window.Context.Parameters.Length);
+            ClassicAssert.AreEqual(1, window.Context.Parameters[0]);
+            ClassicAssert.AreEqual("abc", window.Context.Parameters[1]);
+            ClassicAssert.AreEqual("MyVDW", window.Context.NamedWindowName);
 
             // test no-criteria join
             env.CompileDeploy("@name('s0') select * from MyVDW vdw, SupportBean_ST0#lastevent st0", path)
@@ -310,8 +311,8 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
             // destroy
             env.UndeployAll();
-            Assert.IsNull(GetFromContext(env, "/virtualdw/MyVDW"));
-            Assert.IsTrue(window.IsDestroyed);
+            ClassicAssert.IsNull(GetFromContext(env, "/virtualdw/MyVDW"));
+            ClassicAssert.IsTrue(window.IsDestroyed);
 
             env.UndeployAll();
         }
@@ -457,11 +458,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             // test no-criteria FAF
             var result = env.CompileExecuteFAF("select col1 from MyVDW vdw", path);
             AssertIndexSpec(window.LastRequestedLookup, "", "");
-            Assert.AreEqual("MyVDW", window.LastRequestedLookup.NamedWindowName);
-            Assert.AreEqual(-1, window.LastRequestedLookup.StatementId);
-            Assert.IsNull(window.LastRequestedLookup.StatementName);
-            Assert.IsNotNull(window.LastRequestedLookup.StatementAnnotations);
-            Assert.IsTrue(window.LastRequestedLookup.IsFireAndForget);
+            ClassicAssert.AreEqual("MyVDW", window.LastRequestedLookup.NamedWindowName);
+            ClassicAssert.AreEqual(-1, window.LastRequestedLookup.StatementId);
+            ClassicAssert.IsNull(window.LastRequestedLookup.StatementName);
+            ClassicAssert.IsNotNull(window.LastRequestedLookup.StatementAnnotations);
+            ClassicAssert.IsTrue(window.LastRequestedLookup.IsFireAndForget);
             EPAssertionUtil.AssertProps(result.Array[0], "col1".SplitCsv(), new object[] { "key1" });
             EPAssertionUtil.AssertEqualsExactOrder(Array.Empty<object>(), window.LastAccessKeys);
 
@@ -528,11 +529,11 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     path)
                 .AddListener("s0");
             AssertIndexSpec(window.LastRequestedLookup, "col1=(System.String)|col2=(System.String)", "col3[,](System.Nullable<System.Int32>)");
-            Assert.AreEqual("MyVDW", window.LastRequestedLookup.NamedWindowName);
-            Assert.IsNotNull(window.LastRequestedLookup.StatementId);
-            Assert.AreEqual("s0", window.LastRequestedLookup.StatementName);
-            Assert.AreEqual(1, window.LastRequestedLookup.StatementAnnotations.Length);
-            Assert.IsFalse(window.LastRequestedLookup.IsFireAndForget);
+            ClassicAssert.AreEqual("MyVDW", window.LastRequestedLookup.NamedWindowName);
+            ClassicAssert.IsNotNull(window.LastRequestedLookup.StatementId);
+            ClassicAssert.AreEqual("s0", window.LastRequestedLookup.StatementName);
+            ClassicAssert.AreEqual(1, window.LastRequestedLookup.StatementAnnotations.Length);
+            ClassicAssert.IsFalse(window.LastRequestedLookup.IsFireAndForget);
 
             env.SendEventBean(new SupportBeanRange("key1", "key2", 5, 10));
             env.AssertPropsNew("s0", "col1".SplitCsv(), new object[] { "key1" });
@@ -574,27 +575,27 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             vdw.Events.Clear();
             env.CompileDeploy("@name('idx') create index IndexOne on MyVDW (col3, col2 btree)", path);
             var startEvent = (VirtualDataWindowEventStartIndex)vdw.Events[0];
-            Assert.AreEqual("MyVDW", startEvent.NamedWindowName);
-            Assert.AreEqual("IndexOne", startEvent.IndexName);
-            Assert.AreEqual(2, startEvent.Fields.Count);
-            Assert.AreEqual("col3", startEvent.Fields[0].Name);
-            Assert.AreEqual("hash", startEvent.Fields[0].Type);
-            Assert.AreEqual("col2", startEvent.Fields[1].Name);
-            Assert.AreEqual("btree", startEvent.Fields[1].Type);
-            Assert.IsFalse(startEvent.IsUnique);
+            ClassicAssert.AreEqual("MyVDW", startEvent.NamedWindowName);
+            ClassicAssert.AreEqual("IndexOne", startEvent.IndexName);
+            ClassicAssert.AreEqual(2, startEvent.Fields.Count);
+            ClassicAssert.AreEqual("col3", startEvent.Fields[0].Name);
+            ClassicAssert.AreEqual("hash", startEvent.Fields[0].Type);
+            ClassicAssert.AreEqual("col2", startEvent.Fields[1].Name);
+            ClassicAssert.AreEqual("btree", startEvent.Fields[1].Type);
+            ClassicAssert.IsFalse(startEvent.IsUnique);
 
             // stop-index event
             vdw.Events.Clear();
             env.UndeployModuleContaining("idx");
             var stopEvent = (VirtualDataWindowEventStopIndex)vdw.Events[0];
-            Assert.AreEqual("MyVDW", stopEvent.NamedWindowName);
-            Assert.AreEqual("IndexOne", stopEvent.IndexName);
+            ClassicAssert.AreEqual("MyVDW", stopEvent.NamedWindowName);
+            ClassicAssert.AreEqual("IndexOne", stopEvent.IndexName);
 
             // stop named window
             vdw.Events.Clear();
             env.UndeployAll();
             var stopWindow = (VirtualDataWindowEventStopWindow)vdw.Events[0];
-            Assert.AreEqual("MyVDW", stopWindow.NamedWindowName);
+            ClassicAssert.AreEqual("MyVDW", stopWindow.NamedWindowName);
         }
 
         private void RunAssertionIndexChoicesJoinUniqueVirtualDW(RegressionEnvironment env)
@@ -696,13 +697,13 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
             SupportVirtualDWForge.Initializations.Clear();
             env.CompileDeploy("@name('create-nw') @public create window MyVDW.test:vdw() as MapType", path);
 
-            Assert.AreEqual(1, SupportVirtualDWForge.Initializations.Count);
+            ClassicAssert.AreEqual(1, SupportVirtualDWForge.Initializations.Count);
             var forgeContext = SupportVirtualDWForge.Initializations[0];
-            Assert.AreEqual("MyVDW", forgeContext.EventType.Name);
-            Assert.IsNotNull("MyVDW", forgeContext.NamedWindowName);
-            Assert.AreEqual(0, forgeContext.Parameters.Length);
-            Assert.AreEqual(0, forgeContext.ParameterExpressions.Length);
-            Assert.IsNotNull(forgeContext.ViewForgeEnv);
+            ClassicAssert.AreEqual("MyVDW", forgeContext.EventType.Name);
+            ClassicAssert.IsNotNull("MyVDW", forgeContext.NamedWindowName);
+            ClassicAssert.AreEqual(0, forgeContext.Parameters.Length);
+            ClassicAssert.AreEqual(0, forgeContext.ParameterExpressions.Length);
+            ClassicAssert.IsNotNull(forgeContext.ViewForgeEnv);
 
             // define some test data to return, via lookup
             var window = (SupportVirtualDW)GetFromContext(env, "/virtualdw/MyVDW");

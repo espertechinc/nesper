@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.context
@@ -236,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             env.Statement("select").GetEnumerator();
                         }
                         catch (UnsupportedOperationException ex) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 "Iterator not supported on statements that have a context attached",
                                 ex.Message);
                         }

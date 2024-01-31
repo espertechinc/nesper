@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.basic
 {
@@ -24,8 +25,8 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
                 "abc",
                 statement => {
                     var annotations = statement.Annotations;
-                    Assert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
-                    Assert.AreEqual("abc", ((AnnotationName)annotations[0]).Value);
+                    ClassicAssert.AreEqual(typeof(AnnotationName), annotations[0].GetType());
+                    ClassicAssert.AreEqual("abc", ((AnnotationName)annotations[0]).Value);
                 });
 
             env.UndeployAll();

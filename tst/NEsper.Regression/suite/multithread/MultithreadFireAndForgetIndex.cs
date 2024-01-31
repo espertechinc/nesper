@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using Common.Logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             threadPool.Shutdown();
             threadPool.AwaitTermination(TimeUnitHelper.ToTimeSpan(10, TimeUnit.SECONDS));
-            Assert.IsNull(runnable.Exception);
+            ClassicAssert.IsNull(runnable.Exception);
 
             env.UndeployAll();
         }

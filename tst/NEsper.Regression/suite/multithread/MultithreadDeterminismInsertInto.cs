@@ -22,6 +22,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -104,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             for (var statement = 0; statement < numStatements; statement++) {
                 for (var i = 0; i < numEvents - 1; i++) {
                     var expected = Total(i + 1);
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         expected,
                         resultsPerIdent[statement][i],
                         "Failed for statement " + statement);
@@ -153,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             var newEvents = listener.NewDataListFlattened;
             for (var i = 0; i < numEvents - 1; i++) {
                 var expected = Total(i + 1);
-                Assert.AreEqual(expected, newEvents[i].Get("mysum"));
+                ClassicAssert.AreEqual(expected, newEvents[i].Get("mysum"));
             }
 
             env.UndeployAll();

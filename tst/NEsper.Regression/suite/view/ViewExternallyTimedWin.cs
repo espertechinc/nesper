@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -219,12 +220,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.OldDataList[0]);
+                        ClassicAssert.IsNull(listener.OldDataList[0]);
                         listener.Reset();
                     });
 
                 SendExtTimeEvent(env, 10 * 60 * 1000 + 1);
-                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.OldDataList[0].Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(1, listener.OldDataList[0].Length));
 
                 env.UndeployAll();
             }
@@ -268,7 +269,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     "s0",
                     fields,
                     new object[][] { new object[] { "E1", null, "E1", null, 1L, new object[] { "E1" } } });
-                env.AssertListener("s0", listener => { Assert.IsNull(env.Listener("s0").GetAndResetLastOldData()); });
+                env.AssertListener("s0", listener => { ClassicAssert.IsNull(env.Listener("s0").GetAndResetLastOldData()); });
 
                 env.Milestone(1);
 

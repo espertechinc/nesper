@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -81,13 +82,13 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert new data
             var resultNewData = listener.NewDataListFlattened;
-            Assert.AreEqual(totalExpected, resultNewData.Length);
+            ClassicAssert.AreEqual(totalExpected, resultNewData.Length);
             var resultsNewData = SortPerIntKey(resultNewData);
             AssertResult(numRepeats, numThreads, resultsNewData);
 
             // assert old data
             var resultOldData = listener.OldDataListFlattened;
-            Assert.AreEqual(totalExpected, resultOldData.Length);
+            ClassicAssert.AreEqual(totalExpected, resultOldData.Length);
             var resultsOldData = SortPerIntKey(resultOldData);
             AssertResult(numRepeats, numThreads, resultsOldData);
 
@@ -121,9 +122,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
         {
             for (var i = 0; i < numRepeats; i++) {
                 var values = results.Get(i);
-                Assert.AreEqual(numThreads, values.Count);
+                ClassicAssert.AreEqual(numThreads, values.Count);
                 foreach (var value in values) {
-                    Assert.AreEqual(Convert.ToString(i), value);
+                    ClassicAssert.AreEqual(Convert.ToString(i), value);
                 }
             }
         }

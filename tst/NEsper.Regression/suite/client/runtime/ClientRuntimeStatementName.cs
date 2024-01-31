@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -96,8 +97,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual("stmt-0", deployment.Statements[0].Name);
-                Assert.AreEqual("stmt-1", deployment.Statements[1].Name);
+                ClassicAssert.AreEqual("stmt-0", deployment.Statements[0].Name);
+                ClassicAssert.AreEqual("stmt-1", deployment.Statements[1].Name);
                 env.UndeployAll();
             }
 

@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -124,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 Assert.Fail();
             }
             catch (EventTypeException ex) {
-                Assert.AreEqual("Event type named 'ABC' could not be found", ex.Message);
+                ClassicAssert.AreEqual("Event type named 'ABC' could not be found", ex.Message);
             }
 
             // Internal implicit wrapper type
@@ -134,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 Assert.Fail("Event type named 'ABC' could not be found");
             }
             catch (EventTypeException ex) {
-                Assert.AreEqual("Event type named 'ABC' could not be found", ex.Message);
+                ClassicAssert.AreEqual("Event type named 'ABC' could not be found", ex.Message);
             }
 
             env.UndeployAll();
@@ -194,10 +195,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             object underlying)
         {
             if (typename.Equals(JSON_TYPENAME)) {
-                env.AssertEventNew("s0", eventBean => Assert.NotNull(eventBean.Underlying));
+                env.AssertEventNew("s0", eventBean => ClassicAssert.NotNull(eventBean.Underlying));
             }
             else {
-                env.AssertEventNew("s0", eventBean => Assert.AreSame(underlying, eventBean.Underlying));
+                env.AssertEventNew("s0", eventBean => ClassicAssert.AreSame(underlying, eventBean.Underlying));
             }
         }
 

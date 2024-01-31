@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.funcs
 {
@@ -63,9 +64,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(minMaxNode.EqualsNode(minMaxNode, false));
-            Assert.IsFalse(minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
-            Assert.IsFalse(minMaxNode.EqualsNode(new ExprOrNode(), false));
+            ClassicAssert.IsTrue(minMaxNode.EqualsNode(minMaxNode, false));
+            ClassicAssert.IsFalse(minMaxNode.EqualsNode(new ExprMinMaxRowNode(MinMaxTypeEnum.MIN), false));
+            ClassicAssert.IsFalse(minMaxNode.EqualsNode(new ExprOrNode(), false));
         }
 
         [Test]
@@ -73,32 +74,32 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
             SetupNode(minMaxNode, 10, 1.5, null);
-            Assert.AreEqual(10d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(10d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
             SetupNode(minMaxNode, 1, 1.5, null);
-            Assert.AreEqual(1.5d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(1.5d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
             SetupNode(minMaxNode, 1, 1.5, null);
-            Assert.AreEqual(1d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(1d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MAX);
             SetupNode(minMaxNode, 1, 1.5, 2.0f);
-            Assert.AreEqual(2.0d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(2.0d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             minMaxNode = new ExprMinMaxRowNode(MinMaxTypeEnum.MIN);
             SetupNode(minMaxNode, 6, 3.5, 2.0f);
-            Assert.AreEqual(2.0d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(2.0d, minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             minMaxNode = MakeNode(null, typeof(int?), 5, typeof(int?), 6, typeof(int?));
-            Assert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
             minMaxNode = MakeNode(7, typeof(int?), null, typeof(int?), 6, typeof(int?));
-            Assert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
             minMaxNode = MakeNode(3, typeof(int?), 5, typeof(int?), null, typeof(int?));
-            Assert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
             minMaxNode = MakeNode(null, typeof(int?), null, typeof(int?), null, typeof(int?));
-            Assert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(minMaxNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -107,11 +108,11 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
             minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
             minMaxNode.AddChildNode(new SupportExprNode(typeof(int?)));
             minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(double?), minMaxNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(double?), minMaxNode.Forge.EvaluationType);
 
             minMaxNode.AddChildNode(new SupportExprNode(typeof(double?)));
             minMaxNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(double?), minMaxNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(double?), minMaxNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -119,9 +120,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.funcs
         {
             minMaxNode.AddChildNode(new SupportExprNode(9d));
             minMaxNode.AddChildNode(new SupportExprNode(6));
-            Assert.AreEqual("max(9.0d,6)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
+            ClassicAssert.AreEqual("max(9.0d,6)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
             minMaxNode.AddChildNode(new SupportExprNode(0.5d));
-            Assert.AreEqual("max(9.0d,6,0.5d)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
+            ClassicAssert.AreEqual("max(9.0d,6,0.5d)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(minMaxNode));
         }
 
         [Test]

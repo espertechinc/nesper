@@ -14,6 +14,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
     public class RowRecogDelete
@@ -103,7 +105,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportRecogBean("P2", 1));
                 env.SendEventBean(new SupportRecogBean("E1", 3));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(0);
 
@@ -160,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.Milestone(4);
 
                 env.SendEventBean(new SupportBean("D3", 12)); // delete P3 and E3 of first batch
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -294,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 env.SendEventBean(new SupportBean("E2", 0)); // deletes E2
                 env.SendEventBean(new SupportRecogBean("E3", 3));
                 env.AssertListenerNotInvoked("s0");
-                env.AssertIterator("s0", it => Assert.IsFalse(it.MoveNext()));
+                env.AssertIterator("s0", it => ClassicAssert.IsFalse(it.MoveNext()));
 
                 env.Milestone(0);
 

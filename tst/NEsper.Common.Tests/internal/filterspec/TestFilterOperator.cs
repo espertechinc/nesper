@@ -9,6 +9,7 @@
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.filterspec
 {
@@ -18,67 +19,67 @@ namespace com.espertech.esper.common.@internal.filterspec
         [Test]
         public void TestFromText()
         {
-            Assert.AreEqual(FilterOperator.EQUAL, FilterOperatorExtensions.FromText("="));
+            ClassicAssert.AreEqual(FilterOperator.EQUAL, FilterOperatorExtensions.FromText("="));
             foreach (var op in EnumHelper.GetValues<FilterOperator>()) {
-                Assert.AreEqual(op, FilterOperatorExtensions.FromText(op.GetTextualOp()));
+                ClassicAssert.AreEqual(op, FilterOperatorExtensions.FromText(op.GetTextualOp()));
             }
         }
 
         [Test]
         public void TestRanges()
         {
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, false, false) == FilterOperator.RANGE_OPEN);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, true, false) == FilterOperator.RANGE_CLOSED);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, false, false) == FilterOperator.RANGE_HALF_OPEN);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, true, false) == FilterOperator.RANGE_HALF_CLOSED);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, false, true) == FilterOperator.NOT_RANGE_OPEN);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, true, true) == FilterOperator.NOT_RANGE_CLOSED);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, false, true) == FilterOperator.NOT_RANGE_HALF_OPEN);
-            Assert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, true, true) == FilterOperator.NOT_RANGE_HALF_CLOSED);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, false, false) == FilterOperator.RANGE_OPEN);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, true, false) == FilterOperator.RANGE_CLOSED);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, false, false) == FilterOperator.RANGE_HALF_OPEN);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, true, false) == FilterOperator.RANGE_HALF_CLOSED);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, false, true) == FilterOperator.NOT_RANGE_OPEN);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, true, true) == FilterOperator.NOT_RANGE_CLOSED);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(true, false, true) == FilterOperator.NOT_RANGE_HALF_OPEN);
+            ClassicAssert.IsTrue(FilterOperatorExtensions.ParseRangeOperator(false, true, true) == FilterOperator.NOT_RANGE_HALF_CLOSED);
         }
 
         [Test]
         public void TestIsComparison()
         {
-            Assert.IsTrue(FilterOperator.GREATER.IsComparisonOperator());
-            Assert.IsTrue(FilterOperator.GREATER_OR_EQUAL.IsComparisonOperator());
-            Assert.IsTrue(FilterOperator.LESS.IsComparisonOperator());
-            Assert.IsTrue(FilterOperator.LESS_OR_EQUAL.IsComparisonOperator());
-            Assert.IsFalse(FilterOperator.RANGE_CLOSED.IsComparisonOperator());
-            Assert.IsFalse(FilterOperator.EQUAL.IsComparisonOperator());
-            Assert.IsFalse(FilterOperator.NOT_EQUAL.IsComparisonOperator());
+            ClassicAssert.IsTrue(FilterOperator.GREATER.IsComparisonOperator());
+            ClassicAssert.IsTrue(FilterOperator.GREATER_OR_EQUAL.IsComparisonOperator());
+            ClassicAssert.IsTrue(FilterOperator.LESS.IsComparisonOperator());
+            ClassicAssert.IsTrue(FilterOperator.LESS_OR_EQUAL.IsComparisonOperator());
+            ClassicAssert.IsFalse(FilterOperator.RANGE_CLOSED.IsComparisonOperator());
+            ClassicAssert.IsFalse(FilterOperator.EQUAL.IsComparisonOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_EQUAL.IsComparisonOperator());
         }
 
         [Test]
         public void TestIsRange()
         {
-            Assert.IsTrue(FilterOperator.RANGE_OPEN.IsRangeOperator());
-            Assert.IsTrue(FilterOperator.RANGE_CLOSED.IsRangeOperator());
-            Assert.IsTrue(FilterOperator.RANGE_HALF_OPEN.IsRangeOperator());
-            Assert.IsTrue(FilterOperator.RANGE_HALF_CLOSED.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_RANGE_HALF_CLOSED.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_RANGE_OPEN.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_RANGE_CLOSED.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_RANGE_HALF_OPEN.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.LESS.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.EQUAL.IsRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_EQUAL.IsRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.RANGE_OPEN.IsRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.RANGE_CLOSED.IsRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.RANGE_HALF_OPEN.IsRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.RANGE_HALF_CLOSED.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_RANGE_HALF_CLOSED.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_RANGE_OPEN.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_RANGE_CLOSED.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_RANGE_HALF_OPEN.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.LESS.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.EQUAL.IsRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_EQUAL.IsRangeOperator());
         }
 
         [Test]
         public void TestIsInvertedRange()
         {
-            Assert.IsFalse(FilterOperator.RANGE_OPEN.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.RANGE_CLOSED.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.RANGE_HALF_OPEN.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.RANGE_HALF_CLOSED.IsInvertedRangeOperator());
-            Assert.IsTrue(FilterOperator.NOT_RANGE_HALF_CLOSED.IsInvertedRangeOperator());
-            Assert.IsTrue(FilterOperator.NOT_RANGE_OPEN.IsInvertedRangeOperator());
-            Assert.IsTrue(FilterOperator.NOT_RANGE_CLOSED.IsInvertedRangeOperator());
-            Assert.IsTrue(FilterOperator.NOT_RANGE_HALF_OPEN.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.LESS.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.EQUAL.IsInvertedRangeOperator());
-            Assert.IsFalse(FilterOperator.NOT_EQUAL.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.RANGE_OPEN.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.RANGE_CLOSED.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.RANGE_HALF_OPEN.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.RANGE_HALF_CLOSED.IsInvertedRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.NOT_RANGE_HALF_CLOSED.IsInvertedRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.NOT_RANGE_OPEN.IsInvertedRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.NOT_RANGE_CLOSED.IsInvertedRangeOperator());
+            ClassicAssert.IsTrue(FilterOperator.NOT_RANGE_HALF_OPEN.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.LESS.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.EQUAL.IsInvertedRangeOperator());
+            ClassicAssert.IsFalse(FilterOperator.NOT_EQUAL.IsInvertedRangeOperator());
         }
     }
 } // end of namespace

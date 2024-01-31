@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.support.@event;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
@@ -197,8 +197,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 statement => {
                     var eventType = statement.EventType;
                     foreach (var propertyName in propertyNames) {
-                        Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
-                        Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
+                        ClassicAssert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
+                        ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
                     }
                 });
 

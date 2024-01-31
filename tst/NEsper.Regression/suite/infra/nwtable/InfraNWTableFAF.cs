@@ -28,7 +28,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // tryInvalidFAFCompile;
 using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
@@ -643,16 +643,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var fieldsNoagg = "w1.key,w2.value".SplitCsv();
 
                 var result = env.CompileExecuteFAF(queryAgg, path).Array;
-                Assert.AreEqual(0, result.Length);
+                ClassicAssert.AreEqual(0, result.Length);
                 result = env.CompileExecuteFAF(queryNoagg, path).Array;
-                Assert.IsNull(result);
+                ClassicAssert.IsNull(result);
 
                 InsertInfra1Event(env, path, "key1", "keyJoin1");
 
                 result = env.CompileExecuteFAF(queryAgg, path).Array;
-                Assert.AreEqual(0, result.Length);
+                ClassicAssert.AreEqual(0, result.Length);
                 result = env.CompileExecuteFAF(queryNoagg, path).Array;
-                Assert.IsNull(result);
+                ClassicAssert.IsNull(result);
 
                 InsertInfra2Event(env, path, "keyJoin1", 1d);
 
@@ -954,7 +954,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             long[] expected)
         {
             var result = env.CompileExecuteFAF("select * from MyInfra where " + filter, path);
-            Assert.AreEqual(result.Array.Length, expected.Length);
+            ClassicAssert.AreEqual(result.Array.Length, expected.Length);
             IList<long> values = new List<long>();
             foreach (var @event in result.Array) {
                 values.Add(@event.Get("LongPrimitive").AsInt64());
@@ -1194,7 +1194,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // perform query
                 var result = env.CompileExecuteFAF("select * from MyInfra where value> 0", path);
-                Assert.AreEqual(2, result.Array.Length);
+                ClassicAssert.AreEqual(2, result.Array.Length);
                 if (namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
@@ -1212,7 +1212,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 // perform query
                 result = env.CompileExecuteFAF("select * from MyInfra where value < 0", path);
-                Assert.AreEqual(2, result.Array.Length);
+                ClassicAssert.AreEqual(2, result.Array.Length);
                 EPAssertionUtil.AssertPropsPerRowAnyOrder(
                     result.Array,
                     fields,
@@ -1334,14 +1334,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.SendEventBean(new SupportBean("E2", 1));
                 env.SendEventBean(new SupportBean("E3", -3));
                 env.SendEventBean(new SupportBean("E4", 2));
-                Assert.AreEqual(2L, GetCtxInfraCatCount(env, path, "positive"));
-                Assert.AreEqual(2L, GetCtxInfraCatCount(env, path, "negative"));
+                ClassicAssert.AreEqual(2L, GetCtxInfraCatCount(env, path, "positive"));
+                ClassicAssert.AreEqual(2L, GetCtxInfraCatCount(env, path, "negative"));
 
                 result = env.CompileExecuteFAF(
                     "context MyCtxCat delete from CtxInfraCat where context.label = 'negative'",
                     path);
-                Assert.AreEqual(2L, GetCtxInfraCatCount(env, path, "positive"));
-                Assert.AreEqual(0L, GetCtxInfraCatCount(env, path, "negative"));
+                ClassicAssert.AreEqual(2L, GetCtxInfraCatCount(env, path, "positive"));
+                ClassicAssert.AreEqual(0L, GetCtxInfraCatCount(env, path, "negative"));
                 EPAssertionUtil.AssertPropsPerRow(
                     result.Array,
                     "TheString".SplitCsv(),
@@ -1389,16 +1389,16 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.SendEventBean(new SupportBean("E" + i, i));
                 }
 
-                Assert.AreEqual(10L, GetMyInfraCount(env, path));
+                ClassicAssert.AreEqual(10L, GetMyInfraCount(env, path));
                 var result = env.CompileExecuteFAF("delete from MyInfra", path);
-                Assert.AreEqual(0L, GetMyInfraCount(env, path));
+                ClassicAssert.AreEqual(0L, GetMyInfraCount(env, path));
                 if (namedWindow) {
-                    Assert.AreEqual(env.Statement("TheInfra").EventType, result.EventType);
-                    Assert.AreEqual(10, result.Array.Length);
-                    Assert.AreEqual("E0", result.Array[0].Get("TheString"));
+                    ClassicAssert.AreEqual(env.Statement("TheInfra").EventType, result.EventType);
+                    ClassicAssert.AreEqual(10, result.Array.Length);
+                    ClassicAssert.AreEqual("E0", result.Array[0].Get("TheString"));
                 }
                 else {
-                    Assert.AreEqual(0, result.Array.Length);
+                    ClassicAssert.AreEqual(0, result.Array.Length);
                 }
 
                 // test SODA + where-clause
@@ -1406,14 +1406,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.SendEventBean(new SupportBean("E" + i, i));
                 }
 
-                Assert.AreEqual(10L, GetMyInfraCount(env, path));
+                ClassicAssert.AreEqual(10L, GetMyInfraCount(env, path));
                 var eplWithWhere = "delete from MyInfra where TheString=\"E1\"";
                 var modelWithWhere = env.EplToModel(eplWithWhere);
-                Assert.AreEqual(eplWithWhere, modelWithWhere.ToEPL());
+                ClassicAssert.AreEqual(eplWithWhere, modelWithWhere.ToEPL());
                 result = env.CompileExecuteFAF(modelWithWhere, path);
-                Assert.AreEqual(9L, GetMyInfraCount(env, path));
+                ClassicAssert.AreEqual(9L, GetMyInfraCount(env, path));
                 if (namedWindow) {
-                    Assert.AreEqual(env.Statement("TheInfra").EventType, result.EventType);
+                    ClassicAssert.AreEqual(env.Statement("TheInfra").EventType, result.EventType);
                     EPAssertionUtil.AssertPropsPerRow(
                         result.Array,
                         "TheString".SplitCsv(),
@@ -1423,9 +1423,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test SODA delete-all
                 var eplDelete = "delete from MyInfra";
                 var modelDeleteOnly = env.EplToModel(eplDelete);
-                Assert.AreEqual(eplDelete, modelDeleteOnly.ToEPL());
+                ClassicAssert.AreEqual(eplDelete, modelDeleteOnly.ToEPL());
                 env.CompileExecuteFAF(modelDeleteOnly, path);
-                Assert.AreEqual(0L, GetMyInfraCount(env, path));
+                ClassicAssert.AreEqual(0L, GetMyInfraCount(env, path));
 
                 for (var i = 0; i < 5; i++) {
                     env.SendEventBean(new SupportBean("E" + i, i));
@@ -1570,7 +1570,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test update with SODA
                 var epl = "update MyInfra set IntPrimitive=IntPrimitive+10 where TheString=\"E2\"";
                 var model = env.EplToModel(epl);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
                 result = env.CompileExecuteFAF(model, path);
                 if (_namedWindow) {
                     EPAssertionUtil.AssertPropsPerRow(
@@ -1743,7 +1743,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try SODA and column name not provided with insert-into
                 var eplTwo = "insert into MyInfra select \"b\" as TheString, 2 as IntPrimitive";
                 var modelWSelect = env.EplToModel(eplTwo);
-                Assert.AreEqual(eplTwo, modelWSelect.ToEPL());
+                ClassicAssert.AreEqual(eplTwo, modelWSelect.ToEPL());
                 var resultTwo = env.CompileExecuteFAF(modelWSelect, path);
                 env.AssertStatement(
                     "TheInfra",
@@ -1762,7 +1762,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.CompileExecuteFAF(eplThree, path);
                 }
                 catch (EPException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Unique index violation, index 'I1' is a unique index and key 'a' already exists",
                         ex.Message);
                 }
@@ -1829,7 +1829,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // try insert-into with values model
                 env.CompileExecuteFAF("delete from MyInfra", path);
                 var modelWValuesKW = env.EplToModel(eplValuesKW);
-                Assert.AreEqual(eplValuesKW, modelWValuesKW.ToEPL());
+                ClassicAssert.AreEqual(eplValuesKW, modelWValuesKW.ToEPL());
                 env.CompileExecuteFAF(modelWValuesKW, path);
                 env.AssertStatement(
                     "TheInfra",
@@ -1868,13 +1868,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             EPStatement stmt,
             bool namedWindow)
         {
-            Assert.AreSame(resultOne.EventType, stmt.EventType);
+            ClassicAssert.AreSame(resultOne.EventType, stmt.EventType);
             if (namedWindow) {
-                Assert.AreEqual(1, resultOne.Array.Length);
+                ClassicAssert.AreEqual(1, resultOne.Array.Length);
                 EPAssertionUtil.AssertPropsPerRow(resultOne.Array, propertyNames, new object[][] { objects });
             }
             else {
-                Assert.AreEqual(0, resultOne.Array.Length);
+                ClassicAssert.AreEqual(0, resultOne.Array.Length);
             }
         }
 
@@ -1916,7 +1916,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             long[] expectedCountPerCode)
         {
             for (var i = 0; i < expectedCountPerCode.Length; i++) {
-                Assert.AreEqual(expectedCountPerCode[i], GetCtxInfraCount(env, path, i), "for code " + i);
+                ClassicAssert.AreEqual(expectedCountPerCode[i], GetCtxInfraCount(env, path, i), "for code " + i);
             }
         }
 
@@ -2047,7 +2047,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 .Array[0]
                 .Get("c0")
                 .AsInt64();
-            Assert.AreEqual(count, actual);
+            ClassicAssert.AreEqual(count, actual);
             SupportQueryPlanIndexHook.AssertFAFAndReset(indexName, backingClass);
         }
 
@@ -2060,7 +2060,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             string backingClass)
         {
             env.CompileExecuteFAF(epl, path);
-            Assert.AreEqual(count, GetMyInfraCount(env, path));
+            ClassicAssert.AreEqual(count, GetMyInfraCount(env, path));
             SupportQueryPlanIndexHook.AssertFAFAndReset(indexName, backingClass);
         }
 

@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -309,7 +310,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (VariableNotFoundException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable by name 'myglobarvar' is a global variable and not context-partitioned",
                         ex.Message);
                 }
@@ -322,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     Assert.Fail();
                 }
                 catch (VariableNotFoundException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable by name 'myglobarvar' is a global variable and not context-partitioned",
                         ex.Message);
                 }
@@ -396,10 +397,10 @@ namespace com.espertech.esper.regressionlib.suite.context
             var states = env.Runtime.VariableService.GetVariableValue(
                 Collections.SingletonSet(namePairVariable),
                 new SupportSelectorById(agentInstanceId));
-            Assert.AreEqual(1, states.Count);
+            ClassicAssert.AreEqual(1, states.Count);
             var list = states.Get(namePairVariable);
-            Assert.AreEqual(1, list.Count);
-            Assert.AreEqual(expected, list[0].State);
+            ClassicAssert.AreEqual(1, list.Count);
+            ClassicAssert.AreEqual(expected, list[0].State);
         }
     }
 } // end of namespace

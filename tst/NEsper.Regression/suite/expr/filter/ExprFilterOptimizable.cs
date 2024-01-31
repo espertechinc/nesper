@@ -27,7 +27,7 @@ using com.espertech.esper.runtime.@internal.filtersvcimpl;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterOptimizableHelper;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
@@ -766,7 +766,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     });
 
                 try {
-                    Assert.IsTrue(latch.Await(10, TimeUnit.SECONDS));
+                    ClassicAssert.IsTrue(latch.Await(10, TimeUnit.SECONDS));
                 }
                 catch (ThreadInterruptedException) {
                     Assert.Fail();
@@ -791,10 +791,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     "s0",
                     0);
                 env.SendEventBean(new SupportBean());
-                Assert.AreEqual("default", methodInvocationContextFilterOptimized.RuntimeURI);
-                Assert.AreEqual("myCustomOkFunction", methodInvocationContextFilterOptimized.FunctionName);
-                Assert.IsNull(methodInvocationContextFilterOptimized.StatementUserObject);
-                Assert.AreEqual(-1, methodInvocationContextFilterOptimized.ContextPartitionId);
+                ClassicAssert.AreEqual("default", methodInvocationContextFilterOptimized.RuntimeURI);
+                ClassicAssert.AreEqual("myCustomOkFunction", methodInvocationContextFilterOptimized.FunctionName);
+                ClassicAssert.IsNull(methodInvocationContextFilterOptimized.StatementUserObject);
+                ClassicAssert.AreEqual(-1, methodInvocationContextFilterOptimized.ContextPartitionId);
                 methodInvocationContextFilterOptimized = null;
                 env.UndeployAll();
             }
@@ -831,8 +831,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     var statementSPI = (EPStatementSPI)statement;
                     if (HasFilterIndexPlanBasicOrMore(env)) {
                         var param = SupportFilterServiceHelper.GetFilterSvcSingle(statementSPI);
-                        Assert.AreEqual(op, param.Op, "failed for '" + epl + "'");
-                        Assert.AreEqual(expression, param.Name);
+                        ClassicAssert.AreEqual(op, param.Op, "failed for '" + epl + "'");
+                        ClassicAssert.AreEqual(expression, param.Name);
                     }
                 });
             env.UndeployModuleContaining("s0");

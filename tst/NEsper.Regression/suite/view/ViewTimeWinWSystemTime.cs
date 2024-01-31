@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -33,7 +34,7 @@ namespace com.espertech.esper.regressionlib.suite.view
 
             env.AssertStatement(
                 "s0",
-                statement => { Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average")); });
+                statement => { ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average")); });
 
             // Send 2 events, E1 and E2 at +0sec
             env.SendEventBean(MakeBean(SYMBOL, 10, 500));
@@ -86,13 +87,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "s0",
                 iterator => {
                     CheckValue(iterator.Advance(), avgE);
-                    Assert.IsTrue(!iterator.MoveNext());
+                    ClassicAssert.IsTrue(!iterator.MoveNext());
                 });
 
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                     var listenerValues = listener.LastNewData[0];
                     CheckValue(listenerValues, avgE);
                     listener.Reset();
@@ -104,9 +105,9 @@ namespace com.espertech.esper.regressionlib.suite.view
             double avgE)
         {
             var avg = GetDoubleValue(ViewFieldEnum.WEIGHTED_AVERAGE__AVERAGE, values);
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
-            Assert.AreEqual(FEED, values.Get("Feed"));
-            Assert.AreEqual(SYMBOL, values.Get("Symbol"));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
+            ClassicAssert.AreEqual(FEED, values.Get("Feed"));
+            ClassicAssert.AreEqual(SYMBOL, values.Get("Symbol"));
         }
 
         private double GetDoubleValue(

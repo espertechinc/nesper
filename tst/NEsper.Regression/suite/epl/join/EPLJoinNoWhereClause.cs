@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -108,9 +109,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.AreEqual(setOne[0], listener.LastNewData[0].Get("stream_0"));
-                        Assert.AreEqual(setTwo[0], listener.LastNewData[0].Get("stream_1"));
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(setOne[0], listener.LastNewData[0].Get("stream_0"));
+                        ClassicAssert.AreEqual(setTwo[0], listener.LastNewData[0].Get("stream_1"));
                         listener.Reset();
                     });
 
@@ -122,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, setOne[1]);
                 SendEvent(env, setOne[2]);
                 SendEvent(env, setTwo[1]);
-                env.AssertListener("s0", listener => Assert.AreEqual(3, listener.LastNewData.Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(3, listener.LastNewData.Length));
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "s0",
                     fields,

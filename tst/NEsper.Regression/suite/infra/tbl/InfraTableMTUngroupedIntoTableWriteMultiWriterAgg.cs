@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -72,7 +73,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             Log.Info("Waiting for completion");
             for (var i = 0; i < threads.Length; i++) {
                 threads[i].Join();
-                Assert.IsNull(runnables[i].Exception);
+                ClassicAssert.IsNull(runnables[i].Exception);
             }
 
             // verify
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.SendEventBean(new SupportBean_S0(0));
             var @event = env.Listener("s0").AssertOneGetNewAndReset();
             var window = (SupportBean[])@event.Get("c0");
-            Assert.AreEqual(numThreads * 3, window.Length);
+            ClassicAssert.AreEqual(numThreads * 3, window.Length);
 
             env.UndeployAll();
         }

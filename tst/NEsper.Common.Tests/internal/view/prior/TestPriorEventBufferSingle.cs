@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.view.prior
 {
@@ -36,19 +37,19 @@ namespace com.espertech.esper.common.@internal.view.prior
 
         private void AssertEvents0And1()
         {
-            Assert.IsNull(buffer.GetRelativeToEvent(events[0], 0)); // getting 0 is getting prior 1 (see indexes)
-            Assert.IsNull(buffer.GetRelativeToEvent(events[1], 0));
+            ClassicAssert.IsNull(buffer.GetRelativeToEvent(events[0], 0)); // getting 0 is getting prior 1 (see indexes)
+            ClassicAssert.IsNull(buffer.GetRelativeToEvent(events[1], 0));
         }
 
         private void AssertEvents2()
         {
-            Assert.IsNull(buffer.GetRelativeToEvent(events[2], 0));
+            ClassicAssert.IsNull(buffer.GetRelativeToEvent(events[2], 0));
         }
 
         private void AssertEvents3And4()
         {
-            Assert.AreEqual(events[0], buffer.GetRelativeToEvent(events[3], 0));
-            Assert.AreEqual(events[1], buffer.GetRelativeToEvent(events[4], 0));
+            ClassicAssert.AreEqual(events[0], buffer.GetRelativeToEvent(events[3], 0));
+            ClassicAssert.AreEqual(events[1], buffer.GetRelativeToEvent(events[4], 0));
         }
 
         public void TryInvalid(
@@ -87,14 +88,14 @@ namespace com.espertech.esper.common.@internal.view.prior
             AssertEvents3And4();
 
             buffer.Update(null, new[] { events[1], events[3] });
-            Assert.IsNull(buffer.GetRelativeToEvent(events[1], 0));
+            ClassicAssert.IsNull(buffer.GetRelativeToEvent(events[1], 0));
             AssertEvents2();
             AssertEvents3And4();
 
             buffer.Update(new[] { events[5] }, null);
             AssertEvents2();
-            Assert.AreEqual(events[1], buffer.GetRelativeToEvent(events[4], 0));
-            Assert.AreEqual(events[2], buffer.GetRelativeToEvent(events[5], 0));
+            ClassicAssert.AreEqual(events[1], buffer.GetRelativeToEvent(events[4], 0));
+            ClassicAssert.AreEqual(events[2], buffer.GetRelativeToEvent(events[5], 0));
         }
     }
 } // end of namespace

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             var endTime = PerformanceObserver.MilliTime;
 
             // log.info(".testSelectIStream delta=" + (endTime - startTime));
-            Assert.IsTrue(endTime - startTime < 200);
+            ClassicAssert.IsTrue(endTime - startTime < 200);
             env.AssertListenerNotInvoked("s0");
 
             env.UndeployAll();

@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
@@ -206,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                 "s0",
                 @event => {
                     for (var i = 0; i < result.Length; i++) {
-                        Assert.AreEqual(result[i], @event.Get("t" + i), "failed for index " + i);
+                        ClassicAssert.AreEqual(result[i], @event.Get("t" + i), "failed for index " + i);
                     }
                 });
         }

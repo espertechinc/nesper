@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterWhereClause
@@ -102,12 +104,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(typeof(long?), @event.EventType.GetPropertyType("p1"));
-                        Assert.AreEqual(4L, @event.Get("p1"));
-                        Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p2"));
-                        Assert.AreEqual(4d, @event.Get("p2"));
-                        Assert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p3"));
-                        Assert.AreEqual(1d, @event.Get("p3"));
+                        ClassicAssert.AreEqual(typeof(long?), @event.EventType.GetPropertyType("p1"));
+                        ClassicAssert.AreEqual(4L, @event.Get("p1"));
+                        ClassicAssert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p2"));
+                        ClassicAssert.AreEqual(4d, @event.Get("p2"));
+                        ClassicAssert.AreEqual(typeof(double?), @event.EventType.GetPropertyType("p3"));
+                        ClassicAssert.AreEqual(1d, @event.Get("p3"));
                     });
 
                 env.UndeployAll();

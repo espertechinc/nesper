@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -134,14 +135,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBeanRange("R", "R", 100, 101));
-                    env.AssertListener("s0", listener => Assert.AreEqual(4, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(4, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
                 var endTime = PerformanceObserver.MilliTime;
                 Log.Info($"delta={(endTime - startTime)}");
 
-                Assert.IsTrue((endTime - startTime) < 1000);
+                ClassicAssert.IsTrue((endTime - startTime) < 1000);
                 env.UndeployAll();
             }
         }
@@ -184,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 500; i++) {
                     env.SendEventBean(new SupportBean_ST0("ST0", "G", -1));
-                    env.AssertListener("s0", listener => Assert.AreEqual(5, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(5, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
@@ -209,14 +210,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var startTime = PerformanceObserver.MilliTime;
             for (var i = 0; i < 1000; i++) {
                 env.SendEventBean(new SupportBeanRange("R", "G", 100, 101));
-                env.AssertListener("s0", listener => Assert.AreEqual(4, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(4, listener.GetAndResetLastNewData().Length));
             }
 
             Log.Info("Done Querying");
             var endTime = PerformanceObserver.MilliTime;
             Log.Info($"delta={(endTime - startTime)}");
 
-            Assert.IsTrue((endTime - startTime) < 500);
+            ClassicAssert.IsTrue((endTime - startTime) < 500);
             env.UndeployModuleContaining("s0");
         }
     }

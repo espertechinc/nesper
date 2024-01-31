@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert
             var total = GetCount(env, numStatements);
-            Assert.AreEqual(numEvents, total);
+            ClassicAssert.AreEqual(numEvents, total);
 
             env.UndeployAll();
         }

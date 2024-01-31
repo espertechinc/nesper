@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
@@ -109,7 +109,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 int? expected)
             {
                 env.SendEventBean(new SupportBean());
-                env.AssertIterator("create", iterator => Assert.AreEqual(expected, iterator.Advance().Get("value")));
+                env.AssertIterator("create", iterator => ClassicAssert.AreEqual(expected, iterator.Advance().Get("value")));
             }
 
             public string Name()
@@ -159,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextOnUpdate, path).AddListener("update");
                 env.AssertStatement(
                     "update",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.ON_UPDATE,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 

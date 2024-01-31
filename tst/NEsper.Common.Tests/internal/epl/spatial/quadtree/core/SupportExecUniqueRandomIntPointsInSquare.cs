@@ -13,6 +13,7 @@ using System.Linq;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
@@ -20,7 +21,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
     {
         public static void RunAssertion<L>(SupportQuadTreeToolUnique<L> tools)
         {
-            Assert.IsTrue(tools.generator.Unique());
+            ClassicAssert.IsTrue(tools.generator.Unique());
 
             SupportQuadTreeConfig[] configs = {
                 new SupportQuadTreeConfig(0, 0, 1000, 1000, 4, 20),
@@ -53,18 +54,18 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             foreach (var p in points)
             {
                 ICollection<object> values = tools.querier.Invoke(quadTree, p.X, p.Y, 0.9, 0.9);
-                Assert.IsTrue(values != null && !values.IsEmpty(), "Failed to find " + p);
-                Assert.AreEqual(1, values.Count);
-                Assert.AreEqual(p.Id, values.First());
+                ClassicAssert.IsTrue(values != null && !values.IsEmpty(), "Failed to find " + p);
+                ClassicAssert.AreEqual(1, values.Count);
+                ClassicAssert.AreEqual(p.Id, values.First());
             }
 
             // get all content
             ICollection<object> all = tools.querier.Invoke(quadTree, config.X, config.Y, config.Width, config.Height);
-            Assert.AreEqual(points.Count, all.Count);
-            Assert.AreEqual(points.Count, new HashSet<object>(all).Count);
+            ClassicAssert.AreEqual(points.Count, all.Count);
+            ClassicAssert.AreEqual(points.Count, new HashSet<object>(all).Count);
             foreach (var value in all)
             {
-                Assert.IsInstanceOf<string>(value);
+                ClassicAssert.IsInstanceOf<string>(value);
             }
 
             // remove all
@@ -74,7 +75,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             }
 
             ICollection<object> valuesLater = tools.querier.Invoke(quadTree, config.X, config.Y, config.Width, config.Height);
-            Assert.IsNull(valuesLater);
+            ClassicAssert.IsNull(valuesLater);
         }
     }
 } // end of namespace

@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 var bean = new SupportBean("E1", 1);
                 env.SendEventBean(bean);
                 env.SendEventBean(new SupportBean_S0(1));
-                env.AssertEventNew("s0", @event => { Assert.AreSame(bean, @event.Get("sb")); });
+                env.AssertEventNew("s0", @event => { ClassicAssert.AreSame(bean, @event.Get("sb")); });
 
                 env.Milestone(0);
 
@@ -116,8 +117,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var events = (SupportBean[])@event.Get("sbarr");
-                        Assert.AreEqual(1, events.Length);
-                        Assert.AreSame(bean, events[0]);
+                        ClassicAssert.AreEqual(1, events.Length);
+                        ClassicAssert.AreSame(bean, events[0]);
                     });
 
                 env.Milestone(0);

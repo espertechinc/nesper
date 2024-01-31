@@ -9,6 +9,7 @@
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -34,7 +35,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
         public void AssertCalledAndReset(EPStatement stmt)
         {
             AssertStmtOneReceived(stmt);
-            Assert.IsTrue(called);
+            ClassicAssert.IsTrue(called);
             called = false;
             ResetStmts();
         }

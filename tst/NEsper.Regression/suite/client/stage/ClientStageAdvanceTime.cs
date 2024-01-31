@@ -17,6 +17,7 @@ using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // ass
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil; // stageIt
 // unstageIt
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
@@ -66,18 +67,18 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             {
                 AdvanceTime(env, null, "2002-05-30T09:00:00.000");
                 env.StageService.GetStage("ST");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:00:00.000"),
                     env.StageService.GetStage("ST").EventService.CurrentTime);
 
                 AdvanceTime(env, "ST", "2002-05-30T09:00:05.000");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:00:05.000"),
                     env.StageService.GetStage("ST").EventService.CurrentTime);
 
                 env.Milestone(0);
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     DateTimeParsingFunctions.ParseDefaultMSec("2002-05-30T09:00:05.000"),
                     env.StageService.GetStage("ST").EventService.CurrentTime);
 
@@ -130,7 +131,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 env.Milestone(1);
 
                 AdvanceTime(env, "ST", "2002-05-30T09:00:09.999");
-                Assert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
                 AdvanceTime(env, "ST", "2002-05-30T09:00:10.000");
                 AssertPropsPerRow(
                     env.ListenerStage("ST", "s0").GetAndResetLastNewData(),
@@ -142,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
 
                 AdvanceTime(env, "2002-05-30T09:00:19.999");
                 AdvanceTime(env, "ST", "2002-05-30T09:00:19.999");
-                Assert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("ST", "s0").GetAndClearIsInvoked());
 
                 UnstageIt(env, "ST", deploymentId);
 
@@ -184,19 +185,19 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 env.Milestone(1);
 
                 env.AdvanceTimeStage("P1", 9999);
-                Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
                 env.AdvanceTimeStage("P1", 10000);
-                Assert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
+                ClassicAssert.AreEqual("E1", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
                 env.Milestone(2);
 
                 env.AdvanceTimeStage("P1", 11999);
-                Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
                 env.AdvanceTimeStage("P1", 12000);
-                Assert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
+                ClassicAssert.AreEqual("E2", env.ListenerStage("P1", "s0").AssertOneGetOldAndReset().Get("TheString"));
 
                 env.AdvanceTime(12000);
-                Assert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
+                ClassicAssert.IsFalse(env.ListenerStage("P1", "s0").GetAndClearIsInvoked());
 
                 UnstageIt(env, "P1", deploymentId);
 

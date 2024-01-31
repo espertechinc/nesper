@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -68,7 +69,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                             }
                         }
 
-                        Assert.IsFalse(listener.IsInvoked, "For event " + theEvent + " row " + rowCount);
+                        ClassicAssert.IsFalse(listener.IsInvoked, "For event " + theEvent + " row " + rowCount);
                     });
 
                 return;
@@ -101,12 +102,12 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                     Array.Sort(expected);
                     Array.Sort(matchesText);
 
-                    Assert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
+                    ClassicAssert.AreEqual(matches.Length, expected.Length, "For event " + theEvent);
                     for (var i = 0; i < expected.Length; i++) {
                         if (!expected[i].Equals(matchesText[i])) {
                             Log.Info("expected:" + expected[i]);
                             Log.Info("  actual:" + expected[i]);
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 expected[i],
                                 matchesText[i],
                                 "Sending event " + theEvent + " row " + rowCount);

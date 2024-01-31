@@ -15,6 +15,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
     public class EPLOtherAsKeywordBacktick
@@ -164,7 +166,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.Milestone(0);
 
                 env.CompileExecuteFAF("delete from MyWindowFAF as `Order` where `Order`.p0 = 'b'", path);
-                Assert.AreEqual(0, env.CompileExecuteFAF("select * from MyWindowFAF", path).Array.Length);
+                ClassicAssert.AreEqual(0, env.CompileExecuteFAF("select * from MyWindowFAF", path).Array.Length);
 
                 env.UndeployAll();
             }

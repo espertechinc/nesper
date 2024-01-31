@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -71,8 +72,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             threadPool.Shutdown();
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 1, TimeUnit.SECONDS);
 
-            Assert.IsNull(runnableOne.LastException);
-            Assert.IsNull(runnableTwo.LastException);
+            ClassicAssert.IsNull(runnableOne.LastException);
+            ClassicAssert.IsNull(runnableTwo.LastException);
 
             // compare
             var received = listener.Received;
@@ -80,7 +81,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 Console.Out.WriteLine(item);
             }
 
-            Assert.AreEqual(4, received.Count);
+            ClassicAssert.AreEqual(4, received.Count);
 
             env.UndeployAll();
         }

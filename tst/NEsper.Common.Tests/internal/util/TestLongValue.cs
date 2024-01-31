@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -40,7 +41,7 @@ namespace com.espertech.esper.common.@internal.util
         private void TryValid(string strLong, long expected)
         {
             long result = LongValue.ParseString(strLong);
-            Assert.IsTrue(result == expected);
+            ClassicAssert.IsTrue(result == expected);
         }
 
         private void TryInvalid(string strLong)
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.util
             try
             {
                 LongValue.ParseString(strLong);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (Exception ex)
             {

@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -29,9 +30,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.AreSame(eventNew, listener.LastNewData[0].Underlying); // receive 'a' as new data
-                    Assert.AreSame(eventOld, listener.LastOldData[0].Underlying); // receive 'a' as new data
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.AreSame(eventNew, listener.LastNewData[0].Underlying); // receive 'a' as new data
+                    ClassicAssert.AreSame(eventOld, listener.LastOldData[0].Underlying); // receive 'a' as new data
                 });
 
             env.UndeployAll();

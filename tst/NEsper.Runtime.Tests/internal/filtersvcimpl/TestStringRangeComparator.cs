@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.filterspec;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -62,11 +63,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     " expected=" +
                     expected);
 
-                Assert.AreEqual(range, expected, "failed at count " + count);
+                ClassicAssert.AreEqual(range, expected, "failed at count " + count);
                 count++;
             }
 
-            Assert.AreEqual(count, TEST_SET.Length);
+            ClassicAssert.AreEqual(count, TEST_SET.Length);
         }
     }
 } // end of namespace

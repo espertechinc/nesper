@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -66,9 +67,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // compare
             var rows = env.CompileExecuteFAF("select * from MyWindow", path).Array;
-            Assert.AreEqual(numEventsPerThread, rows.Length);
+            ClassicAssert.AreEqual(numEventsPerThread, rows.Length);
             foreach (var row in rows) {
-                Assert.AreEqual(numThreads - 1, row.Get("IntPrimitive"));
+                ClassicAssert.AreEqual(numThreads - 1, row.Get("IntPrimitive"));
             }
 
             //long deltaTime = endTime - startTime;

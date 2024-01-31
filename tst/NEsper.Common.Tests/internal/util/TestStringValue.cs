@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -19,10 +20,10 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestParse()
         {
-            Assert.AreEqual("a", StringValue.ParseString("\"a\""));
-            Assert.AreEqual("", StringValue.ParseString("\"\""));
-            Assert.AreEqual("", StringValue.ParseString("''"));
-            Assert.AreEqual("b", StringValue.ParseString("'b'"));
+            ClassicAssert.AreEqual("a", StringValue.ParseString("\"a\""));
+            ClassicAssert.AreEqual("", StringValue.ParseString("\"\""));
+            ClassicAssert.AreEqual("", StringValue.ParseString("''"));
+            ClassicAssert.AreEqual("b", StringValue.ParseString("'b'"));
         }
 
         [Test]
@@ -35,10 +36,10 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestRenderEPL()
         {
-            Assert.AreEqual("null", TryConstant(null));
-            Assert.AreEqual("\"\"", TryConstant(""));
-            Assert.AreEqual("1", TryConstant(1));
-            Assert.AreEqual("\"abc\"", TryConstant("abc"));
+            ClassicAssert.AreEqual("null", TryConstant(null));
+            ClassicAssert.AreEqual("\"\"", TryConstant(""));
+            ClassicAssert.AreEqual("1", TryConstant(1));
+            ClassicAssert.AreEqual("\"abc\"", TryConstant("abc"));
         }
 
         [Test]
@@ -65,7 +66,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 string input = (string) inout[i][0];
                 int expected = (int) inout[i][1];
-                Assert.AreEqual(expected, StringValue.UnescapedIndexOfDot(input), "for input " + input);
+                ClassicAssert.AreEqual(expected, StringValue.UnescapedIndexOfDot(input), "for input " + input);
             }
         }
 

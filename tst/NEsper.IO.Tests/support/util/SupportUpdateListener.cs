@@ -13,6 +13,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esperio.support.util
 {
@@ -67,13 +68,13 @@ namespace com.espertech.esperio.support.util
     
         public EventBean AssertOneGetNewAndReset()
         {
-            Assert.IsTrue(_isInvoked);
+            ClassicAssert.IsTrue(_isInvoked);
     
-            Assert.AreEqual(1, _newDataList.Count);
-            Assert.AreEqual(1, _oldDataList.Count);
+            ClassicAssert.AreEqual(1, _newDataList.Count);
+            ClassicAssert.AreEqual(1, _oldDataList.Count);
     
-            Assert.AreEqual(1, _lastNewData.Length);
-            Assert.IsNull(_lastOldData);
+            ClassicAssert.AreEqual(1, _lastNewData.Length);
+            ClassicAssert.IsNull(_lastOldData);
     
             var lastNew = _lastNewData[0];
             Reset();
@@ -82,13 +83,13 @@ namespace com.espertech.esperio.support.util
     
         public EventBean AssertOneGetOldAndReset()
         {
-            Assert.IsTrue(_isInvoked);
+            ClassicAssert.IsTrue(_isInvoked);
     
-            Assert.AreEqual(1, _newDataList.Count);
-            Assert.AreEqual(1, _oldDataList.Count);
+            ClassicAssert.AreEqual(1, _newDataList.Count);
+            ClassicAssert.AreEqual(1, _oldDataList.Count);
     
-            Assert.AreEqual(1, _lastOldData.Length);
-            Assert.IsNull(_lastNewData);
+            ClassicAssert.AreEqual(1, _lastOldData.Length);
+            ClassicAssert.IsNull(_lastNewData);
     
             var lastNew = _lastOldData[0];
             Reset();

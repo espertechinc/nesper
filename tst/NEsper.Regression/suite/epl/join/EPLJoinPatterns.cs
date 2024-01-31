@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -178,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEventS0(env, 53, "a5");
                 SendEventS2(env, 53, "c5");
                 SendEventS1(env, 51, "b5");
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 // start statement
                 env.CompileDeploy(stmtText).AddListener("s0");
@@ -222,14 +223,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                         var result = theEvent.Get("s0")
                             .AsStringDictionary()
                             .TransformLeft<string, object, EventBean>();
-                        Assert.AreSame(s0, result.Get("es0").Underlying);
-                        Assert.AreSame(s1, result.Get("es1").Underlying);
+                        ClassicAssert.AreSame(s0, result.Get("es0").Underlying);
+                        ClassicAssert.AreSame(s1, result.Get("es1").Underlying);
 
                         result = theEvent.Get("s1")
                             .AsStringDictionary()
                             .TransformLeft<string, object, EventBean>();
-                        Assert.AreSame(s2, result.Get("es2").Underlying);
-                        Assert.AreSame(s3, result.Get("es3").Underlying);
+                        ClassicAssert.AreSame(s2, result.Get("es2").Underlying);
+                        ClassicAssert.AreSame(s3, result.Get("es3").Underlying);
                     });
 
                 env.UndeployAll();
@@ -287,14 +288,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string p20,
             string p30)
         {
-            Assert.AreEqual(s0es0Id, theEvent.Get("s0es0Id"));
-            Assert.AreEqual(s0es1Id, theEvent.Get("s0es1Id"));
-            Assert.AreEqual(s1es2Id, theEvent.Get("s1es2Id"));
-            Assert.AreEqual(s1es3Id, theEvent.Get("s1es3Id"));
-            Assert.AreEqual(p00, theEvent.Get("es0p00"));
-            Assert.AreEqual(p10, theEvent.Get("es1p10"));
-            Assert.AreEqual(p20, theEvent.Get("es2p20"));
-            Assert.AreEqual(p30, theEvent.Get("es3p30"));
+            ClassicAssert.AreEqual(s0es0Id, theEvent.Get("s0es0Id"));
+            ClassicAssert.AreEqual(s0es1Id, theEvent.Get("s0es1Id"));
+            ClassicAssert.AreEqual(s1es2Id, theEvent.Get("s1es2Id"));
+            ClassicAssert.AreEqual(s1es3Id, theEvent.Get("s1es3Id"));
+            ClassicAssert.AreEqual(p00, theEvent.Get("es0p00"));
+            ClassicAssert.AreEqual(p10, theEvent.Get("es1p10"));
+            ClassicAssert.AreEqual(p20, theEvent.Get("es2p20"));
+            ClassicAssert.AreEqual(p30, theEvent.Get("es3p30"));
         }
 
         private static void AssertEventData(
@@ -307,12 +308,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             string s1p10
         )
         {
-            Assert.AreEqual(es0aId, theEvent.Get("es0aId"));
-            Assert.AreEqual(es0ap00, theEvent.Get("es0ap00"));
-            Assert.AreEqual(es0bId, theEvent.Get("es0bId"));
-            Assert.AreEqual(es0bp00, theEvent.Get("es0bp00"));
-            Assert.AreEqual(s1Id, theEvent.Get("s1Id"));
-            Assert.AreEqual(s1p10, theEvent.Get("s1p10"));
+            ClassicAssert.AreEqual(es0aId, theEvent.Get("es0aId"));
+            ClassicAssert.AreEqual(es0ap00, theEvent.Get("es0ap00"));
+            ClassicAssert.AreEqual(es0bId, theEvent.Get("es0bId"));
+            ClassicAssert.AreEqual(es0bp00, theEvent.Get("es0bp00"));
+            ClassicAssert.AreEqual(s1Id, theEvent.Get("s1Id"));
+            ClassicAssert.AreEqual(s1p10, theEvent.Get("s1p10"));
         }
     }
 } // end of namespace

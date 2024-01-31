@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -374,9 +375,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
-                        Assert.AreEqual(10d, eventBean.Get("Average"));
-                        Assert.AreEqual(20000L, eventBean.Get("sumation"));
+                        ClassicAssert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        ClassicAssert.AreEqual(10d, eventBean.Get("Average"));
+                        ClassicAssert.AreEqual(20000L, eventBean.Get("sumation"));
                     });
 
                 // create insert into statements
@@ -391,17 +392,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
-                        Assert.AreEqual(15d, eventBean.Get("Average"));
-                        Assert.AreEqual(60000L, eventBean.Get("sumation"));
+                        ClassicAssert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        ClassicAssert.AreEqual(15d, eventBean.Get("Average"));
+                        ClassicAssert.AreEqual(60000L, eventBean.Get("sumation"));
                     });
 
                 env.AssertEventNew(
                     "s2",
                     eventBean => {
-                        Assert.AreEqual("IBM", eventBean.Get("Symbol"));
-                        Assert.AreEqual(20d, eventBean.Get("Average"));
-                        Assert.AreEqual(40000L, eventBean.Get("sumation"));
+                        ClassicAssert.AreEqual("IBM", eventBean.Get("Symbol"));
+                        ClassicAssert.AreEqual(20d, eventBean.Get("Average"));
+                        ClassicAssert.AreEqual(40000L, eventBean.Get("sumation"));
                     });
 
                 env.UndeployAll();
@@ -417,9 +418,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
                 });
 
             SendEvent(env, SYMBOL_DELL, 10000, 51);
@@ -487,12 +488,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(oldData);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.IsNull(oldData);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-                    Assert.AreEqual(volume, newData[0].Get("Volume"));
-                    Assert.AreEqual(sum, newData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(volume, newData[0].Get("Volume"));
+                    ClassicAssert.AreEqual(sum, newData[0].Get("mySum"));
 
                     listener.Reset();
                 });

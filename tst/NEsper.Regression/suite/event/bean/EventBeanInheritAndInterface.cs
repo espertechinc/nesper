@@ -15,6 +15,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -99,14 +100,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 env.SendEventBean(new ISupportAImplSuperGImplPlus("G", "A", "BaseAB", "B", "C"));
                 for (var i = 0; i < listeners.Length; i++) {
-                    Assert.IsTrue(listeners[i].IsInvoked);
+                    ClassicAssert.IsTrue(listeners[i].IsInvoked);
                     var theEvent = listeners[i].GetAndResetLastNewData()[0];
 
                     for (var j = 0; j < expected[i].Length; j++) {
-                        Assert.IsTrue(
+                        ClassicAssert.IsTrue(
                             theEvent.EventType.IsProperty(expected[i][j]),
                             "failed property valid check for stmt=" + epls[i]);
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             expected[i][j],
                             theEvent.Get(expected[i][j]),
                             "failed property check for stmt=" + epls[i]);

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -91,14 +92,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             for (var i = 0; i < writeThreads.Length; i++) {
                 writeRunnables[i].Shutdown = true;
                 writeThreads[i].Join();
-                Assert.IsNull(writeRunnables[i].Exception);
+                ClassicAssert.IsNull(writeRunnables[i].Exception);
             }
 
             readRunnable.Shutdown = true;
             readThread.Join();
 
             env.UndeployAll();
-            Assert.IsNull(readRunnable.Exception);
+            ClassicAssert.IsNull(readRunnable.Exception);
         }
 
         public class WriteRunnable : IRunnable
@@ -172,7 +173,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         var @event = listener.AssertOneGetNewAndReset();
                         var valueOne = @event.Get("c0");
                         foreach (var field in fields) {
-                            Assert.AreEqual(valueOne, @event.Get(field));
+                            ClassicAssert.AreEqual(valueOne, @event.Get(field));
                         }
                     }
                 }

@@ -17,6 +17,8 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -139,8 +141,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                             output,
                             "c0,c1,c3".SplitCsv(),
                             new object[] { 55, "x", "p0value" });
-                        Assert.AreEqual(1, output.Get("c2").Unwrap<object>().Count);
-                        Assert.AreEqual("[\"0_p0\", \"1_p0\"]", output.Get("c4").RenderAny());
+                        ClassicAssert.AreEqual(1, output.Get("c2").Unwrap<object>().Count);
+                        ClassicAssert.AreEqual("[\"0_p0\", \"1_p0\"]", output.Get("c4").RenderAny());
                     });
 
                 env.UndeployAll();

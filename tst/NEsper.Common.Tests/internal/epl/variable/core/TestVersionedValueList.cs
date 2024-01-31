@@ -10,6 +10,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.threading.locks;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.variable.core
 {
@@ -29,46 +30,46 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
         {
             TryInvalid(0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("a", list.GetVersion(3));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("a", list.GetVersion(3));
 
             list.AddValue(4, "b", 0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("a", list.GetVersion(3));
-            Assert.AreEqual("b", list.GetVersion(4));
-            Assert.AreEqual("b", list.GetVersion(5));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("a", list.GetVersion(3));
+            ClassicAssert.AreEqual("b", list.GetVersion(4));
+            ClassicAssert.AreEqual("b", list.GetVersion(5));
 
             list.AddValue(6, "c", 0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("a", list.GetVersion(3));
-            Assert.AreEqual("b", list.GetVersion(4));
-            Assert.AreEqual("b", list.GetVersion(5));
-            Assert.AreEqual("c", list.GetVersion(6));
-            Assert.AreEqual("c", list.GetVersion(7));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("a", list.GetVersion(3));
+            ClassicAssert.AreEqual("b", list.GetVersion(4));
+            ClassicAssert.AreEqual("b", list.GetVersion(5));
+            ClassicAssert.AreEqual("c", list.GetVersion(6));
+            ClassicAssert.AreEqual("c", list.GetVersion(7));
 
             list.AddValue(7, "d", 0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("a", list.GetVersion(3));
-            Assert.AreEqual("b", list.GetVersion(4));
-            Assert.AreEqual("b", list.GetVersion(5));
-            Assert.AreEqual("c", list.GetVersion(6));
-            Assert.AreEqual("d", list.GetVersion(7));
-            Assert.AreEqual("d", list.GetVersion(8));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("a", list.GetVersion(3));
+            ClassicAssert.AreEqual("b", list.GetVersion(4));
+            ClassicAssert.AreEqual("b", list.GetVersion(5));
+            ClassicAssert.AreEqual("c", list.GetVersion(6));
+            ClassicAssert.AreEqual("d", list.GetVersion(7));
+            ClassicAssert.AreEqual("d", list.GetVersion(8));
 
             list.AddValue(9, "e", 0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("a", list.GetVersion(3));
-            Assert.AreEqual("b", list.GetVersion(4));
-            Assert.AreEqual("b", list.GetVersion(5));
-            Assert.AreEqual("c", list.GetVersion(6));
-            Assert.AreEqual("d", list.GetVersion(7));
-            Assert.AreEqual("d", list.GetVersion(8));
-            Assert.AreEqual("e", list.GetVersion(9));
-            Assert.AreEqual("e", list.GetVersion(10));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("a", list.GetVersion(3));
+            ClassicAssert.AreEqual("b", list.GetVersion(4));
+            ClassicAssert.AreEqual("b", list.GetVersion(5));
+            ClassicAssert.AreEqual("c", list.GetVersion(6));
+            ClassicAssert.AreEqual("d", list.GetVersion(7));
+            ClassicAssert.AreEqual("d", list.GetVersion(8));
+            ClassicAssert.AreEqual("e", list.GetVersion(9));
+            ClassicAssert.AreEqual("e", list.GetVersion(10));
         }
 
         [Test]
@@ -84,36 +85,36 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             list.AddValue(10, "i", 10000);
             list.AddValue(11, "j", 10500);
             list.AddValue(12, "k", 10600);
-            Assert.AreEqual(9, list.OlderVersions.Count);
+            ClassicAssert.AreEqual(9, list.OlderVersions.Count);
 
             TryInvalid(0);
             TryInvalid(1);
-            Assert.AreEqual("a", list.GetVersion(2));
-            Assert.AreEqual("b", list.GetVersion(3));
-            Assert.AreEqual("c", list.GetVersion(4));
-            Assert.AreEqual("d", list.GetVersion(5));
-            Assert.AreEqual("e", list.GetVersion(6));
-            Assert.AreEqual("f", list.GetVersion(7));
-            Assert.AreEqual("g", list.GetVersion(8));
-            Assert.AreEqual("k", list.GetVersion(12));
-            Assert.AreEqual("k", list.GetVersion(13));
+            ClassicAssert.AreEqual("a", list.GetVersion(2));
+            ClassicAssert.AreEqual("b", list.GetVersion(3));
+            ClassicAssert.AreEqual("c", list.GetVersion(4));
+            ClassicAssert.AreEqual("d", list.GetVersion(5));
+            ClassicAssert.AreEqual("e", list.GetVersion(6));
+            ClassicAssert.AreEqual("f", list.GetVersion(7));
+            ClassicAssert.AreEqual("g", list.GetVersion(8));
+            ClassicAssert.AreEqual("k", list.GetVersion(12));
+            ClassicAssert.AreEqual("k", list.GetVersion(13));
 
             list.AddValue(15, "x", 11000);  // 11th value added
-            Assert.AreEqual(9, list.OlderVersions.Count);
+            ClassicAssert.AreEqual(9, list.OlderVersions.Count);
 
             TryInvalid(0);
             TryInvalid(1);
             TryInvalid(2);
-            Assert.AreEqual("b", list.GetVersion(3));
-            Assert.AreEqual("c", list.GetVersion(4));
-            Assert.AreEqual("d", list.GetVersion(5));
-            Assert.AreEqual("k", list.GetVersion(13));
-            Assert.AreEqual("k", list.GetVersion(14));
-            Assert.AreEqual("x", list.GetVersion(15));
+            ClassicAssert.AreEqual("b", list.GetVersion(3));
+            ClassicAssert.AreEqual("c", list.GetVersion(4));
+            ClassicAssert.AreEqual("d", list.GetVersion(5));
+            ClassicAssert.AreEqual("k", list.GetVersion(13));
+            ClassicAssert.AreEqual("k", list.GetVersion(14));
+            ClassicAssert.AreEqual("x", list.GetVersion(15));
 
             // expire all before 5.5 sec
             list.AddValue(20, "y", 15500);  // 11th value added
-            Assert.AreEqual(7, list.OlderVersions.Count);
+            ClassicAssert.AreEqual(7, list.OlderVersions.Count);
 
             TryInvalid(0);
             TryInvalid(1);
@@ -121,30 +122,30 @@ namespace com.espertech.esper.common.@internal.epl.variable.core
             TryInvalid(3);
             TryInvalid(4);
             TryInvalid(5);
-            Assert.AreEqual("e", list.GetVersion(6));
-            Assert.AreEqual("k", list.GetVersion(13));
-            Assert.AreEqual("x", list.GetVersion(15));
-            Assert.AreEqual("x", list.GetVersion(16));
-            Assert.AreEqual("y", list.GetVersion(20));
+            ClassicAssert.AreEqual("e", list.GetVersion(6));
+            ClassicAssert.AreEqual("k", list.GetVersion(13));
+            ClassicAssert.AreEqual("x", list.GetVersion(15));
+            ClassicAssert.AreEqual("x", list.GetVersion(16));
+            ClassicAssert.AreEqual("y", list.GetVersion(20));
 
             // expire all before 10.5 sec
             list.AddValue(21, "z1", 20500);
             list.AddValue(22, "z2", 20500);
             list.AddValue(23, "z3", 20501);
-            Assert.AreEqual(4, list.OlderVersions.Count);
+            ClassicAssert.AreEqual(4, list.OlderVersions.Count);
             TryInvalid(9);
             TryInvalid(10);
             TryInvalid(11);
-            Assert.AreEqual("k", list.GetVersion(12));
-            Assert.AreEqual("k", list.GetVersion(13));
-            Assert.AreEqual("k", list.GetVersion(14));
-            Assert.AreEqual("x", list.GetVersion(15));
-            Assert.AreEqual("x", list.GetVersion(16));
-            Assert.AreEqual("y", list.GetVersion(20));
-            Assert.AreEqual("z1", list.GetVersion(21));
-            Assert.AreEqual("z2", list.GetVersion(22));
-            Assert.AreEqual("z3", list.GetVersion(23));
-            Assert.AreEqual("z3", list.GetVersion(24));
+            ClassicAssert.AreEqual("k", list.GetVersion(12));
+            ClassicAssert.AreEqual("k", list.GetVersion(13));
+            ClassicAssert.AreEqual("k", list.GetVersion(14));
+            ClassicAssert.AreEqual("x", list.GetVersion(15));
+            ClassicAssert.AreEqual("x", list.GetVersion(16));
+            ClassicAssert.AreEqual("y", list.GetVersion(20));
+            ClassicAssert.AreEqual("z1", list.GetVersion(21));
+            ClassicAssert.AreEqual("z2", list.GetVersion(22));
+            ClassicAssert.AreEqual("z3", list.GetVersion(23));
+            ClassicAssert.AreEqual("z3", list.GetVersion(24));
         }
 
         private void TryInvalid(int version)

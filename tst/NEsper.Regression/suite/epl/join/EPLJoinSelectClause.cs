@@ -11,6 +11,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoinSelectClause : RegressionExecution
@@ -27,9 +29,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 "s0",
                 statement => {
                     var result = statement.EventType;
-                    Assert.AreEqual(typeof(double?), result.GetPropertyType("s0.DoubleBoxed"));
-                    Assert.AreEqual(typeof(double?), result.GetPropertyType("div"));
-                    Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                    ClassicAssert.AreEqual(typeof(double?), result.GetPropertyType("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(typeof(double?), result.GetPropertyType("div"));
+                    ClassicAssert.AreEqual(2, statement.EventType.PropertyNames.Length);
                 });
             env.AssertListenerNotInvoked("s0");
 
@@ -42,8 +44,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 "s0",
                 listener => {
                     var newEvents = listener.LastNewData;
-                    Assert.AreEqual(1d, newEvents[0].Get("s0.DoubleBoxed"));
-                    Assert.AreEqual(3d, newEvents[0].Get("div"));
+                    ClassicAssert.AreEqual(1d, newEvents[0].Get("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(3d, newEvents[0].Get("div"));
                 });
 
             env.Milestone(2);
@@ -52,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 "s0",
                 iterator => {
                     var theEvent = iterator.Advance();
-                    Assert.AreEqual(1d, theEvent.Get("s0.DoubleBoxed"));
-                    Assert.AreEqual(3d, theEvent.Get("div"));
+                    ClassicAssert.AreEqual(1d, theEvent.Get("s0.DoubleBoxed"));
+                    ClassicAssert.AreEqual(3d, theEvent.Get("div"));
                 });
 
             env.UndeployAll();

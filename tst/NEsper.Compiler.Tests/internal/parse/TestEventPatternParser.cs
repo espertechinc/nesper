@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -415,7 +416,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 
 	        try {
 	            Parse(text);
-	            Assert.IsFalse(true);
+	            ClassicAssert.IsFalse(true);
 	        } catch (Exception ex) {
 	            Log.Debug(".assertIsInvalid Expected ParseException exception was thrown and ignored, message=" + ex.Message);
 	        }

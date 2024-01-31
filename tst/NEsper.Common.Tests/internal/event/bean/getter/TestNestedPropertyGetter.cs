@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -47,10 +48,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.Get(theEvent));
+            ClassicAssert.AreEqual(bean.GetIndexed(0).GetMapped("0ma"), getter.Get(theEvent));
 
             // test null value returned
-            Assert.IsNull(getterNull.Get(theEvent));
+            ClassicAssert.IsNull(getterNull.Get(theEvent));
         }
 
         private KeyedMethodPropertyGetter MakeGetterOne(int index)

@@ -16,6 +16,7 @@ using com.espertech.esper.compat.datetime;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.schedule
 {
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 Log.Debug(
                     ".checkCorrect   result=" + timeFormat.Format(resultDate) +
                     " long=" + resultDate.UtcMillis);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
         }
 
@@ -79,7 +80,7 @@ namespace com.espertech.esper.common.@internal.schedule
                 Log.Debug(
                     ".checkCorrect result=" + timeFormat.Format(resultDate) +
                     " long=" + resultDate.UtcMillis);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
         }
 

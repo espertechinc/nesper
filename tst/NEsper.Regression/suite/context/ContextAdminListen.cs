@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.support.context;
 using static com.espertech.esper.regressionlib.support.context.SupportContextListenUtil;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -206,12 +207,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                         typeof(ContextStateEventContextPartitionDeallocated)));
 
             var it = api.GetContextPartitionStateListeners(depIdCtx, contextName);
-            Assert.AreSame(listeners[1], it.Advance());
-            Assert.AreSame(listeners[2], it.Advance());
-            Assert.IsFalse(it.MoveNext());
+            ClassicAssert.AreSame(listeners[1], it.Advance());
+            ClassicAssert.AreSame(listeners[2], it.Advance());
+            ClassicAssert.IsFalse(it.MoveNext());
 
             api.RemoveContextPartitionStateListeners(depIdCtx, contextName);
-            Assert.IsFalse(api.GetContextPartitionStateListeners(depIdCtx, contextName).MoveNext());
+            ClassicAssert.IsFalse(api.GetContextPartitionStateListeners(depIdCtx, contextName).MoveNext());
 
             env.SendEventBean(new SupportBean_S0(2));
             env.SendEventBean(new SupportBean_S1(2));
@@ -263,12 +264,12 @@ namespace com.espertech.esper.regressionlib.suite.context
                             typeof(ContextStateEventContextDestroyed)));
 
                 var it = api.ContextStateListeners;
-                Assert.AreSame(listeners[1], it.Advance());
-                Assert.AreSame(listeners[2], it.Advance());
-                Assert.IsFalse(it.MoveNext());
+                ClassicAssert.AreSame(listeners[1], it.Advance());
+                ClassicAssert.AreSame(listeners[2], it.Advance());
+                ClassicAssert.IsFalse(it.MoveNext());
 
                 api.RemoveContextStateListeners();
-                Assert.IsFalse(api.ContextStateListeners.MoveNext());
+                ClassicAssert.IsFalse(api.ContextStateListeners.MoveNext());
 
                 env.CompileDeploy(epl);
                 env.UndeployAll();
@@ -319,12 +320,12 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 var allocated = listener.AllocatedEvents;
-                Assert.AreEqual(1, allocated.Count);
+                ClassicAssert.AreEqual(1, allocated.Count);
                 var nested = (ContextPartitionIdentifierNested)allocated[0].Identifier;
                 EPAssertionUtil.AssertEqualsExactOrder(
                     "E1".SplitCsv(),
                     ((ContextPartitionIdentifierPartitioned)nested.Identifiers[1]).Keys);
-                Assert.AreEqual(1, listener.GetAndReset().Count);
+                ClassicAssert.AreEqual(1, listener.GetAndReset().Count);
 
                 env.UndeployModuleContaining("S0");
                 listener.AssertAndReset(
@@ -373,8 +374,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("@name('S0') context MyContext select count(*) from SupportBean", path);
 
                 var allocated = listener.AllocatedEvents;
-                Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual("neg", ((ContextPartitionIdentifierCategory)allocated[1].Identifier).Label);
+                ClassicAssert.AreEqual(2, allocated.Count);
+                ClassicAssert.AreEqual("neg", ((ContextPartitionIdentifierCategory)allocated[1].Identifier).Label);
                 listener.GetAndReset();
 
                 env.UndeployModuleContaining("S0");
@@ -402,8 +403,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 var deploymentId = env.DeploymentId("S0");
 
                 var allocated = listener.AllocatedEvents;
-                Assert.AreEqual(2, allocated.Count);
-                Assert.AreEqual(1, ((ContextPartitionIdentifierHash)allocated[1].Identifier).Hash);
+                ClassicAssert.AreEqual(2, allocated.Count);
+                ClassicAssert.AreEqual(1, ((ContextPartitionIdentifierHash)allocated[1].Identifier).Hash);
                 listener.GetAndReset();
 
                 env.UndeployAll();

@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
 {
@@ -41,48 +42,48 @@ namespace com.espertech.esper.common.@internal.metrics.stmtmetrics
         public void TestFlow()
         {
             svc.CurrentTime = 1000;
-            Assert.IsNull(svc.NearestTime);
+            ClassicAssert.IsNull(svc.NearestTime);
 
             svc.Add(2000, execs[0]);
-            Assert.AreEqual(3000, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(3000, svc.NearestTime.Value);
 
             svc.Add(2100, execs[1]);
-            Assert.AreEqual(3000, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(3000, svc.NearestTime.Value);
 
             svc.Add(2000, execs[2]);
-            Assert.AreEqual(3000, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(3000, svc.NearestTime.Value);
 
             svc.CurrentTime = 1100;
             svc.Add(100, execs[3]);
-            Assert.AreEqual(1200, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(1200, svc.NearestTime.Value);
 
             svc.CurrentTime = 1199;
             svc.Evaluate(executions);
-            Assert.IsTrue(executions.IsEmpty());
+            ClassicAssert.IsTrue(executions.IsEmpty());
 
             svc.CurrentTime = 1200;
             svc.Evaluate(executions);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] { execs[3] }, executions.GetEnumerator());
-            Assert.AreEqual(3000, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(3000, svc.NearestTime.Value);
 
             executions.Clear();
             svc.CurrentTime = 2999;
             svc.Evaluate(executions);
-            Assert.IsTrue(executions.IsEmpty());
+            ClassicAssert.IsTrue(executions.IsEmpty());
 
             svc.CurrentTime = 3000;
             svc.Evaluate(executions);
             EPAssertionUtil.AssertEqualsExactOrder(new object[] { execs[0], execs[2] }, executions.GetEnumerator());
-            Assert.AreEqual(3100, svc.NearestTime.Value);
+            ClassicAssert.AreEqual(3100, svc.NearestTime.Value);
 
             svc.Clear();
-            Assert.IsNull(svc.NearestTime);
+            ClassicAssert.IsNull(svc.NearestTime);
 
             executions.Clear();
             svc.CurrentTime = Int64.MaxValue - 1;
             svc.Evaluate(executions);
-            Assert.IsTrue(executions.IsEmpty());
-            Assert.IsNull(svc.NearestTime);
+            ClassicAssert.IsTrue(executions.IsEmpty());
+            ClassicAssert.IsNull(svc.NearestTime);
         }
     }
 } // end of namespace

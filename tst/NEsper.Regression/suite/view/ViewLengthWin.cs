@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -165,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                     events => {
                         for (var i = 8; i < 10; i++) {
                             var @event = events.Advance();
-                            Assert.AreEqual($"E{i}", @event.Get("Symbol"));
+                            ClassicAssert.AreEqual($"E{i}", @event.Get("Symbol"));
                         }
                     });
                 env.UndeployAll();
@@ -193,11 +193,11 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
-                        Assert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
-                        Assert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
-                        Assert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
-                        Assert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
+                        ClassicAssert.AreEqual(eventObject.GetMapped("keyOne"), theEvent.Get("a"));
+                        ClassicAssert.AreEqual(eventObject.GetIndexed(1), theEvent.Get("b"));
+                        ClassicAssert.AreEqual(eventObject.Nested.NestedNested.NestedNestedValue, theEvent.Get("c"));
+                        ClassicAssert.AreEqual(eventObject.MapProperty, theEvent.Get("MapProperty"));
+                        ClassicAssert.AreEqual(eventObject.ArrayProperty[0], theEvent.Get("ArrayProperty[0]"));
                     });
 
                 env.Milestone(1);

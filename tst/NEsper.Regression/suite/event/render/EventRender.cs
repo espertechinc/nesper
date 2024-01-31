@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.render
 {
@@ -64,17 +65,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 var jsonOptions = new JSONRenderingOptions();
                 jsonOptions.Renderer = new MyRenderer();
                 var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", env.GetEnumerator("s0").Advance(), jsonOptions);
-                Assert.AreEqual(4, MyRenderer.Contexts.Count);
+                ClassicAssert.AreEqual(4, MyRenderer.Contexts.Count);
                 var contexts = MyRenderer.Contexts;
                 var context = contexts[2];
-                Assert.IsNotNull(context.DefaultRenderer);
-                Assert.AreEqual(1, context.IndexedPropertyIndex!.Value);
-                Assert.AreEqual(nameof(MyRendererEvent), context.EventType.Name);
-                Assert.AreEqual("SomeProperties", context.PropertyName);
+                ClassicAssert.IsNotNull(context.DefaultRenderer);
+                ClassicAssert.AreEqual(1, context.IndexedPropertyIndex!.Value);
+                ClassicAssert.AreEqual(nameof(MyRendererEvent), context.EventType.Name);
+                ClassicAssert.AreEqual("SomeProperties", context.PropertyName);
 
                 var expectedJson =
                     "{ \"MyEvent\": { \"Id\": \"id1\", \"SomeProperties\": [\"index#0=1;index#1=x\", \"index#0=2;index#1=y\"], \"MappedProperty\": { \"key\": \"value\" } } }";
-                Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
+                ClassicAssert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
 
                 MyRenderer.Contexts.Clear();
                 var xmlOptions = new XMLRenderingOptions();
@@ -91,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     " <SomeProperties>index#0=2;index#1=y</SomeProperties>" +
                     " <MappedProperty> <key>value</key> </MappedProperty>" +
                     " </MyEvent>";
-                Assert.AreEqual(4, MyRenderer.Contexts.Count);
-                Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
+                ClassicAssert.AreEqual(4, MyRenderer.Contexts.Count);
+                ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
 
                 env.UndeployAll();
             }
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             env.GetEnumerator("s0").Advance());
                         var expectedJson =
                             "{ \"MyEvent\": { \"P0\": \"abc\", \"P1\": 1, \"P3\": 2, \"P4\": 3.0, \"P2\": { \"Id\": 1, \"P00\": \"P00\", \"P01\": null, \"P02\": null, \"P03\": null } } }";
-                        Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
+                        ClassicAssert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
                 env.AssertThat(
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             env.GetEnumerator("s0").Advance());
                         var expected =
                             "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <MyEvent> <P0>abc</P0> <P1>1</P1> <P3>2</P3> <P4>3.0</P4> <P2> <Id>1</Id> <P00>P00</P00> </P2> </MyEvent>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
                     });
 
                 env.UndeployAll();
@@ -162,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var json = env.Runtime.RenderEventService.RenderJSON(
                             "MyEvent",
                             env.GetEnumerator("s0").Advance());
-                        Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
+                        ClassicAssert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
                 env.AssertThat(
@@ -178,7 +179,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "    <efg></efg>\n" +
                                        "  </StringObjectMap>\n" +
                                        "</MyEvent>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(xmlOne));
                     });
 
                 env.AssertThat(
@@ -193,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                           "<MyEvent>\n" +
                                           "  <StringObjectMap abc=\"def\" def=\"123\"/>\n" +
                                           "</MyEvent>";
-                        Assert.AreEqual(RemoveNewline(expectedTwo), RemoveNewline(xmlTwo));
+                        ClassicAssert.AreEqual(RemoveNewline(expectedTwo), RemoveNewline(xmlTwo));
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -206,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     "s0",
                     en => {
                         var json = env.Runtime.RenderEventService.RenderJSON("MyEvent", en.Advance());
-                        Assert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
+                        ClassicAssert.AreEqual(RemoveNewline(expectedJson), RemoveNewline(json));
                     });
 
                 env.UndeployAll();

@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -125,7 +126,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 env.CompileDeploy("@public create variable int C = B", path);
                 env.CompileDeploy("@name('s0') @public create variable int D = C", path);
 
-                Assert.AreEqual(10, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "D"));
+                ClassicAssert.AreEqual(10, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "D"));
 
                 env.UndeployAll();
             }

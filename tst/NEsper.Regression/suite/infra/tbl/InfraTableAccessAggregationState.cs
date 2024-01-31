@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -177,12 +179,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     .AddListener("into");
                 env.AssertStatement(
                     "into",
-                    statement => Assert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("mywin")));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("mywin")));
 
                 env.CompileDeploy("@name('s0') select varagg.mywin as c0 from SupportBean_S0", path).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean[]), statement.EventType.GetPropertyType("c0")));
 
                 var b1 = MakeSendBean(env, "E1", 10);
                 env.AssertPropsNew("into", "mywin".SplitCsv(), new object[] { new SupportBean[] { b1 } });

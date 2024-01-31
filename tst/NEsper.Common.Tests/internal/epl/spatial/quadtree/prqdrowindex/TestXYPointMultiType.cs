@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
@@ -23,8 +24,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             XYPointMultiType v)
         {
             var received = v.Multityped is ICollection<object> ? Join((ICollection<object>) v.Multityped) : v.Multityped.ToString();
-            Assert.AreEqual(expected, received);
-            Assert.AreEqual(v.Count(), expected.SplitCsv().Length);
+            ClassicAssert.AreEqual(expected, received);
+            ClassicAssert.AreEqual(v.Count(), expected.SplitCsv().Length);
         }
 
         private string Join(ICollection<object> collection)
@@ -86,12 +87,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 
             var v = new XYPointMultiType(10, 20, "X");
             v.CollectInto(values);
-            Assert.AreEqual("X", Join(values));
+            ClassicAssert.AreEqual("X", Join(values));
 
             values.Clear();
             v.AddSingleValue("Y");
             v.CollectInto(values);
-            Assert.AreEqual("X,Y", Join(values));
+            ClassicAssert.AreEqual("X,Y", Join(values));
         }
 
         [Test]

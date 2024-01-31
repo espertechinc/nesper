@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -197,11 +198,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(oldData);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.IsNull(oldData);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(newSum, newData[0].Get("mySum"));
-                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(newSum, newData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
 
                     listener.Reset();
                 });
@@ -218,11 +219,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(newData);
-                    Assert.AreEqual(1, oldData.Length);
+                    ClassicAssert.IsNull(newData);
+                    ClassicAssert.AreEqual(1, oldData.Length);
 
-                    Assert.AreEqual(newSum, oldData[0].Get("mySum"));
-                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(newSum, oldData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(symbol, oldData[0].Get("Symbol"));
 
                     listener.Reset();
                 });

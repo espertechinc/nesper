@@ -9,6 +9,7 @@
 using com.espertech.esper.common.@internal.epl.expression.dot.walk;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.compiler.@internal.parse
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			for (int i = 0; i < inout.Length; i++) {
 				string input = inout[i][0];
 				string expected = inout[i][1];
-				Assert.AreEqual(expected, DotEscaper.EscapeDot(input), "for input " + input);
+				ClassicAssert.AreEqual(expected, DotEscaper.EscapeDot(input), "for input " + input);
 			}
 		}
 
@@ -66,7 +67,7 @@ namespace com.espertech.esper.compiler.@internal.parse
 			for (int i = 0; i < inout.Length; i++) {
 				string input = inout[i][0];
 				string expected = inout[i][1];
-				Assert.AreEqual(expected, DotEscaper.UnescapeDot(input), "for input " + input);
+				ClassicAssert.AreEqual(expected, DotEscaper.UnescapeDot(input), "for input " + input);
 			}
 		}
 	}

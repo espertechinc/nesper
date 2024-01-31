@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -35,62 +36,62 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestHashCode()
         {
-            Assert.IsTrue(keys11.GetHashCode() != keys12.GetHashCode());
-            Assert.IsTrue(keys12.GetHashCode() != keys13.GetHashCode());
+            ClassicAssert.IsTrue(keys11.GetHashCode() != keys12.GetHashCode());
+            ClassicAssert.IsTrue(keys12.GetHashCode() != keys13.GetHashCode());
 
-            Assert.IsTrue(keys1.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
-            Assert.IsTrue(keys3.GetHashCode() == "a".GetHashCode());
-            Assert.IsTrue(keys4.GetHashCode() == "b".GetHashCode());
-            Assert.IsTrue(keys5.GetHashCode() == 0);
+            ClassicAssert.IsTrue(keys1.GetHashCode() == ("a".GetHashCode() * 397 ^ "b".GetHashCode()));
+            ClassicAssert.IsTrue(keys3.GetHashCode() == "a".GetHashCode());
+            ClassicAssert.IsTrue(keys4.GetHashCode() == "b".GetHashCode());
+            ClassicAssert.IsTrue(keys5.GetHashCode() == 0);
 
-            Assert.IsTrue(keys8.GetHashCode() == keys1.GetHashCode());
-            Assert.IsTrue(keys1.GetHashCode() == keys2.GetHashCode());
-            Assert.IsTrue(keys1.GetHashCode() != keys3.GetHashCode());
-            Assert.IsTrue(keys1.GetHashCode() != keys4.GetHashCode());
-            Assert.IsTrue(keys1.GetHashCode() != keys5.GetHashCode());
+            ClassicAssert.IsTrue(keys8.GetHashCode() == keys1.GetHashCode());
+            ClassicAssert.IsTrue(keys1.GetHashCode() == keys2.GetHashCode());
+            ClassicAssert.IsTrue(keys1.GetHashCode() != keys3.GetHashCode());
+            ClassicAssert.IsTrue(keys1.GetHashCode() != keys4.GetHashCode());
+            ClassicAssert.IsTrue(keys1.GetHashCode() != keys5.GetHashCode());
 
-            Assert.IsTrue(keys7.GetHashCode() != keys8.GetHashCode());
-            Assert.IsTrue(keys9.GetHashCode() == keys10.GetHashCode());
+            ClassicAssert.IsTrue(keys7.GetHashCode() != keys8.GetHashCode());
+            ClassicAssert.IsTrue(keys9.GetHashCode() == keys10.GetHashCode());
         }
 
         [Test]
         public void TestEquals()
         {
-            Assert.AreEqual(keys2, keys1);
-            Assert.AreEqual(keys1, keys2);
+            ClassicAssert.AreEqual(keys2, keys1);
+            ClassicAssert.AreEqual(keys1, keys2);
 
-            Assert.IsFalse(keys1.Equals(keys3));
-            Assert.IsFalse(keys3.Equals(keys1));
-            Assert.IsFalse(keys1.Equals(keys4));
-            Assert.IsFalse(keys2.Equals(keys5));
-            Assert.IsFalse(keys3.Equals(keys4));
-            Assert.IsFalse(keys4.Equals(keys5));
+            ClassicAssert.IsFalse(keys1.Equals(keys3));
+            ClassicAssert.IsFalse(keys3.Equals(keys1));
+            ClassicAssert.IsFalse(keys1.Equals(keys4));
+            ClassicAssert.IsFalse(keys2.Equals(keys5));
+            ClassicAssert.IsFalse(keys3.Equals(keys4));
+            ClassicAssert.IsFalse(keys4.Equals(keys5));
 
-            Assert.IsTrue(keys1.Equals(keys1));
-            Assert.IsTrue(keys2.Equals(keys2));
-            Assert.IsTrue(keys3.Equals(keys3));
-            Assert.IsTrue(keys4.Equals(keys4));
-            Assert.IsTrue(keys5.Equals(keys5));
+            ClassicAssert.IsTrue(keys1.Equals(keys1));
+            ClassicAssert.IsTrue(keys2.Equals(keys2));
+            ClassicAssert.IsTrue(keys3.Equals(keys3));
+            ClassicAssert.IsTrue(keys4.Equals(keys4));
+            ClassicAssert.IsTrue(keys5.Equals(keys5));
 
-            Assert.IsFalse(keys1.Equals(keys7));
-            Assert.IsFalse(keys1.Equals(keys8));
-            Assert.IsFalse(keys1.Equals(keys9));
-            Assert.IsFalse(keys1.Equals(keys10));
-            Assert.IsTrue(keys9.Equals(keys10));
+            ClassicAssert.IsFalse(keys1.Equals(keys7));
+            ClassicAssert.IsFalse(keys1.Equals(keys8));
+            ClassicAssert.IsFalse(keys1.Equals(keys9));
+            ClassicAssert.IsFalse(keys1.Equals(keys10));
+            ClassicAssert.IsTrue(keys9.Equals(keys10));
         }
 
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(1, keys6.Count);
-            Assert.AreEqual(2, keys1.Count);
-            Assert.AreEqual(3, keys8.Count);
-            Assert.AreEqual(4, keys9.Count);
+            ClassicAssert.AreEqual(1, keys6.Count);
+            ClassicAssert.AreEqual(2, keys1.Count);
+            ClassicAssert.AreEqual(3, keys8.Count);
+            ClassicAssert.AreEqual(4, keys9.Count);
 
-            Assert.AreEqual("a", keys1[0]);
-            Assert.AreEqual("b", keys1[1]);
-            Assert.IsTrue(null == keys4[0]);
-            Assert.IsTrue("d" == keys10[3]);
+            ClassicAssert.AreEqual("a", keys1[0]);
+            ClassicAssert.AreEqual("b", keys1[1]);
+            ClassicAssert.IsTrue(null == keys4[0]);
+            ClassicAssert.IsTrue("d" == keys10[3]);
         }
 
         [Test]
@@ -107,28 +108,28 @@ namespace com.espertech.esper.common.@internal.collection
 
             // Test contains
             mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
-            Assert.IsTrue(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
-            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[1])));
-            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[2])));
-            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[3])));
+            ClassicAssert.IsTrue(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
+            ClassicAssert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[1])));
+            ClassicAssert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[2])));
+            ClassicAssert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[3])));
 
             // Test unique
             mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
-            Assert.AreEqual(1, mapSet.Count);
+            ClassicAssert.AreEqual(1, mapSet.Count);
 
             mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[1]));
             mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[2]));
             mapSet.Add(new MultiKeyArrayOfKeys<EventBean>(testEvents[3]));
-            Assert.AreEqual(4, mapSet.Count);
+            ClassicAssert.AreEqual(4, mapSet.Count);
 
             mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[0]));
-            Assert.AreEqual(3, mapSet.Count);
-            Assert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
+            ClassicAssert.AreEqual(3, mapSet.Count);
+            ClassicAssert.IsFalse(mapSet.Contains(new MultiKeyArrayOfKeys<EventBean>(testEvents[0])));
 
             mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[1]));
             mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[2]));
             mapSet.Remove(new MultiKeyArrayOfKeys<EventBean>(testEvents[3]));
-            Assert.AreEqual(0, mapSet.Count);
+            ClassicAssert.AreEqual(0, mapSet.Count);
         }
     }
 } // end of namespace

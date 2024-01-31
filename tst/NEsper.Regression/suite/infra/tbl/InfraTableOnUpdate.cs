@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -264,13 +266,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             object[][] keys,
             long?[] values)
         {
-            Assert.AreEqual(keys.Length, values.Length);
+            ClassicAssert.AreEqual(keys.Length, values.Length);
             for (var i = 0; i < keys.Length; i++) {
                 env.SendEventBean(new SupportBean_S0(keys[i][1].AsInt32(), (string)keys[i][0]));
                 var index = i;
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(
+                    @event => ClassicAssert.AreEqual(
                         values[index],
                         @event.Get("value"),
                         "Failed for key '" + CompatExtensions.RenderAny(keys[index]) + "'"));

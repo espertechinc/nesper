@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
     public class EventBeanPropertyResolutionWDefaults
@@ -61,8 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual(1, eventBean.Get("Seconds"));
-                        Assert.AreEqual(2, eventBean.Get("Order"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("Seconds"));
+                        ClassicAssert.AreEqual(2, eventBean.Get("Order"));
                     });
 
                 env.UndeployAll();
@@ -72,8 +74,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual(1, eventBean.Get("Seconds"));
-                        Assert.AreEqual(2, eventBean.Get("Order"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("Seconds"));
+                        ClassicAssert.AreEqual(2, eventBean.Get("Order"));
                     });
 
                 env.UndeployAll();
@@ -129,8 +131,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("order"));
-                        Assert.AreEqual("price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("order"));
+                        ClassicAssert.AreEqual("price.for.goods", statement.EventType.PropertyDescriptors[1].PropertyName);
                     });
 
                 env.SendEventBean(new SupportBean("E1", 1));
@@ -138,8 +140,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                     "s0",
                     eventBean => {
                         var @out = (IDictionary<string, object>)eventBean.Underlying;
-                        Assert.AreEqual("E1", @out.Get("order"));
-                        Assert.AreEqual("E1", @out.Get("price.for.goods"));
+                        ClassicAssert.AreEqual("E1", @out.Get("order"));
+                        ClassicAssert.AreEqual("E1", @out.Get("price.for.goods"));
 
                         // try control character
                         TryInvalidControlCharacter(eventBean);
@@ -162,13 +164,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
 
                 object theEvent = new SupportBeanWriteOnly();
                 env.SendEventBean(theEvent);
-                env.AssertEventNew("s0", eventBean => Assert.AreSame(theEvent, eventBean.Underlying));
+                env.AssertEventNew("s0", eventBean => ClassicAssert.AreSame(theEvent, eventBean.Underlying));
 
                 env.AssertStatement(
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(0, type.PropertyNames.Length);
+                        ClassicAssert.AreEqual(0, type.PropertyNames.Length);
                     });
 
                 env.UndeployAll();
@@ -186,9 +188,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 env.AssertEventNew(
                     "s0",
                     result => {
-                        Assert.AreEqual("upper", result.Get("MYPROPERTY"));
-                        Assert.AreEqual("lower", result.Get("myproperty"));
-                        Assert.AreEqual("lowercamel", result.Get("myProperty"));
+                        ClassicAssert.AreEqual("upper", result.Get("MYPROPERTY"));
+                        ClassicAssert.AreEqual("lower", result.Get("myproperty"));
+                        ClassicAssert.AreEqual("lowercamel", result.Get("myProperty"));
                     });
 
                 env.UndeployAll();

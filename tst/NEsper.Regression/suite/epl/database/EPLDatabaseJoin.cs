@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                         ));
                 model.FromClause = fromClause;
                 env.CopyMayFail(model);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from sql:MyDBWithRetain[\"select mybigint, myint, myvarchar, mychar, mybool, mynumeric, mydecimal, mydouble, myreal from mytesttable where ${IntPrimitive} = mytesttable.mybigint\"] as s0, " +
                     "SupportBean#time_batch(10) as s1",
                     model.ToEPL());
@@ -656,15 +656,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(long?), eventType.GetPropertyType("mybigint"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("myint"));
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("myvarchar"));
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("mychar"));
-                        Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("mybool"));
-                        Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mynumeric"));
-                        Assert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mydecimal"));
-                        Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mydouble"));
-                        Assert.AreEqual(typeof(float?), eventType.GetPropertyType("myreal"));
+                        ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("mybigint"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("myint"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("myvarchar"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("mychar"));
+                        ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("mybool"));
+                        ClassicAssert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mynumeric"));
+                        ClassicAssert.AreEqual(typeof(decimal?), eventType.GetPropertyType("mydecimal"));
+                        ClassicAssert.AreEqual(typeof(double?), eventType.GetPropertyType("mydouble"));
+                        ClassicAssert.AreEqual(typeof(float?), eventType.GetPropertyType("myreal"));
                     });
 
                 SendEventS0(env, 1);
@@ -700,10 +700,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 "s0",
                 listener => {
                     var received = listener.LastNewData;
-                    Assert.AreEqual(3, received.Length);
-                    Assert.AreEqual(100, received[0].Get("myint"));
-                    Assert.AreEqual(50, received[1].Get("myint"));
-                    Assert.AreEqual(20, received[2].Get("myint"));
+                    ClassicAssert.AreEqual(3, received.Length);
+                    ClassicAssert.AreEqual(100, received[0].Get("myint"));
+                    ClassicAssert.AreEqual(50, received[1].Get("myint"));
+                    ClassicAssert.AreEqual(20, received[2].Get("myint"));
                 });
 
             env.AssertPropsPerRowIterator("s0", fields, null);
@@ -756,23 +756,23 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             double? mydouble,
             float? myreal)
         {
-            Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
-            Assert.AreEqual(myint, theEvent.Get("myint"));
-            Assert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
-            Assert.AreEqual(mychar, theEvent.Get("mychar"));
-            Assert.AreEqual(mybool, theEvent.Get("mybool"));
-            Assert.AreEqual(mynumeric, theEvent.Get("mynumeric"));
-            Assert.AreEqual(mydecimal, theEvent.Get("mydecimal"));
-            Assert.AreEqual(mydouble, theEvent.Get("mydouble"));
+            ClassicAssert.AreEqual(mybigint, theEvent.Get("mybigint"));
+            ClassicAssert.AreEqual(myint, theEvent.Get("myint"));
+            ClassicAssert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
+            ClassicAssert.AreEqual(mychar, theEvent.Get("mychar"));
+            ClassicAssert.AreEqual(mybool, theEvent.Get("mybool"));
+            ClassicAssert.AreEqual(mynumeric, theEvent.Get("mynumeric"));
+            ClassicAssert.AreEqual(mydecimal, theEvent.Get("mydecimal"));
+            ClassicAssert.AreEqual(mydouble, theEvent.Get("mydouble"));
 
             var myrealRaw = theEvent.Get("myreal");
             if (myreal.HasValue) {
-                Assert.IsNotNull(myrealRaw);
-                Assert.IsInstanceOf<float>(myrealRaw);
-                Assert.AreEqual(myreal.Value, myrealRaw.AsFloat(), 0.0001);
+                ClassicAssert.IsNotNull(myrealRaw);
+                ClassicAssert.IsInstanceOf<float>(myrealRaw);
+                ClassicAssert.AreEqual(myreal.Value, myrealRaw.AsFloat(), 0.0001);
             }
             else {
-                Assert.IsNull(myrealRaw);
+                ClassicAssert.IsNull(myrealRaw);
             }
         }
 

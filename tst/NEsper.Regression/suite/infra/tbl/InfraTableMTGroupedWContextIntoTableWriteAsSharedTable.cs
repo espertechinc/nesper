@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -102,7 +103,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             // assert
             foreach (var writeRunnable in writeRunnables) {
-                Assert.IsNull(writeRunnable.Exception);
+                ClassicAssert.IsNull(writeRunnable.Exception);
             }
 
             // each group should total up to "numLoops*numThreads"

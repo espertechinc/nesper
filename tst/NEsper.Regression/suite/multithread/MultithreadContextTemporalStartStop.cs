@@ -18,7 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -57,8 +57,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             ThreadJoin(timerThread);
             ThreadJoin(eventThread);
-            Assert.IsNull(eventRunnable.Exception);
-            Assert.IsNull(timerRunnable.Exception);
+            ClassicAssert.IsNull(eventRunnable.Exception);
+            ClassicAssert.IsNull(timerRunnable.Exception);
 
             env.UndeployAll();
         }

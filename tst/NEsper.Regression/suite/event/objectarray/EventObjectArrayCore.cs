@@ -15,7 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
@@ -87,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.CompileDeploy("@name('s0') select lvl1s[0] as c0 from NBAL_2", path).AddListener("s0");
 
                 env.SendEventObjectArray(new object[] { new object[] { oa } }, "NBAL_2");
-                env.AssertEventNew("s0", @event => Assert.AreEqual("somevalue", ((object[])@event.Get("c0"))[0]));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual("somevalue", ((object[])@event.Get("c0"))[0]));
 
                 env.UndeployAll();
             }
@@ -100,8 +100,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertThat(
                     () => {
                         var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("MyObjectArrayEvent");
-                        Assert.AreEqual(EventTypeApplicationType.OBJECTARR, type.Metadata.ApplicationType);
-                        Assert.AreEqual("MyObjectArrayEvent", type.Metadata.Name);
+                        ClassicAssert.AreEqual(EventTypeApplicationType.OBJECTARR, type.Metadata.ApplicationType);
+                        ClassicAssert.AreEqual("MyObjectArrayEvent", type.Metadata.Name);
 
                         SupportEventPropUtil.AssertPropsEquals(
                             type.PropertyDescriptors.ToArray(),
@@ -129,9 +129,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("NestedValue", @event.Get("nested"));
-                        Assert.AreEqual(2, @event.Get("indexed"));
-                        Assert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
+                        ClassicAssert.AreEqual("NestedValue", @event.Get("nested"));
+                        ClassicAssert.AreEqual(2, @event.Get("indexed"));
+                        ClassicAssert.AreEqual("NestedNestedValue", @event.Get("nestednested"));
                     });
 
                 env.UndeployAll();
@@ -153,8 +153,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(5, @event.Get("intVal"));
-                        Assert.AreEqual("xsome stringx", @event.Get("stringVal"));
+                        ClassicAssert.AreEqual(5, @event.Get("intVal"));
+                        ClassicAssert.AreEqual("xsome stringx", @event.Get("stringVal"));
                     });
 
                 // send Map base event
@@ -162,8 +162,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(6, @event.Get("intVal"));
-                        Assert.AreEqual("xstring2x", @event.Get("stringVal"));
+                        ClassicAssert.AreEqual(6, @event.Get("intVal"));
+                        ClassicAssert.AreEqual("xstring2x", @event.Get("stringVal"));
                     });
 
                 env.UndeployAll();

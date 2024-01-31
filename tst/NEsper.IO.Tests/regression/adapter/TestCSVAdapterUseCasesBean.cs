@@ -18,7 +18,7 @@ using com.espertech.esperio.file;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.regression.adapter.TestCSVAdapterUseCases;
 
 namespace com.espertech.esperio.regression.adapter
@@ -60,10 +60,10 @@ namespace com.espertech.esperio.regression.adapter
                 _runtime, new AdapterInputSource(_container, CSV_FILENAME_ONELINE_TRADE), "ExampleMarketDataBeanReadWrite");
             inputAdapter.Start();
  
-            Assert.AreEqual(1, listener.GetNewDataList().Count);
+            ClassicAssert.AreEqual(1, listener.GetNewDataList().Count);
             var eb = listener.GetNewDataList()[0][0];
-            Assert.IsTrue(typeof(ExampleMarketDataBeanReadWrite) == eb.Underlying.GetType());
-            Assert.AreEqual(55.5 * 1000, eb.Get("value"));
+            ClassicAssert.IsTrue(typeof(ExampleMarketDataBeanReadWrite) == eb.Underlying.GetType());
+            ClassicAssert.AreEqual(55.5 * 1000, eb.Get("value"));
             
             // test graph
             var graph =

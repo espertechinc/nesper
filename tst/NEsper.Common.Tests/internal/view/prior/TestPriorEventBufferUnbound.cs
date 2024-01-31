@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.view.prior
 {
@@ -39,9 +40,9 @@ namespace com.espertech.esper.common.@internal.view.prior
         public void TestFlow()
         {
             buffer.Update(new[] { events[0], events[1] }, null);
-            Assert.AreEqual(events[1], buffer.GetNewData(0));
-            Assert.AreEqual(events[0], buffer.GetNewData(1));
-            Assert.IsNull(buffer.GetNewData(2));
+            ClassicAssert.AreEqual(events[1], buffer.GetNewData(0));
+            ClassicAssert.AreEqual(events[0], buffer.GetNewData(1));
+            ClassicAssert.IsNull(buffer.GetNewData(2));
         }
 
         [Test]

@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
     public class ExprFilterOptimizableOrRewrite
@@ -778,7 +780,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 env.SendEventBean(match);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreSame(match, listener.AssertOneGetNewAndReset().Underlying));
+                    listener => ClassicAssert.AreSame(match, listener.AssertOneGetNewAndReset().Underlying));
             }
 
             env.ListenerReset("s0");

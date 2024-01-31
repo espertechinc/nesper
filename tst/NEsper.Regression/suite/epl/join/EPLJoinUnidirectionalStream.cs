@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -290,7 +291,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                         new object[] { "S0_1", "S1_0", "E11" }, new object[] { "S0_2", "S1_0", "E11" },
                         new object[] { "S0_3", "S1_0", "E11" }
                     });
-                env.AssertIterator("s0", iterator => Assert.AreEqual(6, EPAssertionUtil.EnumeratorCount(iterator)));
+                env.AssertIterator("s0", iterator => ClassicAssert.AreEqual(6, EPAssertionUtil.EnumeratorCount(iterator)));
 
                 env.UndeployAll();
 
@@ -353,7 +354,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                             Assert.Fail();
                         }
                         catch (UnsupportedOperationException ex) {
-                            Assert.AreEqual("Iteration over a unidirectional join is not supported", ex.Message);
+                            ClassicAssert.AreEqual("Iteration over a unidirectional join is not supported", ex.Message);
                         }
                     });
 
@@ -489,8 +490,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2L, listener.LastNewData[0].Get("num"));
-                        Assert.AreEqual(2L, listener.LastNewData[1].Get("num"));
+                        ClassicAssert.AreEqual(2L, listener.LastNewData[0].Get("num"));
+                        ClassicAssert.AreEqual(2L, listener.LastNewData[1].Get("num"));
                     });
 
                 env.UndeployAll();
@@ -604,7 +605,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                                "from SupportMarketDataBean unidirectional " +
                                "full outer join SupportBean" +
                                "#keepall on TheString = Symbol";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -860,7 +861,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                         Assert.Fail();
                     }
                     catch (UnsupportedOperationException ex) {
-                        Assert.AreEqual("Iteration over a unidirectional join is not supported", ex.Message);
+                        ClassicAssert.AreEqual("Iteration over a unidirectional join is not supported", ex.Message);
                     }
                 });
         }

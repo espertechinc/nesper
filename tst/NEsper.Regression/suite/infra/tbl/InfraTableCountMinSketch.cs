@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
@@ -308,7 +308,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "frequency",
                     @event => {
                         var value = @event.Get("freq");
-                        Assert.AreEqual(long.Parse(split[1]), value, "failed at index" + index);
+                        ClassicAssert.AreEqual(long.Parse(split[1]), value, "failed at index" + index);
                     });
             }
         }
@@ -324,14 +324,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     var arr = (CountMinSketchTopK[])@event.Get("topk");
 
                     var pairs = topkList.SplitCsv();
-                    Assert.AreEqual(pairs.Length, arr.Length, "received " + Arrays.AsList(arr));
+                    ClassicAssert.AreEqual(pairs.Length, arr.Length, "received " + Arrays.AsList(arr));
 
                     foreach (var pair in pairs) {
                         var pairArr = pair.Split("=");
                         var expectedFrequency = long.Parse(pairArr[1]);
                         var expectedValue = pairArr[0].Trim();
                         var foundIndex = Find(expectedFrequency, expectedValue, arr);
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             foundIndex == -1,
                             "failed to find '" +
                             expectedValue +

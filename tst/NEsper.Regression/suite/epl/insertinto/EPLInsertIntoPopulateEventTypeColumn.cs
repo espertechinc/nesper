@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -91,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.SendEventBean(new SupportBean("B", 2));
             var result = env.Listener("s0").AssertOneGetNewAndReset();
             var fragment = (EventBean)result.Get("e");
-            Assert.AreEqual("AEvent", fragment.EventType.Name);
-            Assert.AreEqual("GE", fragment.Get("Symbol"));
+            ClassicAssert.AreEqual("AEvent", fragment.EventType.Name);
+            ClassicAssert.AreEqual("GE", fragment.Get("Symbol"));
 
             env.UndeployAll();
         }
@@ -274,10 +275,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.SendEventBean(new SupportBean("E2", 2));
             var received = (string)env.Listener("s0").AssertOneGetNewAndReset().Get(fields[0]);
             if (filter) {
-                Assert.AreEqual("x2", received);
+                ClassicAssert.AreEqual("x2", received);
             }
             else {
-                Assert.IsNull(
+                ClassicAssert.IsNull(
                     received); // this should not take the first event and according to SQL standard returns null
             }
 
@@ -305,9 +306,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 new object[] { "001", "i1", 10d });
 
             var underlying = (EventBean[])@event.Get("items");
-            Assert.AreEqual(1, underlying.Length);
-            Assert.AreEqual("i1", underlying[0].Get("name"));
-            Assert.AreEqual(10d, underlying[0].Get("Price"));
+            ClassicAssert.AreEqual(1, underlying.Length);
+            ClassicAssert.AreEqual("i1", underlying[0].Get("name"));
+            ClassicAssert.AreEqual(10d, underlying[0].Get("Price"));
 
             env.UndeployAll();
         }

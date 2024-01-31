@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.map
 {
@@ -100,11 +101,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.map
                         var propertiesReceived = eventType.PropertyNames;
                         var propertiesExpected = new string[] { "simple", "object", "nodefmap", "map" };
                         EPAssertionUtil.AssertEqualsAnyOrder(propertiesReceived, propertiesExpected);
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("simple"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("nodefmap"));
-                        Assert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("object"));
-                        Assert.IsNull(eventType.GetPropertyType("map.mapOne.simpleOne"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("simple"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("nodefmap"));
+                        ClassicAssert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("object"));
+                        ClassicAssert.IsNull(eventType.GetPropertyType("map.mapOne.simpleOne"));
                     });
 
                 env.UndeployAll();

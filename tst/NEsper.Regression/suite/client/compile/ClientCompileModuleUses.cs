@@ -18,6 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -219,7 +220,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Circular dependency detected in module uses-relationships: module 'C' uses (depends on) module 'D' uses (depends on) module 'B'",
                         ex.Message);
                 }
@@ -250,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Circular dependency detected in module uses-relationships: module 'C' uses (depends on) module 'B'",
                         ex.Message);
                 }
@@ -286,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Module-dependency not found as declared by module 'B' for uses-declaration 'C'",
                         ex.Message);
                 }
@@ -301,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     Assert.Fail();
                 }
                 catch (ModuleOrderException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Module-dependency not found as declared by module 'D' for uses-declaration 'x'",
                         ex.Message);
                 }

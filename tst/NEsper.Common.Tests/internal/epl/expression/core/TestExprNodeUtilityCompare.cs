@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.collection;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.epl.expression.core.ExprNodeUtilityCompare;
 
 namespace com.espertech.esper.common.@internal.epl.expression.core
@@ -59,18 +60,18 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
             ExprNode[] setOne,
             ExprNode[] setTwo)
         {
-            Assert.AreEqual(expected, DeepEqualsIgnoreDupAndOrder(setOne, setTwo));
-            Assert.AreEqual(expected, DeepEqualsIgnoreDupAndOrder(setTwo, setOne));
+            ClassicAssert.AreEqual(expected, DeepEqualsIgnoreDupAndOrder(setOne, setTwo));
+            ClassicAssert.AreEqual(expected, DeepEqualsIgnoreDupAndOrder(setTwo, setOne));
         }
 
         [Test]
         public void TestDeepEquals()
         {
-            Assert.IsFalse(DeepEquals(supportExprNodeFactory.Make2SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
-            Assert.IsFalse(DeepEquals(supportExprNodeFactory.MakeEqualsNode(), supportExprNodeFactory.MakeMathNode(), false));
-            Assert.IsTrue(DeepEquals(supportExprNodeFactory.MakeMathNode(), supportExprNodeFactory.MakeMathNode(), false));
-            Assert.IsFalse(DeepEquals(supportExprNodeFactory.MakeMathNode(), supportExprNodeFactory.Make2SubNodeAnd(), false));
-            Assert.IsTrue(DeepEquals(supportExprNodeFactory.Make3SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
+            ClassicAssert.IsFalse(DeepEquals(supportExprNodeFactory.Make2SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
+            ClassicAssert.IsFalse(DeepEquals(supportExprNodeFactory.MakeEqualsNode(), supportExprNodeFactory.MakeMathNode(), false));
+            ClassicAssert.IsTrue(DeepEquals(supportExprNodeFactory.MakeMathNode(), supportExprNodeFactory.MakeMathNode(), false));
+            ClassicAssert.IsFalse(DeepEquals(supportExprNodeFactory.MakeMathNode(), supportExprNodeFactory.Make2SubNodeAnd(), false));
+            ClassicAssert.IsTrue(DeepEquals(supportExprNodeFactory.Make3SubNodeAnd(), supportExprNodeFactory.Make3SubNodeAnd(), false));
         }
 
         [Test]
@@ -111,25 +112,25 @@ namespace com.espertech.esper.common.@internal.epl.expression.core
         [Test]
         public void TestDeepEqualsIsSubset()
         {
-            Assert.IsTrue(DeepEqualsIsSubset(empty, empty));
-            Assert.IsTrue(DeepEqualsIsSubset(empty, justE1));
-            Assert.IsTrue(DeepEqualsIsSubset(empty, new ExprNode[] {e1, e2}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(empty, empty));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(empty, justE1));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(empty, new ExprNode[] {e1, e2}));
 
-            Assert.IsTrue(DeepEqualsIsSubset(justE1, new ExprNode[] {e1}));
-            Assert.IsTrue(DeepEqualsIsSubset(justE1, new ExprNode[] {e1, e1}));
-            Assert.IsFalse(DeepEqualsIsSubset(justE1, new ExprNode[] {e2}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(justE1, new ExprNode[] {e1}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(justE1, new ExprNode[] {e1, e1}));
+            ClassicAssert.IsFalse(DeepEqualsIsSubset(justE1, new ExprNode[] {e2}));
 
             ExprNode[] e1e2 = {e1, e2};
-            Assert.IsFalse(DeepEqualsIsSubset(e1e2, justE1));
-            Assert.IsFalse(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2}));
-            Assert.IsTrue(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2, e1}));
-            Assert.IsTrue(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2, e1, e2, e1}));
+            ClassicAssert.IsFalse(DeepEqualsIsSubset(e1e2, justE1));
+            ClassicAssert.IsFalse(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2, e1}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(e1e2, new ExprNode[] {e2, e1, e2, e1}));
 
             ExprNode[] e1e2e3 = {e1, e2, e3};
-            Assert.IsFalse(DeepEqualsIsSubset(e1e2e3, justE1));
-            Assert.IsFalse(DeepEqualsIsSubset(e1e2e3, new ExprNode[] {e2, e3}));
-            Assert.IsTrue(DeepEqualsIsSubset(e1e2e3, new ExprNode[] {e2, e3, e1}));
-            Assert.IsTrue(DeepEqualsIsSubset(e1e2e3, e1e2e3));
+            ClassicAssert.IsFalse(DeepEqualsIsSubset(e1e2e3, justE1));
+            ClassicAssert.IsFalse(DeepEqualsIsSubset(e1e2e3, new ExprNode[] {e2, e3}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(e1e2e3, new ExprNode[] {e2, e3, e1}));
+            ClassicAssert.IsTrue(DeepEqualsIsSubset(e1e2e3, e1e2e3));
         }
     }
 } // end of namespace

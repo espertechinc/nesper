@@ -23,7 +23,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportSpatialUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.spatial
@@ -274,7 +274,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.Less(delta, 1000);
+                ClassicAssert.Less(delta, 1000);
 
                 env.UndeployAll();
             }
@@ -363,7 +363,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.Less(delta, 1000);
+                ClassicAssert.Less(delta, 1000);
 
                 env.UndeployAll();
             }
@@ -530,10 +530,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 env.AssertThat(
                     () => {
                         var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             "non-unique hash={} btree={} advanced={pointregionquadtree(Px,Py)}",
                             subquery.Tables[0].IndexDesc);
-                        Assert.AreEqual("MyIndex", subquery.Tables[0].IndexName);
+                        ClassicAssert.AreEqual("MyIndex", subquery.Tables[0].IndexName);
                     });
 
                 SendPoint(env, "P1", 10, 40);
@@ -946,7 +946,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     }
                 }
 
-                Assert.AreEqual(256, bbs.Count);
+                ClassicAssert.AreEqual(256, bbs.Count);
                 return bbs;
             }
         }
@@ -1071,7 +1071,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     listener => {
                         foreach (var p in points) {
                             env.SendEventBean(new SupportSpatialAABB("", p.Px.Value, p.Py.Value, 1, 1));
-                            Assert.AreEqual(p.Id, listener.AssertOneGetNewAndReset().Get("c0"));
+                            ClassicAssert.AreEqual(p.Id, listener.AssertOneGetNewAndReset().Get("c0"));
                         }
                     });
 
@@ -1277,7 +1277,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "s0",
                     listener => {
                         var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
-                        Assert.AreEqual("P7,P8,P9,P11,P13,P14,P16", received);
+                        ClassicAssert.AreEqual("P7,P8,P9,P11,P13,P14,P16", received);
                     });
 
                 env.UndeployAll();
@@ -1389,7 +1389,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             env.AssertThat(
                 () => {
                     var plan = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                    Assert.AreEqual(expectedIndexName, plan.Tables[0].IndexName);
+                    ClassicAssert.AreEqual(expectedIndexName, plan.Tables[0].IndexName);
                 });
 
             env.SendEventBean(new SupportSpatialAABB("R1", 9, 14, 1.0001, 1.0001, "Y"));

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -74,10 +75,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     @event => {
                         for (var j = 0; j < 10; j++) {
                             var coll = @event.Get("val" + j).Unwrap<SupportBean>();
-                            Assert.AreEqual(1, coll.Count);
+                            ClassicAssert.AreEqual(1, coll.Count);
                             var bean = coll.First();
-                            Assert.AreEqual("K50", bean.TheString);
-                            Assert.AreEqual(1050, bean.IntPrimitive);
+                            ClassicAssert.AreEqual("K50", bean.TheString);
+                            ClassicAssert.AreEqual(1050, bean.IntPrimitive);
                         }
                     });
             }
@@ -118,10 +119,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     @event => {
                         for (var j = 0; j < 10; j++) {
                             var coll = @event.Get("val" + j).Unwrap<SupportBean>();
-                            Assert.AreEqual(1, coll.Count);
+                            ClassicAssert.AreEqual(1, coll.Count);
                             var bean = coll.First();
-                            Assert.AreEqual("K50", bean.TheString);
-                            Assert.AreEqual(1050, bean.IntPrimitive);
+                            ClassicAssert.AreEqual("K50", bean.TheString);
+                            ClassicAssert.AreEqual(1050, bean.IntPrimitive);
                         }
                     });
             }

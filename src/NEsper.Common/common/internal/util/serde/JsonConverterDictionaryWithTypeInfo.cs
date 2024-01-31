@@ -32,39 +32,73 @@ namespace com.espertech.esper.common.@internal.util.serde
             result = typeToConvert.GetInterfaces().Any(_ => _ == typeof(IDictionary<string, object>));
             _typeResultCache[typeToConvert] = result;
             return result;
-
-#if false
-            // Maybe this is an implementation
-            return typeToConvert
-                .GetInterfaces()
-                .Any(iface => iface == typeof(IDictionary<string, object>));
-#endif
         }
 
+        private static void TryExpect(ref Utf8JsonReader reader, JsonTokenType tokenType)
+        {
+            if (reader.Read()) {
+                if (reader.TokenType == tokenType) {
+                    return;
+                }
+                throw new JsonException($"invalid content; expecting {tokenType}, but received {reader.TokenType}");
+            }
+
+            throw new JsonException($"invalid content; expecting {tokenType}, but received end of stream");
+        }
+
+        private object ReadValueOrNull(ref Utf8JsonReader reader, JsonSerializerOptions options)
+        {
+            if (reader.Read()) {
+                if (reader.TokenType == JsonTokenType.Null) {
+                    return null;
+                }
+
+                if (reader.TokenType == JsonTokenType.String) {
+                    var valueTypeName = reader.GetString();
+                    var valueType = Type.GetType(valueTypeName);
+                    if (reader.Read()) {
+                        var value = JsonSerializer.Deserialize(ref reader, valueType, options);
+                        return value;
+                    }
+                    
+                    throw new JsonException($"invalid content; expecting token, but received end of stream");
+                }
+
+                throw new JsonException($"invalid content; expecting {JsonTokenType.Null} or {JsonTokenType.String}, but received {reader.TokenType}");
+            }
+
+            throw new JsonException($"invalid content; expecting {JsonTokenType.Null} or {JsonTokenType.String}, but received end of stream");
+        }
+        
         public override IDictionary<string, object> Read(
             ref Utf8JsonReader reader,
             Type typeToConvert,
             JsonSerializerOptions options)
         {
-            var dictionary = new Dictionary<string, object>();
+            if (reader.TokenType == JsonTokenType.Null) {
+                return null;
+            } 
+            
+            if (reader.TokenType == JsonTokenType.StartArray) {
+                TryExpect(ref reader, JsonTokenType.String);
+                var dictionaryTypeName = reader.GetString();
+                var dictionaryType = Type.GetType(dictionaryTypeName);
+                var dictionary = TypeHelper.Instantiate<IDictionary<string, object>>(dictionaryType);
 
-            using JsonDocument doc = JsonDocument.ParseValue(ref reader);
+                while (reader.Read() && reader.TokenType != JsonTokenType.EndArray) {
+                    if (reader.TokenType == JsonTokenType.StartArray) {
+                        TryExpect(ref reader, JsonTokenType.String);
+                        var key = reader.GetString();
+                        var val = ReadValueOrNull(ref reader, options);
+                        dictionary[key] = val;
+                        TryExpect(ref reader, JsonTokenType.EndArray);
+                    }
+                }
 
-            foreach (JsonProperty kvp in doc.RootElement.EnumerateObject()) {
-                if (kvp.Value.ValueKind == JsonValueKind.Null) {
-                    dictionary[kvp.Name] = null;
-                }
-                else {
-                    var kvpValue = kvp.Value;
-                    var typeElement = kvpValue.GetProperty("__type");
-                    var valueElement = kvpValue.GetProperty("__value");
-                    var valueType = Type.GetType(typeElement.GetString());
-                    var value = JsonSerializer.Deserialize(valueElement.GetRawText(), valueType, options);
-                    dictionary[kvp.Name] = value;
-                }
+                return dictionary;
             }
-
-            return dictionary;
+            
+            throw new JsonException($"invalid content; expecting {JsonTokenType.StartArray}, but received end of stream");
         }
 
         public override void Write(
@@ -72,24 +106,30 @@ namespace com.espertech.esper.common.@internal.util.serde
             IDictionary<string, object> value,
             JsonSerializerOptions options)
         {
-            writer.WriteStartObject();
+            if (value == null) {
+                writer.WriteNullValue();
+                return;
+            }
+                
+            writer.WriteStartArray();
+            writer.WriteStringValue(value.GetType().AssemblyQualifiedName);
 
             foreach (var kvp in value) {
                 var kvpValue = kvp.Value;
+                writer.WriteStartArray();
+                writer.WriteStringValue(kvp.Key);
                 if (kvpValue == null) {
-                    writer.WriteNull(kvp.Key);
+                    writer.WriteNullValue();
                 }
                 else {
-                    writer.WritePropertyName(kvp.Key);
-                    writer.WriteStartObject();
-                    writer.WriteString("__type", kvpValue.GetType().AssemblyQualifiedName);
-                    writer.WritePropertyName("__value");
+                    writer.WriteStringValue(kvpValue.GetType().AssemblyQualifiedName);
                     JsonSerializer.Serialize(writer, kvpValue, kvpValue.GetType(), options);
-                    writer.WriteEndObject();
                 }
+
+                writer.WriteEndArray();
             }
 
-            writer.WriteEndObject();
+            writer.WriteEndArray();
         }
     }
 }

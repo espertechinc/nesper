@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
@@ -275,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                     .AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.SELECT,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
                 env.SendEventBean(new SupportBean());
@@ -417,7 +418,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(IDictionary<string, object>),
                         statement.EventType.GetPropertyType("val0")));
 
@@ -470,8 +471,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("scalar()"));
-                        Assert.AreEqual("s0", statement.Name);
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("scalar()"));
+                        ClassicAssert.AreEqual("s0", statement.Name);
                     });
 
                 env.SendEventBean(new SupportBean_ST0("E1", 1));
@@ -1083,8 +1084,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.UndeployAll();
 
                 var model = env.EplToModel(eplDeclared);
-                Assert.AreEqual(eplDeclared, model.ToEPL());
-                Assert.AreEqual(eplFormatted, model.ToEPL(new EPStatementFormatter(true)));
+                ClassicAssert.AreEqual(eplDeclared, model.ToEPL());
+                ClassicAssert.AreEqual(eplFormatted, model.ToEPL(new EPStatementFormatter(true)));
                 env.CompileDeploy(model).AddListener("s0");
 
                 TryAssertionTwoParameterArithmetic(env, fields);
@@ -1112,7 +1113,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                         EPAssertionUtil.AssertEqualsAnyOrder(props, fields);
                         var eventType = statement.EventType;
                         for (var i = 0; i < fields.Length; i++) {
-                            Assert.AreEqual(typeof(int?), eventType.GetPropertyType(fields[i]));
+                            ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType(fields[i]));
                         }
                     });
 
@@ -1128,7 +1129,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 env.AssertThat(
                     () => {
                         var getter = env.Statement("s0").EventType.GetGetter(fields[3]);
-                        Assert.AreEqual(111, getter.Get(env.Listener("s0").AssertOneGetNewAndReset()));
+                        ClassicAssert.AreEqual(111, getter.Get(env.Listener("s0").AssertOneGetNewAndReset()));
                     });
             }
         }
@@ -1366,7 +1367,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 "s0",
                 listener => {
                     var outArray = ToArray(listener.AssertOneGetNewAndReset().Get("val1").Unwrap<object>());
-                    Assert.AreEqual(0, outArray.Length);
+                    ClassicAssert.AreEqual(0, outArray.Length);
                 });
 
             env.SendEventBean(new SupportBean("E2", 3));
@@ -1374,8 +1375,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 "s0",
                 listener => {
                     var outArray = ToArray(listener.AssertOneGetNewAndReset().Get("val1").Unwrap<object>());
-                    Assert.AreEqual(1, outArray.Length);
-                    Assert.AreEqual("E2", outArray[0].TheString);
+                    ClassicAssert.AreEqual(1, outArray.Length);
+                    ClassicAssert.AreEqual("E2", outArray[0].TheString);
                 });
 
             env.UndeployAll();

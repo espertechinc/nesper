@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -669,12 +670,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(2, result.Second.Length);
-                        Assert.AreEqual(null, result.Second[0].Get("maxVol"));
-                        Assert.AreEqual(null, result.Second[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.Second.Length);
+                        ClassicAssert.AreEqual(null, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(null, result.Second[1].Get("maxVol"));
                     });
 
                 env.UndeployAll();
@@ -844,11 +845,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(1, result.Second.Length);
-                        Assert.AreEqual(2.0, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(1, result.Second.Length);
+                        ClassicAssert.AreEqual(2.0, result.Second[0].Get("maxVol"));
                     });
 
                 env.UndeployAll();
@@ -1073,12 +1074,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(2, listener.LastNewData.Length);
-                    Assert.AreEqual(1L, listener.LastNewData[0].Get("LongBoxed"));
-                    Assert.AreEqual(1L, listener.LastNewData[0].Get("result"));
-                    Assert.AreEqual(2L, listener.LastNewData[1].Get("LongBoxed"));
-                    Assert.AreEqual(3L, listener.LastNewData[1].Get("result"));
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.AreEqual(2, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1L, listener.LastNewData[0].Get("LongBoxed"));
+                    ClassicAssert.AreEqual(1L, listener.LastNewData[0].Get("result"));
+                    ClassicAssert.AreEqual(2L, listener.LastNewData[1].Get("LongBoxed"));
+                    ClassicAssert.AreEqual(3L, listener.LastNewData[1].Get("result"));
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
 
             env.UndeployAll();
@@ -1384,8 +1385,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(3, listener.LastNewData.Length);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.AreEqual(3, listener.LastNewData.Length);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     EPAssertionUtil.AssertPropsPerRow(
                         listener.LastNewData,
                         fields,
@@ -1413,10 +1414,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(2L, listener.LastNewData[0].Get("LongBoxed"));
-                    Assert.AreEqual(3L, listener.LastNewData[0].Get("result"));
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(2L, listener.LastNewData[0].Get("LongBoxed"));
+                    ClassicAssert.AreEqual(3L, listener.LastNewData[0].Get("result"));
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
 
             env.UndeployAll();
@@ -1474,9 +1475,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.LastNewData != null);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(volume, listener.LastNewData[0].Get("sum(Volume)"));
+                    ClassicAssert.IsTrue(listener.LastNewData != null);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(volume, listener.LastNewData[0].Get("sum(Volume)"));
                     listener.Reset();
                 });
         }

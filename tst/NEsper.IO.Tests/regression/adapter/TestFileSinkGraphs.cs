@@ -19,7 +19,7 @@ using com.espertech.esperio.file;
 using com.espertech.esperio.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -83,7 +83,7 @@ namespace com.espertech.esperio.regression.adapter
 				Assert.Fail();
 			}
 			catch (EPDataFlowInstantiationException ex) {
-				Assert.AreEqual(message, ex.Message);
+				ClassicAssert.AreEqual(message, ex.Message);
 			}
 
 			try {

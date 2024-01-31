@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -134,8 +134,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     result => {
-                        Assert.AreEqual("hello", result.Get("val"));
-                        Assert.AreEqual("hello2", result.Get("val2"));
+                        ClassicAssert.AreEqual("hello", result.Get("val"));
+                        ClassicAssert.AreEqual("hello2", result.Get("val2"));
                     });
                 env.UndeployAll();
             }
@@ -152,8 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         };
                         for (var i = 0; i < rows.Length; i++) {
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType);
                         }
                     });
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     @event => {
                         var result = @event.Get(subexpr);
-                        Assert.AreEqual("abcappend", ((SupportChainChildTwo)result).Text);
+                        ClassicAssert.AreEqual("abcappend", ((SupportChainChildTwo)result).Text);
                     });
             }
         }
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             theEvent,
                             new[] {"Symbol", "Simpleprop"},
                             new object[] { "ACME", null });
-                        Assert.IsNull(theEvent.Get("def"));
+                        ClassicAssert.IsNull(theEvent.Get("def"));
                     });
 
                 var eventComplexProps = SupportBeanComplexProps.MakeDefaultBean();
@@ -245,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                             @event,
                             new string[] { "Symbol", "Simpleprop" },
                             new object[] { "ACME", "ACME" });
-                        Assert.IsNotNull(@event.Get("def"));
+                        ClassicAssert.IsNotNull(@event.Get("def"));
                     });
 
                 env.UndeployAll();
@@ -265,10 +265,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(3, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("Symbol"));
-                        Assert.AreEqual(typeof(double?), type.GetPropertyType("pvf"));
+                        ClassicAssert.AreEqual(3, type.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("Volume"));
+                        ClassicAssert.AreEqual(typeof(string), type.GetPropertyType("Symbol"));
+                        ClassicAssert.AreEqual(typeof(double?), type.GetPropertyType("pvf"));
                     });
 
                 var eventA = new SupportMarketDataBean("ACME", 4, 99L, null);
@@ -294,9 +294,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(2, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("S0.GetVolume()"));
-                        Assert.AreEqual(typeof(double?), type.GetPropertyType("S0.GetPriceTimesVolume(3)"));
+                        ClassicAssert.AreEqual(2, type.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("S0.GetVolume()"));
+                        ClassicAssert.AreEqual(typeof(double?), type.GetPropertyType("S0.GetPriceTimesVolume(3)"));
                     });
 
                 var eventA = new SupportMarketDataBean("ACME", 4, 2L, null);
@@ -336,15 +336,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // Attach listener to feed
                 env.CompileDeploy(textOne).AddListener("s0");
                 var model = env.EplToModel(textOne);
-                Assert.AreEqual(textOne, model.ToEPL());
+                ClassicAssert.AreEqual(textOne, model.ToEPL());
 
                 env.AssertStatement(
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(2, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s0stream"));
-                        Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1stream"));
+                        ClassicAssert.AreEqual(2, type.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("s0stream"));
+                        ClassicAssert.AreEqual(typeof(SupportBean), type.GetPropertyType("s1stream"));
                     });
 
                 var eventA = new SupportMarketDataBean("ACME", 0, 0L, null);
@@ -366,9 +366,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(2, type.PropertyNames.Length);
-                        Assert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S0"));
-                        Assert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
+                        ClassicAssert.AreEqual(2, type.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(SupportMarketDataBean), type.GetPropertyType("S0"));
+                        ClassicAssert.AreEqual(typeof(SupportBean), type.GetPropertyType("S1"));
                     });
 
                 env.SendEventBean(eventA);

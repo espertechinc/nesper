@@ -19,6 +19,7 @@ using com.espertech.esper.common.@internal.util;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
@@ -132,7 +133,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
                 requiredPerStream,
                 new DependencyGraph(6, false));
 
-            Assert.AreEqual(6, substreamsPerStream.Count);
+            ClassicAssert.AreEqual(6, substreamsPerStream.Count);
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[2], new[] {3, 1});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream[3], new[] {4, 5});
             EPAssertionUtil.AssertEqualsExactOrder(substreamsPerStream.Get(1), new[] {0});

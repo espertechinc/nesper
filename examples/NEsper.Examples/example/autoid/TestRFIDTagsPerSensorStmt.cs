@@ -13,7 +13,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.AutoId
@@ -60,11 +60,11 @@ namespace NEsper.Examples.AutoId
 	
 	    private void AssertReceived(string sensorId, double numTags)
 	    {
-	        Assert.IsTrue(_listener.IsInvoked);
-	        Assert.AreEqual(1, _listener.LastNewData.Length);
+	        ClassicAssert.IsTrue(_listener.IsInvoked);
+	        ClassicAssert.AreEqual(1, _listener.LastNewData.Length);
 	        var eventBean = _listener.LastNewData[0];
-	        Assert.AreEqual(sensorId, eventBean["SensorId"]);
-	        Assert.AreEqual(numTags, eventBean["NumTagsPerSensor"]);
+	        ClassicAssert.AreEqual(sensorId, eventBean["SensorId"]);
+	        ClassicAssert.AreEqual(numTags, eventBean["NumTagsPerSensor"]);
 	        _listener.Reset();
 	    }
 	}

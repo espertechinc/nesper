@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.lrreport;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
@@ -47,18 +48,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
                 listener => {
                     var val1 = listener.AssertOneGetNew().Get("val1").UnwrapIntoArray<Item>();
 
-                    Assert.AreEqual(3, val1.Length);
-                    Assert.AreEqual("L00000", val1[0].AssetId);
-                    Assert.AreEqual("L00007", val1[1].AssetId);
-                    Assert.AreEqual("L00008", val1[2].AssetId);
+                    ClassicAssert.AreEqual(3, val1.Length);
+                    ClassicAssert.AreEqual("L00000", val1[0].AssetId);
+                    ClassicAssert.AreEqual("L00007", val1[1].AssetId);
+                    ClassicAssert.AreEqual("L00008", val1[2].AssetId);
 
                     var val2Event = listener.AssertOneGetNewAndReset();
                     var val2Result = val2Event.Get("val2");
                     var val2 = val2Result.AsObjectDictionary();
-                    Assert.AreEqual(3, val2.Count);
-                    Assert.AreEqual("P00008", ((Item)val2.Get("L00000")).AssetId);
-                    Assert.AreEqual("P00001", ((Item)val2.Get("L00007")).AssetId);
-                    Assert.AreEqual("P00001", ((Item)val2.Get("L00008")).AssetId);
+                    ClassicAssert.AreEqual(3, val2.Count);
+                    ClassicAssert.AreEqual("P00008", ((Item)val2.Get("L00000")).AssetId);
+                    ClassicAssert.AreEqual("P00001", ((Item)val2.Get("L00007")).AssetId);
+                    ClassicAssert.AreEqual("P00001", ((Item)val2.Get("L00008")).AssetId);
                 });
 
             env.UndeployAll();

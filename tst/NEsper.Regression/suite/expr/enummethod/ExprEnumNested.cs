@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.sales;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumNested
@@ -116,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var result = (ICollection<SupportBean_ST0>)@event.Get("val");
-                        Assert.AreEqual(3, result.Count); // this would be 1 if the cache is invalid
+                        ClassicAssert.AreEqual(3, result.Count); // this would be 1 if the cache is invalid
                     });
 
                 env.UndeployAll();

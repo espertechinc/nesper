@@ -19,6 +19,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
@@ -238,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     throw new EPRuntimeException(ex);
                 }
 
-                Assert.AreEqual(2, rollout.Items.Length);
+                ClassicAssert.AreEqual(2, rollout.Items.Length);
                 AssertDeployment(env, rollout.Items[0].Deployment, "type");
                 AssertDeployment(env, rollout.Items[1].Deployment, "s0");
 
@@ -261,9 +262,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 EPDeployment deployment,
                 string statementName)
             {
-                Assert.AreEqual(1, deployment.Statements.Length);
-                Assert.AreEqual(statementName, deployment.Statements[0].Name);
-                Assert.AreEqual(env.DeploymentId(statementName), deployment.DeploymentId);
+                ClassicAssert.AreEqual(1, deployment.Statements.Length);
+                ClassicAssert.AreEqual(statementName, deployment.Statements[0].Name);
+                ClassicAssert.AreEqual(env.DeploymentId(statementName), deployment.DeploymentId);
             }
 
             private void AssertSendAndReceive(
@@ -307,9 +308,9 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.Fail();
             }
             catch (EPDeployException ex) {
-                Assert.AreEqual(rolloutNumber, ex.RolloutItemNumber);
+                ClassicAssert.AreEqual(rolloutNumber, ex.RolloutItemNumber);
                 SupportMessageAssertUtil.AssertMessage(ex.Message, expectedMsg);
-                Assert.AreEqual(exceptionType, ex.GetType());
+                ClassicAssert.AreEqual(exceptionType, ex.GetType());
             }
 
             try {
@@ -320,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 // expected
             }
 
-            Assert.IsNotNull(env.DeploymentId("s1"));
+            ClassicAssert.IsNotNull(env.DeploymentId("s1"));
         }
 
         private static void AssertStatementIds(
@@ -335,7 +336,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                     names[i],
                     statement => {
                         var spi = (EPStatementSPI)statement;
-                        Assert.AreEqual(statementIds[index], spi.StatementId);
+                        ClassicAssert.AreEqual(statementIds[index], spi.StatementId);
                     });
             }
         }

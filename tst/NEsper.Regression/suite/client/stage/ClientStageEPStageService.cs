@@ -13,6 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.stage
 {
@@ -39,60 +40,60 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
                 var stageAOne = env.StageService.GetStage("A");
                 var stageBTwo = env.StageService.GetStage("A");
 
-                Assert.AreSame(stageAOne, stageBTwo);
-                Assert.AreEqual("A", stageAOne.URI);
+                ClassicAssert.AreSame(stageAOne, stageBTwo);
+                ClassicAssert.AreEqual("A", stageAOne.URI);
                 CollectionAssert.AreEquivalent("A".SplitCsv(), env.StageService.StageURIs);
-                Assert.IsNull(env.StageService.GetExistingStage("B"));
-                Assert.AreEqual("A", env.StageService.GetStage("A").URI);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("B"));
+                ClassicAssert.AreEqual("A", env.StageService.GetStage("A").URI);
 
                 env.Milestone(0);
 
                 var stageB = env.StageService.GetStage("B");
-                Assert.AreNotSame(stageB, stageAOne);
+                ClassicAssert.AreNotSame(stageB, stageAOne);
                 CollectionAssert.AreEquivalent("A,B".SplitCsv(), env.StageService.StageURIs);
-                Assert.IsNull(env.StageService.GetExistingStage("C"));
-                Assert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
-                Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("C"));
+                ClassicAssert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
+                ClassicAssert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
 
                 env.Milestone(1);
 
                 var stageC = env.StageService.GetStage("C");
-                Assert.AreNotSame(stageB, stageC);
+                ClassicAssert.AreNotSame(stageB, stageC);
                 CollectionAssert.AreEquivalent("A,B,C".SplitCsv(), env.StageService.StageURIs);
-                Assert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
-                Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
-                Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
+                ClassicAssert.AreEqual("A", env.StageService.GetExistingStage("A").URI);
+                ClassicAssert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
+                ClassicAssert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
 
                 env.Milestone(2);
 
                 CollectionAssert.AreEquivalent("A,B,C".SplitCsv(), env.StageService.StageURIs);
                 env.StageService.GetStage("A").Destroy();
                 CollectionAssert.AreEquivalent("B,C".SplitCsv(), env.StageService.StageURIs);
-                Assert.IsNull(env.StageService.GetExistingStage("A"));
-                Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
-                Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("A"));
+                ClassicAssert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
+                ClassicAssert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
 
                 env.Milestone(3);
 
-                Assert.IsNull(env.StageService.GetExistingStage("A"));
-                Assert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
-                Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("A"));
+                ClassicAssert.AreEqual("B", env.StageService.GetExistingStage("B").URI);
+                ClassicAssert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
                 env.StageService.GetStage("B").Destroy();
                 CollectionAssert.AreEquivalent("C".SplitCsv(), env.StageService.StageURIs);
-                Assert.IsNull(env.StageService.GetExistingStage("A"));
-                Assert.IsNull(env.StageService.GetExistingStage("B"));
-                Assert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("A"));
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("B"));
+                ClassicAssert.AreEqual("C", env.StageService.GetExistingStage("C").URI);
 
                 env.Milestone(4);
 
-                Assert.AreEqual("C", stageC.URI);
+                ClassicAssert.AreEqual("C", stageC.URI);
                 stageC = env.StageService.GetStage("C");
                 stageC.Destroy();
                 stageC.Destroy();
-                Assert.AreEqual(0, env.StageService.StageURIs.Length);
-                Assert.IsNull(env.StageService.GetExistingStage("A"));
-                Assert.IsNull(env.StageService.GetExistingStage("B"));
-                Assert.IsNull(env.StageService.GetExistingStage("C"));
+                ClassicAssert.AreEqual(0, env.StageService.StageURIs.Length);
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("A"));
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("B"));
+                ClassicAssert.IsNull(env.StageService.GetExistingStage("C"));
 
                 try {
                     env.StageService.GetStage(null);

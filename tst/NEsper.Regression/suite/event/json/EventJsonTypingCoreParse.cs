@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using static com.espertech.esper.common.@internal.support.SupportEnum;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -1115,9 +1116,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             private void AssertFillTwo(EventBean @event)
             {
                 var array6To9 = (object[])@event.Get("c0");
-                Assert.AreEqual(1, array6To9.Length);
+                ClassicAssert.AreEqual(1, array6To9.Length);
                 var array6plus = (object[])array6To9[0];
-                Assert.AreEqual("6", array6plus[0].ToString());
+                ClassicAssert.AreEqual("6", array6plus[0].ToString());
                 var array7plus = (object[])array6plus[1];
                 EPAssertionUtil.AssertEqualsExactOrder((object[])array7plus[0], new object[] { 7, 8 });
                 EPAssertionUtil.AssertEqualsExactOrder((object[])array7plus[1], new object[] { 9 });
@@ -1127,12 +1128,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             private void AssertFillOne(EventBean @event)
             {
                 var array1To5 = (object[])@event.Get("c0");
-                Assert.AreEqual(2, array1To5.Length);
+                ClassicAssert.AreEqual(2, array1To5.Length);
                 var array12 = (object[])array1To5[0];
                 EPAssertionUtil.AssertEqualsExactOrder(array12, new object[] { 1, 2 });
                 var array345 = (object[])array1To5[1];
                 EPAssertionUtil.AssertEqualsExactOrder((object[])array345[0], new object[] { 3, 4 });
-                Assert.AreEqual(5, array345[1]);
+                ClassicAssert.AreEqual(5, array345[1]);
             }
         }
 
@@ -1169,12 +1170,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             private void AssertFilled(EventBean @event)
             {
                 var array = (object[])@event.Get("c0");
-                Assert.AreEqual("a", array[0]);
-                Assert.AreEqual(1, array[1]);
+                ClassicAssert.AreEqual("a", array[0]);
+                ClassicAssert.AreEqual(1, array[1]);
                 var nested = (IDictionary<string, object>)array[2];
-                Assert.AreEqual("{value=def}", nested.ToString());
-                Assert.IsFalse((bool)array[3]);
-                Assert.IsNull(array[4]);
+                ClassicAssert.AreEqual("{value=def}", nested.ToString());
+                ClassicAssert.IsFalse((bool)array[3]);
+                ClassicAssert.IsNull(array[4]);
             }
         }
 
@@ -1196,7 +1197,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "s0",
                     statement => {
                         foreach (var prop in statement.EventType.PropertyDescriptors) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 "c1,c3,c5,c7,c9,c11".Contains(prop.PropertyName) ? typeof(bool?) : typeof(object),
                                 prop.PropertyType);
                         }
@@ -1244,9 +1245,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "c0,c1,c2,c3,c4,c5,c6,c7,c9,c11".Split(","),
                     new object[] { "abc", true, 1, true, true, true, null, true, true, true });
                 var @object = (IDictionary<string, object>)eventBean.Get("c8");
-                Assert.AreEqual("def", @object.Get("value"));
+                ClassicAssert.AreEqual("def", @object.Get("value"));
                 var array = (object[])eventBean.Get("c10");
-                Assert.AreEqual("a", array[0]);
+                ClassicAssert.AreEqual("a", array[0]);
             }
 
             private void AssertUnfilled(EventBean eventBean)

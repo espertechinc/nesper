@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -324,9 +325,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamA"));
-                        Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamB"));
-                        Assert.AreEqual(2, statement.EventType.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamA"));
+                        ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("streamB"));
+                        ClassicAssert.AreEqual(2, statement.EventType.PropertyNames.Length);
                     });
 
                 int[][] eventData = new int[][] {
@@ -354,7 +355,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 SendEvent(env, eventsB[1]);
                 SendEvent(env, eventsB[2]);
                 SendEvent(env, eventsB[3]);
-                env.AssertListener("s0", listener => Assert.IsNull(listener.LastNewData)); // No events expected
+                env.AssertListener("s0", listener => ClassicAssert.IsNull(listener.LastNewData)); // No events expected
 
                 env.Milestone(0);
 

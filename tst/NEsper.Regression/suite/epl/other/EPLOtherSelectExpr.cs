@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     theEvent => {
                         var fieldsArr = fields;
                         foreach (var aFieldsArr in fieldsArr) {
-                            Assert.AreEqual(1, theEvent.Get(aFieldsArr));
+                            ClassicAssert.AreEqual(1, theEvent.Get(aFieldsArr));
                         }
                     });
                 env.UndeployAll();
@@ -166,9 +166,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(1, theEvent.Get("Stddev"));
-                        Assert.AreEqual(1L, theEvent.Get("Count"));
-                        Assert.AreEqual(1, theEvent.Get("Last"));
+                        ClassicAssert.AreEqual(1, theEvent.Get("Stddev"));
+                        ClassicAssert.AreEqual(1L, theEvent.Get("Count"));
+                        ClassicAssert.AreEqual(1, theEvent.Get("Last"));
                     });
 
                 env.UndeployAll();
@@ -194,10 +194,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertStatement(
                     "A\'B",
                     statement => {
-                        Assert.AreEqual("A\'B", statement.Name);
+                        ClassicAssert.AreEqual("A\'B", statement.Name);
                         var desc = (com.espertech.esper.common.client.annotation.DescriptionAttribute)
                             statement.Annotations[1];
-                        Assert.AreEqual("A\"B", desc.Value);
+                        ClassicAssert.AreEqual("A\"B", desc.Value);
                     });
                 env.UndeployAll();
 
@@ -272,10 +272,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             type.PropertyNames,
                             new string[] { "3*IntPrimitive", "TheString", "result", "aBool" });
-                        Assert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
-                        Assert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
-                        Assert.AreEqual(typeof(float?), type.GetPropertyType("result"));
-                        Assert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
+                        ClassicAssert.AreEqual(typeof(string), type.GetPropertyType("TheString"));
+                        ClassicAssert.AreEqual(typeof(bool?), type.GetPropertyType("aBool"));
+                        ClassicAssert.AreEqual(typeof(float?), type.GetPropertyType("result"));
+                        ClassicAssert.AreEqual(typeof(int?), type.GetPropertyType("3*IntPrimitive"));
                     });
 
                 env.UndeployAll();
@@ -294,16 +294,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 SendEvent(env, "a", false, 0, 0, 0);
                 SendEvent(env, "b", false, 0, 0, 0);
-                env.AssertListener("s0", listener => Assert.IsNull(listener.LastNewData));
+                env.AssertListener("s0", listener => ClassicAssert.IsNull(listener.LastNewData));
                 SendEvent(env, "c", true, 3, 10, 20);
 
                 env.AssertListener(
                     "s0",
                     listener => {
                         var received = listener.GetAndResetLastNewData()[0];
-                        Assert.AreEqual("c", received.Get("TheString"));
-                        Assert.AreEqual(true, received.Get("aBool"));
-                        Assert.AreEqual(30f, received.Get("result"));
+                        ClassicAssert.AreEqual("c", received.Get("TheString"));
+                        ClassicAssert.AreEqual(true, received.Get("aBool"));
+                        ClassicAssert.AreEqual(30f, received.Get("result"));
                     });
 
                 env.UndeployAll();

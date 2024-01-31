@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -36,9 +37,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "s0",
                 statement => {
                     var type = statement.EventType;
-                    Assert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
-                    Assert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
-                    Assert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
+                    ClassicAssert.AreEqual(typeof(object), type.GetPropertyType("SimpleProperty?"));
+                    ClassicAssert.AreEqual(typeof(object), type.GetPropertyType("indexed"));
+                    ClassicAssert.AreEqual(typeof(object), type.GetPropertyType("mapped"));
                 });
 
             SupportBeanComplexProps inner = SupportBeanComplexProps.MakeDefaultBean();
@@ -46,9 +47,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
-                    Assert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
-                    Assert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
+                    ClassicAssert.AreEqual(inner.SimpleProperty, theEvent.Get("SimpleProperty?"));
+                    ClassicAssert.AreEqual(inner.GetIndexed(1), theEvent.Get("indexed"));
+                    ClassicAssert.AreEqual(inner.GetMapped("keyOne"), theEvent.Get("mapped"));
                 });
 
             var start = PerformanceObserver.MilliTime;

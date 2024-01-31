@@ -21,6 +21,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
     public class EventJsonAdapter
@@ -88,10 +90,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(date, @event.Get("myDate"));
+                        ClassicAssert.AreEqual(date, @event.Get("myDate"));
                         var renderer = env.Runtime.RenderEventService.GetJSONRenderer(
                             env.Runtime.EventTypeService.GetBusEventType("JsonEvent"));
-                        Assert.AreEqual("{\"hello\":{\"myDate\":\"22-09-2018\"}}", renderer.Render("hello", @event));
+                        ClassicAssert.AreEqual("{\"hello\":{\"myDate\":\"22-09-2018\"}}", renderer.Render("hello", @event));
                     });
 
                 env.UndeployAll();
@@ -210,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 "s1",
                 @out => {
                     var @event = (JsonEventObject)@out.Underlying;
-                    Assert.AreEqual(json, @event.ToString());
+                    ClassicAssert.AreEqual(json, @event.ToString());
                 });
         }
 

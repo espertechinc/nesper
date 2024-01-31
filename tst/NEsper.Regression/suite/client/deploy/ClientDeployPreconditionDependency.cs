@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.client.deploy
 {
     public class ClientDeployPreconditionDependency
@@ -419,7 +421,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
                 Assert.Fail();
             }
             catch (EPDeployPreconditionException ex) {
-                Assert.AreEqual(-1, ex.RolloutItemNumber);
+                ClassicAssert.AreEqual(-1, ex.RolloutItemNumber);
                 if (!message.Equals("skip")) {
                     SupportMessageAssertUtil.AssertMessage(ex.Message, message);
                 }

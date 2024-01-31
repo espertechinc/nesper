@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.client.extension
@@ -132,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, "Xa", "a");
                 SendAssert(env, "Xab", "a,b");
@@ -160,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, 0, "-1,-2");
                 SendAssert(env, 1, "-1,2");
@@ -191,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -229,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -264,7 +265,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 
@@ -302,7 +303,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 SendAssert(env, null);
 

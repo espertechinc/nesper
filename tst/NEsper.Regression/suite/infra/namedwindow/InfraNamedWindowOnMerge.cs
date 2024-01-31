@@ -23,7 +23,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
@@ -390,9 +390,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "window",
                     iterator => {
                         var @event = iterator.Advance();
-                        Assert.AreEqual(id, @event.Get("id"));
-                        Assert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
-                        Assert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
+                        ClassicAssert.AreEqual(id, @event.Get("id"));
+                        ClassicAssert.AreSame(currentSewid, ((EventBean)@event.Get("currentSewid")).Underlying);
+                        ClassicAssert.AreSame(prevSewid, ((EventBean)@event.Get("prevSewid")).Underlying);
                     });
             }
         }

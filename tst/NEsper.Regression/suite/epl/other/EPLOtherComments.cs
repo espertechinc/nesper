@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -35,9 +36,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("e1", theEvent.Get("TheString"));
-                    Assert.AreEqual(100, theEvent.Get("IntPrimitive"));
-                    Assert.AreEqual(100, theEvent.Get("myPrimitive"));
+                    ClassicAssert.AreEqual("e1", theEvent.Get("TheString"));
+                    ClassicAssert.AreEqual(100, theEvent.Get("IntPrimitive"));
+                    ClassicAssert.AreEqual(100, theEvent.Get("myPrimitive"));
                 });
 
             env.SendEventBean(new SupportBean("e1", -1));

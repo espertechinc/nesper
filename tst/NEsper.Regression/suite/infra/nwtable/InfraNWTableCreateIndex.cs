@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -236,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             var text = namedWindow
                                 ? "Unexpected exception in statement 'create': Unique index violation, index 'I1' is a unique index and key 'E1' already exists"
                                 : "Unexpected exception in statement 'insert': Unique index violation, index 'I1' is a unique index and key 'E1' already exists";
-                            Assert.AreEqual(text, ex.Message);
+                            ClassicAssert.AreEqual(text, ex.Message);
                         }
                     });
 
@@ -286,7 +287,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         path)
                     .AddListener("s0");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         namedWindow ? 1 : 2,
                         GetIndexCount(env, namedWindow, "create", "MyInfraONR")));
 
@@ -298,19 +299,19 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "@name('stmtTwo') on SupportBean_S0 s0 select nw.f1 as f1, nw.f2 as f2 from MyInfraONR nw where nw.f2 = s0.Id",
                     path);
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         namedWindow ? 1 : 2,
                         GetIndexCount(env, namedWindow, "create", "MyInfraONR")));
 
                 env.UndeployModuleContaining("s0");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         namedWindow ? 1 : 2,
                         GetIndexCount(env, namedWindow, "create", "MyInfraONR")));
 
                 env.UndeployModuleContaining("stmtTwo");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         namedWindow ? 1 : 2,
                         GetIndexCount(env, namedWindow, "create", "MyInfraONR")));
 
@@ -326,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "on SupportBean sb select * from MyInfraFour w where w.IntPrimitive = sb.IntPrimitive and w.TheString = sb.TheString",
                     path);
                 env.AssertThat(
-                    () => Assert.AreEqual(1, SupportInfraUtil.GetIndexCountNoContext(env, true, "cw", "MyInfraFour")));
+                    () => ClassicAssert.AreEqual(1, SupportInfraUtil.GetIndexCountNoContext(env, true, "cw", "MyInfraFour")));
 
                 env.UndeployAll();
             }
@@ -388,7 +389,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 EPAssertionUtil.AssertPropsPerRow(result.Array, fields, new object[][] { new object[] { "E1", -2 } });
 
                 env.UndeployModuleContaining("IndexThree");
-                Assert.AreEqual(namedWindow ? 0 : 1, GetIndexCount(env, namedWindow, "create", "MyInfraDC"));
+                ClassicAssert.AreEqual(namedWindow ? 0 : 1, GetIndexCount(env, namedWindow, "create", "MyInfraDC"));
 
                 env.UndeployAll();
             }
@@ -864,7 +865,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     fields,
                     new object[][] { new object[] { "E1" }, new object[] { "E2" }, new object[] { "E3" } });
 
-                Assert.AreEqual(namedWindow ? 1 : 2, GetIndexCount(env, namedWindow, "create", "MyInfraMRAK"));
+                ClassicAssert.AreEqual(namedWindow ? 1 : 2, GetIndexCount(env, namedWindow, "create", "MyInfraMRAK"));
 
                 env.UndeployAll();
             }
@@ -992,7 +993,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             object[][] expected)
         {
             var p00s = listOfP00.SplitCsv();
-            Assert.AreEqual(p00s.Length, expected.Length);
+            ClassicAssert.AreEqual(p00s.Length, expected.Length);
             for (var i = 0; i < p00s.Length; i++) {
                 env.SendEventBean(new SupportBean_S0(0, p00s[i]));
                 if (expected[i] == null) {
@@ -1021,7 +1022,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var entry = GetIndexEntry(env, namedWindow, name);
             if (string.IsNullOrEmpty(csvNames)) {
-                Assert.IsNull(entry);
+                ClassicAssert.IsNull(entry);
             }
             else {
                 EPAssertionUtil.AssertEqualsAnyOrder(csvNames.SplitCsv(), entry.ReferringDeployments);
@@ -1035,7 +1036,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
             int count)
         {
             var repo = GetIndexInstanceRepo(env, namedWindow, name);
-            Assert.AreEqual(count, repo.Tables.Count);
+            ClassicAssert.AreEqual(count, repo.Tables.Count);
         }
 
         private static EventTableIndexRepository GetIndexInstanceRepo(

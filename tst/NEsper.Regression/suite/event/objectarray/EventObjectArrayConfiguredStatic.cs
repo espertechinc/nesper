@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -23,10 +24,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             env.AssertThat(
                 () => {
                     var eventType = env.Runtime.EventTypeService.GetEventTypePreconfigured("MyOAType");
-                    Assert.AreEqual(typeof(object[]), eventType.UnderlyingType);
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
-                    Assert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
+                    ClassicAssert.AreEqual(typeof(object[]), eventType.UnderlyingType);
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
+                    ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("map"));
+                    ClassicAssert.AreEqual(typeof(SupportBean), eventType.GetPropertyType("bean"));
                 });
 
             env.CompileDeploy("@name('s0') select bean, TheString, map('key'), bean.TheString from MyOAType");
@@ -34,7 +35,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(object[]), statement.EventType.UnderlyingType));
+                statement => ClassicAssert.AreEqual(typeof(object[]), statement.EventType.UnderlyingType));
 
             var bean = new SupportBean("E1", 1);
             env.SendEventObjectArray(

@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -36,8 +37,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         {
             Log.Debug(".testEqualsNode");
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
-            Assert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
-            Assert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
+            ClassicAssert.IsTrue(_bitWiseNode.EqualsNode(_bitWiseNode, false));
+            ClassicAssert.IsFalse(_bitWiseNode.EqualsNode(new ExprBitWiseNode(BitWiseOpEnum.BXOR), false));
         }
 
         [Test]
@@ -50,7 +51,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 ExprNodeOrigin.SELECT,
                 _bitWiseNode,
                 SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(8, _bitWiseNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(8, _bitWiseNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -77,7 +78,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
                 ExprNodeOrigin.SELECT,
                 _bitWiseNode,
                 SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(long?), _bitWiseNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(long?), _bitWiseNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             _bitWiseNode = new ExprBitWiseNode(BitWiseOpEnum.BAND);
             _bitWiseNode.AddChildNode(new SupportExprNode(4));
             _bitWiseNode.AddChildNode(new SupportExprNode(2));
-            Assert.AreEqual("4&2", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_bitWiseNode));
+            ClassicAssert.AreEqual("4&2", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(_bitWiseNode));
         }
 
         [Test]

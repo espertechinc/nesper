@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.basic
 {
@@ -45,8 +46,8 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
                 "s0",
                 listener => {
                     var pair = listener.AssertPairGetIRAndReset();
-                    Assert.AreEqual(rstream, pair.Second.Underlying);
-                    Assert.AreSame(sb, pair.First.Underlying);
+                    ClassicAssert.AreEqual(rstream, pair.Second.Underlying);
+                    ClassicAssert.AreSame(sb, pair.First.Underlying);
                 });
         }
 
@@ -55,7 +56,7 @@ namespace com.espertech.esper.regressionlib.suite.client.basic
             string theString)
         {
             var sb = SendBean(env, theString);
-            env.AssertEventNew("s0", @event => Assert.AreEqual(sb, @event.Underlying));
+            env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(sb, @event.Underlying));
             return sb;
         }
 

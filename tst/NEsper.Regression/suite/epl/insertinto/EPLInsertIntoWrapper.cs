@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanSimple = com.espertech.esper.regressionlib.support.bean.SupportBeanSimple;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -142,8 +142,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew(
                     "s2",
                     @event => {
-                        Assert.AreEqual("e1", @event.Get("MyString"));
-                        Assert.AreEqual("e1AB", @event.Get("propB"));
+                        ClassicAssert.AreEqual("e1", @event.Get("MyString"));
+                        ClassicAssert.AreEqual("e1AB", @event.Get("propB"));
                     });
 
                 env.Milestone(1);
@@ -152,8 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew(
                     "s2",
                     @event => {
-                        Assert.AreEqual("e2", @event.Get("MyString"));
-                        Assert.AreEqual("e2AB", @event.Get("propB"));
+                        ClassicAssert.AreEqual("e2", @event.Get("MyString"));
+                        ClassicAssert.AreEqual("e2AB", @event.Get("propB"));
                     });
 
                 env.SendEventBean(new SupportBeanSimple("e3", 1));
@@ -161,11 +161,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s2",
                     listener => {
                         var @event = listener.LastNewData[0];
-                        Assert.AreEqual("e3", @event.Get("MyString"));
-                        Assert.AreEqual("e3AB", @event.Get("propB"));
+                        ClassicAssert.AreEqual("e3", @event.Get("MyString"));
+                        ClassicAssert.AreEqual("e3AB", @event.Get("propB"));
                         @event = listener.LastOldData[0];
-                        Assert.AreEqual("e1", @event.Get("MyString"));
-                        Assert.AreEqual("e1AB", @event.Get("propB"));
+                        ClassicAssert.AreEqual("e1", @event.Get("MyString"));
+                        ClassicAssert.AreEqual("e1AB", @event.Get("propB"));
                     });
 
                 env.UndeployAll();

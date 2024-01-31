@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
@@ -404,11 +404,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     listener => {
                         var events = listener.NewDataListFlattened;
                         env.ListenerReset("s0");
-                        Assert.AreEqual(2, events.Length);
-                        Assert.AreEqual("ATT", events[0].Get("TheString"));
-                        Assert.AreEqual(11, events[0].Get("IntPrimitive"));
-                        Assert.AreEqual("IBM", events[1].Get("TheString"));
-                        Assert.AreEqual(100, events[1].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual(2, events.Length);
+                        ClassicAssert.AreEqual("ATT", events[0].Get("TheString"));
+                        ClassicAssert.AreEqual(11, events[0].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("IBM", events[1].Get("TheString"));
+                        ClassicAssert.AreEqual(100, events[1].Get("IntPrimitive"));
                     });
                 env.UndeployAll();
 
@@ -424,13 +424,13 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var events = listener.NewDataListFlattened;
-                        Assert.AreEqual(3, events.Length);
-                        Assert.AreEqual("IBM", events[0].Get("TheString"));
-                        Assert.AreEqual(10, events[0].Get("IntPrimitive"));
-                        Assert.AreEqual("ATT", events[1].Get("TheString"));
-                        Assert.AreEqual(11, events[1].Get("IntPrimitive"));
-                        Assert.AreEqual("IBM", events[2].Get("TheString"));
-                        Assert.AreEqual(100, events[2].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual(3, events.Length);
+                        ClassicAssert.AreEqual("IBM", events[0].Get("TheString"));
+                        ClassicAssert.AreEqual(10, events[0].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("ATT", events[1].Get("TheString"));
+                        ClassicAssert.AreEqual(11, events[1].Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("IBM", events[2].Get("TheString"));
+                        ClassicAssert.AreEqual(100, events[2].Get("IntPrimitive"));
                     });
 
                 env.UndeployAll();
@@ -933,11 +933,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(1, result.Second.Length);
-                        Assert.AreEqual(2.0, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(1, result.Second.Length);
+                        ClassicAssert.AreEqual(2.0, result.Second[0].Get("maxVol"));
                     });
 
                 env.UndeployAll();
@@ -1085,12 +1085,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(2, result.Second.Length);
-                        Assert.AreEqual(null, result.Second[0].Get("maxVol"));
-                        Assert.AreEqual(null, result.Second[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.Second.Length);
+                        ClassicAssert.AreEqual(null, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(null, result.Second[1].Get("maxVol"));
                     });
 
                 env.UndeployAll();
@@ -1283,7 +1283,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(3, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                     EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "IBM", 4L, 18.0 });
                     EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "IBM", 5L, 18.0 });
                     EPAssertionUtil.AssertProps(listener.LastNewData[2], fields, new object[] { "IBM", 6L, 19.0 });
@@ -1294,7 +1294,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(3, listener.LastOldData.Length);
+                    ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                     EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "IBM", 1L, 11.0 });
                     EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "IBM", 2L, 11.0 });
                     env.ListenerReset("s0");
@@ -1308,9 +1308,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), eventType.GetPropertyType("Volume"));
-                    Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(double?), eventType.GetPropertyType("mySum"));
                 });
 
             SendEvent(env, SYMBOL_IBM, 500, 20);
@@ -1339,7 +1339,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                             });
                     }
 
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1358,7 +1358,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                             new object[] { SYMBOL_DELL, 20000L, 51.0 + 52.0 },
                             new object[] { SYMBOL_DELL, 40000L, 51.0 + 52.0 + 45.0 }
                         });
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
         }
 
@@ -1369,9 +1369,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), eventType.GetPropertyType("Volume"));
-                    Assert.AreEqual(typeof(double?), eventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(double?), eventType.GetPropertyType("mySum"));
                 });
 
             SendEvent(env, SYMBOL_IBM, 500, 20);
@@ -1400,7 +1400,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                             });
                     }
 
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1433,7 +1433,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                             });
                     }
 
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
         }
 
@@ -1452,7 +1452,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         events.First,
                         fields,
                         new object[][] { new object[] { SYMBOL_DELL, 20000L, 103.0 } });
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1481,7 +1481,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                             });
                     }
 
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
         }
 
@@ -2032,10 +2032,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 "s0",
                 listener => {
                     var newData = listener.LastNewData;
-                    Assert.AreEqual(1, newData.Length);
-                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-                    Assert.AreEqual(mySum, newData[0].Get("mySum"));
-                    Assert.AreEqual(volume, newData[0].Get("Volume"));
+                    ClassicAssert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(mySum, newData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(volume, newData[0].Get("Volume"));
                     listener.Reset();
                 });
         }
@@ -2046,9 +2046,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("Volume"));
                 });
 
             SendEvent(env, SYMBOL_DELL, 10, 100);

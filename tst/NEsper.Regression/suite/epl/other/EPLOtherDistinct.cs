@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N;
 
@@ -222,13 +222,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertIterator(
                     "s0",
-                    iterator => Assert.AreEqual(3, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(3, EPAssertionUtil.EnumeratorToArray(iterator).Length));
                 env.AssertIterator(
                     "s1",
-                    iterator => Assert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(2, EPAssertionUtil.EnumeratorToArray(iterator).Length));
                 env.AssertIterator(
                     "s2",
-                    iterator => Assert.AreEqual(3, EPAssertionUtil.EnumeratorToArray(iterator).Length));
+                    iterator => ClassicAssert.AreEqual(3, EPAssertionUtil.EnumeratorToArray(iterator).Length));
 
                 env.UndeployAll();
             }
@@ -459,18 +459,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 SendEvent(env, "E3", 2, 10L);
                 SendEvent(env, "Query", 0, 10L);
 
-                Assert.IsTrue(subscriber.IsInvoked);
-                Assert.AreEqual(1, subscriber.InsertStreamList.Count);
+                ClassicAssert.IsTrue(subscriber.IsInvoked);
+                ClassicAssert.AreEqual(1, subscriber.InsertStreamList.Count);
                 var inserted = subscriber.InsertStreamList[0];
-                Assert.AreEqual(2, inserted.Length);
-                Assert.AreEqual("Query", ((SupportBean)inserted[0][0]).TheString);
-                Assert.AreEqual("Query", ((SupportBean)inserted[1][0]).TheString);
+                ClassicAssert.AreEqual(2, inserted.Length);
+                ClassicAssert.AreEqual("Query", ((SupportBean)inserted[0][0]).TheString);
+                ClassicAssert.AreEqual("Query", ((SupportBean)inserted[1][0]).TheString);
                 var mapOne = (IDictionary<string, object>)inserted[0][1];
-                Assert.AreEqual("E2", ((EventBean)mapOne.Get("wooA")).Get("TheString"));
-                Assert.AreEqual("E1", ((EventBean)mapOne.Get("fooA")).Get("TheString"));
+                ClassicAssert.AreEqual("E2", ((EventBean)mapOne.Get("wooA")).Get("TheString"));
+                ClassicAssert.AreEqual("E1", ((EventBean)mapOne.Get("fooA")).Get("TheString"));
                 var mapTwo = (IDictionary<string, object>)inserted[1][1];
-                Assert.AreEqual("E3", ((EventBean)mapTwo.Get("wooA")).Get("TheString"));
-                Assert.AreEqual("E1", ((EventBean)mapTwo.Get("fooA")).Get("TheString"));
+                ClassicAssert.AreEqual("E3", ((EventBean)mapTwo.Get("wooA")).Get("TheString"));
+                ClassicAssert.AreEqual("E1", ((EventBean)mapTwo.Get("fooA")).Get("TheString"));
 
                 env.UndeployAll();
             }
@@ -614,12 +614,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     new object[][] { new object[] { "E1" }, new object[] { "E2" } });
 
                 var model = env.EplToModel(statementText);
-                Assert.AreEqual(statementText, model.ToEPL());
+                ClassicAssert.AreEqual(statementText, model.ToEPL());
 
                 model = new EPStatementObjectModel();
                 model.SelectClause = SelectClause.CreateWildcard().Distinct(true);
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_A"));
-                Assert.AreEqual("select distinct * from SupportBean_A", model.ToEPL());
+                ClassicAssert.AreEqual("select distinct * from SupportBean_A", model.ToEPL());
 
                 env.UndeployAll();
             }

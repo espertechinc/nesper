@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 {
@@ -95,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 AssertReceivedUUID(env, sb2.TheString);
 
                 var sb5 = SendManyArrayGetSB(env, "MA1", new int[] { 1, 3 });
-                Assert.AreNotEqual(sb5.TheString, sb1.TheString);
+                ClassicAssert.AreNotEqual(sb5.TheString, sb1.TheString);
 
                 env.UndeployAll();
             }
@@ -283,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                 "s0",
                 listener => {
                     var sb = (SupportBean)listener.AssertOneGetNewAndReset().Get("s");
-                    Assert.AreEqual(uuidExpected, sb.TheString);
+                    ClassicAssert.AreEqual(uuidExpected, sb.TheString);
                 });
         }
 

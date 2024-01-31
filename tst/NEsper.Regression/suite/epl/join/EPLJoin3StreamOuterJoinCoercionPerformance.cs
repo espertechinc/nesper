@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -89,9 +90,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.AssertEventNew(
                         "s0",
                         theEvent => {
-                            Assert.AreEqual(index, theEvent.Get("v1"));
-                            Assert.AreEqual((long)index, theEvent.Get("v2"));
-                            Assert.AreEqual((double)index, theEvent.Get("v3"));
+                            ClassicAssert.AreEqual(index, theEvent.Get("v1"));
+                            ClassicAssert.AreEqual((long)index, theEvent.Get("v2"));
+                            ClassicAssert.AreEqual((double)index, theEvent.Get("v3"));
                         });
                 }
 
@@ -134,9 +135,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.AssertEventNew(
                         "s0",
                         theEvent => {
-                            Assert.AreEqual(index, theEvent.Get("v1"));
-                            Assert.AreEqual((long)index, theEvent.Get("v2"));
-                            Assert.AreEqual((double)index, theEvent.Get("v3"));
+                            ClassicAssert.AreEqual(index, theEvent.Get("v1"));
+                            ClassicAssert.AreEqual((long)index, theEvent.Get("v2"));
+                            ClassicAssert.AreEqual((double)index, theEvent.Get("v3"));
                         });
                 }
 
@@ -179,9 +180,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     env.AssertEventNew(
                         "s0",
                         theEvent => {
-                            Assert.AreEqual(index, theEvent.Get("v1"));
-                            Assert.AreEqual((long)index, theEvent.Get("v2"));
-                            Assert.AreEqual((double)index, theEvent.Get("v3"));
+                            ClassicAssert.AreEqual(index, theEvent.Get("v1"));
+                            ClassicAssert.AreEqual((long)index, theEvent.Get("v2"));
+                            ClassicAssert.AreEqual((double)index, theEvent.Get("v3"));
                         });
                 }
 
@@ -228,17 +229,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 for (var i = 0; i < 100; i++) {
                     long index = 5000 + i;
                     env.SendEventBean(SupportBeanRange.MakeLong("R", "K", index, index + 2));
-                    env.AssertListener("s0", listener => Assert.AreEqual(30, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(30, listener.GetAndResetLastNewData().Length));
                 }
 
                 var endTime = PerformanceObserver.MilliTime;
                 var delta = endTime - startTime;
 
                 env.SendEventBean(new SupportBean_ST0("ST0X", "K", 5000));
-                env.AssertListener("s0", listener => Assert.AreEqual(10, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(10, listener.GetAndResetLastNewData().Length));
 
                 env.SendEventBean(new SupportBean_ST1("ST1X", "K", 5004));
-                env.AssertListener("s0", listener => Assert.AreEqual(301, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(301, listener.GetAndResetLastNewData().Length));
 
                 Assert.That(delta, Is.LessThan(500), "Failed perf test, delta=" + delta);
                 env.UndeployAll();

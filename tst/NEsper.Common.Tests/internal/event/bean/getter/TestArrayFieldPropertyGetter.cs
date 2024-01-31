@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -51,10 +52,10 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         [Test]
         public void TestGet()
         {
-            Assert.AreEqual(bean.fieldStringArray[0], getter.Get(theEvent));
-            Assert.AreEqual(bean.fieldStringArray[0], getter.Get(theEvent, 0));
+            ClassicAssert.AreEqual(bean.fieldStringArray[0], getter.Get(theEvent));
+            ClassicAssert.AreEqual(bean.fieldStringArray[0], getter.Get(theEvent, 0));
 
-            Assert.IsNull(getterOutOfBounds.Get(theEvent));
+            ClassicAssert.IsNull(getterOutOfBounds.Get(theEvent));
         }
 
         private ArrayFieldPropertyGetter MakeGetter(int index)

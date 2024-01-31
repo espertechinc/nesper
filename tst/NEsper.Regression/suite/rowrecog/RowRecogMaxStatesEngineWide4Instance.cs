@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -62,7 +63,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 300, 1));
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 400, 1));
             EPAssertionUtil.EnumeratorToArray(env.Statement("S2").GetEnumerator());
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 300, 1));
@@ -91,7 +92,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 300, 1));
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 400, 1));
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("A", 500, 1));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 500, 1));
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 700, 1));
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 800, 1));
             env.SendEventBean(RowRecogMaxStatesEngineWide3Instance.MakeBean("B", 900, 1));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
         }
     }
 } // end of namespace

@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.extend.aggfunc;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -649,18 +650,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(2, result.Second.Length);
-                        Assert.AreEqual(null, result.Second[0].Get("maxVol"));
-                        Assert.AreEqual(1.0, result.Second[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.Second.Length);
+                        ClassicAssert.AreEqual(null, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(1.0, result.Second[1].Get("maxVol"));
                     });
 
                 // statement object model test
                 var model = env.EplToModel(epl);
                 env.CopyMayFail(model);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 env.UndeployAll();
             }
@@ -687,12 +688,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
-                        Assert.AreEqual(1.0, result.First[0].Get("maxVol"));
-                        Assert.AreEqual(2.0, result.First[1].Get("maxVol"));
-                        Assert.AreEqual(2, result.Second.Length);
-                        Assert.AreEqual(null, result.Second[0].Get("maxVol"));
-                        Assert.AreEqual(1.0, result.Second[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(1.0, result.First[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(2.0, result.First[1].Get("maxVol"));
+                        ClassicAssert.AreEqual(2, result.Second.Length);
+                        ClassicAssert.AreEqual(null, result.Second[0].Get("maxVol"));
+                        ClassicAssert.AreEqual(1.0, result.Second[1].Get("maxVol"));
                     });
 
                 env.UndeployAll();
@@ -719,9 +720,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(2, newEvents.Length);
-                        Assert.AreEqual(1L, newEvents[0].Get("cnt"));
-                        Assert.AreEqual(0L, newEvents[1].Get("cnt"));
+                        ClassicAssert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual(1L, newEvents[0].Get("cnt"));
+                        ClassicAssert.AreEqual(0L, newEvents[1].Get("cnt"));
                     });
 
                 SendTimer(env, 31000);
@@ -733,9 +734,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(2, newEvents.Length);
-                        Assert.AreEqual(1L, newEvents[0].Get("cnt"));
-                        Assert.AreEqual(2L, newEvents[1].Get("cnt"));
+                        ClassicAssert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual(1L, newEvents[0].Get("cnt"));
+                        ClassicAssert.AreEqual(2L, newEvents[1].Get("cnt"));
                     });
 
                 env.UndeployAll();
@@ -764,10 +765,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual(2, newEvents.Length);
                         // output limiting starts 10 seconds after, therefore the old batch was posted already and the cnt is zero
-                        Assert.AreEqual(1L, newEvents[0].Get("cnt"));
-                        Assert.AreEqual(0L, newEvents[1].Get("cnt"));
+                        ClassicAssert.AreEqual(1L, newEvents[0].Get("cnt"));
+                        ClassicAssert.AreEqual(0L, newEvents[1].Get("cnt"));
                     });
 
                 SendTimer(env, 50000);
@@ -775,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(0L, newData[0].Get("cnt"));
+                        ClassicAssert.AreEqual(0L, newData[0].Get("cnt"));
                         listener.Reset();
                     });
 
@@ -786,8 +787,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(1, newEvents.Length);
-                        Assert.AreEqual(2L, newEvents[0].Get("cnt"));
+                        ClassicAssert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(2L, newEvents[0].Get("cnt"));
                     });
 
                 env.UndeployAll();
@@ -920,17 +921,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
             env.SendEventBean(new SupportBean("E1", 10));
             env.SendEventBean(new SupportBean("E2", 20));
-            env.AssertThat(() => Assert.AreEqual(0, SupportInvocationCountFunction.GetValueInvocationCount));
+            env.AssertThat(() => ClassicAssert.AreEqual(0, SupportInvocationCountFunction.GetValueInvocationCount));
 
             env.SendEventBean(new SupportBean("E3", 30));
             env.AssertEqualsNew("s0", "c0", 60);
-            env.AssertThat(() => Assert.AreEqual(1, SupportInvocationCountFunction.GetValueInvocationCount));
+            env.AssertThat(() => ClassicAssert.AreEqual(1, SupportInvocationCountFunction.GetValueInvocationCount));
 
             env.SendEventBean(new SupportBean("E3", 40));
             env.SendEventBean(new SupportBean("E4", 50));
             env.SendEventBean(new SupportBean("E5", 60));
             env.AssertEqualsNew("s0", "c0", 210);
-            env.AssertThat(() => Assert.AreEqual(2, SupportInvocationCountFunction.GetValueInvocationCount));
+            env.AssertThat(() => ClassicAssert.AreEqual(2, SupportInvocationCountFunction.GetValueInvocationCount));
 
             env.UndeployAll();
         }

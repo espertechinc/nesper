@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.filter
 {
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                 catch (AssertionException ex) {
                     var message = "Failed after create stmt " + i + " and before milestone P" + milestone.Get();
                     Log.Error(message, ex);
-                    Assert.Fail(message, ex);
+                    Assert.Fail(message);
                 }
 
                 env.Milestone(milestone.GetAndIncrement());
@@ -76,7 +77,7 @@ namespace com.espertech.esper.regressionlib.support.filter
                     AssertSendEvents(existingStatements, startedStatements, initialListeners, env, _theCase.Items);
                 }
                 catch (AssertionException ex) {
-                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get(), ex);
+                    Assert.Fail("Failed after create stmt " + i + " and after milestone P" + milestone.Get());
                 }
             }
 
@@ -149,21 +150,21 @@ namespace com.espertech.esper.regressionlib.support.filter
                 for (var i = 0; i < startedStatements.Length; i++) {
                     var stmtName = "s" + i;
                     if (!existingStatements[i]) {
-                        Assert.IsNull(env.Statement(stmtName), message);
+                        ClassicAssert.IsNull(env.Statement(stmtName), message);
                     }
                     else if (!startedStatements[i]) {
-                        Assert.IsNull(env.Statement(stmtName));
-                        Assert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
+                        ClassicAssert.IsNull(env.Statement(stmtName));
+                        ClassicAssert.IsFalse(initialListeners[i].GetAndClearIsInvoked());
                     }
                     else if (!item.ExpectedPerStmt[i]) {
                         var listener = env.Listener(stmtName);
                         var isInvoked = listener.GetAndClearIsInvoked();
-                        Assert.IsFalse(isInvoked, message);
+                        ClassicAssert.IsFalse(isInvoked, message);
                     }
                     else {
                         var listener = env.Listener(stmtName);
-                        Assert.IsTrue(listener.IsInvoked, message);
-                        Assert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
+                        ClassicAssert.IsTrue(listener.IsInvoked, message);
+                        ClassicAssert.AreSame(item.Bean, listener.AssertOneGetNewAndReset().Underlying, message);
                     }
                 }
             }

@@ -21,6 +21,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -335,10 +336,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 env.AssertStatement(
                     "infra",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             StatementType.CREATE_TABLE,
                             statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                        Assert.AreEqual("varaggIIP", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                        ClassicAssert.AreEqual("varaggIIP", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                     });
 
                 var eplInto =
@@ -1010,12 +1011,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
                 env.SendEventBean(new SupportBean("E1", 10));
                 var resultSelect = env.CompileExecuteFAF("select varaggNWFAF.Total as c0 from MyWindow", path);
-                Assert.AreEqual(10, resultSelect.Array[0].Get("c0"));
+                ClassicAssert.AreEqual(10, resultSelect.Array[0].Get("c0"));
 
                 var resultDelete = env.CompileExecuteFAF(
                     "delete from MyWindow where varaggNWFAF.Total = IntPrimitive",
                     path);
-                Assert.AreEqual(1, resultDelete.Array.Length);
+                ClassicAssert.AreEqual(1, resultDelete.Array.Length);
 
                 env.Milestone(0);
 
@@ -1023,7 +1024,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var resultUpdate = env.CompileExecuteFAF(
                     "update MyWindow set DoublePrimitive = 100 where varaggNWFAF.Total = IntPrimitive",
                     path);
-                Assert.AreEqual(100d, resultUpdate.Array[0].Get("DoublePrimitive"));
+                ClassicAssert.AreEqual(100d, resultUpdate.Array[0].Get("DoublePrimitive"));
 
                 var resultInsert = env.CompileExecuteFAF(
                     "insert into MyWindow (TheString, IntPrimitive) values ('A', varaggNWFAF.Total)",
@@ -1246,10 +1247,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c0"));
-                    Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c1"));
-                    Assert.AreEqual(typeof(SupportBean[]), eventType.GetPropertyType("c2"));
-                    Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c3"));
+                    ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("c0"));
+                    ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("c1"));
+                    ClassicAssert.AreEqual(typeof(SupportBean[]), eventType.GetPropertyType("c2"));
+                    ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("c3"));
                 });
 
             var b1 = MakeSendBean(env, "E1", 10, 100);
@@ -1360,12 +1361,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
         private static void AssertTopLevelTypeInfo(EPStatement stmt)
         {
-            Assert.AreEqual(typeof(IDictionary<string, object>), stmt.EventType.GetPropertyType("val0"));
+            ClassicAssert.AreEqual(typeof(IDictionary<string, object>), stmt.EventType.GetPropertyType("val0"));
             var fragType = stmt.EventType.GetFragmentType("val0");
-            Assert.IsFalse(fragType.IsIndexed);
-            Assert.IsFalse(fragType.IsNative);
-            Assert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("Thewindow"));
-            Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("Thetotal"));
+            ClassicAssert.IsFalse(fragType.IsIndexed);
+            ClassicAssert.IsFalse(fragType.IsNative);
+            ClassicAssert.AreEqual(typeof(object[][]), fragType.FragmentType.GetPropertyType("Thewindow"));
+            ClassicAssert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("Thetotal"));
         }
 
         private static void AssertIntegerIndexed(
@@ -1374,8 +1375,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
         {
             EPAssertionUtil.AssertEqualsExactOrder(events, (object[])@event.Get("c0.myevents"));
             EPAssertionUtil.AssertEqualsExactOrder(events, (object[])@event.Get("c1"));
-            Assert.AreEqual(events[^1], @event.Get("c2"));
-            Assert.AreEqual(events[^2], @event.Get("c3"));
+            ClassicAssert.AreEqual(events[^1], @event.Get("c2"));
+            ClassicAssert.AreEqual(events[^2], @event.Get("c3"));
         }
 
         private static SupportBean_S1 MakeSendS1(

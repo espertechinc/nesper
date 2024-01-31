@@ -22,7 +22,7 @@ using com.espertech.esper.runtime.client.scopetest;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportSpatialUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.spatial
@@ -249,16 +249,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SendPoint(env, "P2", 60, 10);
                 SendPoint(env, "P3", 10, 60);
                 SendPoint(env, "P4", 10, 10);
-                env.AssertThat(() => Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 AssertRectanglesManyRow(env, BOXES, "P0,P4", "P2", "P3", "P1", "P1");
 
                 env.Milestone(1);
 
-                env.AssertThat(() => Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 AssertRectanglesManyRow(env, BOXES, "P0,P4", "P2", "P3", "P1", "P1");
 
                 env.UndeployAll();
-                env.AssertThat(() => Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
             }
         }
 

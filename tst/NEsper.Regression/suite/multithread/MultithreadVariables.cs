@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -87,9 +88,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var3Values.Add(theEvent.Get("var3").AsInt64());
             }
 
-            Assert.AreEqual(numThreads * numRepeats, var3Values.Count);
+            ClassicAssert.AreEqual(numThreads * numRepeats, var3Values.Count);
             for (var i = 1; i < numThreads * numRepeats + 1; i++) {
-                Assert.IsTrue(var3Values.Contains(i));
+                ClassicAssert.IsTrue(var3Values.Contains(i));
             }
         }
     }

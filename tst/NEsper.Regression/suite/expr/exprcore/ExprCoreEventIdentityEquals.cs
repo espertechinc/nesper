@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -169,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string theString)
         {
             env.SendEventBean(new SupportBean(theString, 0));
-            env.AssertEventNew("s0", _ => Assert.NotNull(_));
+            env.AssertEventNew("s0", ClassicAssert.NotNull);
         }
     }
 } // end of namespace

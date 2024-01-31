@@ -151,7 +151,7 @@ namespace NEsper.Examples.VirtualDW
             var args = new CompilerArguments();
             args.Path.Add(runtime.RuntimePath);
             args.Options.AccessModifierNamedWindow = env => NameAccessModifier.PUBLIC;
-            args.Configuration.Compiler.ByteCode.AllowSubscriber = true;
+            args.Configuration.Compiler.ByteCode.IsAllowSubscriber = true;
 
             var compiled = EPCompilerProvider.Compiler.Compile(epl, args);
             var deployment = runtime.DeploymentService.Deploy(compiled);

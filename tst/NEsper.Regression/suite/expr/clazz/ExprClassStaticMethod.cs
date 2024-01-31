@@ -15,6 +15,8 @@ using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.clazz
 {
     public class ExprClassStaticMethod
@@ -141,11 +143,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(1, support.Contexts.Count);
+                        ClassicAssert.AreEqual(1, support.Contexts.Count);
                         var ctx = support.Contexts[0];
 
                         var artifact = ctx.Artifact;
-                        Assert.NotNull(artifact);
+                        ClassicAssert.NotNull(artifact);
                         CollectionAssert.Contains(artifact.TypeNames, "MyUtility");
                     });
             }
@@ -276,12 +278,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
 
                 var eplFAF = "select MyClass.DoIt(TheString) as c0 from MyWindow";
                 var result = env.CompileExecuteFAF(eplFAF, path);
-                Assert.AreEqual("abc", result.Array[0].Get("c0"));
+                ClassicAssert.AreEqual("abc", result.Array[0].Get("c0"));
 
                 env.Milestone(0);
 
                 result = env.CompileExecuteFAF(eplFAF, path);
-                Assert.AreEqual("abc", result.Array[0].Get("c0"));
+                ClassicAssert.AreEqual("abc", result.Array[0].Get("c0"));
 
                 env.UndeployAll();
             }
@@ -312,12 +314,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.clazz
                              "}\n" +
                              "\"\"\"\n select ${NAMESPACE}.MyClass.DoIt(TheString) as c0 from MyWindow";
                 var result = env.CompileExecuteFAF(eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()), path);
-                Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                ClassicAssert.AreEqual(">E1<", result.Array[0].Get("c0"));
 
                 env.Milestone(0);
 
                 result = env.CompileExecuteFAF(eplFAF.Replace("${NAMESPACE}", NamespaceGenerator.Create()), path);
-                Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                ClassicAssert.AreEqual(">E1<", result.Array[0].Get("c0"));
 
                 env.UndeployAll();
             }

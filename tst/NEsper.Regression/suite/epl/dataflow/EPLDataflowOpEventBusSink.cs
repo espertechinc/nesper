@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -150,9 +151,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                         listener.WaitForInvocation(3000, 3);
                         var events = listener.NewDataListFlattened;
                         for (var i = 0; i < 3; i++) {
-                            Assert.AreEqual("abc", events[i].Get("p0"));
+                            ClassicAssert.AreEqual("abc", events[i].Get("p0"));
                             var val = events[i].Get("p1").AsInt64();
-                            Assert.IsTrue(val > 0 && val < 10);
+                            ClassicAssert.IsTrue(val > 0 && val < 10);
                         }
                     });
 

@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -516,9 +516,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select",
                     statement => {
                         var resultType = statement.EventType;
-                        Assert.AreEqual(2, resultType.PropertyNames.Length);
-                        Assert.AreEqual(typeof(string), resultType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+                        ClassicAssert.AreEqual(2, resultType.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(string), resultType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
                     });
 
                 env.UndeployAll();
@@ -584,8 +584,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select",
                     statement => {
                         var resultType = statement.EventType;
-                        Assert.AreEqual(1, resultType.PropertyNames.Length);
-                        Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+                        ClassicAssert.AreEqual(1, resultType.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
                     });
 
                 env.UndeployModuleContaining("create");
@@ -663,8 +663,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select",
                     statement => {
                         var resultType = statement.EventType;
-                        Assert.AreEqual(1, resultType.PropertyNames.Length);
-                        Assert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
+                        ClassicAssert.AreEqual(1, resultType.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(int?), resultType.GetPropertyType("sumb"));
                     });
 
                 env.UndeployAll();
@@ -722,7 +722,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertListener(
                     "select",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "A1", "E1", 1 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "A1", "E2", 2 });
                     });
@@ -784,7 +784,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
                 env.AssertStatement(
                     "select",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.ON_SELECT,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -813,7 +813,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "create",
                     fieldsCreate,
                     new object[][] { new object[] { "E1", 1 }, new object[] { "E2", 2 }, new object[] { "E3", 3 } });
-                env.AssertIterator("select", iterator => Assert.IsFalse(iterator.MoveNext()));
+                env.AssertIterator("select", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
                 SendSupportBean(env, "E4", 0);
 
@@ -823,7 +823,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertListener(
                     "select",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         EPAssertionUtil.AssertProps(
                             listener.LastNewData[0],
                             fieldsOnSelect,
@@ -844,7 +844,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         new object[] { "E1", 1 }, new object[] { "E2", 2 }, new object[] { "E3", 3 },
                         new object[] { "E4", 0 }
                     });
-                env.AssertIterator("select", iterator => Assert.IsFalse(iterator.MoveNext()));
+                env.AssertIterator("select", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
                 env.UndeployModuleContaining("select");
                 env.UndeployModuleContaining("insert");
@@ -991,7 +991,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextSelect, path).AddListener("select");
                 env.AssertStatement(
                     "select",
-                    statement => Assert.IsFalse(((EPStatementSPI)statement).StatementContext.IsStatelessSelect));
+                    statement => ClassicAssert.IsFalse(((EPStatementSPI)statement).StatementContext.IsStatelessSelect));
 
                 // send 3 event
                 SendSupportBean(env, "E1", 16);
@@ -1007,9 +1007,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "select",
                     listener => {
                         var events = listener.LastNewData;
-                        Assert.AreEqual(2, events.Length);
-                        Assert.AreEqual("E1", events[0].Get("mwcwin.a"));
-                        Assert.AreEqual("E1", events[1].Get("mwcwin.a"));
+                        ClassicAssert.AreEqual(2, events.Length);
+                        ClassicAssert.AreEqual("E1", events[0].Get("mwcwin.a"));
+                        ClassicAssert.AreEqual("E1", events[1].Get("mwcwin.a"));
                     });
 
                 env.UndeployAll();
@@ -1444,7 +1444,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                                 Assert.Fail();
                             }
                             catch (EPCompileException ex) {
-                                Assert.IsTrue(ex.Message.Contains("index hint busted"));
+                                ClassicAssert.IsTrue(ex.Message.Contains("index hint busted"));
                             }
                         });
                 }

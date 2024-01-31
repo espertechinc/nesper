@@ -16,6 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.context
@@ -470,13 +471,13 @@ namespace com.espertech.esper.regressionlib.suite.context
                     .SetSubscriber("s0");
 
                 env.SendEventBean(new SupportBean("G1", 1));
-                env.AssertSubscriber("s0", subs => Assert.AreEqual(1L, subs.AssertOneGetNewAndReset()));
+                env.AssertSubscriber("s0", subs => ClassicAssert.AreEqual(1L, subs.AssertOneGetNewAndReset()));
 
                 env.SendEventBean(new SupportBean("G1", 1));
-                env.AssertSubscriber("s0", subs => Assert.AreEqual(2L, subs.AssertOneGetNewAndReset()));
+                env.AssertSubscriber("s0", subs => ClassicAssert.AreEqual(2L, subs.AssertOneGetNewAndReset()));
 
                 env.SendEventBean(new SupportBean("G2", 2));
-                env.AssertSubscriber("s0", subs => Assert.AreEqual(1L, subs.AssertOneGetNewAndReset()));
+                env.AssertSubscriber("s0", subs => ClassicAssert.AreEqual(1L, subs.AssertOneGetNewAndReset()));
 
                 env.UndeployAll();
             }
@@ -613,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             env.DeploymentId("CTX"),
                             "SegmentedByString",
                             ContextPartitionSelectorAll.INSTANCE);
-                        Assert.AreEqual(1, partitions.Identifiers.Count);
+                        ClassicAssert.AreEqual(1, partitions.Identifiers.Count);
                         var ident = (ContextPartitionIdentifierPartitioned)partitions.Identifiers.Values.First();
                         EPAssertionUtil.AssertEqualsExactOrder(new string[] { "G1" }, ident.Keys);
                     });

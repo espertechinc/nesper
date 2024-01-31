@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.patternassert
 {
@@ -231,13 +232,13 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 				"s0",
 				listener => {
 					if (stepDesc == null) {
-						Assert.IsFalse(listener.IsInvoked, "At time " + timeInSec + " expected no events but received one or more");
+						ClassicAssert.IsFalse(listener.IsInvoked, "At time " + timeInSec + " expected no events but received one or more");
 					}
 					else {
 						// If we do expect remove stream events, asset both
 						if (!isExpectNullRemoveStream) {
 							var message = "At time " + timeInSec;
-							Assert.IsTrue(listener.IsInvoked, message + " expected events but received none");
+							ClassicAssert.IsTrue(listener.IsInvoked, message + " expected events but received none");
 							if (assertAllowAnyOrder) {
 								EPAssertionUtil.AssertPropsPerRowAnyOrder(
 									listener.LastNewData,
@@ -265,7 +266,7 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 							// If we don't expect remove stream events (istream only), then asset new data only if there
 							// If we do expect new data, assert
 							if (stepDesc.NewDataPerRow != null) {
-								Assert.IsTrue(listener.IsInvoked, "At time " + timeInSec + " expected events but received none");
+								ClassicAssert.IsTrue(listener.IsInvoked, "At time " + timeInSec + " expected events but received none");
 								if (assertAllowAnyOrder) {
 									EPAssertionUtil.AssertPropsPerRowAnyOrder(
 										listener.LastNewData,
@@ -282,12 +283,12 @@ namespace com.espertech.esper.regressionlib.support.patternassert
 							}
 							else {
 								// If we don't expect new data, make sure its null
-								Assert.IsNull(
+								ClassicAssert.IsNull(
 									listener.LastNewData,
 									"At time " + timeInSec + " expected no insert stream events but received some");
 							}
 
-							Assert.IsNull(
+							ClassicAssert.IsNull(
 								listener.LastOldData,
 								"At time " +
 								timeInSec +

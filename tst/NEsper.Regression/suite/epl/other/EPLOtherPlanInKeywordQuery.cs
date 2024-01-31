@@ -23,6 +23,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
@@ -122,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy(epl);
 
                 var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                Assert.AreEqual("[]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                ClassicAssert.AreEqual("[]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
 
                 env.UndeployAll();
             }
@@ -148,7 +149,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        ClassicAssert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 TryAssertionMultiIdx(env);
@@ -168,7 +169,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge),
                             onExprNamedWindow.TableLookupStrategy);
                     });
@@ -195,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge),
                             onExprTable.TableLookupStrategy);
                     });
@@ -222,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordMultiTableLookupStrategyFactoryForge),
                             subquery.TableLookupStrategy);
                     });
@@ -291,7 +292,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordFullTableScanLookupStrategyFactoryForge),
                             subqueryCoercion.TableLookupStrategy);
                     });
@@ -314,7 +315,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[0].Items;
-                        Assert.AreEqual("[\"P00\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        ClassicAssert.AreEqual("[\"P00\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 TryAssertionSingleIdx(env);
@@ -334,7 +335,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var onExprNamedWindow = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge),
                             onExprNamedWindow.TableLookupStrategy);
                     });
@@ -359,7 +360,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var onExprTable = SupportQueryPlanIndexHook.AssertOnExprAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge),
                             onExprTable.TableLookupStrategy);
                     });
@@ -387,7 +388,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var subquery = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordInKeywordSingleTableLookupStrategyFactoryForge),
                             subquery.TableLookupStrategy);
                     });
@@ -456,7 +457,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var subqueryCoercion = SupportQueryPlanIndexHook.AssertSubqueryAndReset();
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             nameof(SubordFullTableScanLookupStrategyFactoryForge),
                             subqueryCoercion.TableLookupStrategy);
                     });
@@ -479,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[\"P10\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        ClassicAssert.AreEqual("[\"P10\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 env.SendEventBean(new SupportBean_S1(100, "x"));
@@ -514,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var items = SupportQueryPlanIndexHook.AssertJoinAndReset().IndexSpecs[1].Items;
-                        Assert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
+                        ClassicAssert.AreEqual("[\"P10\"][\"P11\"]", SupportQueryPlanIndexHelper.GetIndexedExpressions(items));
                     });
 
                 env.SendEventBean(new SupportBean_S1(100, "x", "y"));
@@ -801,7 +802,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual(c0, @event.Get("c0"));
+                    ClassicAssert.AreEqual(c0, @event.Get("c0"));
                     var c1Coll = @event.Get("c1");
                     EPAssertionUtil.AssertEqualsAnyOrder(c1, c1Coll?.Unwrap<int?>());
                 });

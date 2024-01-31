@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
@@ -1097,20 +1098,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual(cAvedev, @event.Get("cAvedev"));
-                    Assert.AreEqual(cAvg, @event.Get("cAvg"));
-                    Assert.AreEqual(cCount, @event.Get("cCount"));
-                    Assert.AreEqual(cMax, @event.Get("cMax"));
-                    Assert.AreEqual(cFmax, @event.Get("cFmax"));
-                    Assert.AreEqual(cMaxever, @event.Get("cMaxever"));
-                    Assert.AreEqual(cFmaxever, @event.Get("cFmaxever"));
-                    Assert.AreEqual(cMedian, @event.Get("cMedian"));
-                    Assert.AreEqual(cMin, @event.Get("cMin"));
-                    Assert.AreEqual(cFmin, @event.Get("cFmin"));
-                    Assert.AreEqual(cMinever, @event.Get("cMinever"));
-                    Assert.AreEqual(cFminever, @event.Get("cFminever"));
-                    Assert.AreEqual(cStddev, @event.Get("cStddev"));
-                    Assert.AreEqual(cSum, @event.Get("cSum"));
+                    ClassicAssert.AreEqual(cAvedev, @event.Get("cAvedev"));
+                    ClassicAssert.AreEqual(cAvg, @event.Get("cAvg"));
+                    ClassicAssert.AreEqual(cCount, @event.Get("cCount"));
+                    ClassicAssert.AreEqual(cMax, @event.Get("cMax"));
+                    ClassicAssert.AreEqual(cFmax, @event.Get("cFmax"));
+                    ClassicAssert.AreEqual(cMaxever, @event.Get("cMaxever"));
+                    ClassicAssert.AreEqual(cFmaxever, @event.Get("cFmaxever"));
+                    ClassicAssert.AreEqual(cMedian, @event.Get("cMedian"));
+                    ClassicAssert.AreEqual(cMin, @event.Get("cMin"));
+                    ClassicAssert.AreEqual(cFmin, @event.Get("cFmin"));
+                    ClassicAssert.AreEqual(cMinever, @event.Get("cMinever"));
+                    ClassicAssert.AreEqual(cFminever, @event.Get("cFminever"));
+                    ClassicAssert.AreEqual(cStddev, @event.Get("cStddev"));
+                    ClassicAssert.AreEqual(cSum, @event.Get("cSum"));
                 });
         }
 
@@ -1124,7 +1125,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 "s0",
                 listener => {
                     var value = listener.AssertOneGetNewAndReset().Get("c0").UnwrapIntoList<object>();
-                    Assert.AreEqual(expected, CompatExtensions.RenderAny(value));
+                    ClassicAssert.AreEqual(expected, CompatExtensions.RenderAny(value));
                 });
         }
 

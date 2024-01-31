@@ -20,6 +20,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -589,7 +590,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
             // send event, all should receive the event
             SendBean(env, "IntBoxed", 3);
             for (var i = 0; i < statements.Length; i++) {
-                Assert.IsTrue(listeners[i].IsInvokedAndReset());
+                ClassicAssert.IsTrue(listeners[i].IsInvokedAndReset());
             }
 
             // stop first, then second, then third etc statement
@@ -599,18 +600,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 // send event, all remaining statement received it
                 SendBean(env, "IntBoxed", 3);
                 for (var i = 0; i <= toStop; i++) {
-                    Assert.IsFalse(listeners[i].IsInvoked);
+                    ClassicAssert.IsFalse(listeners[i].IsInvoked);
                 }
 
                 for (var i = toStop + 1; i < statements.Length; i++) {
-                    Assert.IsTrue(listeners[i].IsInvokedAndReset());
+                    ClassicAssert.IsTrue(listeners[i].IsInvokedAndReset());
                 }
             }
 
             // now all statements are stopped, send event and verify no listener received
             SendBean(env, "IntBoxed", 3);
             for (var i = 0; i < statements.Length; i++) {
-                Assert.IsFalse(listeners[i].IsInvoked);
+                ClassicAssert.IsFalse(listeners[i].IsInvoked);
             }
         }
 

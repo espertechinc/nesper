@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.json;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -193,11 +194,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var und = (JsonEventObjectBase)@event.Underlying;
 
-                Assert.AreEqual("{\"n1\":\"a\"}", und.Get("pn").ToString());
-                Assert.AreEqual("{\"n1\":\"b\"}", und.Get("cn").ToString());
+                ClassicAssert.AreEqual("{\"n1\":\"a\"}", und.Get("pn").ToString());
+                ClassicAssert.AreEqual("{\"n1\":\"b\"}", und.Get("cn").ToString());
                 EPAssertionUtil.AssertEqualsExactOrder(new int[] { 1, 2 }, (int[])und.Get("pa"));
                 EPAssertionUtil.AssertEqualsExactOrder(new int[] { 3, 4 }, (int[])und.Get("ca"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "{\"pn\":{\"n1\":\"a\"},\"pa\":[1,2],\"cn\":{\"n1\":\"b\"},\"ca\":[3,4]}",
                     und.ToString());
             }
@@ -289,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             {
                 var und = (JsonEventObject)@event.Underlying;
                 SupportJsonEventTypeUtil.CompareDictionaries(expected, und);
-                Assert.AreEqual(jsonOne, und.ToString());
+                ClassicAssert.AreEqual(jsonOne, und.ToString());
             }
 
             private void AssertInvoked(
@@ -308,7 +309,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
 
                         var splitNotInvoked = notInvokedCsv.SplitCsv();
                         foreach (var s in splitNotInvoked) {
-                            Assert.IsFalse(env.Listener(s).IsInvoked);
+                            ClassicAssert.IsFalse(env.Listener(s).IsInvoked);
                         }
 
                         assertion.Invoke(@event);
@@ -348,10 +349,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 AssertNoSuchElement(() => und.GetNativeKeyName(0));
                 AssertNoSuchElement(() => und.GetNativeEntry(0));
                 Assert.That(und.TryGetNativeKey("x", out var index), Is.False);
-                Assert.IsTrue(und.JsonValues.IsEmpty());
+                ClassicAssert.IsTrue(und.JsonValues.IsEmpty());
 
                 SupportJsonEventTypeUtil.CompareDictionaries(new LinkedHashMap<string, object>(), und);
-                Assert.AreEqual("{}", und.ToString());
+                ClassicAssert.AreEqual("{}", und.ToString());
             }
         }
 
@@ -386,14 +387,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 AssertByIndex(2, und.GetNativeKeyName, new object[] { "b1", "d1" });
                 AssertByIndex(2, i => und.GetNativeEntry(i), new object[] { ToEntry("b1", 4d), ToEntry("d1", "def") });
                 AssertByName(und, "b1,d1");
-                Assert.IsTrue(und.JsonValues.IsEmpty());
+                ClassicAssert.IsTrue(und.JsonValues.IsEmpty());
 
                 IDictionary<string, object> compared = new LinkedHashMap<string, object>();
                 compared.Put("b1", 4d);
                 compared.Put("d1", "def");
                 SupportJsonEventTypeUtil.CompareDictionaries(compared, und);
 
-                Assert.AreEqual("{\"b1\":4.0,\"d1\":\"def\"}", und.ToString());
+                ClassicAssert.AreEqual("{\"b1\":4.0,\"d1\":\"def\"}", und.ToString());
             }
         }
 
@@ -434,14 +435,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         ToEntry("c1", "def")
                     });
                 AssertByName(und, "a1,c1");
-                Assert.IsTrue(und.JsonValues.IsEmpty());
+                ClassicAssert.IsTrue(und.JsonValues.IsEmpty());
 
                 IDictionary<string, object> compared = new LinkedHashMap<string, object>();
                 compared.Put("a1", 4d);
                 compared.Put("c1", "def");
                 SupportJsonEventTypeUtil.CompareDictionaries(compared, und);
 
-                Assert.AreEqual("{\"a1\":4.0,\"c1\":\"def\"}", und.ToString());
+                ClassicAssert.AreEqual("{\"a1\":4.0,\"c1\":\"def\"}", und.ToString());
             }
         }
 
@@ -480,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             private void AssertEvent(EventBean @event)
             {
                 var und = (JsonEventObjectBase)@event.Underlying;
-                Assert.AreEqual(6, und.NativeCount);
+                ClassicAssert.AreEqual(6, und.NativeCount);
                 AssertByIndex(6, und.GetNativeValue, new object[] { 4d, "x", 3, "def", 2d, 1 });
                 AssertByIndex(6, und.GetNativeKeyName, new object[] { "a1", "b1", "b2", "c1", "d1", "d2" });
                 AssertByIndex(
@@ -495,7 +496,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         ToEntry("d2", 1)
                     });
                 AssertByName(und, "a1,b1,b2,c1,d1,d2");
-                Assert.IsTrue(und.JsonValues.IsEmpty());
+                ClassicAssert.IsTrue(und.JsonValues.IsEmpty());
 
                 IDictionary<string, object> compared = new LinkedHashMap<string, object>();
                 compared.Put("a1", 4d);
@@ -506,7 +507,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 compared.Put("d2", 1);
                 SupportJsonEventTypeUtil.CompareDictionaries(compared, und);
 
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "{\"a1\":4.0,\"b1\":\"x\",\"b2\":3,\"c1\":\"def\",\"d1\":2.0,\"d2\":1}",
                     und.ToString());
             }
@@ -548,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     });
                 Assert.That(und.NativeCount, Is.EqualTo(4));
                 AssertByName(und, "p1,p2,c1,c2");
-                Assert.IsTrue(und.JsonValues.IsEmpty());
+                ClassicAssert.IsTrue(und.JsonValues.IsEmpty());
 
                 IDictionary<string, object> compared = new LinkedHashMap<string, object>();
                 compared.Put("p1", "abc");
@@ -557,7 +558,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 compared.Put("c2", 20);
                 SupportJsonEventTypeUtil.CompareDictionaries(compared, und);
 
-                Assert.AreEqual("{\"p1\":\"abc\",\"p2\":10,\"c1\":\"def\",\"c2\":20}", und.ToString());
+                ClassicAssert.AreEqual("{\"p1\":\"abc\",\"p2\":10,\"c1\":\"def\",\"c2\":20}", und.ToString());
             }
         }
 
@@ -574,7 +575,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
         {
             var split = csv.SplitCsv();
             for (var i = 0; i < split.Length; i++) {
-                Assert.IsTrue(und.ContainsKey(split[i]));
+                ClassicAssert.IsTrue(und.ContainsKey(split[i]));
                 Assert.That(und.TryGetNativeKey(split[i], out var name), Is.True);
                 Assert.That(name, Is.EqualTo(split[i]));
             }
@@ -619,8 +620,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             env.AssertIterator(
                 "s0",
                 itS0 => {
-                    Assert.AreEqual(10, itS0.Advance().Get("c0"));
-                    Assert.AreEqual("abc", itS0.Advance().Get("c0"));
+                    ClassicAssert.AreEqual(10, itS0.Advance().Get("c0"));
+                    ClassicAssert.AreEqual("abc", itS0.Advance().Get("c0"));
                 });
 
             env.AssertIterator(
@@ -649,7 +650,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
         {
             var @event = (JsonEventObjectBase)eventBean.Underlying;
             SupportJsonEventTypeUtil.CompareDictionaries(Collections.SingletonMap("value", expected), @event);
-            Assert.AreEqual(json, @event.ToString());
+            ClassicAssert.AreEqual(json, @event.ToString());
         }
     }
 } // end of namespace

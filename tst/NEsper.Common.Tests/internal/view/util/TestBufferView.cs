@@ -13,6 +13,7 @@ using com.espertech.esper.common.@internal.supportunit.@event;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.view.util
 {
@@ -100,7 +101,7 @@ namespace com.espertech.esper.common.@internal.view.util
         public void TestUpdate()
         {
             // Observer starts with no data
-            Assert.IsFalse(observer.GetAndResetHasNewData());
+            ClassicAssert.IsFalse(observer.GetAndResetHasNewData());
 
             // Send some data
             var newEvents = MakeBeans("n", 1);
@@ -108,15 +109,15 @@ namespace com.espertech.esper.common.@internal.view.util
             bufferView.Update(newEvents, oldEvents);
 
             // make sure received
-            Assert.IsTrue(observer.GetAndResetHasNewData());
-            Assert.AreEqual(1, observer.GetAndResetStreamId());
-            Assert.IsNotNull(observer.GetAndResetNewEventBuffer());
-            Assert.IsNotNull(observer.GetAndResetOldEventBuffer());
+            ClassicAssert.IsTrue(observer.GetAndResetHasNewData());
+            ClassicAssert.AreEqual(1, observer.GetAndResetStreamId());
+            ClassicAssert.IsNotNull(observer.GetAndResetNewEventBuffer());
+            ClassicAssert.IsNotNull(observer.GetAndResetOldEventBuffer());
 
             // Reset and send null data
-            Assert.IsFalse(observer.GetAndResetHasNewData());
+            ClassicAssert.IsFalse(observer.GetAndResetHasNewData());
             bufferView.Update(null, null);
-            Assert.IsTrue(observer.GetAndResetHasNewData());
+            ClassicAssert.IsTrue(observer.GetAndResetHasNewData());
         }
     }
 } // end of namespace

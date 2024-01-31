@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -176,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 myEventBean1.TheString = "address";
                 myEventBean1.IntBoxed = 9001;
                 env.SendEventBean(myEventBean1);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.Milestone(0);
 
@@ -184,17 +185,17 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 myEventBean2.TheString = "txn";
                 myEventBean2.IntBoxed = 9001;
                 env.SendEventBean(myEventBean2);
-                env.AssertIterator("s0", enumerator => Assert.IsTrue(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsTrue(enumerator.MoveNext()));
 
                 env.Milestone(1);
 
                 env.AssertIterator(
                     "s0",
                     enumerator => {
-                        Assert.IsTrue(enumerator.MoveNext());
+                        ClassicAssert.IsTrue(enumerator.MoveNext());
                         var theEvent = enumerator.Current;
-                        Assert.AreEqual(myEventBean1, theEvent.Get("addressInfo"));
-                        Assert.AreEqual(myEventBean2, theEvent.Get("txnWD"));
+                        ClassicAssert.AreEqual(myEventBean1, theEvent.Get("addressInfo"));
+                        ClassicAssert.AreEqual(myEventBean2, theEvent.Get("txnWD"));
                     });
 
                 env.UndeployAll();
@@ -226,10 +227,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertIterator(
                     "s0",
                     enumerator => {
-                        Assert.IsTrue(enumerator.MoveNext());
+                        ClassicAssert.IsTrue(enumerator.MoveNext());
                         var theEvent = enumerator.Current;
-                        Assert.AreEqual(myEventBean1, theEvent.Get("addressInfo"));
-                        Assert.AreEqual(myEventBean2, theEvent.Get("txnWD"));
+                        ClassicAssert.AreEqual(myEventBean1, theEvent.Get("addressInfo"));
+                        ClassicAssert.AreEqual(myEventBean2, theEvent.Get("txnWD"));
                     });
 
                 env.UndeployAll();
@@ -243,7 +244,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 var stmtText = "@name('s0') select * from SupportMarketDataBean#length(5) order by Symbol, Volume";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 object eventOne = SendEvent(env, "SYM", 1);
                 AssertIterator(env, new[] { eventOne });
@@ -285,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "@name('s0') select Symbol, Volume from SupportMarketDataBean#length(3) order by Symbol, Volume";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 1);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 1L } });
@@ -322,7 +323,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.CompileDeploy(stmtText).AddListener("s0");
 
                 SendEvent(env, "SYM", 100);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
                 env.AssertPropsPerRowIterator("s0", fields, null);
 
                 SendEvent(env, "SYM", -1);
@@ -369,7 +370,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(3);
 
                 SendEvent(env, "SYM", 6);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -441,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "group by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
@@ -504,7 +505,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "from SupportMarketDataBean#length(5) " +
                                "group by Symbol having sum(Volume) > 10";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
@@ -562,12 +563,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "from SupportMarketDataBean#groupwin(Symbol)#length(1) " +
                                "where Price - Volume >= 1000.0 group by Symbol having count(*) = 1";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportMarketDataBean("SYM", -1, -1L, null));
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.Milestone(1);
 
@@ -575,7 +576,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", "1x1000.0" } });
 
                 env.SendEventBean(new SupportMarketDataBean("SYM", 1d, 1L, null));
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -591,7 +592,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "group by Symbol " +
                                "order by Symbol";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
@@ -660,7 +661,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "group by Symbol";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
@@ -727,7 +728,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "group by Symbol having sum(Volume) > 20";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", -1, 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", -1d, 100L } });
@@ -794,7 +795,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "from SupportMarketDataBean#length(3) ";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
@@ -832,7 +833,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "from SupportMarketDataBean#length(3) " +
                                " order by Symbol asc";
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
                 env.AssertPropsPerRowIterator("s0", fields, new[] { new object[] { "SYM", 100L } });
@@ -871,10 +872,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 
                 env.CompileDeploy(stmtText).AddListener("s0");
 
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, "SYM", 100);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.Milestone(0);
 
@@ -893,7 +894,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     new[] { new object[] { "SYM", 104L }, new object[] { "TAC", 104L }, new object[] { "MOV", 104L } });
 
                 SendEvent(env, "SYM", 10);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -941,10 +942,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                                "from SupportMarketDataBean#length(3) having sum(Volume) > 100";
 
                 env.CompileDeploy(stmtText).AddListener("s0");
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 SendEvent(env, 100);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.Milestone(0);
 
@@ -957,7 +958,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.Milestone(1);
 
                 SendEvent(env, 10);
-                env.AssertIterator("s0", enumerator => Assert.IsFalse(enumerator.MoveNext()));
+                env.AssertIterator("s0", enumerator => ClassicAssert.IsFalse(enumerator.MoveNext()));
 
                 env.UndeployAll();
             }

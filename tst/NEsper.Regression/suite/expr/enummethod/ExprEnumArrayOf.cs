@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil;
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 using static com.espertech.esper.regressionlib.support.bean.SupportBean_ST0_Container;
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(fields[0], val => AssertArrayEquals(Array.Empty<string>(), val));
 
                 builder.WithAssertion(Make2ValueNull())
-                    .Verify(fields[0], Assert.IsNull);
+                    .Verify(fields[0], ClassicAssert.IsNull);
 
                 builder.Run(env);
             }
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(fields[0], val => AssertArrayEquals(Array.Empty<string>(), val));
 
                 builder.WithAssertion(MakeString(null))
-                    .Verify(fields[0], Assert.IsNull);
+                    .Verify(fields[0], ClassicAssert.IsNull);
 
                 builder.Run(env);
             }
@@ -230,7 +230,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify(fields[0], val => AssertArrayEquals(new int?[] { }, val));
 
                 builder.WithAssertion(MakeString(null))
-                    .Verify(fields[0], Assert.IsNull);
+                    .Verify(fields[0], ClassicAssert.IsNull);
 
                 builder.Run(env);
             }

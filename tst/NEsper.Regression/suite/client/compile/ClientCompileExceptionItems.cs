@@ -13,7 +13,7 @@ using com.espertech.esper.compiler.client;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     AssertMessage(
                         ex,
                         "Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1'");
-                    Assert.AreEqual(2, ex.Items.Count);
+                    ClassicAssert.AreEqual(2, ex.Items.Count);
                     AssertItem(
                         ex.Items[0],
                         "create schema MySchemaOne (   col1 Wrong )",
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     AssertMessage(
                         ex,
                         "Nestable type configuration encountered an unexpected property type name 'Wrong' for property 'col1'");
-                    Assert.AreEqual(2, ex.Items.Count);
+                    ClassicAssert.AreEqual(2, ex.Items.Count);
                     AssertItem(
                         ex.Items[0],
                         "create schema MySchemaOne (col1 Wrong)",
@@ -136,7 +136,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 }
                 catch (EPCompileException ex) {
                     AssertMessage(ex, "Incorrect syntax near 'XX' [XX X]");
-                    Assert.AreEqual(1, ex.Items.Count);
+                    ClassicAssert.AreEqual(1, ex.Items.Count);
                     AssertItem(ex.Items[0], "XX X", 1, "Incorrect syntax near 'XX'");
                 }
             }
@@ -153,8 +153,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             int lineNumber,
             string expectedMsg)
         {
-            Assert.AreEqual(expression, item.Expression);
-            Assert.AreEqual(lineNumber, item.LineNumber);
+            ClassicAssert.AreEqual(expression, item.Expression);
+            ClassicAssert.AreEqual(lineNumber, item.LineNumber);
             AssertMessage(item.InnerException.Message, expectedMsg);
         }
     }

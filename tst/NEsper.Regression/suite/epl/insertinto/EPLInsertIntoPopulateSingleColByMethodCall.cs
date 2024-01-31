@@ -29,7 +29,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra; // assertTrue
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -218,13 +218,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.CompileDeploy(textOne, path).AddListener("s1");
             env.AssertStatement(
                 "s1",
-                statement => Assert.IsTrue(
+                statement => ClassicAssert.IsTrue(
                     TypeHelper.IsSubclassOrImplementsInterface(statement.EventType.UnderlyingType, underlyingType)));
 
             env.CompileDeploy(textTwo, path).AddListener("s2");
             env.AssertStatement(
                 "s2",
-                statement => Assert.IsTrue(
+                statement => ClassicAssert.IsTrue(
                     TypeHelper.IsSubclassOrImplementsInterface(statement.EventType.UnderlyingType, underlyingType)));
 
             sendEvent.Invoke(env, @event, typeNameEvent);
@@ -232,9 +232,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s2",
                 theEvent => {
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         TypeHelper.IsSubclassOrImplementsInterface(theEvent.EventType.GetType(), eventTypeType));
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         TypeHelper.IsSubclassOrImplementsInterface(theEvent.Underlying.GetType(), underlyingType));
                     EPAssertionUtil.AssertProps(theEvent, propertyName, propertyValues);
                 });
@@ -275,9 +275,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s0",
                 eventBean => {
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         TypeHelper.IsSubclassOrImplementsInterface(eventBean.Underlying.GetType(), underlyingType));
-                    Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventBean.GetType(), eventBeanType));
+                    ClassicAssert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventBean.GetType(), eventBeanType));
                     EPAssertionUtil.AssertProps(eventBean, propertyName, propertyValues);
                 });
 

@@ -15,6 +15,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
     public class ExprCoreCurrentTimestamp
@@ -44,10 +46,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("current_timestamp()"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t0"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t1"));
-                        Assert.AreEqual(typeof(long?), type.GetPropertyType("t2"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("current_timestamp()"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("t0"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("t1"));
+                        ClassicAssert.AreEqual(typeof(long?), type.GetPropertyType("t2"));
                     });
 
                 SendTimer(env, 100);
@@ -60,7 +62,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     theEvent => {
                         AssertResults(theEvent, new object[] { 999L, 999L, 1000L });
-                        Assert.AreEqual(theEvent.Get("current_timestamp()"), theEvent.Get("t0"));
+                        ClassicAssert.AreEqual(theEvent.Get("current_timestamp()"), theEvent.Get("t0"));
                     });
 
                 env.UndeployAll();
@@ -78,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.SelectClause = SelectClause.Create().Add(Expressions.CurrentTimestamp(), "t0");
                 model.FromClause = FromClause.Create().Add(FilterStream.Create(nameof(SupportBean)));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);
@@ -123,7 +125,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             object[] result)
         {
             for (var i = 0; i < result.Length; i++) {
-                Assert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
+                ClassicAssert.AreEqual(result[i], theEvent.Get("t" + i), "failed for index " + i);
             }
         }
     }

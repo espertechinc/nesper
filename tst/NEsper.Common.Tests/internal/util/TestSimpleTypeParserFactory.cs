@@ -9,6 +9,7 @@
 using System;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -48,7 +49,7 @@ namespace com.espertech.esper.common.@internal.util
             for (int i = 0; i < tests.Length; i++)
             {
                 SimpleTypeParser parser = SimpleTypeParserFactory.GetParser((Type) tests[i][0]);
-                Assert.AreEqual(tests[i][2], parser.Parse((string) tests[i][1]), "error in row:" + i);
+                ClassicAssert.AreEqual(tests[i][2], parser.Parse((string) tests[i][1]), "error in row:" + i);
             }
         }
     }

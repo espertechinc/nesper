@@ -12,6 +12,7 @@ using System.Numerics;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -36,7 +37,7 @@ namespace com.espertech.esper.common.@internal.type
         {
             var computer = MathArithType.GetComputer(
                 MathArithTypeEnum.ADD, typeof(double?), typeof(double?), typeof(double?), false, false, null);
-            Assert.AreEqual(12.1d, computer.Compute(5.5, 6.6));
+            ClassicAssert.AreEqual(12.1d, computer.Compute(5.5, 6.6));
         }
 
         [Test]
@@ -55,32 +56,32 @@ namespace com.espertech.esper.common.@internal.type
 
                     if (type == MathArithTypeEnum.ADD)
                     {
-                        Assert.AreEqual(clazz, result.GetType());
-                        Assert.AreEqual(7d, result.AsDouble());
+                        ClassicAssert.AreEqual(clazz, result.GetType());
+                        ClassicAssert.AreEqual(7d, result.AsDouble());
                     }
 
                     if (type == MathArithTypeEnum.SUBTRACT)
                     {
-                        Assert.AreEqual(clazz, result.GetType());
-                        Assert.AreEqual(-1d, result.AsDouble());
+                        ClassicAssert.AreEqual(clazz, result.GetType());
+                        ClassicAssert.AreEqual(-1d, result.AsDouble());
                     }
 
                     if (type == MathArithTypeEnum.MULTIPLY)
                     {
-                        Assert.AreEqual(clazz, result.GetType());
-                        Assert.AreEqual(12d, result.AsDouble());
+                        ClassicAssert.AreEqual(clazz, result.GetType());
+                        ClassicAssert.AreEqual(12d, result.AsDouble());
                     }
 
                     if (type == MathArithTypeEnum.DIVIDE)
                     {
-                        Assert.AreEqual(typeof(double), result.GetType());
+                        ClassicAssert.AreEqual(typeof(double), result.GetType());
                         if (clazz == typeof(int?) || clazz == typeof(long?))
                         {
-                            Assert.AreEqual(0.75d, result.AsDouble(), "clazz=" + clazz);
+                            ClassicAssert.AreEqual(0.75d, result.AsDouble(), "clazz=" + clazz);
                         }
                         else
                         {
-                            Assert.AreEqual(3 / 4d, result.AsDouble(), "clazz=" + clazz);
+                            ClassicAssert.AreEqual(3 / 4d, result.AsDouble(), "clazz=" + clazz);
                         }
                     }
                 }
@@ -150,7 +151,7 @@ namespace com.espertech.esper.common.@internal.type
                     Log.Error("Exception expected", ex);
                 }
 
-                Assert.AreEqual(expected, result, "line " + i + " lhs=" + lhs + " op=" + e + " rhs=" + rhs);
+                ClassicAssert.AreEqual(expected, result, "line " + i + " lhs=" + lhs + " op=" + e + " rhs=" + rhs);
             }
         }
 

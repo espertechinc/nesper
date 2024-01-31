@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -78,7 +79,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             Log.Info($"{methodName} delta={(endTime - startTime)}");
 
             // Stay below 500, no index would be 4 sec plus
-            Assert.IsTrue(endTime - startTime < 500);
+            ClassicAssert.IsTrue(endTime - startTime < 500);
 
             env.UndeployAll();
         }
@@ -164,7 +165,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Log.Info($"{methodName} delta={(endTime - startTime)}");
 
                 // Stay below 500, no index would be 4 sec plus
-                Assert.IsTrue(endTime - startTime < 500);
+                ClassicAssert.IsTrue(endTime - startTime < 500);
                 env.UndeployAll();
             }
         }

@@ -9,6 +9,7 @@
 using System;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -18,9 +19,9 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void SimpleIndentTest()
         {
-            Assert.AreEqual("", Indent.CreateIndent(0));
-            Assert.AreEqual(" ", Indent.CreateIndent(1));
-            Assert.AreEqual("  ", Indent.CreateIndent(2));
+            ClassicAssert.AreEqual("", Indent.CreateIndent(0));
+            ClassicAssert.AreEqual(" ", Indent.CreateIndent(1));
+            ClassicAssert.AreEqual("  ", Indent.CreateIndent(2));
 
             try
             {

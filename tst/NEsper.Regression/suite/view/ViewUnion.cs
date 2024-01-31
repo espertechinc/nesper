@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -583,7 +584,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         object[] result =
                             { listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString") };
                         EPAssertionUtil.AssertEqualsAnyOrder(result, new string[] { "E1", "E2" });
@@ -598,7 +599,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[] { "E5" });
                         EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[] { "E5" });
                         listener.Reset();
@@ -611,7 +612,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                         EPAssertionUtil.AssertProps(listener.AssertOneGetOld(), fields, new object[] { "E3" });
                         EPAssertionUtil.AssertProps(listener.AssertOneGetNew(), fields, new object[] { "E6" });
                         listener.Reset();
@@ -731,7 +732,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         object[] result =
                             { listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString") };
                         EPAssertionUtil.AssertEqualsAnyOrder(result, new string[] { "E5", "E6" });

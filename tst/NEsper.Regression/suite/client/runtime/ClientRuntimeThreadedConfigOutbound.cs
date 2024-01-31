@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -56,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 throw new EPException(e);
             }
 
-            Assert.AreEqual(5, listener.NewEvents.Count);
+            ClassicAssert.AreEqual(5, listener.NewEvents.Count);
 
             env.UndeployAll();
         }

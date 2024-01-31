@@ -23,7 +23,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
@@ -170,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 foreach (var name in new string[] { "schema", "create" }) {
                     env.AssertStatement(
                         name,
-                        statement => Assert.IsTrue(
+                        statement => ClassicAssert.IsTrue(
                             eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
                 }
 
@@ -234,10 +234,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "create",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
+                        ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(eventType.UnderlyingType));
                         EPAssertionUtil.AssertEqualsAnyOrder(eventType.PropertyNames, new string[] { "one", "two" });
-                        Assert.AreEqual("T1", eventType.GetFragmentType("one").FragmentType.Name);
-                        Assert.AreEqual("T2", eventType.GetFragmentType("two").FragmentType.Name);
+                        ClassicAssert.AreEqual("T1", eventType.GetFragmentType("one").FragmentType.Name);
+                        ClassicAssert.AreEqual("T2", eventType.GetFragmentType("two").FragmentType.Name);
                     });
 
                 IDictionary<string, object> innerDataOne = new Dictionary<string, object>();
@@ -273,12 +273,12 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     statement => {
                         var eventType = statement.EventType;
                         EPAssertionUtil.AssertEqualsAnyOrder(eventType.PropertyNames, new string[] { "a", "b", "c" });
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(long?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c"));
-                        Assert.AreEqual(EventTypeTypeClass.NAMED_WINDOW, eventType.Metadata.TypeClass);
-                        Assert.AreEqual("MyWindowNW", eventType.Metadata.Name);
-                        Assert.AreEqual(EventTypeApplicationType.MAP, eventType.Metadata.ApplicationType);
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(EventTypeTypeClass.NAMED_WINDOW, eventType.Metadata.TypeClass);
+                        ClassicAssert.AreEqual("MyWindowNW", eventType.Metadata.Name);
+                        ClassicAssert.AreEqual(EventTypeApplicationType.MAP, eventType.Metadata.ApplicationType);
                     });
 
                 env.AssertStatement(
@@ -286,9 +286,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     statement => {
                         var eventType = statement.EventType;
                         EPAssertionUtil.AssertEqualsAnyOrder(eventType.PropertyNames, new string[] { "a", "b", "c" });
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(long?), eventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(long?), eventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("c"));
                     });
 
                 SendSupportBean(env, "E1", 1L, 10L);
@@ -382,7 +382,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(parentQuery, path).AddListener("s0");
 
                 env.SendEventBean(new SupportBean_A("E1"));
-                env.AssertListener("s0", listener => Assert.AreEqual(1, listener.NewDataListFlattened.Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(1, listener.NewDataListFlattened.Length));
 
                 env.UndeployAll();
             }
@@ -424,7 +424,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     iterator => {
                         var result = iterator.Advance();
                         var getter = result.EventType.GetGetter("event.hsi");
-                        Assert.AreEqual(10, getter.Get(result));
+                        ClassicAssert.AreEqual(10, getter.Get(result));
                     });
 
                 env.UndeployAll();
@@ -481,9 +481,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "create",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("b"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c"));
                     });
                 env.UndeployAll();
 
@@ -521,14 +521,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "@name('create') create window MyWindowMAM#keepall select * from MyMapWithKeyPrimitiveBoxed;\n" +
                     "@name('insert') insert into MyWindowMAM select * from MyMapWithKeyPrimitiveBoxed;\n";
                 env.CompileDeploy(epl).AddListener("create");
-                env.AssertStatement("create", statement => Assert.IsTrue(statement.EventType is MapEventType));
+                env.AssertStatement("create", statement => ClassicAssert.IsTrue(statement.EventType is MapEventType));
 
                 SendMap(env, "k1", 100L, 200L);
                 env.AssertListener(
                     "create",
                     listener => {
                         var theEvent = listener.AssertOneGetNewAndReset();
-                        Assert.IsTrue(theEvent is MappedEventBean);
+                        ClassicAssert.IsTrue(theEvent is MappedEventBean);
                         EPAssertionUtil.AssertProps(theEvent, "key,primitive".SplitCsv(), new object[] { "k1", 100L });
                     });
 

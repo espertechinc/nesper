@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -83,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "s0",
                     iterator => {
                         var @event = iterator.Advance();
-                        Assert.AreEqual(2L, @event.Get("thecnt"));
+                        ClassicAssert.AreEqual(2L, @event.Get("thecnt"));
                     });
             }
 

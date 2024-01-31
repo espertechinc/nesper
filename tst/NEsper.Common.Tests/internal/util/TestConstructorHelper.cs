@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -22,17 +23,17 @@ namespace com.espertech.esper.common.@internal.util
         {
             object[] parameters = new object[] { "test", 1 };
             SupportCtorObjectArray objOne = (SupportCtorObjectArray) ConstructorHelper.InvokeConstructor(typeof(SupportCtorObjectArray), parameters);
-            Assert.AreEqual(parameters, objOne.Arguments);
+            ClassicAssert.AreEqual(parameters, objOne.Arguments);
 
             SupportCtorInt objTwo = (SupportCtorInt) ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[] { 99 });
-            Assert.AreEqual(99, objTwo.SomeValue);
+            ClassicAssert.AreEqual(99, objTwo.SomeValue);
             objTwo = (SupportCtorInt) ConstructorHelper.InvokeConstructor(typeof(SupportCtorInt), new object[] { new int?(13) });
-            Assert.AreEqual(13, objTwo.SomeValue);
+            ClassicAssert.AreEqual(13, objTwo.SomeValue);
 
             SupportCtorIntObjectArray objThree = (SupportCtorIntObjectArray) ConstructorHelper.InvokeConstructor(typeof(SupportCtorIntObjectArray), new object[] { 1 });
-            Assert.AreEqual(1, objThree.SomeValue);
+            ClassicAssert.AreEqual(1, objThree.SomeValue);
             objThree = (SupportCtorIntObjectArray) ConstructorHelper.InvokeConstructor(typeof(SupportCtorIntObjectArray), parameters);
-            Assert.AreEqual(parameters, objThree.Arguments);
+            ClassicAssert.AreEqual(parameters, objThree.Arguments);
         }
 
         [Test]

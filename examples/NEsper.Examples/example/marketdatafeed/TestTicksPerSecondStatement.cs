@@ -17,7 +17,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.MarketDataFeed
@@ -60,12 +60,12 @@ namespace NEsper.Examples.MarketDataFeed
 	        SendEvent(new MarketDataEvent("IBM", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("GE", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("MS", FeedEnum.FEED_B));
-	        Assert.IsFalse(_listener.IsInvoked);
+	        ClassicAssert.IsFalse(_listener.IsInvoked);
 	
 	        _runtime.EventService.AdvanceTime(1500); // Now events arriving around 1.5 sec
 	        SendEvent(new MarketDataEvent("TEL", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("CSC", FeedEnum.FEED_B));
-	        Assert.IsFalse(_listener.IsInvoked);
+	        ClassicAssert.IsFalse(_listener.IsInvoked);
 	
 	        _runtime.EventService.AdvanceTime(2000); // Now events arriving around 2 sec
 	        SendEvent(new MarketDataEvent("TEL", FeedEnum.FEED_A));
@@ -78,7 +78,7 @@ namespace NEsper.Examples.MarketDataFeed
 	        SendEvent(new MarketDataEvent("TEL", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("GE", FeedEnum.FEED_B));
 	        SendEvent(new MarketDataEvent("MS", FeedEnum.FEED_B));
-            Assert.IsFalse(_listener.IsInvoked);
+            ClassicAssert.IsFalse(_listener.IsInvoked);
 	
 	        _runtime.EventService.AdvanceTime(3000);
 	        AssertCounts(2, 5);
@@ -87,7 +87,7 @@ namespace NEsper.Examples.MarketDataFeed
 	        SendEvent(new MarketDataEvent("TEL", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("IBM", FeedEnum.FEED_A));
 	        SendEvent(new MarketDataEvent("UUS", FeedEnum.FEED_A));
-            Assert.IsFalse(_listener.IsInvoked);
+            ClassicAssert.IsFalse(_listener.IsInvoked);
 	
 	        _runtime.EventService.AdvanceTime(4000);
 	        SendEvent(new MarketDataEvent("NBOT", FeedEnum.FEED_B));
@@ -95,7 +95,7 @@ namespace NEsper.Examples.MarketDataFeed
 	        AssertCounts(3, 0);
 	
 	        _runtime.EventService.AdvanceTime(4500);
-            Assert.IsFalse(_listener.IsInvoked);
+            ClassicAssert.IsFalse(_listener.IsInvoked);
 	
 	        _runtime.EventService.AdvanceTime(5000);
 	        AssertCounts(0, 2);
@@ -106,11 +106,11 @@ namespace NEsper.Examples.MarketDataFeed
 	    	var countPerFeed = new Dictionary<FeedEnum, long>();
             countPerFeed.Put((FeedEnum)_listener.LastNewData[0]["feed"], (long)_listener.LastNewData[0]["cnt"]);
 	        countPerFeed.Put((FeedEnum)_listener.LastNewData[1]["feed"], (long)_listener.LastNewData[1]["cnt"]);
-            Assert.AreEqual(2, _listener.LastNewData.Length);
+            ClassicAssert.AreEqual(2, _listener.LastNewData.Length);
 	        _listener.Reset();
 	
-	        Assert.AreEqual(countFeedA, (long) countPerFeed.Get(FeedEnum.FEED_A)); // casting to long to avoid JUnit ambiguous assert
-	        Assert.AreEqual(countFeedB, (long) countPerFeed.Get(FeedEnum.FEED_B));
+	        ClassicAssert.AreEqual(countFeedA, (long) countPerFeed.Get(FeedEnum.FEED_A)); // casting to long to avoid JUnit ambiguous assert
+	        ClassicAssert.AreEqual(countFeedB, (long) countPerFeed.Get(FeedEnum.FEED_B));
 	    }
 	
 	    private void SendEvent(MarketDataEvent eventBean) {

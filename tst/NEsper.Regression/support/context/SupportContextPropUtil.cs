@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.context
 {
@@ -29,10 +30,10 @@ namespace com.espertech.esper.regressionlib.support.context
             object[][] values)
         {
             if (fieldsCSV != null) {
-                Assert.AreEqual(ids.Length, values.Length);
+                ClassicAssert.AreEqual(ids.Length, values.Length);
             }
             else {
-                Assert.IsNull(values);
+                ClassicAssert.IsNull(values);
             }
 
             env.AssertStatement(
@@ -75,10 +76,10 @@ namespace com.espertech.esper.regressionlib.support.context
                             stmt.DeploymentId,
                             contextName,
                             id);
-                        Assert.AreEqual(contextName, props.Get("name"));
-                        Assert.AreEqual(id, props.Get("id"));
+                        ClassicAssert.AreEqual(contextName, props.Get("name"));
+                        ClassicAssert.AreEqual(id, props.Get("id"));
 
-                        Assert.AreEqual(nestedContextNames.Length, fieldsCSVPerCtx.Length);
+                        ClassicAssert.AreEqual(nestedContextNames.Length, fieldsCSVPerCtx.Length);
                         for (var level = 0; level < nestedContextNames.Length; level++) {
                             AssertProps(
                                 id,
@@ -103,12 +104,12 @@ namespace com.espertech.esper.regressionlib.support.context
             var fields = fieldsCSV == null ? Array.Empty<string>() : fieldsCSV.SplitCsv();
 
             if (values != null) {
-                Assert.AreEqual(values.Length, fields.Length);
+                ClassicAssert.AreEqual(values.Length, fields.Length);
             }
 
-            Assert.AreEqual(contextName, props.Get("name"));
+            ClassicAssert.AreEqual(contextName, props.Get("name"));
             if (assertId) {
-                Assert.AreEqual(id, props.Get("id"));
+                ClassicAssert.AreEqual(id, props.Get("id"));
             }
 
             var col = -1;
@@ -120,7 +121,7 @@ namespace com.espertech.esper.regressionlib.support.context
                     actual = actualEventBean.Underlying;
                 }
 
-                Assert.AreEqual(expected, actual, "Mismatch id " + id + " field " + field);
+                ClassicAssert.AreEqual(expected, actual, "Mismatch id " + id + " field " + field);
             }
         }
     }

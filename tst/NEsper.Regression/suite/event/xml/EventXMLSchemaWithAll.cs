@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "s0",
                 listener => {
                     var theEvent = listener.LastNewData[0];
-                    Assert.AreEqual("page1", theEvent.Get("sesja"));
+                    ClassicAssert.AreEqual("page1", theEvent.Get("sesja"));
                     listener.Reset();
                 });
             SupportXML.SendXMLEvent(

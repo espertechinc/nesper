@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.@event.render
@@ -94,16 +94,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var @event = statement.First();
 
                         var result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
-                        Assert.AreEqual(expectedWithTitle, result);
+                        ClassicAssert.AreEqual(expectedWithTitle, result);
 
                         result = env.Runtime.RenderEventService.RenderJSON("thetitle", @event);
-                        Assert.AreEqual(expectedWithTitle, result);
+                        ClassicAssert.AreEqual(expectedWithTitle, result);
 
                         var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
                         result = renderer.Render("thetitle", @event);
-                        Assert.AreEqual(expectedWithTitle, result);
+                        ClassicAssert.AreEqual(expectedWithTitle, result);
                         result = renderer.Render(@event);
-                        Assert.AreEqual(expected, result);
+                        ClassicAssert.AreEqual(expected, result);
                     });
 
                 env.UndeployAll();
@@ -133,14 +133,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                         var valuesOnly =
                             "{ \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\", \"This\": { \"BigInteger\": null, \"BoolBoxed\": null, \"BoolPrimitive\": false, \"ByteBoxed\": null, \"BytePrimitive\": 0, \"CharBoxed\": null, \"CharPrimitive\": \"x\", \"DecimalBoxed\": null, \"DecimalPrimitive\": 0.0, \"DoubleBoxed\": null, \"DoublePrimitive\": 0.0, \"EnumValue\": \"ENUM_VALUE_1\", \"FloatBoxed\": null, \"FloatPrimitive\": 0.0, \"IntBoxed\": 992, \"IntPrimitive\": 1, \"LongBoxed\": null, \"LongPrimitive\": 0, \"ShortBoxed\": null, \"ShortPrimitive\": 0, \"TheString\": \"a\\nc>\" } }";
                         var expected = "{ \"supportBean\": " + valuesOnly + " }";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
 
                         var renderer = env.Runtime.RenderEventService.GetJSONRenderer(statement.EventType);
                         var jsonEvent = renderer.Render("supportBean", statement.First());
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(jsonEvent));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(jsonEvent));
 
                         jsonEvent = renderer.Render(statement.First());
-                        Assert.AreEqual(RemoveNewline(valuesOnly), RemoveNewline(jsonEvent));
+                        ClassicAssert.AreEqual(RemoveNewline(valuesOnly), RemoveNewline(jsonEvent));
                     });
 
                 env.UndeployAll();
@@ -191,7 +191,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "    }\n" +
                                        "  }\n" +
                                        "}";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.UndeployAll();
@@ -211,7 +211,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "outer",
                             env.GetEnumerator("s0").Advance());
                         var expected = "{ \"outer\": { \"Props\": null } }";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.SendEventBean(new EmptyMapEvent(Collections.GetEmptyMap<string, string>()));
@@ -221,7 +221,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "outer",
                             env.GetEnumerator("s0").Advance());
                         var expected = "{ \"outer\": { \"Props\": {} } }";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.SendEventBean(new EmptyMapEvent(Collections.SingletonMap("a", "b")));
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "outer",
                             env.GetEnumerator("s0").Advance());
                         var expected = "{ \"outer\": { \"Props\": { \"a\": \"b\" } } }";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.UndeployAll();
@@ -252,7 +252,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 for (var i = 0; i < testdata.Length; i++) {
                     var buf = new StringBuilder();
                     OutputValueRendererJSONString.Enquote(testdata[i][0], buf);
-                    Assert.AreEqual(testdata[i][1], buf.ToString());
+                    ClassicAssert.AreEqual(testdata[i][1], buf.ToString());
                 }
             }
         }

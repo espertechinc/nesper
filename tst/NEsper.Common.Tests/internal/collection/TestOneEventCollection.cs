@@ -11,6 +11,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -31,19 +32,19 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestFlow()
         {
-            Assert.IsTrue(list.IsEmpty());
+            ClassicAssert.IsTrue(list.IsEmpty());
             EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new EventBean[0]);
 
             list.Add(events[0]);
-            Assert.IsFalse(list.IsEmpty());
+            ClassicAssert.IsFalse(list.IsEmpty());
             EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new EventBean[] { events[0] });
 
             list.Add(events[1]);
-            Assert.IsFalse(list.IsEmpty());
+            ClassicAssert.IsFalse(list.IsEmpty());
             EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new EventBean[] { events[0], events[1] });
 
             list.Add(events[2]);
-            Assert.IsFalse(list.IsEmpty());
+            ClassicAssert.IsFalse(list.IsEmpty());
             EPAssertionUtil.AssertEqualsExactOrder(list.ToArray(), new EventBean[] { events[0], events[1], events[2] });
         }
     }

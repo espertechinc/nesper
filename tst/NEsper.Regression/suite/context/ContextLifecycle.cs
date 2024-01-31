@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -129,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean("E2", 2));
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         2,
                         SupportVirtualDWFactory.Windows.Count)); // Independent windows for independent contexts
 
@@ -137,10 +138,10 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertThat(
                     () => {
                         foreach (var vdw in SupportVirtualDWFactory.Windows) {
-                            Assert.IsTrue(vdw.IsDestroyed);
+                            ClassicAssert.IsTrue(vdw.IsDestroyed);
                         }
 
-                        Assert.IsTrue(SupportVirtualDWFactory.IsDestroyed);
+                        ClassicAssert.IsTrue(SupportVirtualDWFactory.IsDestroyed);
                     });
             }
         }
@@ -190,30 +191,30 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var epl =
                     "@name('context') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)";
-                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
-                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 // create and destroy
                 env.CompileDeploy(epl);
-                Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
-                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 env.UndeployModuleContaining("context");
-                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
 
                 // create context, create statement, destroy statement, destroy context
                 var path = new RegressionPath();
                 env.CompileDeploy(epl, path);
-                Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
 
                 env.CompileDeploy("@name('s0') context NineToFive select * from SupportBean", path);
-                Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 env.UndeployModuleContaining("s0");
-                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 env.UndeployModuleContaining("context");
-                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
 
                 // create same context
                 path.Clear();
@@ -221,11 +222,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.CompileDeploy("@name('C') context NineToFive select * from SupportBean", path);
                 env.CompileDeploy("@name('D') context NineToFive select * from SupportBean", path);
 
-                Assert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(1, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 env.UndeployAll();
-                Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
-                Assert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
+                ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                ClassicAssert.AreEqual(0, SupportScheduleHelper.ScheduleCountOverall(env.Runtime));
 
                 env.UndeployAll();
             }

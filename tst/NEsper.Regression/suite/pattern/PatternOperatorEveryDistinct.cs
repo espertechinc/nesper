@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -447,8 +448,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E1", theEvent.Get("a[0].TheString"));
-                        Assert.AreEqual("E3", theEvent.Get("a[1].TheString"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("a[0].TheString"));
+                        ClassicAssert.AreEqual("E3", theEvent.Get("a[1].TheString"));
                     });
 
                 env.MilestoneInc(milestone);
@@ -493,8 +494,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E1", theEvent.Get("a[0].TheString"));
-                        Assert.AreEqual("E2", theEvent.Get("a[1].TheString"));
+                        ClassicAssert.AreEqual("E1", theEvent.Get("a[0].TheString"));
+                        ClassicAssert.AreEqual("E2", theEvent.Get("a[1].TheString"));
                     });
 
                 env.MilestoneInc(milestone);
@@ -511,8 +512,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual("E5", theEvent.Get("a[0].TheString"));
-                        Assert.AreEqual("E6", theEvent.Get("a[1].TheString"));
+                        ClassicAssert.AreEqual("E5", theEvent.Get("a[0].TheString"));
+                        ClassicAssert.AreEqual("E6", theEvent.Get("a[1].TheString"));
                     });
 
                 env.UndeployAll();

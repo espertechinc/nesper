@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 // assertEquals
 
@@ -140,7 +141,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
             long i)
         {
             env.AssertThat(
-                () => Assert.AreEqual(
+                () => ClassicAssert.AreEqual(
                     i,
                     env.CompileExecuteFAF("select count(*) as c0 from MyWindow", path).Array[0].Get("c0")));
         }

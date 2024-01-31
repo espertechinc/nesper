@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -96,16 +97,16 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertEventNew(
                     "s0",
                     eventReceived => {
-                        Assert.AreEqual("s0", eventReceived.Get("MyString"));
-                        Assert.AreSame(theEventOne, eventReceived.Get("myBean"));
+                        ClassicAssert.AreEqual("s0", eventReceived.Get("MyString"));
+                        ClassicAssert.AreSame(theEventOne, eventReceived.Get("myBean"));
                     });
 
                 var theEventTwo = SendEvent(env, "s1");
                 env.AssertEventNew(
                     "s0",
                     eventReceived => {
-                        Assert.AreEqual("s1", eventReceived.Get("MyString"));
-                        Assert.AreSame(theEventTwo, eventReceived.Get("myBean"));
+                        ClassicAssert.AreEqual("s1", eventReceived.Get("MyString"));
+                        ClassicAssert.AreSame(theEventTwo, eventReceived.Get("myBean"));
                     });
 
                 env.UndeployAll();
@@ -146,7 +147,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 model.FromClause = FromClause.Create(
                     FilterStream.Create(nameof(SupportBean)).AddView("length", Expressions.Constant(1000)));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -184,7 +185,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         fields,
                         "coalesce(null, ByteBoxed, ShortBoxed, IntBoxed, LongBoxed, FloatBoxed, DoubleBoxed)")
                     .WithStatementConsumer(
-                        stmt => Assert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
+                        stmt => ClassicAssert.AreEqual(typeof(double?), stmt.EventType.GetPropertyType("c0")));
 
                 builder.WithAssertion(MakeEventWithDouble(env, null, null, null, null, null, null))
                     .Expect(fields, new object[] { null });
@@ -232,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var fields = "c0".SplitCsv();
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(fields, "coalesce(null, null)")
-                    .WithStatementConsumer(stmt => Assert.AreEqual(null, stmt.EventType.GetPropertyType("result")));
+                    .WithStatementConsumer(stmt => ClassicAssert.AreEqual(null, stmt.EventType.GetPropertyType("result")));
 
                 builder.WithAssertion(new SupportBean()).Expect(fields, new object[] { null });
 

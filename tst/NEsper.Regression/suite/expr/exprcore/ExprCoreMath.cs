@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -137,9 +138,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string[] fields,
             params Type[] types)
         {
-            Assert.AreEqual(fields.Length, types.Length);
+            ClassicAssert.AreEqual(fields.Length, types.Length);
             for (var i = 0; i < fields.Length; i++) {
-                Assert.AreEqual(types[i], stmt.EventType.GetPropertyType(fields[i]), "failed for " + i);
+                ClassicAssert.AreEqual(types[i], stmt.EventType.GetPropertyType(fields[i]), "failed for " + i);
             }
         }
 
@@ -386,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                                 expected = typeof(long?);
                             }
 
-                            Assert.AreEqual(expected, stmt.EventType.GetPropertyType(field), "for field " + field);
+                            ClassicAssert.AreEqual(expected, stmt.EventType.GetPropertyType(field), "for field " + field);
                         }
                     }
                     ;

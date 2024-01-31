@@ -16,6 +16,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.type;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 {
@@ -57,7 +58,7 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
-            Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
+            ClassicAssert.AreEqual(2, spec.ExecNodeSpecs.Length);
         }
 
         [Test]
@@ -69,9 +70,9 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanbuild
 
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P01", "P02" }, spec.IndexSpecs[0].IndexProps[0]);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { "P11", "P12" }, spec.IndexSpecs[1].IndexProps[0]);
-            Assert.AreEqual(2, spec.ExecNodeSpecs.Length);
-            Assert.AreEqual(typeof(TableOuterLookupNodeForge), spec.ExecNodeSpecs[0].GetType());
-            Assert.AreEqual(typeof(TableLookupNodeForge), spec.ExecNodeSpecs[1].GetType());
+            ClassicAssert.AreEqual(2, spec.ExecNodeSpecs.Length);
+            ClassicAssert.AreEqual(typeof(TableOuterLookupNodeForge), spec.ExecNodeSpecs[0].GetType());
+            ClassicAssert.AreEqual(typeof(TableLookupNodeForge), spec.ExecNodeSpecs[1].GetType());
         }
     }
 } // end of namespace

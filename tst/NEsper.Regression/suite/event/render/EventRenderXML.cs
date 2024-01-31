@@ -18,7 +18,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.@event.render
@@ -112,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                             "    <TheString>a\\u000ac</TheString>\n" +
                                             "  </This>\n" +
                                             "</supportBean>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.AssertThat(
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                             "<supportBean BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DecimalPrimitive=\"0.0\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"> " +
                             "<This BoolPrimitive=\"false\" BytePrimitive=\"0\" CharPrimitive=\"x\" DecimalPrimitive=\"0.0\" DoublePrimitive=\"0.0\" EnumValue=\"ENUM_VALUE_2\" FloatPrimitive=\"0.0\" IntBoxed=\"992\" IntPrimitive=\"1\" LongPrimitive=\"0\" ShortPrimitive=\"0\" TheString=\"a\\u000ac\"/> " +
                             "</supportBean>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.UndeployAll();
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "    <Id>A1</Id>\n" +
                                        "  </prop0>\n" +
                                        "</outerMap>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.AssertThat(
@@ -213,7 +213,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                                        "  </innersimple>\n" +
                                        "  <prop0 Id=\"A1\"/>\n" +
                                        "</outerMap>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.UndeployAll();
@@ -233,17 +233,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                     "s0",
                     en => {
                         var theEvent = en.Advance();
-                        Assert.AreEqual(DateTime.Parse("2010-01-31"), theEvent.Get("mySqlDate"));
+                        ClassicAssert.AreEqual(DateTime.Parse("2010-01-31"), theEvent.Get("mySqlDate"));
 
                         var getter = theEvent.EventType.GetGetter("mySqlDate");
-                        Assert.AreEqual(DateTime.Parse("2010-01-31"), getter.Get(theEvent));
+                        ClassicAssert.AreEqual(DateTime.Parse("2010-01-31"), getter.Get(theEvent));
 
                         var result = env.Runtime.RenderEventService.RenderXML("testsqldate", theEvent);
 
                         // Console.WriteLine(result);
                         var expected =
                             "<?xml version=\"1.0\" encoding=\"UTF-8\"?> <testsqldate> <mySqlDate>2010-01-31</mySqlDate> </testsqldate>";
-                        Assert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
+                        ClassicAssert.AreEqual(RemoveNewline(expected), RemoveNewline(result));
                     });
 
                 env.UndeployAll();
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.render
                 for (var i = 0; i < testdata.Length; i++) {
                     var buf = new StringBuilder();
                     OutputValueRendererXMLString.XmlEncode(testdata[i][0], buf, true);
-                    Assert.AreEqual(testdata[i][1], buf.ToString());
+                    ClassicAssert.AreEqual(testdata[i][1], buf.ToString());
                 }
             }
         }

@@ -16,7 +16,8 @@ namespace com.espertech.esper.common.@internal.util.serde
             var typeElement = root.GetProperty("__type");
             var valueType = Type.GetType(typeElement.GetString());
             var valueElement = root.GetProperty("__value");
-            return (T) JsonSerializer.Deserialize(valueElement.GetRawText(), valueType, options);
+            var value = valueElement.Deserialize(valueType, options);
+            return (T) value;
         }
 
         public override void Write(

@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.@internal.filtersvcimpl;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportSpatialUtil;
 
 // assertEquals
@@ -132,12 +132,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 SendEventRectangle(env, "R2", 60, 10, 1, 1);
                 SendEventRectangle(env, "R3", 10, 60, 1, 1);
                 SendEventRectangle(env, "R4", 10, 10, 1, 1);
-                env.AssertThat(() => Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 AssertRectanglesManyRow(env, BOXES, "R0,R4", "R2", "R3", "R1", "R1");
 
                 env.Milestone(1);
 
-                env.AssertThat(() => Assert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(6, SupportFilterServiceHelper.GetFilterSvcCountApprox(env)));
                 AssertRectanglesManyRow(env, BOXES, "R0,R4", "R2", "R3", "R1", "R1");
 
                 env.UndeployAll();

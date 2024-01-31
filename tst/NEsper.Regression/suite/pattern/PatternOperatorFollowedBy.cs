@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -321,8 +321,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreSame(eventOne, theEvent.Get("A"));
-                        Assert.AreSame(eventTwo, theEvent.Get("B"));
+                        ClassicAssert.AreSame(eventOne, theEvent.Get("A"));
+                        ClassicAssert.AreSame(eventTwo, theEvent.Get("B"));
                     });
 
                 var eventThree = SendEvent(
@@ -335,14 +335,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         var theEvent = listener.LastNewData[0];
-                        Assert.AreSame(eventOne, theEvent.Get("A"));
-                        Assert.AreSame(eventThree, theEvent.Get("B"));
+                        ClassicAssert.AreSame(eventOne, theEvent.Get("A"));
+                        ClassicAssert.AreSame(eventThree, theEvent.Get("B"));
                         theEvent = listener.LastNewData[1];
-                        Assert.AreSame(eventTwo, theEvent.Get("A"));
-                        Assert.AreSame(eventThree, theEvent.Get("B"));
+                        ClassicAssert.AreSame(eventTwo, theEvent.Get("A"));
+                        ClassicAssert.AreSame(eventThree, theEvent.Get("B"));
                     });
 
                 env.UndeployAll();
@@ -496,8 +496,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
-                        Assert.AreEqual(2, listener.NewDataList[0].Length);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.NewDataList[0].Length);
                     });
 
                 env.UndeployAll();

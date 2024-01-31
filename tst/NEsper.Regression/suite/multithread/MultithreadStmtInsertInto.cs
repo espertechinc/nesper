@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -79,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // Assert results
             var totalExpected = numThreads * numRepeats * 2;
             var result = listener.NewDataListFlattened;
-            Assert.AreEqual(totalExpected, result.Length);
+            ClassicAssert.AreEqual(totalExpected, result.Length);
             IDictionary<long, ICollection<string>> results = new Dictionary<long, ICollection<string>>();
             foreach (var theEvent in result) {
                 var count = theEvent.Get("mycount").AsInt64();
@@ -94,12 +95,12 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 entries.Add(key);
             }
 
-            Assert.AreEqual(numRepeats, results.Count);
+            ClassicAssert.AreEqual(numRepeats, results.Count);
             foreach (var value in results.Values) {
-                Assert.AreEqual(2 * numThreads, value.Count);
+                ClassicAssert.AreEqual(2 * numThreads, value.Count);
                 for (var i = 0; i < numThreads; i++) {
-                    Assert.IsTrue(value.Contains("E1_" + i));
-                    Assert.IsTrue(value.Contains("E2_" + i));
+                    ClassicAssert.IsTrue(value.Contains("E1_" + i));
+                    ClassicAssert.IsTrue(value.Contains("E2_" + i));
                 }
             }
 

@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
     public class ClientExtendAggregationInlinedClass
@@ -249,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     () => {
                         var eplFAF = inlined + "select concat(TheString) as c0 from MyWindow";
                         var result = env.CompileExecuteFAF(eplFAF, path);
-                        Assert.AreEqual("E1,E2", result.Array[0].Get("c0"));
+                        ClassicAssert.AreEqual("E1,E2", result.Array[0].Get("c0"));
                     });
 
                 env.UndeployAll();

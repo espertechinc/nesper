@@ -22,6 +22,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -160,9 +161,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             bool exists,
             string value)
         {
-            Assert.AreEqual(exists, getter.IsExistsProperty(@event));
-            Assert.AreEqual(value, getter.Get(@event));
-            Assert.IsNull(getter.GetFragment(@event));
+            ClassicAssert.AreEqual(exists, getter.IsExistsProperty(@event));
+            ClassicAssert.AreEqual(value, getter.Get(@event));
+            ClassicAssert.IsNull(getter.GetFragment(@event));
         }
 
         private void AssertProps(
@@ -173,12 +174,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertEventNew(
                 "s1",
                 @event => {
-                    Assert.AreEqual(valueA, @event.Get("c0"));
-                    Assert.AreEqual(valueB, @event.Get("c1"));
-                    Assert.AreEqual(valueA != null, @event.Get("c2"));
-                    Assert.AreEqual(valueB != null, @event.Get("c3"));
-                    Assert.AreEqual(valueA == null ? null : "String", @event.Get("c4"));
-                    Assert.AreEqual(valueB == null ? null : "String", @event.Get("c5"));
+                    ClassicAssert.AreEqual(valueA, @event.Get("c0"));
+                    ClassicAssert.AreEqual(valueB, @event.Get("c1"));
+                    ClassicAssert.AreEqual(valueA != null, @event.Get("c2"));
+                    ClassicAssert.AreEqual(valueB != null, @event.Get("c3"));
+                    ClassicAssert.AreEqual(valueA == null ? null : "String", @event.Get("c4"));
+                    ClassicAssert.AreEqual(valueB == null ? null : "String", @event.Get("c5"));
                 });
         }
 

@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
     public class EPLVariablesOutputRate
@@ -86,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var stmtTextSelect =
                     "@name('s0') select count(*) as cnt from SupportBean output last every var_output_limit events";
-                Assert.AreEqual(stmtTextSelect, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextSelect, model.ToEPL());
                 env.CompileDeploy(model, new RegressionPath()).AddListener("s0");
 
                 TryAssertionOutputRateEventsAll(env);

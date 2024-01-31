@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.rowrecog;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -430,7 +431,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
         {
             var message = "For sent: " + sent;
             if (testDesc.Expected == null) {
-                Assert.AreEqual(0, received.Length, message);
+                ClassicAssert.AreEqual(0, received.Length, message);
                 return;
             }
 
@@ -451,7 +452,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             if (testDesc.Expected.Length != received.Length) {
                 Log.Info("expected: " + testDesc.Expected.RenderAny());
                 Log.Info("received: " + receivedText.RenderAny());
-                Assert.AreEqual(testDesc.Expected.Length, received.Length, message);
+                ClassicAssert.AreEqual(testDesc.Expected.Length, received.Length, message);
             }
 
             Log.Debug("comparing: " + message);

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.@event
 {
@@ -173,7 +174,7 @@ namespace com.espertech.esper.regressionlib.support.@event
 
             for (var i = 0; i < receivedValues.Length; i++) {
                 var exists = (bool) eventBean.Get("exists_" + propertyNames[i]);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     expected[i].IsExists,
                     exists,
                     "Assertion failed for property 'exists_" + propertyNames[i] + "'");
@@ -192,8 +193,8 @@ namespace com.espertech.esper.regressionlib.support.@event
                 value = optionalValueConversion.Invoke(value);
             }
 
-            Assert.AreEqual(expected.Value, value);
-            Assert.AreEqual(expected.IsExists, eventBean.Get("exists_" + propertyName));
+            ClassicAssert.AreEqual(expected.Value, value);
+            ClassicAssert.AreEqual(expected.IsExists, eventBean.Get("exists_" + propertyName));
         }
     }
 } // end of namespace

@@ -16,6 +16,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowindex
 {
@@ -106,7 +107,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             var values = MXCIFQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
             if (ids == null || ids.Length == 0)
             {
-                Assert.IsTrue(values == null);
+                ClassicAssert.IsTrue(values == null);
             }
             else
             {
@@ -127,11 +128,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxcifrowinde
             string expected,
             XYWHRectangleMultiType rectangle)
         {
-            Assert.AreEqual(x, rectangle.X);
-            Assert.AreEqual(y, rectangle.Y);
-            Assert.AreEqual(width, rectangle.W);
-            Assert.AreEqual(height, rectangle.H);
-            Assert.AreEqual(expected, rectangle.Multityped.RenderAny());
+            ClassicAssert.AreEqual(x, rectangle.X);
+            ClassicAssert.AreEqual(y, rectangle.Y);
+            ClassicAssert.AreEqual(width, rectangle.W);
+            ClassicAssert.AreEqual(height, rectangle.H);
+            ClassicAssert.AreEqual(expected, rectangle.Multityped.RenderAny());
         }
     }
 } // end of namespace

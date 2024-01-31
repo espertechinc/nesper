@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -293,12 +294,12 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("variance"));
-                        Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("datapoints"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("total"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddev"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddevpa"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("average"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("variance"));
+                        ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("datapoints"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("total"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddev"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("stddevpa"));
                     });
 
                 SendEvent(env, SYMBOL, 100);
@@ -333,9 +334,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual(1.0, @event.Get("average"));
-                        Assert.AreEqual("E1", @event.Get("TheString"));
-                        Assert.AreEqual(1, @event.Get("IntPrimitive"));
+                        ClassicAssert.AreEqual(1.0, @event.Get("average"));
+                        ClassicAssert.AreEqual("E1", @event.Get("TheString"));
+                        ClassicAssert.AreEqual(1, @event.Get("IntPrimitive"));
                     });
 
                 env.UndeployAll();
@@ -784,13 +785,13 @@ namespace com.espertech.esper.regressionlib.suite.view
                 "s0",
                 iterator => {
                     CheckValues(iterator.Advance(), false, false, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
-                    Assert.IsFalse(iterator.MoveNext());
+                    ClassicAssert.IsFalse(iterator.MoveNext());
                 });
 
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                     var childViewValues = listener.LastNewData[0];
                     CheckValues(childViewValues, false, false, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
                     listener.Reset();
@@ -810,7 +811,7 @@ namespace com.espertech.esper.regressionlib.suite.view
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastOldData.Length);
+                    ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                     var childViewValues = listener.LastOldData[0];
                     CheckValues(childViewValues, isFirst, false, countE, sumE, avgE, stdevpaE, stdevE, varianceE);
                 });
@@ -834,19 +835,19 @@ namespace com.espertech.esper.regressionlib.suite.view
             var stdev = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__STDDEV, values);
             var variance = GetDoubleValue(ViewFieldEnum.UNIVARIATE_STATISTICS__VARIANCE, values);
 
-            Assert.AreEqual(count, countE);
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(sum, sumE, 6));
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(stdevpa, stdevpaE, 6));
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(stdev, stdevE, 6));
-            Assert.IsTrue(DoubleValueAssertionUtil.Equals(variance, varianceE, 6));
+            ClassicAssert.AreEqual(count, countE);
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(sum, sumE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(avg, avgE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(stdevpa, stdevpaE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(stdev, stdevE, 6));
+            ClassicAssert.IsTrue(DoubleValueAssertionUtil.Equals(variance, varianceE, 6));
             if (isFirst && !isNewData) {
-                Assert.AreEqual(null, values.Get("Symbol"));
-                Assert.AreEqual(null, values.Get("Feed"));
+                ClassicAssert.AreEqual(null, values.Get("Symbol"));
+                ClassicAssert.AreEqual(null, values.Get("Feed"));
             }
             else {
-                Assert.AreEqual(SYMBOL, values.Get("Symbol"));
-                Assert.AreEqual(FEED, values.Get("Feed"));
+                ClassicAssert.AreEqual(SYMBOL, values.Get("Symbol"));
+                ClassicAssert.AreEqual(FEED, values.Get("Feed"));
             }
         }
 

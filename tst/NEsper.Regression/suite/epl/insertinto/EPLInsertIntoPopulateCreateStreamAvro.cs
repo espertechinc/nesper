@@ -19,7 +19,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Util.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -89,7 +89,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         SupportAvroUtil.AvroToJson(@event);
-                        Assert.AreEqual(1L, @event.Get("MyLong"));
+                        ClassicAssert.AreEqual(1L, @event.Get("MyLong"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new[] { 1L, 2L },
                             @event.Get("MyLongArray").UnwrapIntoArray<long>());
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                             new byte[] { 1, 2, 3 },
                             (byte[])@event.Get("MyByteArray"));
 
-                        Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("MyMap").RenderAny());
+                        ClassicAssert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("MyMap").RenderAny());
                     });
 
                 env.UndeployAll();
@@ -125,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     @event => {
                         var json = SupportAvroUtil.AvroToJson(@event);
                         Console.Out.WriteLine(json);
-                        Assert.AreEqual(1, @event.Get("MyInt"));
+                        ClassicAssert.AreEqual(1, @event.Get("MyInt"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new[] { 1L, 2L },
                             @event.Get("myLongArray").UnwrapIntoArray<long>());
                         CollectionAssert.AreEqual(new byte[] { 1, 2, 3 }, (byte[])@event.Get("myByteArray"));
-                        Assert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("myMap").RenderAny());
+                        ClassicAssert.AreEqual("{\"k1\"=\"v1\"}", @event.Get("myMap").RenderAny());
 
                         var designSchema = SchemaBuilder.Record(
                             "name",
@@ -145,7 +145,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                         var assembledSchema = ((AvroEventType)@event.EventType).SchemaAvro;
                         var compareMsg = SupportAvroUtil.CompareSchemas(designSchema, assembledSchema);
-                        Assert.IsNull(compareMsg, compareMsg);
+                        ClassicAssert.IsNull(compareMsg, compareMsg);
                     });
 
                 env.UndeployAll();

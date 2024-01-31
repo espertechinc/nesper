@@ -23,7 +23,7 @@ using Newtonsoft.Json.Linq;
 
 // record
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
@@ -110,10 +110,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual("E1", @event.Get("npid"));
-                    Assert.AreEqual("n1", @event.Get("node.nid"));
+                    ClassicAssert.AreEqual("E1", @event.Get("npid"));
+                    ClassicAssert.AreEqual("n1", @event.Get("node.nid"));
                     var fragment = (EventBean)@event.GetFragment("node");
-                    Assert.AreEqual("Node", fragment.EventType.Name);
+                    ClassicAssert.AreEqual("Node", fragment.EventType.Name);
                 });
 
             env.UndeployAll();
@@ -157,9 +157,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.AssertEventNew(
                 "Target",
                 theEvent => {
-                    Assert.AreEqual(10, theEvent.Get("c1.myId"));
-                    Assert.AreEqual(11, theEvent.Get("c2.myId"));
-                    Assert.AreEqual("4", theEvent.Get("rule"));
+                    ClassicAssert.AreEqual(10, theEvent.Get("c1.myId"));
+                    ClassicAssert.AreEqual(11, theEvent.Get("c2.myId"));
+                    ClassicAssert.AreEqual("4", theEvent.Get("rule"));
                 });
 
             env.UndeployAll();
@@ -188,7 +188,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
             env.CompileDeploy(
                     "@name('s1') insert into SuspectMyEvent " +
@@ -224,14 +224,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             EventBean eventBean)
         {
             if (eventRepresentationEnum.IsAvroOrJsonEvent()) {
-                Assert.AreEqual(1, eventBean.Get("myEvent.myId"));
+                ClassicAssert.AreEqual(1, eventBean.Get("myEvent.myId"));
             }
             else {
-                Assert.IsTrue(eventBean.Get("myEvent") is EventBean);
-                Assert.AreEqual(1, ((EventBean)eventBean.Get("myEvent")).Get("myId"));
+                ClassicAssert.IsTrue(eventBean.Get("myEvent") is EventBean);
+                ClassicAssert.AreEqual(1, ((EventBean)eventBean.Get("myEvent")).Get("myId"));
             }
 
-            Assert.IsNotNull(eventBean.EventType.GetFragmentType("myEvent"));
+            ClassicAssert.IsNotNull(eventBean.EventType.GetFragmentType("myEvent"));
         }
 
         private static IDictionary<string, object> MakeEvent(int myId)

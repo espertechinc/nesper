@@ -12,6 +12,7 @@ using com.espertech.esper.common.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -69,13 +70,13 @@ namespace com.espertech.esper.regressionlib.support.util
 	    public EventBean AssertOneGetNewAndReset() {
 		    lock (this) {
 
-			    Assert.IsTrue(isInvoked);
+			    ClassicAssert.IsTrue(isInvoked);
 
-			    Assert.AreEqual(1, newDataList.Count);
-			    Assert.AreEqual(1, oldDataList.Count);
+			    ClassicAssert.AreEqual(1, newDataList.Count);
+			    ClassicAssert.AreEqual(1, oldDataList.Count);
 
-			    Assert.AreEqual(1, lastNewData.Length);
-			    Assert.IsNull(lastOldData);
+			    ClassicAssert.AreEqual(1, lastNewData.Length);
+			    ClassicAssert.IsNull(lastOldData);
 
 			    var lastNew = lastNewData[0];
 			    Reset();
@@ -86,13 +87,13 @@ namespace com.espertech.esper.regressionlib.support.util
 	    public EventBean AssertOneGetOldAndReset() {
 		    lock (this) {
 
-			    Assert.IsTrue(isInvoked);
+			    ClassicAssert.IsTrue(isInvoked);
 
-			    Assert.AreEqual(1, newDataList.Count);
-			    Assert.AreEqual(1, oldDataList.Count);
+			    ClassicAssert.AreEqual(1, newDataList.Count);
+			    ClassicAssert.AreEqual(1, oldDataList.Count);
 
-			    Assert.AreEqual(1, lastOldData.Length);
-			    Assert.IsNull(lastNewData);
+			    ClassicAssert.AreEqual(1, lastOldData.Length);
+			    ClassicAssert.IsNull(lastNewData);
 
 			    var lastNew = lastOldData[0];
 			    Reset();

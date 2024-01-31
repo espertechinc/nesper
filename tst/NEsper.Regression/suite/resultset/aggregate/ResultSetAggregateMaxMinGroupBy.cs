@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
     public class ResultSetAggregateMaxMinGroupBy
@@ -128,7 +130,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                           "from SupportMarketDataBean#length(3) " +
                           "where Symbol=\"DELL\" or Symbol=\"IBM\" or Symbol=\"GE\" " +
                           "group by Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -257,11 +259,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minVol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxVol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minDistVol"));
-                    Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxDistVol"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("minDistVol"));
+                    ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("maxDistVol"));
                 });
 
             SendEvent(env, SYMBOL_DELL, 50L);
@@ -428,20 +430,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.AreEqual(1, oldData.Length);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(1, oldData.Length);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
-                    Assert.AreEqual(minVolOld, oldData[0].Get("minVol"));
-                    Assert.AreEqual(maxVolOld, oldData[0].Get("maxVol"));
-                    Assert.AreEqual(minDistVolOld, oldData[0].Get("minDistVol"));
-                    Assert.AreEqual(maxDistVolOld, oldData[0].Get("maxDistVol"));
+                    ClassicAssert.AreEqual(symbolOld, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(minVolOld, oldData[0].Get("minVol"));
+                    ClassicAssert.AreEqual(maxVolOld, oldData[0].Get("maxVol"));
+                    ClassicAssert.AreEqual(minDistVolOld, oldData[0].Get("minDistVol"));
+                    ClassicAssert.AreEqual(maxDistVolOld, oldData[0].Get("maxDistVol"));
 
-                    Assert.AreEqual(symbolNew, newData[0].Get("Symbol"));
-                    Assert.AreEqual(minVolNew, newData[0].Get("minVol"));
-                    Assert.AreEqual(maxVolNew, newData[0].Get("maxVol"));
-                    Assert.AreEqual(minDistVolNew, newData[0].Get("minDistVol"));
-                    Assert.AreEqual(maxDistVolNew, newData[0].Get("maxDistVol"));
+                    ClassicAssert.AreEqual(symbolNew, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(minVolNew, newData[0].Get("minVol"));
+                    ClassicAssert.AreEqual(maxVolNew, newData[0].Get("maxVol"));
+                    ClassicAssert.AreEqual(minDistVolNew, newData[0].Get("minDistVol"));
+                    ClassicAssert.AreEqual(maxDistVolNew, newData[0].Get("maxDistVol"));
 
                     listener.Reset();
                 });

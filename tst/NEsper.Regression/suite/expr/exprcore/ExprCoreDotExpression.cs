@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.@event;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 
@@ -273,8 +273,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 builder.WithStatementConsumer(
                     stmt => {
-                        Assert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c5"));
-                        Assert.AreEqual(typeof(ICollection<string>), stmt.EventType.GetPropertyType("c6"));
+                        ClassicAssert.AreEqual(typeof(IList<string>), stmt.EventType.GetPropertyType("c5"));
+                        ClassicAssert.AreEqual(typeof(ICollection<string>), stmt.EventType.GetPropertyType("c6"));
                     });
 
                 var strings = Arrays.AsList("2", "0", "0");
@@ -312,14 +312,14 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             typeof(SupportEventInnerTypeWGetIds),
                             statement.EventType.GetPropertyType("c0"));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             typeof(SupportEventInnerTypeWGetIds),
                             statement.EventType.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("c3"));
                     });
 
                 var @event = new SupportEventTypeErasure(
@@ -430,8 +430,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     statement => {
                         for (var i = 0; i < rows.Length; i++) {
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType);
                         }
                     });
 
@@ -487,8 +487,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     statement => {
                         for (var i = 0; i < rows.Length; i++) {
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName, "failed for " + rows[i][0]);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType, "failed for " + rows[i][0]);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, "failed for " + rows[i][0]);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, "failed for " + rows[i][0]);
                         }
                     });
 
@@ -528,8 +528,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     statement => {
                         for (var i = 0; i < rows.Length; i++) {
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType);
                         }
                     });
 
@@ -555,8 +555,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 statement => {
                     for (var i = 0; i < rows.Length; i++) {
                         var prop = statement.EventType.PropertyDescriptors[i];
-                        Assert.AreEqual(rows[i][0], prop.PropertyName);
-                        Assert.AreEqual(rows[i][1], prop.PropertyType);
+                        ClassicAssert.AreEqual(rows[i][0], prop.PropertyName);
+                        ClassicAssert.AreEqual(rows[i][1], prop.PropertyType);
                     }
                 });
 
@@ -565,7 +565,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 "s0",
                 @event => {
                     var result = @event.Get(subexpr);
-                    Assert.AreEqual("abcappend", ((SupportChainChildTwo)result).Text);
+                    ClassicAssert.AreEqual("abcappend", ((SupportChainChildTwo)result).Text);
                 });
         }
 

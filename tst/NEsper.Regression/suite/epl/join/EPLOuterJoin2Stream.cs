@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -316,7 +317,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "s0",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual(10, events.Length);
+                        ClassicAssert.AreEqual(10, events.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             events,
                             "TheString,IntPrimitive,Symbol,Volume".Split(","),
@@ -490,7 +491,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 var stmtText =
                     "select s0.Id, s0.P00, s0.P01, s1.Id, s1.P10, s1.P11 from SupportBean_S0#keepall as s0 left outer join SupportBean_S1#keepall as s1 on s0.P00 = s1.P10 and s1.P11 = s0.P01";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -498,7 +499,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 AssertMultiColumnLeft(env);
 
                 var modelReverse = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, modelReverse.ToEPL());
+                ClassicAssert.AreEqual(stmtText, modelReverse.ToEPL());
 
                 env.UndeployAll();
             }
@@ -795,11 +796,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("s0.P00"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("s0.Id"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("s1.P10"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("s1.Id"));
-                        Assert.AreEqual(4, statement.EventType.PropertyNames.Length);
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("s0.P00"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("s0.Id"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("s1.P10"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("s1.Id"));
+                        ClassicAssert.AreEqual(4, statement.EventType.PropertyNames.Length);
                     });
 
                 env.UndeployAll();
@@ -833,10 +834,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             int? idS1,
             string p10)
         {
-            Assert.AreEqual(idS0, receivedEvent.Get("s0.Id"));
-            Assert.AreEqual(idS1, receivedEvent.Get("s1.Id"));
-            Assert.AreEqual(p00, receivedEvent.Get("s0.P00"));
-            Assert.AreEqual(p10, receivedEvent.Get("s1.P10"));
+            ClassicAssert.AreEqual(idS0, receivedEvent.Get("s0.Id"));
+            ClassicAssert.AreEqual(idS1, receivedEvent.Get("s1.Id"));
+            ClassicAssert.AreEqual(p00, receivedEvent.Get("s0.P00"));
+            ClassicAssert.AreEqual(p10, receivedEvent.Get("s1.P10"));
         }
 
         private static void SendEvent(

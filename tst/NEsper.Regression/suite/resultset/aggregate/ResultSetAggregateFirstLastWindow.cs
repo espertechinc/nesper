@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.RegressionFlag;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -669,8 +669,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         "s0",
                         statement => {
                             var prop = statement.EventType.PropertyDescriptors[index];
-                            Assert.AreEqual(rows[index][0], prop.PropertyName);
-                            Assert.AreEqual(rows[index][1], prop.PropertyType);
+                            ClassicAssert.AreEqual(rows[index][0], prop.PropertyName);
+                            ClassicAssert.AreEqual(rows[index][1], prop.PropertyType);
                         });
                 }
 
@@ -1138,7 +1138,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     statement => {
                         var props = statement.EventType.PropertyDescriptors;
                         for (var i = 0; i < props.Count; i++) {
-                            Assert.AreEqual(
+                            ClassicAssert.AreEqual(
                                 i == 4 || i == 5 ? typeof(SupportBean[]) : typeof(SupportBean),
                                 props[i].PropertyType);
                         }

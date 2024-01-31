@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil; // assertTypesAllSame
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
@@ -127,9 +127,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify("c2", val => CompareMap(val, "E1_0_1", 101));
 
                 builder.WithAssertion(SupportCollection.MakeString(null))
-                    .Verify("c0", Assert.IsNull)
-                    .Verify("c1", Assert.IsNull)
-                    .Verify("c2", Assert.IsNull);
+                    .Verify("c0", ClassicAssert.IsNull)
+                    .Verify("c1", ClassicAssert.IsNull)
+                    .Verify("c2", ClassicAssert.IsNull);
 
                 builder.WithAssertion(SupportCollection.MakeString(""))
                     .Verify("c0", val => CompareMap(val, ""))

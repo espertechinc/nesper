@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -69,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert
             var results = listener.NewDataListFlattened;
-            Assert.IsTrue(results.Length >= numThreads * numRoutes);
+            ClassicAssert.IsTrue(results.Length >= numThreads * numRoutes);
 
             foreach (var routedEvent in routed) {
                 var found = false;
@@ -79,7 +80,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                     }
                 }
 
-                Assert.IsTrue(found);
+                ClassicAssert.IsTrue(found);
             }
 
             env.UndeployAll();

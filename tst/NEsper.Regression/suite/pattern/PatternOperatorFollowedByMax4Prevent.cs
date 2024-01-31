@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -32,7 +32,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
         public void Run(RegressionEnvironment env)
         {
             var context = SupportConditionHandlerFactory.FactoryContexts[0];
-            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+            ClassicAssert.AreEqual(env.RuntimeURI, context.RuntimeURI);
 
             var milestone = new AtomicLong();
             RunAssertionFollowedWithMax(env, milestone);
@@ -54,7 +54,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.SendEventBean(new SupportBean("A1", 0));
             env.SendEventBean(new SupportBean("A2", 0));
             env.SendEventBean(new SupportBean("B1", 0));
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B2", 0));
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -84,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             env.SendEventBean(new SupportBean_A("A2"));
             env.SendEventBean(new SupportBean("B4", 0)); // now A1, B1, B2, B4
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -101,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.MilestoneInc(milestone);
 
             env.SendEventBean(new SupportBean("B4", 0));
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.SendEventBean(new SupportBean("B5", 0));
             AssertContextEnginePool(
@@ -133,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             env.SendEventBean(new SupportBean("A3", 0));
             env.SendEventBean(new SupportBean("B1", 0));
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -162,7 +162,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.SendEventBean(new SupportBean("B3", 0));
             env.SendEventBean(new SupportBean("B4", 0));
             env.SendEventBean(new SupportBean("B5", 0));
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -213,16 +213,16 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             int max,
             IDictionary<string, long> counts)
         {
-            Assert.AreEqual(1, contexts.Count);
+            ClassicAssert.AreEqual(1, contexts.Count);
             var context = contexts[0];
-            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
-            Assert.AreEqual(stmt.DeploymentId, context.DeploymentId);
-            Assert.AreEqual(stmt.Name, context.StatementName);
+            ClassicAssert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+            ClassicAssert.AreEqual(stmt.DeploymentId, context.DeploymentId);
+            ClassicAssert.AreEqual(stmt.Name, context.StatementName);
             var condition = (ConditionPatternRuntimeSubexpressionMax)context.EngineCondition;
-            Assert.AreEqual(max, condition.Max);
-            Assert.AreEqual(counts.Count, condition.Counts.Count);
+            ClassicAssert.AreEqual(max, condition.Max);
+            ClassicAssert.AreEqual(counts.Count, condition.Counts.Count);
             foreach (var expected in counts) {
-                Assert.AreEqual(expected.Value, condition.Counts.Get(expected.Key), "failed for key " + expected.Key);
+                ClassicAssert.AreEqual(expected.Value, condition.Counts.Get(expected.Key), "failed for key " + expected.Key);
             }
 
             contexts.Clear();
@@ -234,13 +234,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             IList<ConditionHandlerContext> contexts,
             int max)
         {
-            Assert.AreEqual(1, contexts.Count);
+            ClassicAssert.AreEqual(1, contexts.Count);
             var context = contexts[0];
-            Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
-            Assert.AreEqual(stmt.DeploymentId, context.DeploymentId);
-            Assert.AreEqual(stmt.Name, context.StatementName);
+            ClassicAssert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+            ClassicAssert.AreEqual(stmt.DeploymentId, context.DeploymentId);
+            ClassicAssert.AreEqual(stmt.Name, context.StatementName);
             var condition = (ConditionPatternSubexpressionMax)context.EngineCondition;
-            Assert.AreEqual(max, condition.Max);
+            ClassicAssert.AreEqual(max, condition.Max);
             contexts.Clear();
         }
     }

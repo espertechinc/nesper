@@ -24,6 +24,7 @@ using com.espertech.esper.regressionlib.support.bookexample;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -151,8 +152,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     bean => {
-                        Assert.AreSame(criteria, bean.Get("criteria"));
-                        Assert.AreSame(trigger, bean.Get("event"));
+                        ClassicAssert.AreSame(criteria, bean.Get("criteria"));
+                        ClassicAssert.AreSame(trigger, bean.Get("event"));
                     });
 
                 env.UndeployAll();
@@ -267,8 +268,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 // assert type is original type
                 env.AssertStatement(
                     "insert",
-                    statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
-                env.AssertIterator("insert", iterator => Assert.IsFalse(iterator.MoveNext()));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
+                env.AssertIterator("insert", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
                 env.UndeployAll();
             }
@@ -301,7 +302,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     Expressions.Or(Expressions.Eq("IntPrimitive", 1), Expressions.Eq("IntPrimitive", 2)));
                 clause.AddItem(item);
                 model.Annotations = Arrays.AsList(AnnotationPart.NameAnnotation("split"), new AnnotationPart("public"));
-                Assert.AreEqual(stmtOrigText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtOrigText, model.ToEPL());
                 env.CompileDeploy(model, path).AddListener("split");
                 TryAssertion(env, path);
                 path.Clear();
@@ -358,8 +359,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertThat(
                     () => {
-                        Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
-                        Assert.AreSame(
+                        ClassicAssert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
+                        ClassicAssert.AreSame(
                             env.Statement("s0").EventType.UnderlyingType,
                             env.Statement("s1").EventType.UnderlyingType);
                     });
@@ -449,8 +450,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 env.AssertThat(
                     () => {
-                        Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
-                        Assert.AreSame(
+                        ClassicAssert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
+                        ClassicAssert.AreSame(
                             env.Statement("s0").EventType.UnderlyingType,
                             env.Statement("s1").EventType.UnderlyingType);
                     });
@@ -552,8 +553,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
             env.AssertThat(
                 () => {
-                    Assert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
-                    Assert.AreSame(
+                    ClassicAssert.AreNotSame(env.Statement("s0").EventType, env.Statement("s1").EventType);
+                    ClassicAssert.AreSame(
                         env.Statement("s0").EventType.UnderlyingType,
                         env.Statement("s1").EventType.UnderlyingType);
                 });
@@ -697,7 +698,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.CompileDeploy(soda, epl, path);
             env.AssertStatement(
                 "split",
-                statement => Assert.AreEqual(
+                statement => ClassicAssert.AreEqual(
                     StatementType.ON_SPLITSTREAM,
                     statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -710,7 +711,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     var orderItemType = env.Runtime.EventTypeService.GetEventType(
                         env.DeploymentId("split"),
                         "OrderItem");
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "[\"Amount\", \"ItemId\", \"OrderId\", \"Price\", \"ProductId\"]",
                         CompatExtensions.Render(orderItemType.PropertyNames.OrderBy(_ => _).ToArray()));
                 });

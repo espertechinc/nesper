@@ -14,6 +14,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -58,14 +59,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         [Test, RunInApplicationDomain]
         public void TestAddRemove()
         {
-            Assert.IsNull(eventTypeIndex.Get(typeOne));
-            Assert.IsNull(eventTypeIndex.Get(typeTwo));
+            ClassicAssert.IsNull(eventTypeIndex.Get(typeOne));
+            ClassicAssert.IsNull(eventTypeIndex.Get(typeTwo));
 
             indexBuilder.Add(typeOne, valueSetOne, callbackOne, lockFactory);
             indexBuilder.Add(typeTwo, valueSetTwo, callbackTwo, lockFactory);
 
-            Assert.IsTrue(eventTypeIndex.Get(typeOne) != null);
-            Assert.IsTrue(eventTypeIndex.Get(typeTwo) != null);
+            ClassicAssert.IsTrue(eventTypeIndex.Get(typeOne) != null);
+            ClassicAssert.IsTrue(eventTypeIndex.Get(typeTwo) != null);
 
             indexBuilder.Remove(callbackOne, typeOne, valueSetOne);
             indexBuilder.Add(typeOne, valueSetOne, callbackOne, lockFactory);

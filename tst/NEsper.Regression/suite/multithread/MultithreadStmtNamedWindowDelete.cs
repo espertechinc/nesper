@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -88,8 +89,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             var expectedIds = expectedIdsList.ToArray();
 
-            Assert.AreEqual(2 * numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
-            Assert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count); // old and new each
+            ClassicAssert.AreEqual(2 * numThreads * numRepeats, listenerWindow.NewDataList.Count); // old and new each
+            ClassicAssert.AreEqual(2 * numThreads * numRepeats, listenerConsumer.NewDataList.Count); // old and new each
 
             // compute list of received
             var newEvents = listenerWindow.NewDataListFlattened;
@@ -98,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 receivedIds[i] = (string)newEvents[i].Get("TheString");
             }
 
-            Assert.AreEqual(receivedIds.Length, expectedIds.Length);
+            ClassicAssert.AreEqual(receivedIds.Length, expectedIds.Length);
 
             Array.Sort(receivedIds);
             Array.Sort(expectedIds);

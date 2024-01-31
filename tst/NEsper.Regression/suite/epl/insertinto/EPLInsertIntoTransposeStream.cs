@@ -24,7 +24,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         typeof(Pair<object, IDictionary<string, object>>),
                         statement.EventType.UnderlyingType));
 
@@ -232,7 +232,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                             result,
                             "dummy,TheString,IntPrimitive".SplitCsv(),
                             new object[] { 1, "OI1", 10 });
-                        Assert.AreEqual("OI1", ((SupportBean)underlying.First).TheString);
+                        ClassicAssert.AreEqual("OI1", ((SupportBean)underlying.First).TheString);
                     });
 
                 env.UndeployAll();
@@ -253,7 +253,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean("I1", 1));
                 env.AssertEventNew(
@@ -263,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                             result,
                             "TheString,IntPrimitive".SplitCsv(),
                             new object[] { "OI1", 10 });
-                        Assert.AreEqual("OI1", ((SupportBean)result.Underlying).TheString);
+                        ClassicAssert.AreEqual("OI1", ((SupportBean)result.Underlying).TheString);
                     });
 
                 // try second statement as "OtherStream" now already exists
@@ -286,7 +286,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextOne).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean("I1", 1));
                 env.AssertEventNew(
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                             resultOne,
                             "TheString,IntPrimitive".SplitCsv(),
                             new object[] { "OI1", 10 });
-                        Assert.AreEqual("OI1", ((SupportBean)resultOne.Underlying).TheString);
+                        ClassicAssert.AreEqual("OI1", ((SupportBean)resultOne.Underlying).TheString);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -306,14 +306,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextTwo).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(SupportBeanNumeric), statement.EventType.UnderlyingType));
+                    statement => ClassicAssert.AreEqual(typeof(SupportBeanNumeric), statement.EventType.UnderlyingType));
 
                 env.SendEventBean(new SupportBean("I2", 10));
                 env.AssertEventNew(
                     "s0",
                     resultTwo => {
                         EPAssertionUtil.AssertProps(resultTwo, "IntOne,IntTwo".SplitCsv(), new object[] { 10, 11 });
-                        Assert.AreEqual(11, (int)((SupportBeanNumeric)resultTwo.Underlying).IntTwo);
+                        ClassicAssert.AreEqual(11, (int)((SupportBeanNumeric)resultTwo.Underlying).IntTwo);
                     });
 
                 env.UndeployAll();

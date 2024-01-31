@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.context;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.client.scopetest.EPAssertionUtil; // assertPropsPerRow
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // tryInvalidFAFCompile
 
@@ -96,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var s0A = new SupportBean_S0(10, "A");
                 env.SendEventBean(s0A);
                 env.AssertEqualsNew("s0", "ctxs0", s0A);
-                env.AssertIterator("s0", iterator => Assert.AreEqual(s0A, iterator.Advance().Get("ctxs0")));
+                env.AssertIterator("s0", iterator => ClassicAssert.AreEqual(s0A, iterator.Advance().Get("ctxs0")));
 
                 env.Milestone(0);
 
@@ -184,7 +184,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             public void Run(RegressionEnvironment env)
             {
                 env.CompileDeploy("@name('s0') select 1 as value");
-                env.AssertIterator("s0", enumerator => Assert.AreEqual(1, enumerator.Advance().Get("value")));
+                env.AssertIterator("s0", enumerator => ClassicAssert.AreEqual(1, enumerator.Advance().Get("value")));
 
                 env.UndeployAll();
             }
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     Assert.Fail();
                 }
                 catch (ArgumentException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Fire-and-forget queries without a from-clause allow only a single context partition selector",
                         ex.Message);
                 }
@@ -267,7 +267,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
 
                 // SODA
                 var model = env.EplToModel(eplFAF);
-                Assert.AreEqual(eplFAF, model.ToEPL());
+                ClassicAssert.AreEqual(eplFAF, model.ToEPL());
                 compiled = env.CompileFAF(model, path);
                 AssertPropsPerRow(
                     env.Runtime.FireAndForgetService.ExecuteQuery(compiled).Array,
@@ -314,10 +314,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
         {
             var result = env.CompileExecuteFAF(epl, path).Array;
             if (expected == null) {
-                Assert.AreEqual(0, result == null ? 0 : result.Length);
+                ClassicAssert.AreEqual(0, result == null ? 0 : result.Length);
             }
             else {
-                Assert.AreEqual(expected, result[0].Get("value"));
+                ClassicAssert.AreEqual(expected, result[0].Get("value"));
             }
         }
 
@@ -330,11 +330,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 name,
                 it => {
                     for (var i = 0; i < s0.Length; i++) {
-                        Assert.IsTrue(it.MoveNext());
-                        Assert.AreEqual(s0[i], it.Current.Get("ctxs0"));
+                        ClassicAssert.IsTrue(it.MoveNext());
+                        ClassicAssert.AreEqual(s0[i], it.Current.Get("ctxs0"));
                     }
 
-                    Assert.IsFalse(it.MoveNext());
+                    ClassicAssert.IsFalse(it.MoveNext());
                 });
         }
     }

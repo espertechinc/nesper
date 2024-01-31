@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -86,7 +87,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
             }
 
-            Assert.AreEqual(100, listener.NewEvents.Count);
+            ClassicAssert.AreEqual(100, listener.NewEvents.Count);
             // analyze result
             //List<Pair<Long, EventBean[]>> events = listener.getNewEvents();
             //OccuranceResult result = OccuranceAnalyzer.analyze(events, new long[] {100 * 1000 * 1000L, 10*1000 * 1000L});

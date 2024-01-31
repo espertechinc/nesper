@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
@@ -98,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertListenerNotInvoked("CreateInfra");
                 env.AssertListenerNotInvoked("Select");
                 env.AssertListenerNotInvoked("OnDelete");
-                env.AssertThat(() => Assert.AreEqual(0, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, GetCount(env, path, "MyInfra")));
 
                 // send 1 event
                 SendSupportBean(env, "E1", 1);
@@ -113,7 +113,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, new object[][] { new object[] { "E1", 1 } });
                 env.AssertPropsPerRowIterator("OnDelete", fields, null);
-                env.AssertThat(() => Assert.AreEqual(1, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, GetCount(env, path, "MyInfra")));
 
                 env.Milestone(0);
 
@@ -127,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, null);
                 env.AssertPropsNew("OnDelete", fields, new object[] { "E1", 1 });
-                env.AssertThat(() => Assert.AreEqual(0, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, GetCount(env, path, "MyInfra")));
 
                 // send 2 events
                 SendSupportBean(env, "E2", 2);
@@ -138,7 +138,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     fields,
                     new object[][] { new object[] { "E2", 2 }, new object[] { "E3", 3 } });
                 env.AssertListenerNotInvoked("OnDelete");
-                env.AssertThat(() => Assert.AreEqual(2, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(2, GetCount(env, path, "MyInfra")));
 
                 env.Milestone(1);
 
@@ -161,7 +161,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         EPAssertionUtil.AssertProps(listener.LastNewData[0], fields, new object[] { "E2", 2 });
                         EPAssertionUtil.AssertProps(listener.LastNewData[1], fields, new object[] { "E3", 3 });
                     });
-                env.AssertThat(() => Assert.AreEqual(0, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, GetCount(env, path, "MyInfra")));
 
                 env.UndeployAll();
             }
@@ -212,7 +212,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, new object[][] { new object[] { "E1", 1 } });
-                env.AssertThat(() => Assert.AreEqual(1, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, GetCount(env, path, "MyInfra")));
 
                 // Delete all events using A, 1 row expected
                 SendSupportBean_A(env, "A1");
@@ -222,7 +222,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, null);
                 env.AssertPropsNew("OnDelete", fields, new object[] { "E1", 1 });
-                env.AssertThat(() => Assert.AreEqual(0, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, GetCount(env, path, "MyInfra")));
 
                 env.Milestone(0);
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 }
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, new object[][] { new object[] { "E2", 2 } });
-                env.AssertThat(() => Assert.AreEqual(1, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, GetCount(env, path, "MyInfra")));
 
                 // Delete all events using B, 1 row expected
                 SendSupportBean_B(env, "B1");
@@ -243,7 +243,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 
                 env.AssertPropsPerRowIterator("CreateInfra", fields, null);
                 env.AssertPropsNew("OnDelete", fields, new object[] { "E2", 2 });
-                env.AssertThat(() => Assert.AreEqual(0, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, GetCount(env, path, "MyInfra")));
 
                 env.UndeployAll();
             }
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.Milestone(0);
 
                 SendSupportBean(env, "E3", 3);
-                env.AssertThat(() => Assert.AreEqual(3, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(3, GetCount(env, path, "MyInfra")));
                 env.ListenerReset("CreateInfra");
                 var fields = new string[] { "a", "b" };
                 env.AssertPropsPerRowIterator(
@@ -315,14 +315,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "CreateInfra",
                     fields,
                     new object[][] { new object[] { "E1", 1 }, new object[] { "E3", 3 } });
-                env.AssertThat(() => Assert.AreEqual(2, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(2, GetCount(env, path, "MyInfra")));
 
                 SendSupportBean(env, "E7", 7);
                 env.AssertPropsPerRowIteratorAnyOrder(
                     "CreateInfra",
                     fields,
                     new object[][] { new object[] { "E1", 1 }, new object[] { "E3", 3 }, new object[] { "E7", 7 } });
-                env.AssertThat(() => Assert.AreEqual(3, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(3, GetCount(env, path, "MyInfra")));
 
                 env.Milestone(1);
 
@@ -332,7 +332,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.AssertListener(
                         "CreateInfra",
                         listener => {
-                            Assert.AreEqual(2, listener.LastOldData.Length);
+                            ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                             EPAssertionUtil.AssertProps(listener.LastOldData[0], fields, new object[] { "E1", 1 });
                             EPAssertionUtil.AssertProps(listener.LastOldData[1], fields, new object[] { "E3", 3 });
                         });
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     "CreateInfra",
                     fields,
                     new object[][] { new object[] { "E7", 7 } });
-                env.AssertThat(() => Assert.AreEqual(1, GetCount(env, path, "MyInfra")));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, GetCount(env, path, "MyInfra")));
 
                 env.UndeployAll();
             }

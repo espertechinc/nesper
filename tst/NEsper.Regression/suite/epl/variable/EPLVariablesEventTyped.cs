@@ -22,7 +22,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
@@ -163,7 +163,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     Assert.Fail();
                 }
                 catch (VariableValueException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable 'vars0_A' of declared event type 'SupportBean_S0' underlying type '" +
                         typeof(SupportBean_S0).FullName +
                         "' cannot be assigned a value of type '" +
@@ -237,7 +237,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(stmtUpdateText, path);
                 env.AssertStatement(
                     "Update",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.ON_SET,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
                 env.SendEventBean(new SupportBean_B("B1"));
@@ -267,25 +267,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
         {
             public void Run(RegressionEnvironment env)
             {
-                Assert.AreEqual(10, ((SupportBean_S0)env.Runtime.VariableService.GetVariableValue(null, "vars0_A")).Id);
-                Assert.AreEqual(20, ((SupportBean_S1)env.Runtime.VariableService.GetVariableValue(null, "vars1_A")).Id);
-                Assert.AreEqual(123, env.Runtime.VariableService.GetVariableValue(null, "varsobj1"));
+                ClassicAssert.AreEqual(10, ((SupportBean_S0)env.Runtime.VariableService.GetVariableValue(null, "vars0_A")).Id);
+                ClassicAssert.AreEqual(20, ((SupportBean_S1)env.Runtime.VariableService.GetVariableValue(null, "vars1_A")).Id);
+                ClassicAssert.AreEqual(123, env.Runtime.VariableService.GetVariableValue(null, "varsobj1"));
                 var value = env.Runtime.VariableService.GetVariableValue(null, "myNonSerializable");
                 if (!env.IsHA) {
-                    Assert.AreSame(NON_SERIALIZABLE, value);
+                    ClassicAssert.AreSame(NON_SERIALIZABLE, value);
                 }
                 else {
-                    Assert.AreEqual(NON_SERIALIZABLE, value);
+                    ClassicAssert.AreEqual(NON_SERIALIZABLE, value);
                 }
 
                 env.Milestone(0);
 
-                Assert.AreEqual(30, ((SupportBean_S2)env.Runtime.VariableService.GetVariableValue(null, "vars2")).Id);
-                Assert.AreEqual(40, ((SupportBean_S3)env.Runtime.VariableService.GetVariableValue(null, "vars3")).Id);
-                Assert.AreEqual("ABC", env.Runtime.VariableService.GetVariableValue(null, "varsobj2"));
+                ClassicAssert.AreEqual(30, ((SupportBean_S2)env.Runtime.VariableService.GetVariableValue(null, "vars2")).Id);
+                ClassicAssert.AreEqual(40, ((SupportBean_S3)env.Runtime.VariableService.GetVariableValue(null, "vars3")).Id);
+                ClassicAssert.AreEqual("ABC", env.Runtime.VariableService.GetVariableValue(null, "varsobj2"));
 
                 env.CompileDeploy("@name('create') create variable object varsobj3=222");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     222,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varsobj3"));
 
@@ -341,10 +341,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 env.SendEventBean(new SupportBean_S0(3));
                 env.AssertPropsNew("s0", fields, new object[] { "A", 1, "A" });
-                Assert.AreNotSame(
+                ClassicAssert.AreNotSame(
                     setBean,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     1,
                     ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .IntPrimitive);
@@ -356,7 +356,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E3"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     ">E3<",
                     ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .TheString);
@@ -366,7 +366,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy("@name('set') on SupportBean_A set varbean.LongPrimitive = 1", path);
                 env.AddListener("set");
                 env.SendEventBean(new SupportBean_A("E4"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     1,
                     ((SupportBean)env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "varbean"))
                     .LongPrimitive);
@@ -430,9 +430,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 var s0objectTwo = new SupportBean_S0(2, "X");
                 env.SendEventBean(s0objectTwo);
-                Assert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
-                Assert.AreEqual(s0objectTwo, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(1, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
+                ClassicAssert.AreEqual(s0objectTwo, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
+                ClassicAssert.AreEqual(
                     s0objectTwo,
                     env.Runtime.VariableService
                         .GetVariableValue(Collections.SingletonSet(new DeploymentIdNamePair(depIdVartype, "vartype")))
@@ -472,9 +472,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.AddListener("set-two");
                 var a1objectTwo = new SupportBean_A("Y");
                 env.SendEventBean(new SupportBean_A("Y"));
-                Assert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
-                Assert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVarobject, "varobject"));
+                ClassicAssert.AreEqual(null, env.Runtime.VariableService.GetVariableValue(depIdVartype, "vartype"));
+                ClassicAssert.AreEqual(
                     a1objectTwo,
                     env.Runtime.VariableService
                         .GetVariableValue(Collections.SingletonSet(new DeploymentIdNamePair(depIdVarbean, "varbean")))

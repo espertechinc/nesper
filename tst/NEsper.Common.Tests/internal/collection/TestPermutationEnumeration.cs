@@ -10,6 +10,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -109,11 +110,11 @@ namespace com.espertech.esper.common.@internal.collection
                 Log.Debug(".tryPermutation expected=" + CompatExtensions.RenderAny(result));
 
                 count++;
-                Assert.IsTrue(Arrays.AreEqual(result, expected),
+                ClassicAssert.IsTrue(Arrays.AreEqual(result, expected),
                     "Mismatch in count=" + count);
             }
 
-            Assert.AreEqual(count, expectedValues.Length);
+            ClassicAssert.AreEqual(count, expectedValues.Length);
             Assert.That(enumeration.MoveNext(), Is.False);
         }
 
@@ -124,26 +125,26 @@ namespace com.espertech.esper.common.@internal.collection
             int[] result = PermutationEnumerator.GetPermutation(4, 21, factors);
 
             Log.Debug(".testGetPermutation result=" + result.RenderAny());
-            Assert.IsTrue(Arrays.AreEqual(result, new[] { 3, 1, 2, 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(result, new[] { 3, 1, 2, 0 }));
         }
 
         [Test]
         public void TestGetFactors()
         {
             int[] factors = PermutationEnumerator.GetFactors(5);
-            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 24, 6, 2, 1, 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(factors, new[] { 24, 6, 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(4);
-            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 6, 2, 1, 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(factors, new[] { 6, 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(3);
-            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 2, 1, 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(factors, new[] { 2, 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(2);
-            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 1, 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(factors, new[] { 1, 0 }));
 
             factors = PermutationEnumerator.GetFactors(1);
-            Assert.IsTrue(Arrays.AreEqual(factors, new[] { 0 }));
+            ClassicAssert.IsTrue(Arrays.AreEqual(factors, new[] { 0 }));
 
             //Log.debug(".testGetFactors " + Arrays.toString(factors));
         }
@@ -151,13 +152,13 @@ namespace com.espertech.esper.common.@internal.collection
         [Test]
         public void TestFaculty()
         {
-            Assert.AreEqual(0, PermutationEnumerator.Faculty(0));
-            Assert.AreEqual(1, PermutationEnumerator.Faculty(1));
-            Assert.AreEqual(2, PermutationEnumerator.Faculty(2));
-            Assert.AreEqual(6, PermutationEnumerator.Faculty(3));
-            Assert.AreEqual(24, PermutationEnumerator.Faculty(4));
-            Assert.AreEqual(120, PermutationEnumerator.Faculty(5));
-            Assert.AreEqual(720, PermutationEnumerator.Faculty(6));
+            ClassicAssert.AreEqual(0, PermutationEnumerator.Faculty(0));
+            ClassicAssert.AreEqual(1, PermutationEnumerator.Faculty(1));
+            ClassicAssert.AreEqual(2, PermutationEnumerator.Faculty(2));
+            ClassicAssert.AreEqual(6, PermutationEnumerator.Faculty(3));
+            ClassicAssert.AreEqual(24, PermutationEnumerator.Faculty(4));
+            ClassicAssert.AreEqual(120, PermutationEnumerator.Faculty(5));
+            ClassicAssert.AreEqual(720, PermutationEnumerator.Faculty(6));
         }
 
         private static readonly ILog Log = LogManager.GetLogger(System.Reflection.MethodBase.GetCurrentMethod().DeclaringType);

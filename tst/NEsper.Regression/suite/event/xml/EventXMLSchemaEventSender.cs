@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML; // getDocument
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -95,8 +96,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("text", theEvent.Get("type"));
-                    Assert.AreEqual("text", theEvent.Get("element1"));
+                    ClassicAssert.AreEqual("text", theEvent.Get("type"));
+                    ClassicAssert.AreEqual("text", theEvent.Get("element1"));
                 });
 
             // send wrong event
@@ -105,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.Fail();
             }
             catch (EPException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "Unexpected root element name 'xxxx' encountered, expected a root element name of 'a'",
                     ex.Message);
             }
@@ -115,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 Assert.Fail();
             }
             catch (EPException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "Unexpected event object type '" +
                     typeof(SupportBean).FullName +
                     "' encountered, please supply a XmlDocument or XmlElement node",
@@ -136,7 +137,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "s0",
                 iterator => {
                     var theEvent = iterator.Advance();
-                    Assert.AreEqual("text", theEvent.Get("element2"));
+                    ClassicAssert.AreEqual("text", theEvent.Get("element2"));
                 });
 
             env.UndeployAll();

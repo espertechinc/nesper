@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.client.configuration.common;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.client.configuration
 {
@@ -27,7 +28,7 @@ namespace com.espertech.esper.common.client.configuration
             }
             catch (ConfigurationException ex)
             {
-                Assert.AreEqual(text, ex.Message);
+                ClassicAssert.AreEqual(text, ex.Message);
             }
         }
 

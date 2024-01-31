@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
     public class EPLInsertIntoIRStreamFunc : RegressionExecution
@@ -55,7 +57,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             env.EplToModelCompileDeploy(eplModel);
             env.AssertStatement(
                 "s1",
-                statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("istream()")));
+                statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("istream()")));
 
             // test join
             env.UndeployAll();

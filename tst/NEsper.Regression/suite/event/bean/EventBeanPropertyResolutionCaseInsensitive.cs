@@ -10,6 +10,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -25,10 +26,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 result => {
-                    Assert.AreEqual("upper", result.Get("MYPROPERTY"));
-                    Assert.AreEqual("lower", result.Get("myproperty"));
-                    Assert.AreEqual("lowercamel", result.Get("myProperty"));
-                    Assert.AreEqual("uppercamel", result.Get("MyProperty"));
+                    ClassicAssert.AreEqual("upper", result.Get("MYPROPERTY"));
+                    ClassicAssert.AreEqual("lower", result.Get("myproperty"));
+                    ClassicAssert.AreEqual("lowercamel", result.Get("myProperty"));
+                    ClassicAssert.AreEqual("uppercamel", result.Get("MyProperty"));
                 });
 
             env.UndeployAll();
@@ -46,10 +47,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("NestedValue", theEvent.Get("val1"));
-                    Assert.AreEqual(10, theEvent.Get("val2"));
-                    Assert.AreEqual("valueOne", theEvent.Get("val3"));
-                    Assert.AreEqual(1, theEvent.Get("val4"));
+                    ClassicAssert.AreEqual("NestedValue", theEvent.Get("val1"));
+                    ClassicAssert.AreEqual(10, theEvent.Get("val2"));
+                    ClassicAssert.AreEqual("valueOne", theEvent.Get("val3"));
+                    ClassicAssert.AreEqual(1, theEvent.Get("val4"));
                 });
 
             env.UndeployAll();

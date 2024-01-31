@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -58,10 +58,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             }
 
             // validate results, price must be 5 for each symbol
-            Assert.AreEqual(numGroups, listener.NewDataList.Count);
+            ClassicAssert.AreEqual(numGroups, listener.NewDataList.Count);
             foreach (var newData in listener.NewDataList) {
                 var result = (SupportBean)newData[0].Underlying;
-                Assert.AreEqual(numRepeats, result.LongPrimitive);
+                ClassicAssert.AreEqual(numRepeats, result.LongPrimitive);
             }
 
             env.UndeployAll();

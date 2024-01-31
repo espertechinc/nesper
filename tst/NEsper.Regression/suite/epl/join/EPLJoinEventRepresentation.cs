@@ -20,6 +20,8 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
     public class EPLJoinEventRepresentation
@@ -133,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "s0",
                     output => {
                         EPAssertionUtil.AssertProps(output, columnNames.SplitCsv(), new object[] { "a", "a", 1, 2 });
-                        Assert.IsTrue(rep.MatchesClass(output.Underlying.GetType()));
+                        ClassicAssert.IsTrue(rep.MatchesClass(output.Underlying.GetType()));
                     });
 
                 SendRepEvent(env, rep, s1Name, "b", 3);

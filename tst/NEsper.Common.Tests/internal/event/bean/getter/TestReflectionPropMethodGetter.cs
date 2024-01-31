@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.getter
 {
@@ -38,13 +39,13 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
         public void TestGetter()
         {
             ReflectionPropMethodGetter getter = MakeGetter(typeof(SupportBean), "GetIntPrimitive");
-            Assert.AreEqual(10, getter.Get(unitTestBean));
+            ClassicAssert.AreEqual(10, getter.Get(unitTestBean));
 
             getter = MakeGetter(typeof(SupportBean), "GetTheString");
-            Assert.AreEqual("a", getter.Get(unitTestBean));
+            ClassicAssert.AreEqual("a", getter.Get(unitTestBean));
 
             getter = MakeGetter(typeof(SupportBean), "GetDoubleBoxed");
-            Assert.AreEqual(null, getter.Get(unitTestBean));
+            ClassicAssert.AreEqual(null, getter.Get(unitTestBean));
         }
 
         [Test]
@@ -57,7 +58,7 @@ namespace com.espertech.esper.common.@internal.@event.bean.getter
             for (int i = 0; i < 10; i++)   // Change to 1E8 for performance testing
             {
                 int value = getter.Get(unitTestBean).AsInt32();
-                Assert.AreEqual(10, value);
+                ClassicAssert.AreEqual(10, value);
             }
 
             Log.Info(".testPerformance Done test");

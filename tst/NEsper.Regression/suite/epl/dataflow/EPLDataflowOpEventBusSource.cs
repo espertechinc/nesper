@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib; // sleep
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -124,12 +125,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             var eventService = (EventServiceSendEventCommon)env.EventService;
 
             events[0].Send(eventService);
-            Assert.AreEqual(0, future.Current.Length);
+            ClassicAssert.AreEqual(0, future.Current.Length);
 
             var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
 
             events[0].Send(eventService);
-            Assert.AreEqual(0, future.Current.Length);
+            ClassicAssert.AreEqual(0, future.Current.Length);
 
             df.Start();
 
@@ -141,16 +142,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             // assert
             future.WaitForInvocation(200, events.Length);
             var rows = future.GetCurrentAndReset();
-            Assert.AreEqual(events.Length, rows.Length);
+            ClassicAssert.AreEqual(events.Length, rows.Length);
             for (var i = 0; i < events.Length; i++) {
-                Assert.AreSame(events[i].Underlying, rows[i]);
+                ClassicAssert.AreSame(events[i].Underlying, rows[i]);
             }
 
             df.Cancel();
 
             events[0].Send(eventService);
             Sleep(50);
-            Assert.AreEqual(0, future.Current.Length);
+            ClassicAssert.AreEqual(0, future.Current.Length);
 
             env.UndeployAll();
         }
@@ -190,13 +191,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.SendEventObjectArray(new object[] { "B", 100L }, "MyEventOA");
                 Sleep(50);
-                Assert.IsNull(collector.Last);
+                ClassicAssert.IsNull(collector.Last);
 
                 env.SendEventObjectArray(new object[] { "A", 101L }, "MyEventOA");
                 future.WaitForInvocation(100, 1);
-                Assert.IsNotNull(collector.Last.Emitter);
-                Assert.AreEqual("MyEventOA", collector.Last.Event.EventType.Name);
-                Assert.AreEqual(false, collector.Last.IsSubmitEventBean);
+                ClassicAssert.IsNotNull(collector.Last.Emitter);
+                ClassicAssert.AreEqual("MyEventOA", collector.Last.Event.EventType.Name);
+                ClassicAssert.AreEqual(false, collector.Last.IsSubmitEventBean);
 
                 instance.Cancel();
 
@@ -238,7 +239,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPRuntimeException(t);
             }
 
-            Assert.AreEqual(1, rows.Length);
+            ClassicAssert.AreEqual(1, rows.Length);
             if (underlying) {
                 EPAssertionUtil.AssertEqualsExactOrder((object[])rows[0], new object[] { "abc", 100L });
             }

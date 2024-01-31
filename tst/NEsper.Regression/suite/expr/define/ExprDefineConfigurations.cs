@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.define
 {
@@ -37,7 +38,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.define
             SupportStaticMethodLib.Invocations.Clear();
             env.SendEventBean(new SupportBean_ST0("a", 0));
             env.SendEventBean(new SupportBean_ST1("a", 0));
-            Assert.AreEqual(expectedInvocationCount, SupportStaticMethodLib.Invocations.Count);
+            ClassicAssert.AreEqual(expectedInvocationCount, SupportStaticMethodLib.Invocations.Count);
 
             env.UndeployAll();
         }

@@ -18,6 +18,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLSchemaEventTransposeNodeArray
@@ -95,13 +97,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     var result = it.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(result);
                     var fragments = (EventBean[])result.GetFragment("narr");
-                    Assert.AreEqual(3, fragments.Length);
-                    Assert.AreEqual("SAMPLE_V8", fragments[0].Get("prop5[1]"));
-                    Assert.AreEqual("SAMPLE_V11", fragments[2].Get("prop5[1]"));
+                    ClassicAssert.AreEqual(3, fragments.Length);
+                    ClassicAssert.AreEqual("SAMPLE_V8", fragments[0].Get("prop5[1]"));
+                    ClassicAssert.AreEqual("SAMPLE_V11", fragments[2].Get("prop5[1]"));
 
                     var fragmentItem = (EventBean)result.GetFragment("narr[2]");
-                    Assert.AreEqual(eventTypeName + ".nested3.nested4", fragmentItem.EventType.Name);
-                    Assert.AreEqual("SAMPLE_V10", fragmentItem.Get("prop5[0]"));
+                    ClassicAssert.AreEqual(eventTypeName + ".nested3.nested4", fragmentItem.EventType.Name);
+                    ClassicAssert.AreEqual("SAMPLE_V10", fragmentItem.Get("prop5[0]"));
                 });
 
             // try array index property insert
@@ -124,12 +126,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "ii",
                 iterator => {
                     var resultItem = iterator.Advance();
-                    Assert.AreEqual("b", resultItem.Get("narr.id"));
+                    ClassicAssert.AreEqual("b", resultItem.Get("narr.id"));
                     SupportEventTypeAssertionUtil.AssertConsistency(resultItem);
                     var fragmentsInsertItem = (EventBean)resultItem.GetFragment("narr");
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentsInsertItem);
-                    Assert.AreEqual("b", fragmentsInsertItem.Get("id"));
-                    Assert.AreEqual("SAMPLE_V9", fragmentsInsertItem.Get("prop5[0]"));
+                    ClassicAssert.AreEqual("b", fragmentsInsertItem.Get("id"));
+                    ClassicAssert.AreEqual("SAMPLE_V9", fragmentsInsertItem.Get("prop5[0]"));
                 });
 
             env.UndeployAll();

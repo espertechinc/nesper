@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.util;
 using com.espertech.esper.common.@internal.type;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -44,8 +45,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(arithNode.EqualsNode(arithNode, false));
-            Assert.IsFalse(arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
+            ClassicAssert.IsTrue(arithNode.EqualsNode(arithNode, false));
+            ClassicAssert.IsFalse(arithNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
 
         [Test]
@@ -54,16 +55,16 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             arithNode.AddChildNode(new SupportExprNode(10));
             arithNode.AddChildNode(new SupportExprNode(1.5));
             ExprNodeUtilityValidate.GetValidatedSubtree(ExprNodeOrigin.SELECT, arithNode, SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(11.5d, arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(11.5d, arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             arithNode = MakeNode(null, typeof(int?), 5d, typeof(double?));
-            Assert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             arithNode = MakeNode(5, typeof(int?), null, typeof(double?));
-            Assert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             arithNode = MakeNode(null, typeof(int?), null, typeof(double?));
-            Assert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.IsNull(arithNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -72,7 +73,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             arithNode.AddChildNode(new SupportExprNode(typeof(double?)));
             arithNode.AddChildNode(new SupportExprNode(typeof(int?)));
             arithNode.Validate(SupportExprValidationContextFactory.MakeEmpty(container));
-            Assert.AreEqual(typeof(double?), arithNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual(typeof(double?), arithNode.Forge.EvaluationType);
         }
 
         [Test]
@@ -87,7 +88,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             arithNode.AddChildNode(new SupportExprNode(5));
             arithNode.AddChildNode(arithNodeChild);
 
-            Assert.AreEqual("5*(4-2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arithNode));
+            ClassicAssert.AreEqual("5*(4-2)", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(arithNode));
         }
 
         [Test]

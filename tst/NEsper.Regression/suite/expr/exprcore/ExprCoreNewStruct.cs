@@ -21,6 +21,7 @@ using NEsper.Avro.Extensions;
 using NEsper.Avro.Support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -85,9 +86,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                         "c0",
                         actual => {
                             var c0 = (IDictionary<string, object>)actual;
-                            Assert.AreEqual("E1", c0.Get("a"));
-                            Assert.AreEqual("E1", c0.Get("b.c"));
-                            Assert.AreEqual("E1", c0.Get("}"));
+                            ClassicAssert.AreEqual("E1", c0.Get("a"));
+                            ClassicAssert.AreEqual("E1", c0.Get("b.c"));
+                            ClassicAssert.AreEqual("E1", c0.Get("}"));
                         });
 
                 builder.Run(env);
@@ -133,7 +134,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "case TheString when \"A\" then new{TheString=\"Q\",IntPrimitive,col2=TheString||\"A\"} when \"B\" then new{TheString,IntPrimitive=10,col2=TheString||\"B\"} end",
                         statement.EventType.PropertyNames[0]));
                 env.UndeployAll();
@@ -145,13 +146,13 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("val0"));
+                    ClassicAssert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("val0"));
                     var fragType = statement.EventType.GetFragmentType("val0");
-                    Assert.IsFalse(fragType.IsIndexed);
-                    Assert.IsFalse(fragType.IsNative);
-                    Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
-                    Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
-                    Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
+                    ClassicAssert.IsFalse(fragType.IsIndexed);
+                    ClassicAssert.IsFalse(fragType.IsNative);
+                    ClassicAssert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
+                    ClassicAssert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("IntPrimitive"));
+                    ClassicAssert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col2"));
                 });
 
             var fieldsInner = "TheString,IntPrimitive,col2".SplitCsv();
@@ -233,12 +234,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("val0"));
+                    ClassicAssert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("val0"));
                     var fragType = statement.EventType.GetFragmentType("val0");
-                    Assert.IsFalse(fragType.IsIndexed);
-                    Assert.IsFalse(fragType.IsNative);
-                    Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col1"));
-                    Assert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("col2"));
+                    ClassicAssert.IsFalse(fragType.IsIndexed);
+                    ClassicAssert.IsFalse(fragType.IsNative);
+                    ClassicAssert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("col1"));
+                    ClassicAssert.AreEqual(typeof(int?), fragType.FragmentType.GetPropertyType("col2"));
                 });
 
             var fieldsInner = "col1,col2".SplitCsv();
@@ -269,18 +270,18 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         rep.IsAvroEvent() ? typeof(GenericRecord) : typeof(IDictionary<string, object>),
                         statement.EventType.GetPropertyType("val0"));
                     var fragType = statement.EventType.GetFragmentType("val0");
                     if (rep == EventRepresentationChoice.JSONCLASSPROVIDED) {
-                        Assert.IsNull(fragType);
+                        ClassicAssert.IsNull(fragType);
                     }
                     else {
-                        Assert.IsFalse(fragType.IsIndexed);
-                        Assert.IsFalse(fragType.IsNative);
-                        Assert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
-                        Assert.AreEqual(
+                        ClassicAssert.IsFalse(fragType.IsIndexed);
+                        ClassicAssert.IsFalse(fragType.IsNative);
+                        ClassicAssert.AreEqual(typeof(string), fragType.FragmentType.GetPropertyType("TheString"));
+                        ClassicAssert.AreEqual(
                             typeof(int?),
                             Boxing.GetBoxedType(fragType.FragmentType.GetPropertyType("IntPrimitive")));
                     }
@@ -294,8 +295,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     if (rep.IsAvroEvent()) {
                         SupportAvroUtil.AvroToJson(@event);
                         var inner = (GenericRecord)@event.Get("val0");
-                        Assert.AreEqual("xE1x", inner.Get("TheString"));
-                        Assert.AreEqual(-3, inner.Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("xE1x", inner.Get("TheString"));
+                        ClassicAssert.AreEqual(-3, inner.Get("IntPrimitive"));
                     }
                     else {
                         EPAssertionUtil.AssertPropsMap(

@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -100,7 +100,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                                 "@name('s0') select * from pattern [timer:interval(0) or every timer:interval(1 min)]")
                             .Statement("s0")
                             .AddListenerWithReplay(listener);
-                        Assert.IsTrue(listener.IsInvoked);
+                        ClassicAssert.IsTrue(listener.IsInvoked);
                         env.UndeployAll();
                     });
             }
@@ -225,8 +225,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(eventA1, theEvent.Get("a"));
-                    Assert.IsNull(theEvent.Get("b"));
+                    ClassicAssert.AreEqual(eventA1, theEvent.Get("a"));
+                    ClassicAssert.IsNull(theEvent.Get("b"));
                 });
 
             env.MilestoneInc(milestone);
@@ -236,8 +236,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(eventA1, theEvent.Get("a"));
-                    Assert.AreEqual(eventB1, theEvent.Get("b"));
+                    ClassicAssert.AreEqual(eventA1, theEvent.Get("a"));
+                    ClassicAssert.AreEqual(eventB1, theEvent.Get("b"));
                 });
 
             env.UndeployAll();

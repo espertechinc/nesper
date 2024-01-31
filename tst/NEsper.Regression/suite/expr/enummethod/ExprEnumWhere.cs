@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
@@ -96,9 +96,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     .Verify("c2", val => AssertST0Id(val, "E2,E4"));
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2ValueNull())
-                    .Verify("c0", Assert.IsNull)
-                    .Verify("c1", Assert.IsNull)
-                    .Verify("c2", Assert.IsNull);
+                    .Verify("c0", ClassicAssert.IsNull)
+                    .Verify("c1", ClassicAssert.IsNull)
+                    .Verify("c2", ClassicAssert.IsNull);
 
                 builder.WithAssertion(SupportBean_ST0_Container.Make2Value())
                     .Verify("c0", val => AssertST0Id(val, ""))

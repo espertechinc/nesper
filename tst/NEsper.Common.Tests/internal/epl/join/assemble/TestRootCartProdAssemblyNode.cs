@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
@@ -39,23 +40,23 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
         [Test]
         public void TestComputeCombined()
         {
-            Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new[] { new[] { 2 } }));
-            Assert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new[] { new[] { 1 }, new[] { 2 } }));
+            ClassicAssert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new[] { new[] { 2 } }));
+            ClassicAssert.IsNull(RootCartProdAssemblyNode.ComputeCombined(new[] { new[] { 1 }, new[] { 2 } }));
 
             var result = RootCartProdAssemblyNode.ComputeCombined(
                 new[] { new[] { 3, 4 }, new[] { 2, 5 }, new[] { 6 } });
-            Assert.AreEqual(1, result.Length);
+            ClassicAssert.AreEqual(1, result.Length);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5 }, result[0]);
 
             result = RootCartProdAssemblyNode.ComputeCombined(
                 new[] { new[] { 3, 4 }, new[] { 2, 5 }, new[] { 6 }, new[] { 0, 8, 9 } });
-            Assert.AreEqual(2, result.Length);
+            ClassicAssert.AreEqual(2, result.Length);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5 }, result[0]);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5, 6 }, result[1]);
 
             result = RootCartProdAssemblyNode.ComputeCombined(
                 new[] { new[] { 3, 4 }, new[] { 2, 5 }, new[] { 6 }, new[] { 0, 8, 9 }, new[] { 1 } });
-            Assert.AreEqual(3, result.Length);
+            ClassicAssert.AreEqual(3, result.Length);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5 }, result[0]);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5, 6 }, result[1]);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 3, 4, 2, 5, 6, 0, 8, 9 }, result[2]);
@@ -76,7 +77,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             rootCartNodeAllOpt.Process(null, resultFinalRows, null);
 
             // 5 generated rows: 2 (stream 2) + 2 (stream 3) + 1 (self, Node 2)
-            Assert.AreEqual(1, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(1, parentNode.RowsList.Count);
 
             var rowArr = supportJoinResultNodeFactory.ConvertTo2DimArr(parentNode.RowsList);
             EPAssertionUtil.AssertEqualsAnyOrder(
@@ -124,7 +125,7 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             rootCartNodeOneReq.Process(null, resultFinalRows, null);
 
             // 5 generated rows: 2 (stream 2) + 2 (stream 3) + 1 (self, Node 2)
-            Assert.AreEqual(8, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(8, parentNode.RowsList.Count);
 
             var rowArr = supportJoinResultNodeFactory.ConvertTo2DimArr(parentNode.RowsList);
             EPAssertionUtil.AssertEqualsAnyOrder(

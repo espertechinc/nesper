@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -74,7 +75,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             long totalReceived = 0;
             foreach (var listener in listeners) {
                 totalReceived += listener.NumReceived;
-                Assert.IsFalse(listener.IsCaughtException);
+                ClassicAssert.IsFalse(listener.IsCaughtException);
             }
 
             var numTimeWindowAdvancements = (endTime - startTime) / 1000 / timeWindowSize;
@@ -207,7 +208,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
                     var symbol = (string)newEvents[0].Get("Symbol");
                     if (lastSymbol != null) {
-                        Assert.AreEqual(lastSymbol, symbol);
+                        ClassicAssert.AreEqual(lastSymbol, symbol);
                     }
                     else {
                         lastSymbol = symbol;

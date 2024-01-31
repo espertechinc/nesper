@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
@@ -122,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { "b" });

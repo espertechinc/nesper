@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -29,12 +30,12 @@ namespace com.espertech.esper.common.@internal.util
 
             firstValues = new HashableMultiKey(new object[] { 3d });
             secondValues = new HashableMultiKey(new object[] { 4d });
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
 
             comparator = new ComparatorHashableMultiKey(new bool[] { true });
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
-            Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
         }
 
         [Test]
@@ -44,12 +45,12 @@ namespace com.espertech.esper.common.@internal.util
 
             firstValues = new HashableMultiKey(new object[] { 3d, 3L });
             secondValues = new HashableMultiKey(new object[] { 3d, 4L });
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, secondValues) < 0);
 
             comparator = new ComparatorHashableMultiKey(new bool[] { false, true });
 
-            Assert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
-            Assert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, secondValues) > 0);
+            ClassicAssert.IsTrue(comparator.Compare(firstValues, firstValues) == 0);
         }
 
         [Test]

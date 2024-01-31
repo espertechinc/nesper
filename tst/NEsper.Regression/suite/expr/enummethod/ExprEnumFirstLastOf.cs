@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
@@ -226,7 +227,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
             string id)
         {
             var result = (SupportBean_ST0)value;
-            Assert.AreEqual(id, result.Id);
+            ClassicAssert.AreEqual(id, result.Id);
         }
     }
 } // end of namespace

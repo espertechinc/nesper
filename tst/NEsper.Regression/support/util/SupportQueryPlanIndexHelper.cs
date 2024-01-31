@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.epl.@join.queryplanouter;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -47,7 +48,7 @@ namespace com.espertech.esper.regressionlib.support.util
             QueryPlanIndexForge[] actual,
             IDictionary<TableLookupIndexReqKey, TableLookupIndexReqKey> indexNameMapping)
         {
-            Assert.AreEqual(expected.Length, actual.Length);
+            ClassicAssert.AreEqual(expected.Length, actual.Length);
             for (var i = 0; i < expected.Length; i++) {
                 CompareIndex(i, expected[i], actual[i], indexNameMapping);
             }
@@ -61,7 +62,7 @@ namespace com.espertech.esper.regressionlib.support.util
         {
             var actualItems = actual.Items;
             var expectedItems = expected.Items;
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 expectedItems.Count,
                 actualItems.Count,
                 "Number of indexes mismatch for stream " + streamNum
@@ -94,7 +95,7 @@ namespace com.espertech.esper.regressionlib.support.util
             QueryPlanNodeForge[] actual,
             IDictionary<TableLookupIndexReqKey, TableLookupIndexReqKey> indexNameMapping)
         {
-            Assert.AreEqual(expected.Length, actual.Length);
+            ClassicAssert.AreEqual(expected.Length, actual.Length);
             for (var i = 0; i < expected.Length; i++) {
                 CompareExecNodeSpec(i, expected[i], actual[i], indexNameMapping);
             }
@@ -144,9 +145,9 @@ namespace com.espertech.esper.regressionlib.support.util
             LookupInstructionQueryPlanNodeForge actual,
             IDictionary<TableLookupIndexReqKey, TableLookupIndexReqKey> indexNameMapping)
         {
-            Assert.AreEqual(expected.RootStream, actual.RootStream);
-            Assert.AreEqual(expected.RootStreamName, actual.RootStreamName);
-            Assert.AreEqual(expected.LookupInstructions.Count, actual.LookupInstructions.Count);
+            ClassicAssert.AreEqual(expected.RootStream, actual.RootStream);
+            ClassicAssert.AreEqual(expected.RootStreamName, actual.RootStreamName);
+            ClassicAssert.AreEqual(expected.LookupInstructions.Count, actual.LookupInstructions.Count);
             for (var i = 0; i < expected.LookupInstructions.Count; i++) {
                 CompareInstructionDetail(
                     streamNum,
@@ -164,7 +165,7 @@ namespace com.espertech.esper.regressionlib.support.util
             LookupInstructionPlanForge actual,
             IDictionary<TableLookupIndexReqKey, TableLookupIndexReqKey> indexNameMapping)
         {
-            Assert.AreEqual(expected.LookupPlans.Length, actual.LookupPlans.Length);
+            ClassicAssert.AreEqual(expected.LookupPlans.Length, actual.LookupPlans.Length);
             for (var i = 0; i < expected.LookupPlans.Length; i++) {
                 CompareTableLookupPlan(
                     streamNum,
@@ -206,16 +207,16 @@ namespace com.espertech.esper.regressionlib.support.util
             IDictionary<TableLookupIndexReqKey, TableLookupIndexReqKey> indexNameMapping)
         {
             var message = "Failed at stream " + streamNum + " and instruction " + numInstruction;
-            Assert.AreEqual(expectedPlan.IndexedStream, actualPlan.IndexedStream, message);
-            Assert.AreEqual(expectedPlan.LookupStream, actualPlan.LookupStream, message);
-            Assert.AreEqual(expectedPlan.GetType().FullName, actualPlan.GetType().FullName, message);
+            ClassicAssert.AreEqual(expectedPlan.IndexedStream, actualPlan.IndexedStream, message);
+            ClassicAssert.AreEqual(expectedPlan.LookupStream, actualPlan.LookupStream, message);
+            ClassicAssert.AreEqual(expectedPlan.GetType().FullName, actualPlan.GetType().FullName, message);
 
             // assert index mapping
-            Assert.AreEqual(expectedPlan.IndexNum.Length, actualPlan.IndexNum.Length, message);
+            ClassicAssert.AreEqual(expectedPlan.IndexNum.Length, actualPlan.IndexNum.Length, message);
             for (var i = 0; i < expectedPlan.IndexNum.Length; i++) {
                 var expectedIndexKey = expectedPlan.IndexNum[i];
                 var actualIndexKey = actualPlan.IndexNum[i];
-                Assert.AreEqual(expectedIndexKey, indexNameMapping.Get(actualIndexKey), message);
+                ClassicAssert.AreEqual(expectedIndexKey, indexNameMapping.Get(actualIndexKey), message);
             }
 
             if (expectedPlan is FullTableScanLookupPlanForge && actualPlan is FullTableScanLookupPlanForge) {
@@ -230,19 +231,19 @@ namespace com.espertech.esper.regressionlib.support.util
                      actualPlan is InKeywordTableLookupPlanMultiIdxForge) {
                 var inExpected = (InKeywordTableLookupPlanMultiIdxForge) expectedPlan;
                 var inActual = (InKeywordTableLookupPlanMultiIdxForge) actualPlan;
-                Assert.IsTrue(ExprNodeUtilityCompare.DeepEquals(inExpected.KeyExpr, inActual.KeyExpr, false));
+                ClassicAssert.IsTrue(ExprNodeUtilityCompare.DeepEquals(inExpected.KeyExpr, inActual.KeyExpr, false));
             }
             else if (expectedPlan is InKeywordTableLookupPlanSingleIdxForge &&
                      actualPlan is InKeywordTableLookupPlanSingleIdxForge) {
                 var inExpected = (InKeywordTableLookupPlanSingleIdxForge) expectedPlan;
                 var inActual = (InKeywordTableLookupPlanSingleIdxForge) actualPlan;
-                Assert.IsTrue(ExprNodeUtilityCompare.DeepEquals(inExpected.Expressions, inActual.Expressions, false));
+                ClassicAssert.IsTrue(ExprNodeUtilityCompare.DeepEquals(inExpected.Expressions, inActual.Expressions, false));
             }
             else if (expectedPlan is SortedTableLookupPlanForge && actualPlan is SortedTableLookupPlanForge) {
                 var inExpected = (SortedTableLookupPlanForge) expectedPlan;
                 var inActual = (SortedTableLookupPlanForge) actualPlan;
-                Assert.AreEqual(inExpected.LookupStream, inActual.LookupStream);
-                Assert.IsTrue(
+                ClassicAssert.AreEqual(inExpected.LookupStream, inActual.LookupStream);
+                ClassicAssert.IsTrue(
                     ExprNodeUtilityCompare.DeepEquals(
                         inExpected.RangeKeyPair.Expressions,
                         inActual.RangeKeyPair.Expressions,
@@ -257,12 +258,12 @@ namespace com.espertech.esper.regressionlib.support.util
             TableLookupKeyDesc expected,
             TableLookupKeyDesc actual)
         {
-            Assert.AreEqual(expected.Hashes.Count, actual.Hashes.Count);
+            ClassicAssert.AreEqual(expected.Hashes.Count, actual.Hashes.Count);
             for (var i = 0; i < expected.Hashes.Count; i++) {
                 CompareIndexDescHash(expected.Hashes[i], actual.Hashes[i]);
             }
 
-            Assert.AreEqual(expected.Ranges.Count, actual.Ranges.Count);
+            ClassicAssert.AreEqual(expected.Ranges.Count, actual.Ranges.Count);
             for (var i = 0; i < expected.Ranges.Count; i++) {
                 CompareIndexDescRange(expected.Ranges[i], actual.Ranges[i]);
             }
@@ -272,14 +273,14 @@ namespace com.espertech.esper.regressionlib.support.util
             QueryGraphValueEntryRangeForge expected,
             QueryGraphValueEntryRangeForge actual)
         {
-            Assert.AreEqual(expected.ToQueryPlan(), actual.ToQueryPlan());
+            ClassicAssert.AreEqual(expected.ToQueryPlan(), actual.ToQueryPlan());
         }
 
         private static void CompareIndexDescHash(
             QueryGraphValueEntryHashKeyedForge expected,
             QueryGraphValueEntryHashKeyedForge actual)
         {
-            Assert.AreEqual(expected.ToQueryPlan(), actual.ToQueryPlan());
+            ClassicAssert.AreEqual(expected.ToQueryPlan(), actual.ToQueryPlan());
         }
 
         private static void CompareIndexItem(

@@ -15,7 +15,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -70,7 +70,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             ThreadSleep(250);
 
             var numDeliveries = listener.NewDataList.Count;
-            Assert.IsTrue(numDeliveries >= 2, "Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
+            ClassicAssert.IsTrue(numDeliveries >= 2, "Done " + numLoops + " loops, have " + numDeliveries + " deliveries");
 
             var sum = 0;
             long count = 0;
@@ -82,8 +82,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.AreEqual(0, sum);
-            Assert.AreEqual(numEvents, count);
+            ClassicAssert.AreEqual(0, sum);
+            ClassicAssert.AreEqual(numEvents, count);
             runtime.Destroy();
         }
 

@@ -10,6 +10,7 @@ using System;
 using System.IO;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -30,7 +31,7 @@ namespace com.espertech.esper.common.@internal.util
 
         private void AssertWritten(string text)
         {
-            Assert.AreEqual(text + NEWLINE, stringWriter.ToString());
+            ClassicAssert.AreEqual(text + NEWLINE, stringWriter.ToString());
             var buffer = stringWriter.GetStringBuilder();
             stringWriter.GetStringBuilder().Remove(0, buffer.Length);
         }

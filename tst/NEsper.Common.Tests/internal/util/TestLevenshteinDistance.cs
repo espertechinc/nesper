@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -16,7 +17,7 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestDistance()
         {
-            Assert.AreEqual(1, LevenshteinDistance.ComputeLevenshteinDistance("abc", "abcd"));
+            ClassicAssert.AreEqual(1, LevenshteinDistance.ComputeLevenshteinDistance("abc", "abcd"));
             // Console.WriteLine(result);
         }
     }

@@ -11,6 +11,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace NEsper.Examples.Transaction
 {
@@ -40,8 +41,8 @@ namespace NEsper.Examples.Transaction
 
         private void AssertReceivedEvent(TxnEventA expectedA, TxnEventB expectedB)
         {
-            Assert.AreEqual(1, listener.OldDataList.Count);
-            Assert.AreEqual(1, listener.LastOldData.Length);
+            ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+            ClassicAssert.AreEqual(1, listener.LastOldData.Length);
             EventBean combinedEvent = listener.LastOldData[0];
             Compare(combinedEvent, expectedA, expectedB);
             listener.Reset();
@@ -49,8 +50,8 @@ namespace NEsper.Examples.Transaction
 
         private void AssertReceivedTwoEvents(TxnEventA expectedA, TxnEventB expectedB)
         {
-            Assert.AreEqual(1, listener.OldDataList.Count);
-            Assert.AreEqual(2, listener.LastOldData.Length);
+            ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+            ClassicAssert.AreEqual(2, listener.LastOldData.Length);
 
             // The order is not guaranteed
             if (listener.LastOldData[0].Get("A") == expectedA) {
@@ -67,9 +68,9 @@ namespace NEsper.Examples.Transaction
 
         private static void Compare(EventBean combinedEvent, TxnEventA expectedA, TxnEventB expectedB)
         {
-            Assert.AreSame(expectedA, combinedEvent.Get("A"));
-            Assert.AreSame(expectedB, combinedEvent.Get("B"));
-            Assert.IsNull(combinedEvent.Get("C"));
+            ClassicAssert.AreSame(expectedA, combinedEvent.Get("A"));
+            ClassicAssert.AreSame(expectedB, combinedEvent.Get("B"));
+            ClassicAssert.IsNull(combinedEvent.Get("C"));
         }
 
         [Test]
@@ -111,7 +112,7 @@ namespace NEsper.Examples.Transaction
             listener.Reset();
 
             _runtime.EventService.AdvanceTime(TIME_WINDOW_SIZE_MSEC + 1*60*1000); // Expire "id0" from window
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
 
             _runtime.EventService.AdvanceTime(TIME_WINDOW_SIZE_MSEC + 2*60*1000); // Expire "id1" from window
             AssertReceivedEvent(a[1], null);
@@ -120,10 +121,10 @@ namespace NEsper.Examples.Transaction
             AssertReceivedEvent(null, b[2]);
 
             _runtime.EventService.AdvanceTime(TIME_WINDOW_SIZE_MSEC + 4*60*1000);
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
 
             _runtime.EventService.AdvanceTime(TIME_WINDOW_SIZE_MSEC + 5*60*1000);
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
 
             _runtime.EventService.AdvanceTime(TIME_WINDOW_SIZE_MSEC + 6*60*1000);
             AssertReceivedTwoEvents(a[5], b[5]);

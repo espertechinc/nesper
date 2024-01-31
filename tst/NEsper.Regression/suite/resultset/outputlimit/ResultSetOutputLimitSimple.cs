@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
@@ -740,7 +740,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 
                 // test statement model
                 var model = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 env.UndeployAll();
             }
@@ -873,8 +873,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertListener(
                     "s1",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
                 env.AssertListenerNotInvoked("s3");
 
@@ -890,16 +890,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertListener(
                     "s1",
                     listener => {
-                        Assert.IsTrue(listener.IsInvoked);
-                        Assert.AreEqual(1, listener.LastNewData.Length);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsTrue(listener.IsInvoked);
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
                 env.AssertListener(
                     "s3",
                     listener => {
-                        Assert.IsTrue(listener.GetAndClearIsInvoked());
-                        Assert.AreEqual(3, listener.LastNewData.Length);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsTrue(listener.GetAndClearIsInvoked());
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
 
                 env.UndeployAll();
@@ -955,8 +955,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(1, newEvents.Length);
-                        Assert.AreEqual("e1", newEvents[0].Get("TheString"));
+                        ClassicAssert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual("e1", newEvents[0].Get("TheString"));
                         listener.Reset();
                     });
 
@@ -976,9 +976,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.AreEqual(2, newEvents.Length);
-                        Assert.AreEqual("e2", newEvents[0].Get("TheString"));
-                        Assert.AreEqual("e3", newEvents[1].Get("TheString"));
+                        ClassicAssert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual("e2", newEvents[0].Get("TheString"));
+                        ClassicAssert.AreEqual("e3", newEvents[1].Get("TheString"));
                     });
 
                 SendTimer(env, 90000);
@@ -1103,8 +1103,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertListener(
                     "s1",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
                 env.AssertListenerNotInvoked("s2");
@@ -1117,8 +1117,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertListener(
                     "s2",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
 
                 env.UndeployAll();
@@ -1383,9 +1383,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreEqual(2L, listener.LastNewData[0].Get("LongBoxed"));
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(2L, listener.LastNewData[0].Get("LongBoxed"));
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
             env.UndeployAll();
         }
@@ -1456,9 +1456,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1475,9 +1475,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1492,9 +1492,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.IsNull(listener.LastNewData);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.IsNull(listener.LastNewData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1509,9 +1509,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.IsNull(listener.LastNewData);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.IsNull(listener.LastNewData);
+                    ClassicAssert.IsNull(listener.LastOldData);
                     listener.Reset();
                 });
 
@@ -1530,9 +1530,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
-                    Assert.AreEqual(3, listener.LastNewData.Length);
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.AreEqual(3, listener.LastNewData.Length);
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
 
             env.UndeployAll();
@@ -1569,10 +1569,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(2, listener.LastNewData.Length);
-                    Assert.AreEqual(1L, listener.LastNewData[0].Get("LongBoxed"));
-                    Assert.AreEqual(2L, listener.LastNewData[1].Get("LongBoxed"));
-                    Assert.IsNull(listener.LastOldData);
+                    ClassicAssert.AreEqual(2, listener.LastNewData.Length);
+                    ClassicAssert.AreEqual(1L, listener.LastNewData[0].Get("LongBoxed"));
+                    ClassicAssert.AreEqual(2L, listener.LastNewData[1].Get("LongBoxed"));
+                    ClassicAssert.IsNull(listener.LastOldData);
                 });
 
             env.UndeployAll();

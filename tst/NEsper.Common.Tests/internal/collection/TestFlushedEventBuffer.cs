@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.common.@internal.supportunit.@event;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -39,36 +40,36 @@ namespace com.espertech.esper.common.@internal.collection
         {
             // test empty buffer
             buffer.Add(null);
-            Assert.IsNull(buffer.GetAndFlush());
+            ClassicAssert.IsNull(buffer.GetAndFlush());
             buffer.Flush();
 
             // test add single events
             buffer.Add(new[] { events[0] });
             var results = buffer.GetAndFlush();
-            Assert.IsTrue(results.Length == 1 && results[0] == events[0]);
+            ClassicAssert.IsTrue(results.Length == 1 && results[0] == events[0]);
 
             buffer.Add(new[] { events[0] });
             buffer.Add(new[] { events[1] });
             results = buffer.GetAndFlush();
-            Assert.IsTrue(results.Length == 2);
-            Assert.AreSame(events[0], results[0]);
-            Assert.AreSame(events[1], results[1]);
+            ClassicAssert.IsTrue(results.Length == 2);
+            ClassicAssert.AreSame(events[0], results[0]);
+            ClassicAssert.AreSame(events[1], results[1]);
 
             buffer.Flush();
-            Assert.IsNull(buffer.GetAndFlush());
+            ClassicAssert.IsNull(buffer.GetAndFlush());
 
             // Add multiple events
             buffer.Add(new[] { events[2], events[3] });
             buffer.Add(new[] { events[4], events[5] });
             results = buffer.GetAndFlush();
-            Assert.IsTrue(results.Length == 4);
-            Assert.AreSame(events[2], results[0]);
-            Assert.AreSame(events[3], results[1]);
-            Assert.AreSame(events[4], results[2]);
-            Assert.AreSame(events[5], results[3]);
+            ClassicAssert.IsTrue(results.Length == 4);
+            ClassicAssert.AreSame(events[2], results[0]);
+            ClassicAssert.AreSame(events[3], results[1]);
+            ClassicAssert.AreSame(events[4], results[2]);
+            ClassicAssert.AreSame(events[5], results[3]);
 
             buffer.Flush();
-            Assert.IsNull(buffer.GetAndFlush());
+            ClassicAssert.IsNull(buffer.GetAndFlush());
         }
     }
 } // end of namespace

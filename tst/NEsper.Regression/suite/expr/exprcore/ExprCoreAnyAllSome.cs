@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
@@ -171,7 +172,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     () => {
                         var epl = eplReference.Get();
                         var model = env.EplToModel(epl);
-                        Assert.AreEqual(epl.Replace("<>", "!="), model.ToEPL());
+                        ClassicAssert.AreEqual(epl.Replace("<>", "!="), model.ToEPL());
                         env.CompileDeploy(model).AddListener("s0");
 
                         for (var i = 0; i < testdata.Length; i++) {
@@ -352,7 +353,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 // test OM
                 var model = env.EplToModel(runResult.EPL);
-                Assert.AreEqual(runResult.EPL.Replace("<>", "!="), model.ToEPL());
+                ClassicAssert.AreEqual(runResult.EPL.Replace("<>", "!="), model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
 
                 arrayBean = new SupportBeanArrayCollMap(new int[] { 1, 2 });

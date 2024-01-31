@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -150,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                             listener.NewDataListFlattened,
                             fields,
                             new object[][] { new object[] { "E1" }, new object[] { "E2" } });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 

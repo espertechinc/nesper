@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.schedule
 {
@@ -28,7 +29,7 @@ namespace com.espertech.esper.regressionlib.support.schedule
             string timeZoneId)
         {
             CompareDate(dateTimeEx, year, month, day, hour, minute, second, millis);
-            Assert.AreEqual(timeZoneId, dateTimeEx.TimeZone.Id);
+            ClassicAssert.AreEqual(timeZoneId, dateTimeEx.TimeZone.Id);
         }
 
         public static void CompareDate(
@@ -41,13 +42,13 @@ namespace com.espertech.esper.regressionlib.support.schedule
             int second,
             int millis)
         {
-            Assert.AreEqual(year, dateTimeEx.Year);
-            Assert.AreEqual(month, dateTimeEx.Month);
-            Assert.AreEqual(day, dateTimeEx.Day);
-            Assert.AreEqual(hour, dateTimeEx.Hour);
-            Assert.AreEqual(minute, dateTimeEx.Minute);
-            Assert.AreEqual(second, dateTimeEx.Second);
-            Assert.AreEqual(millis, dateTimeEx.Millisecond);
+            ClassicAssert.AreEqual(year, dateTimeEx.Year);
+            ClassicAssert.AreEqual(month, dateTimeEx.Month);
+            ClassicAssert.AreEqual(day, dateTimeEx.Day);
+            ClassicAssert.AreEqual(hour, dateTimeEx.Hour);
+            ClassicAssert.AreEqual(minute, dateTimeEx.Minute);
+            ClassicAssert.AreEqual(second, dateTimeEx.Second);
+            ClassicAssert.AreEqual(millis, dateTimeEx.Millisecond);
         }
 
         public static long TimePlusMonth(

@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
@@ -249,8 +249,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 var value = (MyLocalVariable)env.Runtime.VariableService.GetVariableValue(
                     env.DeploymentId("var"),
                     "VAR");
-                Assert.AreEqual(aExpected, value.a);
-                Assert.AreEqual(bExpected, value.b);
+                ClassicAssert.AreEqual(aExpected, value.a);
+                ClassicAssert.AreEqual(bExpected, value.b);
             }
         }
 
@@ -324,7 +324,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for variable 'doublearray'"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for variable 'doublearray'"));
                 }
 
                 // index returned null
@@ -432,7 +432,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 RegressionEnvironment env,
                 int? expected)
             {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     expected,
                     env.Runtime.VariableService.GetVariableValue(env.DeploymentId("var"), "total_sum"));
             }
@@ -563,7 +563,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model, path);
                 var stmtText = "@name('s0') select var1OM, var2OM, Id from SupportBean_A";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
                 env.AddListener("s0");
 
                 var fieldsSelect = new string[] { "var1OM", "var2OM", "Id" };
@@ -578,16 +578,16 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("set"));
                 var stmtTextSet = "@name('set') on SupportBean set var1OM=IntPrimitive, var2OM=IntBoxed";
                 env.CompileDeploy(model, path).AddListener("set");
-                Assert.AreEqual(stmtTextSet, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextSet, model.ToEPL());
 
                 var fieldsVar = new string[] { "var1OM", "var2OM" };
                 env.AssertStatement(
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1OM"));
-                        Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2OM"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1OM"));
+                        ClassicAssert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2OM"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                         EPAssertionUtil.AssertEqualsAnyOrder(fieldsVar, typeSet.PropertyNames);
                     });
 
@@ -711,9 +711,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1C"));
-                        Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2C"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(double?), typeSet.GetPropertyType("var1C"));
+                        ClassicAssert.AreEqual(typeof(long?), typeSet.GetPropertyType("var2C"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                         EPAssertionUtil.AssertEqualsAnyOrder(fieldsVar, typeSet.PropertyNames);
                     });
 
@@ -753,9 +753,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1RTC"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
-                        Assert.IsTrue(Arrays.AreEqual(typeSet.PropertyNames, new string[] { "var1RTC" }));
+                        ClassicAssert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1RTC"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.IsTrue(Arrays.AreEqual(typeSet.PropertyNames, new string[] { "var1RTC" }));
                     });
 
                 var fieldsVar = new string[] { "var1RTC" };
@@ -795,9 +795,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1ROM"));
-                        Assert.AreEqual(typeof(int?), typeSet.GetPropertyType("var2ROM"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(int?), typeSet.GetPropertyType("var1ROM"));
+                        ClassicAssert.AreEqual(typeof(int?), typeSet.GetPropertyType("var2ROM"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             new string[] { "var1ROM", "var2ROM" },
                             typeSet.PropertyNames);
@@ -856,10 +856,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_1"));
-                        Assert.AreEqual(typeof(bool?), typeSet.GetPropertyType("papi_2"));
-                        Assert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_3"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_1"));
+                        ClassicAssert.AreEqual(typeof(bool?), typeSet.GetPropertyType("papi_2"));
+                        ClassicAssert.AreEqual(typeof(string), typeSet.GetPropertyType("papi_3"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
 
                         CollectionAssert.AreEqual(typeSet.PropertyNames.OrderBy(_ => _), fieldsVar);
                     });
@@ -892,10 +892,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                     "set",
                     statement => {
                         var typeSet = statement.EventType;
-                        Assert.AreEqual(typeof(float?), typeSet.GetPropertyType("var1COE"));
-                        Assert.AreEqual(typeof(double?), typeSet.GetPropertyType("var2COE"));
-                        Assert.AreEqual(typeof(long?), typeSet.GetPropertyType("var3COE"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(float?), typeSet.GetPropertyType("var1COE"));
+                        ClassicAssert.AreEqual(typeof(double?), typeSet.GetPropertyType("var2COE"));
+                        ClassicAssert.AreEqual(typeof(long?), typeSet.GetPropertyType("var3COE"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), typeSet.UnderlyingType);
                         EPAssertionUtil.AssertEqualsAnyOrder(typeSet.PropertyNames, fieldsVar);
                     });
 

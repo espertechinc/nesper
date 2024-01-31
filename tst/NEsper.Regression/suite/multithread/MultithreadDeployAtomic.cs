@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -77,20 +77,20 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             runnable.Shutdown = true;
             ThreadJoin(thread);
 
-            Assert.IsNull(runnable.Exception);
-            Assert.AreEqual(NUM_STMTS, listener.FirstLastPerStmt.Count);
+            ClassicAssert.IsNull(runnable.Exception);
+            ClassicAssert.AreEqual(NUM_STMTS, listener.FirstLastPerStmt.Count);
 
             // all first events should be the same
             var reference = listener.FirstLastPerStmt.Values.First();
-            Assert.IsNotNull(reference.First);
-            Assert.IsNotNull(reference.Second);
-            Assert.AreNotSame(reference.First, reference.Second);
+            ClassicAssert.IsNotNull(reference.First);
+            ClassicAssert.IsNotNull(reference.Second);
+            ClassicAssert.AreNotSame(reference.First, reference.Second);
             foreach (var other in listener.FirstLastPerStmt.Values) {
-                Assert.AreSame(reference.Second, other.Second, "last event not the same");
+                ClassicAssert.AreSame(reference.Second, other.Second, "last event not the same");
             }
 
             foreach (var other in listener.FirstLastPerStmt.Values) {
-                Assert.AreSame(reference.First, other.First, "first event not the same");
+                ClassicAssert.AreSame(reference.First, other.First, "first event not the same");
             }
 
             env.Deployment.RemoveAllDeploymentStateListeners();

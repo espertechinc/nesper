@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -350,8 +351,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     statement => {
                         var prop = statement.EventType.PropertyDescriptors;
                         for (var i = 0; i < rows.Length; i++) {
-                            Assert.AreEqual(rows[i][0], prop[i].PropertyName);
-                            Assert.AreEqual(rows[i][1], prop[i].PropertyType);
+                            ClassicAssert.AreEqual(rows[i][0], prop[i].PropertyName);
+                            ClassicAssert.AreEqual(rows[i][1], prop[i].PropertyType);
                         }
                     });
 
@@ -478,8 +479,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     @event => {
                         var result = @event.Get($"{dateTimeHelper}.GetCurrentTimeMillis()").AsInt64();
                         long? finishTime = DateTimeHelper.CurrentTimeMillis;
-                        Assert.IsTrue(startTime <= result);
-                        Assert.IsTrue(result <= finishTime);
+                        ClassicAssert.IsTrue(startTime <= result);
+                        ClassicAssert.IsTrue(result <= finishTime);
                     });
 
                 env.UndeployAll();
@@ -514,7 +515,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var bitWriter = typeof(BitWriter).CleanName();
                 var statementText = $"@Name('s0') select {bitWriter}.Write(7) as value{STREAM_MDB_LEN5}";
 
-                Assert.AreEqual(statementText.Trim(), model.ToEPL());
+                ClassicAssert.AreEqual(statementText.Trim(), model.ToEPL());
                 env.CompileDeploy(model).AddListener("s0");
 
                 SendEvent(env, "IBM", 10d, 4L);
@@ -621,10 +622,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertThat(
                     () => {
                         var first = SupportStaticMethodLib.MethodInvocationContexts[0];
-                        Assert.AreEqual("s0", first.StatementName);
-                        Assert.AreEqual(env.RuntimeURI, first.RuntimeURI);
-                        Assert.AreEqual(-1, first.ContextPartitionId);
-                        Assert.AreEqual("StaticMethodWithContext", first.FunctionName);
+                        ClassicAssert.AreEqual("s0", first.StatementName);
+                        ClassicAssert.AreEqual(env.RuntimeURI, first.RuntimeURI);
+                        ClassicAssert.AreEqual(-1, first.ContextPartitionId);
+                        ClassicAssert.AreEqual("StaticMethodWithContext", first.FunctionName);
                     });
                 env.UndeployAll();
             }
@@ -739,10 +740,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                     "s0",
                     listener => {
                         var newEvents = listener.GetAndResetLastNewData();
-                        Assert.IsTrue(newEvents.Length == 3);
-                        Assert.AreEqual("MAT", newEvents[0].Get("Symbol"));
-                        Assert.AreEqual("IBM", newEvents[1].Get("Symbol"));
-                        Assert.AreEqual("CAT", newEvents[2].Get("Symbol"));
+                        ClassicAssert.IsTrue(newEvents.Length == 3);
+                        ClassicAssert.AreEqual("MAT", newEvents[0].Get("Symbol"));
+                        ClassicAssert.AreEqual("IBM", newEvents[1].Get("Symbol"));
+                        ClassicAssert.AreEqual("CAT", newEvents[2].Get("Symbol"));
                     });
                 env.UndeployAll();
             }

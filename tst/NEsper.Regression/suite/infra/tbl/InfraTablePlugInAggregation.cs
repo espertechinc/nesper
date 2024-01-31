@@ -13,6 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -71,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     "s0",
                     @event => {
                         var count = @event.Get("c0").AsBoxedInt32();
-                        Assert.AreEqual(counts[index], count, $"failed for word '{words[index]}'");
+                        ClassicAssert.AreEqual(counts[index], count, $"failed for word '{words[index]}'");
                     });
             }
         }

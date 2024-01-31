@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.support.wordexample;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
@@ -72,7 +72,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             Log.Info("Delta=" + delta + " for " + numThreads * numRepeats + " events");
 
             foreach (var r in runnables) {
-                Assert.IsNull(r.Exception);
+                ClassicAssert.IsNull(r.Exception);
             }
 
             env.UndeployAll();

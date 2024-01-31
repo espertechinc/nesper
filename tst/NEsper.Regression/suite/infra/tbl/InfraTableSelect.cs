@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.subscriber;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -232,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                     enumerator => {
                         var @event = enumerator.Advance();
                         var row = (object[])@event.Get("c0");
-                        Assert.AreEqual("a", row[0]);
+                        ClassicAssert.AreEqual("a", row[0]);
                     });
 
                 env.UndeployAll();
@@ -372,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                         AssertEventUnd(((object[][])@event.Get(col))[0], rowValues);
                     }
 
-                    Assert.AreEqual("b", @event.Get("c3"));
+                    ClassicAssert.AreEqual("b", @event.Get("c3"));
                     EPAssertionUtil.AssertEqualsExactOrder(new string[] { "b" }, (string[])@event.Get("c4"));
                 });
 
@@ -489,7 +490,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(ICollection<object[]>), statement.EventType.GetPropertyType("mt")));
+                statement => ClassicAssert.AreEqual(typeof(ICollection<object[]>), statement.EventType.GetPropertyType("mt")));
 
             env.SendEventBean(new SupportBean_S2(0));
             env.AssertEventNew(
@@ -519,8 +520,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(object[][]), statement.EventType.GetPropertyType("mt"));
-                    Assert.AreSame(
+                    ClassicAssert.AreEqual(typeof(object[][]), statement.EventType.GetPropertyType("mt"));
+                    ClassicAssert.AreSame(
                         env.Statement("create").EventType,
                         statement.EventType.GetFragmentType("mt").FragmentType);
                 });
@@ -531,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 @event => {
                     var value = (object[][])@event.Get("mt");
                     AssertEventUnd(value[0], rowValues);
-                    Assert.AreSame(
+                    ClassicAssert.AreSame(
                         env.Statement("create").EventType,
                         ((EventBean[])@event.GetFragment("mt"))[0].EventType);
                 });
@@ -549,7 +550,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("mt")));
+                statement => ClassicAssert.AreEqual(typeof(object[]), statement.EventType.GetPropertyType("mt")));
 
             env.SendEventBean(new SupportBean_S2(0));
             env.AssertEventNew("s0", @event => AssertEventUnd(@event.Get("mt"), rowValues));

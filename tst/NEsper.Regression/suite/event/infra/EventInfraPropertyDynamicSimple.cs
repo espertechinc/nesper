@@ -20,7 +20,7 @@ using com.espertech.esper.regressionlib.support.@event;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface;
@@ -147,8 +147,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(expectedPropertyType, statement.EventType.GetPropertyType("myid"));
-                    Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("exists_myid"));
+                    ClassicAssert.AreEqual(expectedPropertyType, statement.EventType.GetPropertyType("myid"));
+                    ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("exists_myid"));
 
                     foreach (var pair in tests) {
                         send.Invoke(env, pair.First, typename);

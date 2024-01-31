@@ -88,7 +88,7 @@ namespace com.espertech.esper.runtime.@internal.metrics
         {
 #if METRICS_BORKED
             var instance = ManagementFactory.PlatformMBeanServer.GetObjectInstance(new ObjectName(name));
-            Assert.IsNotNull(instance);
+            ClassicAssert.IsNotNull(instance);
 #endif
         }
 

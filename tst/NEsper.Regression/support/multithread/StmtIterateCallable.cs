@@ -18,6 +18,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -64,7 +65,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                             }
                         }
 
-                        Assert.IsTrue(found);
+                        ClassicAssert.IsTrue(found);
                         Log.Info(".call Thread " + Thread.CurrentThread.ManagedThreadId + " end iterator " + loop);
                     }
                 }

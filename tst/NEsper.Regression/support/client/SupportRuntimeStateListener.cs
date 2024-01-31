@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public EPRuntime AssertOneGetAndResetDestroyedEvents()
         {
-            Assert.AreEqual(1, DestroyedEvents.Count);
+            ClassicAssert.AreEqual(1, DestroyedEvents.Count);
             var item = DestroyedEvents[0];
             DestroyedEvents.Clear();
             return item;
@@ -40,7 +41,7 @@ namespace com.espertech.esper.regressionlib.support.client
 
         public EPRuntime AssertOneGetAndResetInitializedEvents()
         {
-            Assert.AreEqual(1, InitializedEvents.Count);
+            ClassicAssert.AreEqual(1, InitializedEvents.Count);
             var item = InitializedEvents[0];
             InitializedEvents.Clear();
             return item;

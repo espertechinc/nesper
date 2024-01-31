@@ -26,6 +26,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.option;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -246,8 +247,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(IList<string>), eventType.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(IDictionary<string, int>), eventType.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(IList<string>), eventType.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, int>), eventType.GetPropertyType("c1"));
                     });
 
                 env.SendEventBean(new SupportBean());
@@ -327,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 EPCompiled compiled;
                 if (soda) {
                     var copy = env.EplToModel(epl);
-                    Assert.AreEqual(epl.Trim(), copy.ToEPL());
+                    ClassicAssert.AreEqual(epl.Trim(), copy.ToEPL());
                     compiled = env.Compile(copy, new CompilerArguments(env.Configuration));
                 }
                 else {
@@ -348,11 +349,11 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c0"));
-                        Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("c1"));
-                        Assert.AreEqual(typeof(object[]), eventType.GetPropertyType("c2"));
-                        Assert.AreEqual(typeof(string[][]), eventType.GetPropertyType("c3"));
-                        Assert.AreEqual(typeof(object[][]), eventType.GetPropertyType("c4"));
+                        ClassicAssert.AreEqual(typeof(int?[]), eventType.GetPropertyType("c0"));
+                        ClassicAssert.AreEqual(typeof(int[]), eventType.GetPropertyType("c1"));
+                        ClassicAssert.AreEqual(typeof(object[]), eventType.GetPropertyType("c2"));
+                        ClassicAssert.AreEqual(typeof(string[][]), eventType.GetPropertyType("c3"));
+                        ClassicAssert.AreEqual(typeof(object[][]), eventType.GetPropertyType("c4"));
                     });
 
                 env.SendEventBean(new SupportBean());
@@ -442,15 +443,15 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                     // expected
                 }
 
-                Assert.AreEqual(1, MySubstitutionOption.Contexts.Count);
+                ClassicAssert.AreEqual(1, MySubstitutionOption.Contexts.Count);
                 var ctx = MySubstitutionOption.Contexts[0];
-                Assert.IsNotNull(ctx.Annotations);
-                Assert.AreEqual("abc", ctx.DeploymentId);
-                Assert.IsNotNull(ctx.Epl);
-                Assert.IsTrue(ctx.StatementId > 0);
-                Assert.AreEqual("s0", ctx.StatementName);
-                Assert.AreEqual(typeof(int?), ctx.SubstitutionParameterTypes[0]);
-                Assert.AreEqual((int?)1, ctx.SubstitutionParameterNames.Get("p0"));
+                ClassicAssert.IsNotNull(ctx.Annotations);
+                ClassicAssert.AreEqual("abc", ctx.DeploymentId);
+                ClassicAssert.IsNotNull(ctx.Epl);
+                ClassicAssert.IsTrue(ctx.StatementId > 0);
+                ClassicAssert.AreEqual("s0", ctx.StatementName);
+                ClassicAssert.AreEqual(typeof(int?), ctx.SubstitutionParameterTypes[0]);
+                ClassicAssert.AreEqual((int?)1, ctx.SubstitutionParameterNames.Get("p0"));
             }
 
             public ISet<RegressionFlag> Flags()
@@ -626,13 +627,13 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 env.AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
 
                 DeployWithResolver(env, compiled, "s1", new SupportPortableDeploySubstitutionParams(1, "e2"));
                 env.AddListener("s1");
                 env.AssertStatement(
                     "s1",
-                    statement => Assert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
+                    statement => ClassicAssert.AreEqual(epl, statement.GetProperty(StatementProperty.EPL)));
 
                 env.SendEventBean(new SupportBean("e2", 10));
                 env.AssertListenerNotInvoked("s0");
@@ -973,7 +974,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             if (compareText) {
                 env.AssertStatement(
                     statementName,
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
                         statement.GetProperty(StatementProperty.EPL)));
             }
@@ -987,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
             if (compareText) {
                 env.AssertStatement(
                     statementName + "__1",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         "select * from SupportBean(TheString=?::string,IntPrimitive=?::int)",
                         statement.GetProperty(StatementProperty.EPL)));
             }
@@ -1028,8 +1029,8 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 Assert.Fail();
             }
             catch (EPDeploySubstitutionParameterException ex) {
-                Assert.AreEqual(-1, ex.RolloutItemNumber);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(-1, ex.RolloutItemNumber);
+                ClassicAssert.AreEqual(
                     "Substitution parameters have not been provided: Statement 's0' has 1 substitution parameters",
                     ex.Message);
             }

@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.compat;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -57,7 +58,7 @@ namespace com.espertech.esper.common.@internal.collection
             Assert.That(refMap.TryGetValue("b", out int val), Is.False);
 
             Assert.That(refMap.TryGetValue("a", out val), Is.True);
-            Assert.AreEqual(100, val);
+            ClassicAssert.AreEqual(100, val);
         }
 
         [Test]
@@ -80,12 +81,12 @@ namespace com.espertech.esper.common.@internal.collection
         public void TestDereference()
         {
             bool isLast = refMap.Dereference("a");
-            Assert.IsTrue(isLast);
+            ClassicAssert.IsTrue(isLast);
 
             refMap.Put("b", 100);
             refMap.Reference("b");
-            Assert.IsFalse(refMap.Dereference("b"));
-            Assert.IsTrue(refMap.Dereference("b"));
+            ClassicAssert.IsFalse(refMap.Dereference("b"));
+            ClassicAssert.IsTrue(refMap.Dereference("b"));
 
             try
             {
@@ -104,10 +105,10 @@ namespace com.espertech.esper.common.@internal.collection
             refMap.Put("b", -1);
             refMap.Reference("b");
 
-            Assert.AreEqual(-1, refMap["b"]);
-            Assert.IsFalse(refMap.Dereference("b"));
-            Assert.AreEqual(-1, refMap["b"]);
-            Assert.IsTrue(refMap.Dereference("b"));
+            ClassicAssert.AreEqual(-1, refMap["b"]);
+            ClassicAssert.IsFalse(refMap.Dereference("b"));
+            ClassicAssert.AreEqual(-1, refMap["b"]);
+            ClassicAssert.IsTrue(refMap.Dereference("b"));
             Assert.That(refMap.Contains("b"), Is.False);
 
             refMap.Put("b", 2);
@@ -119,15 +120,15 @@ namespace com.espertech.esper.common.@internal.collection
             refMap.Dereference("b");
             refMap.Reference("b");
 
-            Assert.AreEqual(2, refMap["b"]);
-            Assert.IsFalse(refMap.Dereference("b"));
-            Assert.IsTrue(refMap.Dereference("b"));
+            ClassicAssert.AreEqual(2, refMap["b"]);
+            ClassicAssert.IsFalse(refMap.Dereference("b"));
+            ClassicAssert.IsTrue(refMap.Dereference("b"));
             Assert.That(refMap.Contains("b"), Is.False);
 
-            Assert.AreEqual(3, refMap["c"]);
-            Assert.IsFalse(refMap.Dereference("c"));
-            Assert.AreEqual(3, refMap["c"]);
-            Assert.IsTrue(refMap.Dereference("c"));
+            ClassicAssert.AreEqual(3, refMap["c"]);
+            ClassicAssert.IsFalse(refMap.Dereference("c"));
+            ClassicAssert.AreEqual(3, refMap["c"]);
+            ClassicAssert.IsTrue(refMap.Dereference("c"));
             Assert.That(refMap.Contains("c"), Is.False);
         }
     }

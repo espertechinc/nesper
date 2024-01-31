@@ -22,7 +22,7 @@ using NEsper.Examples.StockTicker.monitor;
 using NEsper.Examples.Support;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using Configuration = com.espertech.esper.common.client.configuration.Configuration;
 
 namespace NEsper.Examples.StockTicker
@@ -101,7 +101,7 @@ namespace NEsper.Examples.StockTicker
 
             // Check results : make sure the given ratio of out-of-limit stock prices was reported
             var expectedNumEmitted = numberOfTicksToSend / ratioPriceOutOfLimit + 1;
-            Assert.IsTrue(_listener.Count == expectedNumEmitted);
+            ClassicAssert.IsTrue(_listener.Count == expectedNumEmitted);
 
             Log.Info(".performTest Done test");
         }

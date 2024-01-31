@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -37,10 +38,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
             var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlow", options);
             var captiveStart = instance.StartCaptive();
-            Assert.AreEqual(0, captiveStart.Runnables.Count);
-            Assert.AreEqual(1, captiveStart.Emitters.Count);
+            ClassicAssert.AreEqual(0, captiveStart.Runnables.Count);
+            ClassicAssert.AreEqual(1, captiveStart.Emitters.Count);
             var emitter = captiveStart.Emitters.Get("src1");
-            Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.RUNNING, instance.State);
 
             emitter.Submit(new object[] { "E1", 10 });
             EPAssertionUtil.AssertPropsPerRow(
@@ -76,10 +77,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 new[] { new object[] { "E3", 30 } });
 
             // stays running until cancelled (no transition to complete)
-            Assert.AreEqual(EPDataFlowState.RUNNING, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.RUNNING, instance.State);
 
             instance.Cancel();
-            Assert.AreEqual(EPDataFlowState.CANCELLED, instance.State);
+            ClassicAssert.AreEqual(EPDataFlowState.CANCELLED, instance.State);
 
             env.UndeployAll();
 

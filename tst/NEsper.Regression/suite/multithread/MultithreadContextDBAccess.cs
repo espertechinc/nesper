@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -100,7 +101,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             threadPool.Shutdown();
             SupportCompileDeployUtil.ExecutorAwait(threadPool, 10, TimeUnit.SECONDS);
 
-            Assert.AreEqual(numRepeats * numThreads, listener.Count);
+            ClassicAssert.AreEqual(numRepeats * numThreads, listener.Count);
         }
 
         public class MyListener : UpdateListener
@@ -114,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var newEvents = eventArgs.NewEvents;
                 lock (this) {
                     if (newEvents.Length > 1) {
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                     }
 
                     Count += 1;

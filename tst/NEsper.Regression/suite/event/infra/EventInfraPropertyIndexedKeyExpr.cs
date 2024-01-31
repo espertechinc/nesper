@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -43,8 +44,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
-                    Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+                    ClassicAssert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+                    ClassicAssert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
                 });
 
             env.UndeployAll();
@@ -62,8 +63,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
-                    Assert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
+                    ClassicAssert.AreEqual(2, @event.EventType.GetGetterIndexed("indexed").Get(@event, 1));
+                    ClassicAssert.AreEqual(20, @event.EventType.GetGetterMapped("mapped").Get(@event, "keyOne"));
                 });
 
             env.UndeployAll();
@@ -85,8 +86,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("ListOfInt").Get(@event, 1));
-                    Assert.AreEqual(2, type.GetGetterIndexed("IterableOfInt").Get(@event, 1));
+                    ClassicAssert.AreEqual(2, type.GetGetterIndexed("ListOfInt").Get(@event, 1));
+                    ClassicAssert.AreEqual(2, type.GetGetterIndexed("IterableOfInt").Get(@event, 1));
                 });
 
             env.UndeployAll();
@@ -104,8 +105,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("Arr").Get(@event, 1));
-                    Assert.AreEqual(2, type.GetGetterMapped("Mapped").Get(@event, "A"));
+                    ClassicAssert.AreEqual(2, type.GetGetterIndexed("Arr").Get(@event, 1));
+                    ClassicAssert.AreEqual(2, type.GetGetterMapped("Mapped").Get(@event, "A"));
                 });
 
             env.UndeployAll();
@@ -130,9 +131,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("intarray").Get(@event, 1));
-                    Assert.IsNull(type.GetGetterIndexed("dummy"));
-                    Assert.AreEqual(mapinner[1], type.GetGetterIndexed("mapinner").Get(@event, 1));
+                    ClassicAssert.AreEqual(2, type.GetGetterIndexed("intarray").Get(@event, 1));
+                    ClassicAssert.IsNull(type.GetGetterIndexed("dummy"));
+                    ClassicAssert.AreEqual(mapinner[1], type.GetGetterIndexed("mapinner").Get(@event, 1));
                 });
 
             env.UndeployAll();
@@ -156,9 +157,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "s0",
                 @event => {
                     var type = @event.EventType;
-                    Assert.AreEqual(2, type.GetGetterIndexed("intarray").Get(@event, 1));
-                    Assert.IsNull(type.GetGetterIndexed("dummy"));
-                    Assert.AreEqual(oainner[1], type.GetGetterIndexed("oainner").Get(@event, 1));
+                    ClassicAssert.AreEqual(2, type.GetGetterIndexed("intarray").Get(@event, 1));
+                    ClassicAssert.IsNull(type.GetGetterIndexed("dummy"));
+                    ClassicAssert.AreEqual(oainner[1], type.GetGetterIndexed("oainner").Get(@event, 1));
                 });
 
             env.UndeployAll();

@@ -12,6 +12,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
@@ -28,7 +29,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             env.SendEventBean(new SupportBean());
 
             SendTimer(env, 10999);
-            Assert.IsFalse(env.Listener("s0").IsInvoked);
+            ClassicAssert.IsFalse(env.Listener("s0").IsInvoked);
 
             env.CompileDeploy("select * from pattern[timer:interval(5 sec)]");
 
@@ -48,7 +49,7 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
             var before = PerformanceMetricsHelper.GetCurrentMetricResult();
             MyMetricFunctions.TakeMillis(cpuGoal);
             var after = PerformanceMetricsHelper.GetCurrentMetricResult();
-            Assert.IsTrue((after.UserTime - before.UserTime).TotalMilliseconds > cpuGoal);
+            ClassicAssert.IsTrue((after.UserTime - before.UserTime).TotalMilliseconds > cpuGoal);
 #endif
 
             env.UndeployAll();

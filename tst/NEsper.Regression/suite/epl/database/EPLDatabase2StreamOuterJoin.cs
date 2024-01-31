@@ -14,6 +14,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.database
 {
     public class EPLDatabase2StreamOuterJoin
@@ -212,7 +214,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(1, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(1, received.Get("MyInt"));
                         AssertReceived(received, null, null, null, null, null, null, null, null, null);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 1, null } });
@@ -222,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(-1, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(-1, received.Get("MyInt"));
                         AssertReceived(received, null, null, null, null, null, null, null, null, null);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { -1, null } });
@@ -231,7 +233,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(2, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(2, received.Get("MyInt"));
                         AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 2, 20 } });
@@ -261,7 +263,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(1, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(1, received.Get("MyInt"));
                         AssertReceived(received, null, null, null, null, null, null, null, null, null);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 1, null } });
@@ -271,7 +273,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(-1, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(-1, received.Get("MyInt"));
                         AssertReceived(received, null, null, null, null, null, null, null, null, null);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { -1, null } });
@@ -280,7 +282,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(2, received.Get("MyInt"));
+                        ClassicAssert.AreEqual(2, received.Get("MyInt"));
                         AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { 2, 20 } });
@@ -316,8 +318,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual(-1, received.Get("MyInt"));
-                        Assert.AreEqual("A", received.Get("myvarchar"));
+                        ClassicAssert.AreEqual(-1, received.Get("MyInt"));
+                        ClassicAssert.AreEqual("A", received.Get("myvarchar"));
                     });
                 env.AssertPropsPerRowIterator("s0", fields, new object[][] { new object[] { -1, "A" } });
 
@@ -335,7 +337,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AssertEventNew(
                 "s0",
                 received => {
-                    Assert.AreEqual(2, received.Get("MyInt"));
+                    ClassicAssert.AreEqual(2, received.Get("MyInt"));
                     AssertReceived(received, 2L, 20, "B", "Y", false, 100m, 200m, 2.2d, 2.3f);
                 });
 
@@ -355,7 +357,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AssertEventNew(
                 "s0",
                 received => {
-                    Assert.AreEqual(1, received.Get("MyInt"));
+                    ClassicAssert.AreEqual(1, received.Get("MyInt"));
                     AssertReceived(received, 1L, 10, "A", "Z", true, 5000m, 100m, 1.2d, 1.3f);
                 });
 
@@ -363,7 +365,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             env.AssertEventNew(
                 "s0",
                 received => {
-                    Assert.AreEqual(11, received.Get("MyInt"));
+                    ClassicAssert.AreEqual(11, received.Get("MyInt"));
                     AssertReceived(received, null, null, null, null, null, null, null, null, null);
                 });
 
@@ -382,15 +384,15 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
             double? mydouble,
             float? myreal)
         {
-            Assert.AreEqual(mybigint, theEvent.Get("mybigint"));
-            Assert.AreEqual(myint, theEvent.Get("myint"));
-            Assert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
-            Assert.AreEqual(mychar, theEvent.Get("mychar"));
-            Assert.AreEqual(mybool, theEvent.Get("mybool"));
-            Assert.AreEqual(mynumeric, theEvent.Get("mynumeric"));
-            Assert.AreEqual(mydecimal, theEvent.Get("mydecimal"));
-            Assert.AreEqual(mydouble, theEvent.Get("mydouble"));
-            Assert.AreEqual(myreal, theEvent.Get("myreal"));
+            ClassicAssert.AreEqual(mybigint, theEvent.Get("mybigint"));
+            ClassicAssert.AreEqual(myint, theEvent.Get("myint"));
+            ClassicAssert.AreEqual(myvarchar, theEvent.Get("myvarchar"));
+            ClassicAssert.AreEqual(mychar, theEvent.Get("mychar"));
+            ClassicAssert.AreEqual(mybool, theEvent.Get("mybool"));
+            ClassicAssert.AreEqual(mynumeric, theEvent.Get("mynumeric"));
+            ClassicAssert.AreEqual(mydecimal, theEvent.Get("mydecimal"));
+            ClassicAssert.AreEqual(mydouble, theEvent.Get("mydouble"));
+            ClassicAssert.AreEqual(myreal, theEvent.Get("myreal"));
         }
 
         private static void SendEvent(

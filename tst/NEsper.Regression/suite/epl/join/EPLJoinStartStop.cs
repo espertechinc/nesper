@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -61,13 +62,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
 
                 SendEvent(env, setOne[0]);
                 SendEvent(env, setTwo[0]);
-                env.AssertListener("s0", listener => Assert.IsNotNull(listener.GetAndResetLastNewData()));
+                env.AssertListener("s0", listener => ClassicAssert.IsNotNull(listener.GetAndResetLastNewData()));
 
                 var listener = env.Listener("s0");
                 env.UndeployAll();
                 SendEvent(env, setOne[1]);
                 SendEvent(env, setTwo[1]);
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 env.CompileDeploy(joinStatement).AddListener("s0");
                 SendEvent(env, setOne[2]);

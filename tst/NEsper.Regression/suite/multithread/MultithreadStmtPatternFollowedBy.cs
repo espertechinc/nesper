@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -117,7 +117,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                                        " sd=" + getNull(out.get("sd.Id")));
                 }
                  */
-                Assert.AreEqual(9, events.Length);
+                ClassicAssert.AreEqual(9, events.Length);
 
                 for (var j = 0; j < epls.Length; j++) {
                     try {

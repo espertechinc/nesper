@@ -21,6 +21,7 @@ using com.espertech.esper.compat.magic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 {
@@ -430,16 +431,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         @event => {
                             var message = "failed at " + index;
                             var valueAtIndex = treemap.Get(index);
-                            Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("ge"), message);
+                            ClassicAssert.AreEqual(FirstEvent(valueAtIndex), @event.Get("ge"), message);
                             EPAssertionUtil.AssertEqualsExactOrder(
                                 AllEvents(valueAtIndex),
                                 (SupportBean[])@event.Get("ges"));
-                            Assert.AreEqual(treemap.ContainsKey(index), @event.Get("ck"), message);
-                            Assert.AreEqual(7, @event.Get("cnte"), message);
-                            Assert.AreEqual(5, @event.Get("cntk"), message);
-                            Assert.AreEqual(FirstEventString(valueAtIndex), @event.Get("geid"), message);
-                            Assert.AreEqual(FirstEvent(valueAtIndex), @event.Get("gefo"), message);
-                            Assert.AreEqual(LastEvent(valueAtIndex), @event.Get("geslo"), message);
+                            ClassicAssert.AreEqual(treemap.ContainsKey(index), @event.Get("ck"), message);
+                            ClassicAssert.AreEqual(7, @event.Get("cnte"), message);
+                            ClassicAssert.AreEqual(5, @event.Get("cntk"), message);
+                            ClassicAssert.AreEqual(FirstEventString(valueAtIndex), @event.Get("geid"), message);
+                            ClassicAssert.AreEqual(FirstEvent(valueAtIndex), @event.Get("gefo"), message);
+                            ClassicAssert.AreEqual(LastEvent(valueAtIndex), @event.Get("geslo"), message);
                         });
                 }
 
@@ -476,14 +477,14 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "s0",
                     @event => {
                         var treeMapFirst = treemap.First();
-                        Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapFirst), @event.Get("feid"));
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fefo"));
-                        Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapFirst), @event.Get("feslo"));
+                        ClassicAssert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapFirst), @event.Get("feid"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fefo"));
+                        ClassicAssert.AreEqual(LastEvent<IList<SupportBean>>(treeMapFirst), @event.Get("feslo"));
 
                         var treeMapLast = treemap.Last();
-                        Assert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapLast), @event.Get("leid"));
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("lefo"));
-                        Assert.AreEqual(LastEvent<IList<SupportBean>>(treeMapLast), @event.Get("leslo"));
+                        ClassicAssert.AreEqual(FirstEventString<IList<SupportBean>>(treeMapLast), @event.Get("leid"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("lefo"));
+                        ClassicAssert.AreEqual(LastEvent<IList<SupportBean>>(treeMapLast), @event.Get("leslo"));
                     });
 
                 env.UndeployAll();
@@ -522,20 +523,20 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     "s0",
                     @event => {
                         var treeMapFirst = treemap.First();
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fe"));
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("minb"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("fe"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapFirst), @event.Get("minb"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             AllEvents<IList<SupportBean>>(treeMapFirst),
                             (SupportBean[])@event.Get("fes"));
-                        Assert.AreEqual(treeMapFirst.Key, @event.Get("fk"));
+                        ClassicAssert.AreEqual(treeMapFirst.Key, @event.Get("fk"));
 
                         var treeMapLast = treemap.Last();
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("le"));
-                        Assert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("maxb"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("le"));
+                        ClassicAssert.AreEqual(FirstEvent<IList<SupportBean>>(treeMapLast), @event.Get("maxb"));
                         EPAssertionUtil.AssertEqualsExactOrder(
                             AllEvents<IList<SupportBean>>(treeMapLast),
                             (SupportBean[])@event.Get("les"));
-                        Assert.AreEqual(treeMapLast.Key, @event.Get("lk"));
+                        ClassicAssert.AreEqual(treeMapLast.Key, @event.Get("lk"));
                     });
 
                 env.UndeployAll();
@@ -579,18 +580,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                         "s0",
                         @event => {
                             var message = "failed at " + index;
-                            Assert.AreEqual(FirstEventString(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceid"), message);
-                            Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("cefo"), message);
-                            Assert.AreEqual(LastEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceslo"), message);
-                            Assert.AreEqual(FirstEventString(treemap.LessThanOrEqualTo(index)), @event.Get("feid"), message);
-                            Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fefo"), message);
-                            Assert.AreEqual(LastEvent(treemap.LessThanOrEqualTo(index)), @event.Get("feslo"), message);
-                            Assert.AreEqual(FirstEventString(treemap.GreaterThan(index)), @event.Get("heid"), message);
-                            Assert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("hefo"), message);
-                            Assert.AreEqual(LastEvent(treemap.GreaterThan(index)), @event.Get("heslo"), message);
-                            Assert.AreEqual(FirstEventString(treemap.LessThan(index)), @event.Get("leid"), message);
-                            Assert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("lefo"), message);
-                            Assert.AreEqual(LastEvent(treemap.LessThan(index)), @event.Get("leslo"), message);
+                            ClassicAssert.AreEqual(FirstEventString(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceid"), message);
+                            ClassicAssert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("cefo"), message);
+                            ClassicAssert.AreEqual(LastEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ceslo"), message);
+                            ClassicAssert.AreEqual(FirstEventString(treemap.LessThanOrEqualTo(index)), @event.Get("feid"), message);
+                            ClassicAssert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fefo"), message);
+                            ClassicAssert.AreEqual(LastEvent(treemap.LessThanOrEqualTo(index)), @event.Get("feslo"), message);
+                            ClassicAssert.AreEqual(FirstEventString(treemap.GreaterThan(index)), @event.Get("heid"), message);
+                            ClassicAssert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("hefo"), message);
+                            ClassicAssert.AreEqual(LastEvent(treemap.GreaterThan(index)), @event.Get("heslo"), message);
+                            ClassicAssert.AreEqual(FirstEventString(treemap.LessThan(index)), @event.Get("leid"), message);
+                            ClassicAssert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("lefo"), message);
+                            ClassicAssert.AreEqual(LastEvent(treemap.LessThan(index)), @event.Get("leslo"), message);
                         });
                 }
 
@@ -640,18 +641,18 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     env.AssertEventNew(
                         "s0",
                         @event => {
-                            Assert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ce"));
+                            ClassicAssert.AreEqual(FirstEvent(treemap.GreaterThanOrEqualTo(index)), @event.Get("ce"));
                             EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThanOrEqualTo(index)), (SupportBean[])@event.Get("ces"));
-                            Assert.AreEqual(treemap.GreaterThanOrEqualTo(index)?.Key, @event.Get("ck"));
-                            Assert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fe"));
+                            ClassicAssert.AreEqual(treemap.GreaterThanOrEqualTo(index)?.Key, @event.Get("ck"));
+                            ClassicAssert.AreEqual(FirstEvent(treemap.LessThanOrEqualTo(index)), @event.Get("fe"));
                             EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThanOrEqualTo(index)), (SupportBean[])@event.Get("fes"));
-                            Assert.AreEqual(treemap.LessThanOrEqualTo(index)?.Key, @event.Get("fk"));
-                            Assert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("he"));
+                            ClassicAssert.AreEqual(treemap.LessThanOrEqualTo(index)?.Key, @event.Get("fk"));
+                            ClassicAssert.AreEqual(FirstEvent(treemap.GreaterThan(index)), @event.Get("he"));
                             EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.GreaterThan(index)), (SupportBean[])@event.Get("hes"));
-                            Assert.AreEqual(treemap.GreaterThan(index)?.Key, @event.Get("hk"));
-                            Assert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("le"));
+                            ClassicAssert.AreEqual(treemap.GreaterThan(index)?.Key, @event.Get("hk"));
+                            ClassicAssert.AreEqual(FirstEvent(treemap.LessThan(index)), @event.Get("le"));
                             EPAssertionUtil.AssertEqualsExactOrder(AllEvents(treemap.LessThan(index)), (SupportBean[])@event.Get("les"));
-                            Assert.AreEqual(treemap.LessThan(index)?.Key, @event.Get("lk"));
+                            ClassicAssert.AreEqual(treemap.LessThan(index)?.Key, @event.Get("lk"));
                         });
                 }
 
@@ -705,7 +706,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 env.SendEventBean(new SupportBean_S0(15));
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, 15), @event.Get("c0")));
+                    @event => ClassicAssert.AreEqual(LessThanOrEqualToFirstEvent(treemap, 15), @event.Get("c0")));
 
                 env.Milestone(0);
 
@@ -714,7 +715,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var index = i;
                     env.AssertEventNew(
                         "s0",
-                        @event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
+                        @event => ClassicAssert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
                 }
 
                 env.UndeployAll();
@@ -748,7 +749,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                     var index = i;
                     env.AssertEventNew(
                         "s0",
-                        @event => Assert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
+                        @event => ClassicAssert.AreEqual(LessThanOrEqualToFirstEvent(treemap, index), @event.Get("c0")));
                 }
 
                 env.UndeployAll();
@@ -848,7 +849,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 statement => {
                     var eventType = statement.EventType;
                     foreach (var prop in props) {
-                        Assert.AreEqual(expected, eventType.GetPropertyType(prop), "failed for prop '" + prop + "'");
+                        ClassicAssert.AreEqual(expected, eventType.GetPropertyType(prop), "failed for prop '" + prop + "'");
                     }
                 });
         }
@@ -868,10 +869,10 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             EPAssertionUtil.AssertEqualsExactOrder(all.ToArray(), events);
             if (all.IsEmpty()) {
-                Assert.IsNull(lastOf);
+                ClassicAssert.IsNull(lastOf);
             }
             else {
-                Assert.AreEqual(all[^1], lastOf);
+                ClassicAssert.AreEqual(all[^1], lastOf);
             }
         }
 
@@ -886,7 +887,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
                 sme.IsFromInclusive,
                 sme.ToKey,
                 sme.IsToInclusive);
-            Assert.AreEqual(expected.Count, actual.Count);
+            ClassicAssert.AreEqual(expected.Count, actual.Count);
             foreach (var key in expected.Keys) {
                 var expectedEvents = expected.Get(key).ToArray();
                 var actualEvents = actual.Get(key);
@@ -898,7 +899,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             IOrderedDictionary<int, IList<SupportBean>> treemap,
             IOrderedDictionary<object, ICollection<EventBean>> actual)
         {
-            Assert.AreEqual(treemap.Count, actual.Count);
+            ClassicAssert.AreEqual(treemap.Count, actual.Count);
             foreach (var key in treemap.Keys) {
                 var expectedEvents = treemap.Get(key).ToArray();
                 EPAssertionUtil.AssertEqualsExactOrder(expectedEvents, ToArrayOfUnderlying(actual.Get(key)));
@@ -911,26 +912,26 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
             CompareEntry(treemap.LessThan(5), actual.LessThan(5));
             CompareEntry(treemap.GreaterThan(5), actual.GreaterThan(5));
 
-            Assert.AreEqual(treemap.Keys.First(), actual.FirstEntry.Key);
-            Assert.AreEqual(treemap.Keys.Last(), actual.LastEntry.Key);
-            Assert.AreEqual(treemap.LessThanOrEqualTo(5)?.Key, actual.LessThanOrEqualTo(5)?.Key);
-            Assert.AreEqual(treemap.GreaterThanOrEqualTo(5)?.Key, actual.GreaterThanOrEqualTo(5)?.Key);
-            Assert.AreEqual(treemap.LessThan(5)?.Key, actual.LessThan(5)?.Key);
-            Assert.AreEqual(treemap.GreaterThan(5)?.Key, actual.GreaterThan(5)?.Key);
+            ClassicAssert.AreEqual(treemap.Keys.First(), actual.FirstEntry.Key);
+            ClassicAssert.AreEqual(treemap.Keys.Last(), actual.LastEntry.Key);
+            ClassicAssert.AreEqual(treemap.LessThanOrEqualTo(5)?.Key, actual.LessThanOrEqualTo(5)?.Key);
+            ClassicAssert.AreEqual(treemap.GreaterThanOrEqualTo(5)?.Key, actual.GreaterThanOrEqualTo(5)?.Key);
+            ClassicAssert.AreEqual(treemap.LessThan(5)?.Key, actual.LessThan(5)?.Key);
+            ClassicAssert.AreEqual(treemap.GreaterThan(5)?.Key, actual.GreaterThan(5)?.Key);
 
-            Assert.AreEqual(treemap.ContainsKey(5), actual.ContainsKey(5));
-            Assert.AreEqual(treemap.IsEmpty(), actual.IsEmpty());
+            ClassicAssert.AreEqual(treemap.ContainsKey(5), actual.ContainsKey(5));
+            ClassicAssert.AreEqual(treemap.IsEmpty(), actual.IsEmpty());
 
             EPAssertionUtil.AssertEqualsExactOrder(new object[] { 1, 4, 6, 8, 9 }, actual.Keys.ToArray());
 
-            Assert.AreEqual(1, actual.Between(9, true, 9, true).Count);
-            Assert.AreEqual(1, actual.Tail(9).Count);
-            Assert.AreEqual(1, actual.Tail(9, true).Count);
-            Assert.AreEqual(1, actual.Head(2).Count);
-            Assert.AreEqual(1, actual.Head(2, false).Count);
+            ClassicAssert.AreEqual(1, actual.Between(9, true, 9, true).Count);
+            ClassicAssert.AreEqual(1, actual.Tail(9).Count);
+            ClassicAssert.AreEqual(1, actual.Tail(9, true).Count);
+            ClassicAssert.AreEqual(1, actual.Head(2).Count);
+            ClassicAssert.AreEqual(1, actual.Head(2, false).Count);
 
-            Assert.AreEqual(5, actual.Count);
-            Assert.AreEqual(5, actual.Values.Count);
+            ClassicAssert.AreEqual(5, actual.Count);
+            ClassicAssert.AreEqual(5, actual.Values.Count);
 
             // values
             var values = actual.Values;
@@ -981,21 +982,21 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
 
             // entry set
             ICollection<KeyValuePair<object, ICollection<EventBean>>> set = actual;
-            Assert.IsFalse(set.IsEmpty());
+            ClassicAssert.IsFalse(set.IsEmpty());
             var setit = set.GetEnumerator();
             var entry = setit.Advance();
-            Assert.AreEqual(1, entry.Key);
-            Assert.IsTrue(setit.MoveNext());
+            ClassicAssert.AreEqual(1, entry.Key);
+            ClassicAssert.IsTrue(setit.MoveNext());
             EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(entry.Value));
             var array = set.ToArray();
-            Assert.AreEqual(5, array.Length);
-            Assert.AreEqual(1, array[0].Key);
+            ClassicAssert.AreEqual(5, array.Length);
+            ClassicAssert.AreEqual(1, array[0].Key);
             EPAssertionUtil.AssertEqualsExactOrder(treemap.Get(1).ToArray(), ToArrayOfUnderlying(array[0].Value));
-            Assert.IsNotNull(set.ToArray());
+            ClassicAssert.IsNotNull(set.ToArray());
 
             // sorted map
             var events = actual.Head(100);
-            Assert.AreEqual(5, events.Count);
+            ClassicAssert.AreEqual(5, events.Count);
         }
 
         private static void CompareEntry(
@@ -1004,7 +1005,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.aggregate
         {
             Assert.That(expected, Is.Not.Null);
             Assert.That(actual, Is.Not.Null);
-            Assert.AreEqual(expected.Value.Key, actual.Value.Key);
+            ClassicAssert.AreEqual(expected.Value.Key, actual.Value.Key);
             EPAssertionUtil.AssertEqualsExactOrder(
                 expected.Value.Value.ToArray(),
                 ToArrayOfUnderlying(actual.Value.Value));

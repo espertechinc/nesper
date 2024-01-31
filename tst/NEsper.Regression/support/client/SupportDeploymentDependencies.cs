@@ -14,6 +14,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.client
 {
@@ -26,9 +27,9 @@ namespace com.espertech.esper.regressionlib.support.client
 			env.AssertThat(() => {
 				var deploymentId = env.DeploymentId(deployedStatementName);
 				var consumed = env.Runtime.DeploymentService.GetDeploymentDependenciesConsumed(deploymentId);
-				Assert.IsTrue(consumed.Dependencies.IsEmpty());
+				ClassicAssert.IsTrue(consumed.Dependencies.IsEmpty());
 				var provided = env.Runtime.DeploymentService.GetDeploymentDependenciesProvided(deploymentId);
-				Assert.IsTrue(provided.Dependencies.IsEmpty());
+				ClassicAssert.IsTrue(provided.Dependencies.IsEmpty());
 			});
 		}
 

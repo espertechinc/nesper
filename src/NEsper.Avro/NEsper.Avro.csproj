@@ -18,7 +18,7 @@
     <ItemGroup>
         <PackageReference Include="Apache.Avro" Version="1.11.3" />
         <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-        <PackageReference Include="System.CodeDom" Version="7.0.0" />
+        <PackageReference Include="System.CodeDom" Version="8.0.0" />
     </ItemGroup>
 
     <ItemGroup>

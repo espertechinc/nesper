@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -122,8 +123,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 iterator => {
                     var stmtSelectResult = iterator.Advance();
                     SupportEventTypeAssertionUtil.AssertConsistency(stmtSelectResult);
-                    Assert.AreEqual(typeof(string[]), stmtSelectResult.EventType.GetPropertyType("nested4[2].prop5"));
-                    Assert.AreEqual("SAMPLE_V8", stmtSelectResult.Get("nested4[0].prop5[1]"));
+                    ClassicAssert.AreEqual(typeof(string[]), stmtSelectResult.EventType.GetPropertyType("nested4[2].prop5"));
+                    ClassicAssert.AreEqual("SAMPLE_V8", stmtSelectResult.Get("nested4[0].prop5[1]"));
                     EPAssertionUtil.AssertEqualsExactOrder(
                         (string[])stmtSelectResult.Get("nested4[2].prop5"),
                         new object[] { "SAMPLE_V10", "SAMPLE_V11" });
@@ -132,7 +133,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     EPAssertionUtil.AssertEqualsExactOrder(
                         (string[])fragmentNested4.Get("prop5"),
                         new object[] { "SAMPLE_V10", "SAMPLE_V11" });
-                    Assert.AreEqual("SAMPLE_V11", fragmentNested4.Get("prop5[1]"));
+                    ClassicAssert.AreEqual("SAMPLE_V11", fragmentNested4.Get("prop5[1]"));
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentNested4);
                 });
 

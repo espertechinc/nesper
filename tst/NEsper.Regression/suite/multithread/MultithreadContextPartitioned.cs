@@ -23,6 +23,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -96,7 +97,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 }
             }
 
-            Assert.AreEqual(numRepeats * numThreads, listener.Beans.Count);
+            ClassicAssert.AreEqual(numRepeats * numThreads, listener.Beans.Count);
             Assert.That(delta, Is.LessThan(500));
         }
 
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 var newEvents = eventArgs.NewEvents;
                 lock (this) {
                     if (newEvents.Length > 1) {
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                     }
 
                     Beans.Add((SupportBean)newEvents[0].Underlying);

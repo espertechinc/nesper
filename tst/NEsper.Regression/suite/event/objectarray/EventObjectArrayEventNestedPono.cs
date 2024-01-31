@@ -18,6 +18,7 @@ using static com.espertech.esper.regressionlib.suite.@event.map.EventMapCore;
 using static com.espertech.esper.regressionlib.suite.@event.objectarray.EventObjectArrayCore;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -85,12 +86,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                     var propertiesReceived = eventType.PropertyNames;
                     var propertiesExpected = new string[] { "Simple", "Object", "Nodefmap", "Map" };
                     EPAssertionUtil.AssertEqualsAnyOrder(propertiesReceived, propertiesExpected);
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("Simple"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Map"));
-                    Assert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Nodefmap"));
-                    Assert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("Object"));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("Simple"));
+                    ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Map"));
+                    ClassicAssert.AreEqual(typeof(IDictionary<string, object>), eventType.GetPropertyType("Nodefmap"));
+                    ClassicAssert.AreEqual(typeof(SupportBean_A), eventType.GetPropertyType("Object"));
 
-                    Assert.IsNull(eventType.GetPropertyType("Map.MapOne.SimpleOne"));
+                    ClassicAssert.IsNull(eventType.GetPropertyType("Map.MapOne.SimpleOne"));
                 });
 
             // nested PONO with generic return type

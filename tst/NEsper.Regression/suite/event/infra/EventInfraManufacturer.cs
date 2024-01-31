@@ -21,6 +21,7 @@ using com.espertech.esper.runtime.@internal.kernel.service;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -42,8 +43,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "create schema BeanEvent as " + typeof(MyLocalBeanEvent).MaskTypeName(),
                 und => {
                     var bean = (MyLocalBeanEvent)und;
-                    Assert.AreEqual("a", bean.P1);
-                    Assert.AreEqual(1, bean.P2);
+                    ClassicAssert.AreEqual("a", bean.P1);
+                    ClassicAssert.AreEqual(1, bean.P2);
                 });
 
             // Map
@@ -68,8 +69,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "select * from " + AVRO_TYPENAME,
                 und => {
                     var rec = (GenericRecord)und;
-                    Assert.AreEqual("a", rec.Get("P1"));
-                    Assert.AreEqual(1, rec.Get("P2"));
+                    ClassicAssert.AreEqual("a", rec.Get("P1"));
+                    ClassicAssert.AreEqual(1, rec.Get("P2"));
                 });
 
             // Json
@@ -90,8 +91,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 "') create json schema JsonEvent()",
                 und => {
                     var received = (MyLocalJsonProvided)und;
-                    Assert.AreEqual("a", received.P1);
-                    Assert.AreEqual(1, received.P2);
+                    ClassicAssert.AreEqual("a", received.P1);
+                    ClassicAssert.AreEqual(1, received.P2);
                 });
         }
 
@@ -122,7 +123,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
             var @event = manufacturer.Make(new object[] { "a", 1 });
             underlyingAssertion.Invoke(@event.Underlying);
-            Assert.AreSame(@event.EventType, type);
+            ClassicAssert.AreSame(@event.EventType, type);
 
             var underlying = manufacturer.MakeUnderlying(new object[] { "a", 1 });
             underlyingAssertion.Invoke(underlying);

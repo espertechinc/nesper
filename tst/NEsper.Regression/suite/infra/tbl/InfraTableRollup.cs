@@ -14,6 +14,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -262,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var index = i;
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0")));
+                    listener => ClassicAssert.AreEqual(expected, listener.AssertOneGetNewAndReset().Get("c0")));
             }
         }
     }

@@ -22,7 +22,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -107,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert result
             for (var i = 0; i < numEvents - 1; i++) {
-                Assert.AreEqual(1, listeners[i].NewDataList.Count, "Listener not invoked: #" + i);
+                ClassicAssert.AreEqual(1, listeners[i].NewDataList.Count, "Listener not invoked: #" + i);
             }
 
             runtime.Destroy();

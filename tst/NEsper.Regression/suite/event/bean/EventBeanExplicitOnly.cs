@@ -9,6 +9,7 @@
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -26,8 +27,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
                 "s0",
                 statement => {
                     var eventType = statement.EventType;
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("fnested"));
-                    Assert.AreEqual(typeof(string), eventType.GetPropertyType("mnested"));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("fnested"));
+                    ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("mnested"));
                 });
 
             var legacyBean = EventBeanPublicAccessors.MakeSampleEvent();
@@ -37,8 +38,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("fnested"));
-                    Assert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("mnested"));
+                    ClassicAssert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("fnested"));
+                    ClassicAssert.AreEqual(legacyBean.fieldNested.ReadNestedValue(), @event.Get("mnested"));
                 });
 
             env.TryInvalidCompile("select IntPrimitive from MySupportBean#length(5)", "skip");

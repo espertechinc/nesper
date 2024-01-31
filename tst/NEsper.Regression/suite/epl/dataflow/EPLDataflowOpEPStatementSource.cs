@@ -23,7 +23,7 @@ using com.espertech.esper.regressionlib.support.dataflow;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib;
@@ -88,12 +88,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     .WithOperatorProvider(new DefaultSupportGraphOpProvider(captureOp));
 
                 var df = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-                Assert.IsNull(df.UserObject);
-                Assert.IsNull(df.InstanceId);
+                ClassicAssert.IsNull(df.UserObject);
+                ClassicAssert.IsNull(df.InstanceId);
                 df.Start();
 
                 env.SendEventBean(new SupportBean("E1", 1));
-                Assert.AreEqual(0, captureOp.Current.Length);
+                ClassicAssert.AreEqual(0, captureOp.Current.Length);
 
                 var epl = "@name('MyStatement') select TheString as Id from SupportBean";
                 var compiled = env.Compile(epl);
@@ -115,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.UndeployModuleContaining("MyStatement");
 
                 env.SendEventBean(new SupportBean("E3", 3));
-                Assert.AreEqual(0, captureOp.Current.Length);
+                ClassicAssert.AreEqual(0, captureOp.Current.Length);
 
                 try {
                     env.Deployment.Deploy(compiled, new DeploymentOptions().WithDeploymentId("MyDeploymentId"));
@@ -135,7 +135,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.UndeployModuleContaining("MyStatement");
 
                 env.SendEventBean(new SupportBean("E5", 5));
-                Assert.AreEqual(0, captureOp.Current.Length);
+                ClassicAssert.AreEqual(0, captureOp.Current.Length);
 
                 compiled = env.Compile("@name('MyStatement') select 'X'||TheString||'X' as Id from SupportBean");
                 try {
@@ -304,7 +304,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 env.SendEventBean(new SupportBean_A("A2"));
                 Sleep(50);
-                Assert.AreEqual(0, captureOp.Current.Length);
+                ClassicAssert.AreEqual(0, captureOp.Current.Length);
 
                 env.CompileDeploy("@name('s2') select Id from SupportBean_A");
 
@@ -329,7 +329,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.SendEventBean(new SupportBean_A("A1"));
                 env.SendEventBean(new SupportBean_B("B3"));
-                Assert.AreEqual(0, captureOp.Current.Length);
+                ClassicAssert.AreEqual(0, captureOp.Current.Length);
 
                 env.UndeployAll();
             }

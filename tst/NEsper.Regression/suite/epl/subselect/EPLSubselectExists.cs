@@ -14,6 +14,8 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
     public class EPLSubselectExists
@@ -125,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 model = env.CopyMayFail(model);
 
                 var stmtText = "select exists (select * from SupportBean_S1#length(1000)) as value from SupportBean_S0";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -254,7 +256,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var stmtText =
                     "select Id from SupportBean_S0 where not exists (select * from SupportBean_S1#length(1000))";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");

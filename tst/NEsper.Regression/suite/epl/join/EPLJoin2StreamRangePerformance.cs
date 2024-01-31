@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -107,10 +108,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBean("G", 9990));
-                    env.AssertListener("s0", listener => Assert.AreEqual(4, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(4, listener.GetAndResetLastNewData().Length));
 
                     env.SendEventBean(new SupportBeanRange("R", "G", 4, 10));
-                    env.AssertListener("s0", listener => Assert.AreEqual(7, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(7, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Log.Info($"delta={(endTime - startTime)}");
 
                 env.UndeployAll();
-                Assert.Less((endTime - startTime), 500);
+                ClassicAssert.Less((endTime - startTime), 500);
             }
         }
 
@@ -156,10 +157,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBean("B", 10));
-                    env.AssertListener("s0", listener => Assert.AreEqual(10, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(10, listener.GetAndResetLastNewData().Length));
 
                     env.SendEventBean(new SupportBeanRange("R", 9990, -1));
-                    env.AssertListener("s0", listener => Assert.AreEqual(9, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(9, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
@@ -167,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 Log.Info($"delta={(endTime - startTime)}");
 
                 env.UndeployAll();
-                Assert.IsTrue((endTime - startTime) < 500);
+                ClassicAssert.IsTrue((endTime - startTime) < 500);
             }
         }
 
@@ -208,10 +209,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBean("55", 10));
-                    env.AssertListener("s0", listener => Assert.AreEqual(3, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(3, listener.GetAndResetLastNewData().Length));
 
                     env.SendEventBean(new SupportBeanRange("R", "56", 12, 20));
-                    env.AssertListener("s0", listener => Assert.AreEqual(9, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(9, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
@@ -269,14 +270,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 var startTime = PerformanceObserver.MilliTime;
                 for (var i = 0; i < 1000; i++) {
                     env.SendEventBean(new SupportBeanRange("R", "E", 5, 9995));
-                    env.AssertListener("s0", listener => Assert.AreEqual(9, listener.GetAndResetLastNewData().Length));
+                    env.AssertListener("s0", listener => ClassicAssert.AreEqual(9, listener.GetAndResetLastNewData().Length));
                 }
 
                 Log.Info("Done Querying");
                 var endTime = PerformanceObserver.MilliTime;
                 Log.Info($"delta={(endTime - startTime)}");
 
-                Assert.IsTrue((endTime - startTime) < 500);
+                ClassicAssert.IsTrue((endTime - startTime) < 500);
                 env.UndeployAll();
             }
         }
@@ -505,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             var endTime = PerformanceObserver.MilliTime;
             Log.Info($"delta={(endTime - startTime)}");
 
-            Assert.IsTrue((endTime - startTime) < 1500);
+            ClassicAssert.IsTrue((endTime - startTime) < 1500);
             env.UndeployModuleContaining("s0");
         }
 

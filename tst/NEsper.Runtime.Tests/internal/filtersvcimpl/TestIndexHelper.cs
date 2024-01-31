@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -63,47 +64,47 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // Create index list wity index that doesn't match
             var indexOne = IndexFactory.CreateIndex(MakeLookupable("BoolPrimitive"), lockFactory, FilterOperator.EQUAL);
             indexes.Add(indexOne);
-            Assert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
+            ClassicAssert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
 
             // Create index list wity index that doesn't match
             indexOne = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.GREATER_OR_EQUAL);
             indexes.Clear();
             indexes.Add(indexOne);
-            Assert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
+            ClassicAssert.IsTrue(IndexHelper.FindIndex(parameters, indexes) == null);
 
             // Add an index that does match a parameter
             var indexTwo = IndexFactory.CreateIndex(MakeLookupable("DoubleBoxed"), lockFactory, FilterOperator.GREATER);
             indexes.Add(indexTwo);
             var pair = IndexHelper.FindIndex(parameters, indexes);
-            Assert.IsTrue(pair != null);
-            Assert.AreEqual(parameterTwo, pair.First);
-            Assert.AreEqual(indexTwo, pair.Second);
+            ClassicAssert.IsTrue(pair != null);
+            ClassicAssert.AreEqual(parameterTwo, pair.First);
+            ClassicAssert.AreEqual(indexTwo, pair.Second);
 
             // Add another index that does match a parameter, should return first match however which is doubleBoxed
             var indexThree = IndexFactory.CreateIndex(MakeLookupable("IntPrimitive"), lockFactory, FilterOperator.GREATER);
             indexes.Add(indexThree);
             pair = IndexHelper.FindIndex(parameters, indexes);
-            Assert.AreEqual(parameterOne, pair.First);
-            Assert.AreEqual(indexThree, pair.Second);
+            ClassicAssert.AreEqual(parameterOne, pair.First);
+            ClassicAssert.AreEqual(indexThree, pair.Second);
 
             // Try again removing one index
             indexes.Remove(indexTwo);
             pair = IndexHelper.FindIndex(parameters, indexes);
-            Assert.AreEqual(parameterOne, pair.First);
-            Assert.AreEqual(indexThree, pair.Second);
+            ClassicAssert.AreEqual(parameterOne, pair.First);
+            ClassicAssert.AreEqual(indexThree, pair.Second);
         }
 
         [Test, RunInApplicationDomain]
         public void TestFindParameter()
         {
             var indexOne = IndexFactory.CreateIndex(MakeLookupable("BoolPrimitive"), lockFactory, FilterOperator.EQUAL);
-            Assert.IsNull(IndexHelper.FindParameter(parameters, indexOne));
+            ClassicAssert.IsNull(IndexHelper.FindParameter(parameters, indexOne));
 
             var indexTwo = IndexFactory.CreateIndex(MakeLookupable("string"), lockFactory, FilterOperator.EQUAL);
-            Assert.AreEqual(parameterThree, IndexHelper.FindParameter(parameters, indexTwo));
+            ClassicAssert.AreEqual(parameterThree, IndexHelper.FindParameter(parameters, indexTwo));
 
             var indexThree = IndexFactory.CreateIndex(MakeLookupable("IntPrimitive"), lockFactory, FilterOperator.GREATER);
-            Assert.AreEqual(parameterOne, IndexHelper.FindParameter(parameters, indexThree));
+            ClassicAssert.AreEqual(parameterOne, IndexHelper.FindParameter(parameters, indexThree));
         }
     }
 } // end of namespace

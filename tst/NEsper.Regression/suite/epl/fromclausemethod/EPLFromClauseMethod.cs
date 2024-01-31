@@ -19,7 +19,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
@@ -685,7 +685,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                     .Add(MethodInvocationStream.Create(typeof(SupportStaticMethodLib).FullName, "FetchArrayNoArg"));
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
-                Assert.AreEqual(joinStatement, model.ToEPL());
+                ClassicAssert.AreEqual(joinStatement, model.ToEPL());
 
                 TryArrayNoArg(env);
             }
@@ -734,7 +734,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
-                Assert.AreEqual(joinStatement, model.ToEPL());
+                ClassicAssert.AreEqual(joinStatement, model.ToEPL());
 
                 TryArrayWithArg(env);
             }
@@ -760,7 +760,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                             listener.LastNewData,
                             fields,
                             new object[][] { new object[] { "A", "E4" }, new object[] { "B", "E4" } });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -773,7 +773,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
                             fields,
                             new object[][]
                                 { new object[] { "A", "E5" }, new object[] { "B", "E5" }, new object[] { "C", "E5" } });
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -1100,7 +1100,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.fromclausemethod
             env.UndeployModuleContaining("s0");
 
             SendSupportBeanEvent(env, 0, -1);
-            Assert.IsFalse(listener.IsInvoked);
+            ClassicAssert.IsFalse(listener.IsInvoked);
         }
 
         private static void AssertJoinHistoricalOnlyIndependent(

@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
@@ -119,9 +120,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             string status,
             string carId)
         {
-            Assert.AreEqual(status, received.Get("Status"));
+            ClassicAssert.AreEqual(status, received.Get("Status"));
             var got = received.Get("outputevent");
-            Assert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("CarId"));
+            ClassicAssert.AreEqual(carId, received.Get("outputevent").AsStringDictionary().Get("CarId"));
         }
 
         private static void AssertReceivedPono(
@@ -129,8 +130,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
             string status,
             string carId)
         {
-            Assert.AreEqual(status, received.Get("Status"));
-            Assert.AreEqual(carId, ((SupportBean)received.Get("outputevent")).TheString);
+            ClassicAssert.AreEqual(status, received.Get("Status"));
+            ClassicAssert.AreEqual(carId, ((SupportBean)received.Get("outputevent")).TheString);
         }
 
         private static void SendCarMap(

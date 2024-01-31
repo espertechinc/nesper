@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -99,23 +100,23 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 }
 
                 var contexts = SupportExceptionHandlerFactory.FactoryContexts;
-                Assert.AreEqual(2, contexts.Count);
-                Assert.AreEqual(runtime.URI, contexts[0].RuntimeURI);
-                Assert.AreEqual(runtime.URI, contexts[1].RuntimeURI);
+                ClassicAssert.AreEqual(2, contexts.Count);
+                ClassicAssert.AreEqual(runtime.URI, contexts[0].RuntimeURI);
+                ClassicAssert.AreEqual(runtime.URI, contexts[1].RuntimeURI);
 
                 var handlerOne = SupportExceptionHandlerFactory.Handlers[0];
                 var handlerTwo = SupportExceptionHandlerFactory.Handlers[1];
                 runtime.EventService.SendEventBean(new SupportBean(), "SupportBean");
 
-                Assert.AreEqual(1, handlerOne.Contexts.Count);
-                Assert.AreEqual(1, handlerTwo.Contexts.Count);
+                ClassicAssert.AreEqual(1, handlerOne.Contexts.Count);
+                ClassicAssert.AreEqual(1, handlerTwo.Contexts.Count);
                 var ehc = handlerOne.Contexts[0];
-                Assert.AreEqual(runtime.URI, ehc.RuntimeURI);
-                Assert.AreEqual(epl, ehc.Epl);
-                Assert.AreEqual(deployment.DeploymentId, ehc.DeploymentId);
-                Assert.AreEqual("ABCName", ehc.StatementName);
-                Assert.AreEqual("Sample exception", ehc.Exception.Message);
-                Assert.IsNotNull(ehc.CurrentEvent);
+                ClassicAssert.AreEqual(runtime.URI, ehc.RuntimeURI);
+                ClassicAssert.AreEqual(epl, ehc.Epl);
+                ClassicAssert.AreEqual(deployment.DeploymentId, ehc.DeploymentId);
+                ClassicAssert.AreEqual("ABCName", ehc.StatementName);
+                ClassicAssert.AreEqual("Sample exception", ehc.Exception.Message);
+                ClassicAssert.IsNotNull(ehc.CurrentEvent);
 
                 runtime.Destroy();
             }

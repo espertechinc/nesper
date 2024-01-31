@@ -13,6 +13,8 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
     /// <summary>
@@ -97,7 +99,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 long?[] sums)
             {
                 var p00s = listOfP00.SplitCsv();
-                Assert.AreEqual(p00s.Length, sums.Length);
+                ClassicAssert.AreEqual(p00s.Length, sums.Length);
                 for (var i = 0; i < p00s.Length; i++) {
                     env.SendEventBean(new SupportBean_S0(0, p00s[i]));
                     env.AssertEqualsNew("s0", "c0", sums[i]);
@@ -157,11 +159,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
             int?[] values)
         {
             var keyarr = keys.SplitCsv();
-            Assert.AreEqual(keyarr.Length, values.Length);
+            ClassicAssert.AreEqual(keyarr.Length, values.Length);
             for (var i = 0; i < keyarr.Length; i++) {
                 env.SendEventBean(new SupportBean_S0(0, keyarr[i]));
                 var index = i;
-                env.AssertEventNew("s0", @event => Assert.AreEqual(values[index], @event.Get("value")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(values[index], @event.Get("value")));
             }
         }
 

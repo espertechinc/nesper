@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -330,14 +331,14 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
-                        Assert.AreEqual(beanOne, listener.LastOldData[0].Underlying);
+                        ClassicAssert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
+                        ClassicAssert.AreEqual(beanOne, listener.LastOldData[0].Underlying);
                     });
                 env.AssertListener(
                     "s1",
                     listener => {
-                        Assert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual(beanTwo, listener.LastNewData[0].Underlying);
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
 
                 env.UndeployAll();

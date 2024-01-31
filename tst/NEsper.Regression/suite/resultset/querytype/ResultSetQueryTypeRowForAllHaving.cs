@@ -13,6 +13,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -123,7 +124,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             // assert select result type
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
+                statement => ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
 
             SendTimerEvent(env, 0);
             SendEvent(env, 10);
@@ -139,7 +140,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             SendEvent(env, -5);
             env.AssertListener(
                 "s0",
-                listener => Assert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum")));
+                listener => ClassicAssert.AreEqual(20L, listener.GetAndResetLastNewData()[0].Get("mySum")));
 
             env.Milestone(1);
 
@@ -147,8 +148,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(20L, listener.LastOldData[0].Get("mySum"));
-                    Assert.IsNull(listener.GetAndResetLastNewData());
+                    ClassicAssert.AreEqual(20L, listener.LastOldData[0].Get("mySum"));
+                    ClassicAssert.IsNull(listener.GetAndResetLastNewData());
                 });
         }
 

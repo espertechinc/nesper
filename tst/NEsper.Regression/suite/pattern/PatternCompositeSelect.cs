@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -99,30 +99,30 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.IsInstanceOf<IDictionary<string, object>>(theEvent.Underlying);
+                        ClassicAssert.IsInstanceOf<IDictionary<string, object>>(theEvent.Underlying);
 
                         // test fragment B type and event
                         var typeFragB = theEvent.EventType.GetFragmentType("b");
-                        Assert.IsFalse(typeFragB.IsIndexed);
-                        Assert.AreEqual("SupportBean_B", typeFragB.FragmentType.Name);
-                        Assert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("Id"));
+                        ClassicAssert.IsFalse(typeFragB.IsIndexed);
+                        ClassicAssert.AreEqual("SupportBean_B", typeFragB.FragmentType.Name);
+                        ClassicAssert.AreEqual(typeof(string), typeFragB.FragmentType.GetPropertyType("Id"));
 
                         var eventFragB = (EventBean)theEvent.GetFragment("b");
-                        Assert.AreEqual("SupportBean_B", eventFragB.EventType.Name);
+                        ClassicAssert.AreEqual("SupportBean_B", eventFragB.EventType.Name);
 
                         // test fragment A type and event
                         var typeFragA = theEvent.EventType.GetFragmentType("a");
-                        Assert.IsTrue(typeFragA.IsIndexed);
-                        Assert.AreEqual("SupportBean_A", typeFragA.FragmentType.Name);
-                        Assert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("Id"));
+                        ClassicAssert.IsTrue(typeFragA.IsIndexed);
+                        ClassicAssert.AreEqual("SupportBean_A", typeFragA.FragmentType.Name);
+                        ClassicAssert.AreEqual(typeof(string), typeFragA.FragmentType.GetPropertyType("Id"));
 
-                        Assert.IsTrue(theEvent.GetFragment("a") is EventBean[]);
+                        ClassicAssert.IsTrue(theEvent.GetFragment("a") is EventBean[]);
                         var eventFragA1 = (EventBean)theEvent.GetFragment("a[0]");
-                        Assert.AreEqual("SupportBean_A", eventFragA1.EventType.Name);
-                        Assert.AreEqual("A1", eventFragA1.Get("Id"));
+                        ClassicAssert.AreEqual("SupportBean_A", eventFragA1.EventType.Name);
+                        ClassicAssert.AreEqual("A1", eventFragA1.Get("Id"));
                         var eventFragA2 = (EventBean)theEvent.GetFragment("a[1]");
-                        Assert.AreEqual("SupportBean_A", eventFragA2.EventType.Name);
-                        Assert.AreEqual("A2", eventFragA2.Get("Id"));
+                        ClassicAssert.AreEqual("SupportBean_A", eventFragA2.EventType.Name);
+                        ClassicAssert.AreEqual("A2", eventFragA2.Get("Id"));
                     });
 
                 env.UndeployAll();

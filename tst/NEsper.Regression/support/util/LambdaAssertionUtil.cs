@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -61,7 +62,7 @@ namespace com.espertech.esper.regressionlib.support.util
 			params object[] expected)
 		{
 			if (expected == null) {
-				Assert.IsNull(result);
+				ClassicAssert.IsNull(result);
 				return;
 			}
 
@@ -107,9 +108,9 @@ namespace com.espertech.esper.regressionlib.support.util
 			}
 
 			var expected = expectedList.SplitCsv();
-			Assert.AreEqual(expected.Length, arr.Length, "Received: " + GetIds(arr));
+			ClassicAssert.AreEqual(expected.Length, arr.Length, "Received: " + GetIds(arr));
 			for (var i = 0; i < expected.Length; i++) {
-				Assert.AreEqual(expected[i], arr[i].Id);
+				ClassicAssert.AreEqual(expected[i], arr[i].Id);
 			}
 		}
 

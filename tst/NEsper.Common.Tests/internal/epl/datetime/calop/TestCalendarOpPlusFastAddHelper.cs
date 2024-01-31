@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.epl.expression.time.abacus;
 using com.espertech.esper.compat.datetime;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.datetime.calop
 {
@@ -145,7 +146,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             public void AssertLong(long value)
             {
-                Assert.AreEqual(expected, value);
+                ClassicAssert.AreEqual(expected, value);
             }
         }
 
@@ -160,7 +161,7 @@ namespace com.espertech.esper.common.@internal.epl.datetime.calop
 
             public void AssertLong(long value)
             {
-                Assert.IsTrue(value >= atLeast);
+                ClassicAssert.IsTrue(value >= atLeast);
             }
         }
     }

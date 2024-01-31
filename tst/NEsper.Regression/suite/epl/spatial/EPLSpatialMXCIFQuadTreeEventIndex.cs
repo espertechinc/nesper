@@ -25,6 +25,7 @@ using com.espertech.esper.regressionlib.support.util;
 using static com.espertech.esper.regressionlib.support.util.SupportSpatialUtil;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.spatial
 {
@@ -189,7 +190,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     "s0",
                     listener => {
                         var received = SortJoinProperty(listener.GetAndResetLastNewData(), "c0");
-                        Assert.AreEqual("R1", received);
+                        ClassicAssert.AreEqual("R1", received);
                     });
 
                 env.UndeployAll();
@@ -275,7 +276,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     new object[][] { new object[] { "R1" } });
             }
             else {
-                Assert.AreEqual(0, result.Array.Length);
+                ClassicAssert.AreEqual(0, result.Array.Length);
             }
         }
 
@@ -302,14 +303,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 for (var x = 0; x < 100; x++) {
                     for (var y = 0; y < 50; y++) {
                         env.SendEventBean(new SupportSpatialAABB("R", x, y, 0.5, 0.5));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             $"{x}_{y}",
                             listener.AssertOneGetNewAndReset().Get("c0"));
                     }
                 }
 
                 var delta = PerformanceObserver.MilliTime - start;
-                Assert.Less(delta, 2000);
+                ClassicAssert.Less(delta, 2000);
 
                 env.UndeployAll();
             }
@@ -714,7 +715,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                     }
                 }
 
-                Assert.AreEqual(256, bbs.Count);
+                ClassicAssert.AreEqual(256, bbs.Count);
                 return bbs;
             }
         }
@@ -987,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
                 var listener = env.Listener("s0");
                 foreach (var r in rectangles) {
                     env.SendEventBean(new SupportSpatialAABB("", r.X!.Value, r.Y!.Value, 0.1, 0.1));
-                    Assert.AreEqual(r.Id, listener.AssertOneGetNewAndReset().Get("c0"));
+                    ClassicAssert.AreEqual(r.Id, listener.AssertOneGetNewAndReset().Get("c0"));
                 }
 
                 // get all content
@@ -1074,10 +1075,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.spatial
             bool expected)
         {
             var bbOne = BoundingBox.From(one.X, one.Y, one.Width, one.Height);
-            Assert.AreEqual(expected, bbOne.IntersectsBoxIncludingEnd(two.X, two.Y, two.Width, two.Height));
+            ClassicAssert.AreEqual(expected, bbOne.IntersectsBoxIncludingEnd(two.X, two.Y, two.Width, two.Height));
 
             var bbTwo = BoundingBox.From(two.X, two.Y, two.Width, two.Height);
-            Assert.AreEqual(expected, bbTwo.IntersectsBoxIncludingEnd(one.X, one.Y, one.Width, one.Height));
+            ClassicAssert.AreEqual(expected, bbTwo.IntersectsBoxIncludingEnd(one.X, one.Y, one.Width, one.Height));
 
             env.SendEventBean(new SupportSpatialDualAABB(one, two));
             env.AssertEqualsNew("s0", "c0", expected);

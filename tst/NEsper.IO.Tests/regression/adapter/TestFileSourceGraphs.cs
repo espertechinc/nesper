@@ -24,7 +24,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esperio.file;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esperio.support.util.CompileUtil;
 
 namespace com.espertech.esperio.regression.adapter
@@ -66,7 +66,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/noTimestampOne.zip', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 2}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(2, received.Count);
+			ClassicAssert.AreEqual(2, received.Count);
 			foreach (var aReceived in received) {
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
@@ -95,7 +95,7 @@ namespace com.espertech.esperio.regression.adapter
 				"FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/noTimestampOne.csv', propertyNames: ['MyInt','MyDouble','MyString'], numLoops: 3}" +
 				"DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(3, received.Count);
+			ClassicAssert.AreEqual(3, received.Count);
 			foreach (var aReceived in received) {
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
@@ -116,7 +116,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/moreProperties.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -136,7 +136,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/intsTitleRow.csv', hasHeaderLine:true, propertyNames: ['intTwo','intOne'], numLoops: 1}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -156,7 +156,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyIntRowEvent> { file: '../../../etc/regression/timestampOne.csv', propertyNames: ['p0','p1','p2','p3']}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -177,7 +177,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyStrRowEvent> { file: '../../../etc/regression/noTimestampOne.csv', propertyNames: [\"MyInt\", \"MyDouble\", \"MyString\"],}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -196,8 +196,8 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/emptyFile.csv'}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
-			Assert.IsTrue(received[0].IsEmpty());
+			ClassicAssert.AreEqual(1, received.Count);
+			ClassicAssert.IsTrue(received[0].IsEmpty());
 		}
 
 		[Test]
@@ -207,8 +207,8 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/titleRowOnly.csv', hasTitleLine: true}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
-			Assert.IsTrue(received[0].IsEmpty());
+			ClassicAssert.AreEqual(1, received.Count);
+			ClassicAssert.IsTrue(received[0].IsEmpty());
 		}
 
 		[Test]
@@ -220,10 +220,10 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyOAType> { file: '../../../etc/regression/dateprocessing_one.csv', hasTitleLine: false}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			var data = (object[]) received[0][0];
-			Assert.AreEqual(testtime, ((DateTime) data[0]).UtcMillis());
-			Assert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
+			ClassicAssert.AreEqual(testtime, ((DateTime) data[0]).UtcMillis());
+			ClassicAssert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
 
 			// with date format specified
 			
@@ -239,10 +239,10 @@ namespace com.espertech.esperio.regression.adapter
 			        "FileSource -> mystream<MyOAType> { file: '../../../etc/regression/dateprocessing_two.csv', hasTitleLine: false, dateFormat: 'yyyyMMddHHmmssfff'}" +
 			        "DefaultSupportCaptureOp(mystream) {}";
 			received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			data = (object[]) received[0][0];
-			Assert.AreEqual(testtime, ((DateTime) data[0]).UtcMillis());
-			Assert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
+			ClassicAssert.AreEqual(testtime, ((DateTime) data[0]).UtcMillis());
+			ClassicAssert.AreEqual(testtime, ((DateTimeEx) data[1]).UtcMillis);
 		}
 
 		[Test]
@@ -322,7 +322,7 @@ namespace com.espertech.esperio.regression.adapter
 				Assert.Fail();
 			}
 			catch (EPDataFlowInstantiationException ex) {
-				Assert.AreEqual(message, ex.Message);
+				ClassicAssert.AreEqual(message, ex.Message);
 			}
 			finally {
 				UndeployAll(_runtime);
@@ -372,7 +372,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "FileSource -> mystream<MyMapEvent> { file: '../../../etc/regression/titleRow.csv', hasTitleLine:true, numLoops: 3}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(3, received.Count);
+			ClassicAssert.AreEqual(3, received.Count);
 			foreach (var aReceived in received) {
 				EPAssertionUtil.AssertPropsPerRow(
 					container,
@@ -396,7 +396,7 @@ namespace com.espertech.esperio.regression.adapter
 			            "}" +
 			            "DefaultSupportCaptureOp(mystream) {}";
 			var received = RunDataFlow(graph);
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -431,7 +431,7 @@ namespace com.espertech.esperio.regression.adapter
 				new EPDataFlowInstantiationOptions().WithOperatorProvider(new DefaultSupportGraphOpProvider(outputOp)));
 			instance.Run();
 			var received = outputOp.GetAndReset();
-			Assert.AreEqual(1, received.Count);
+			ClassicAssert.AreEqual(1, received.Count);
 			EPAssertionUtil.AssertPropsPerRow(
 				container,
 				received[0].ToArray(),
@@ -441,7 +441,7 @@ namespace com.espertech.esperio.regression.adapter
 					new object[] {"three", 3, 300L, 3.3},
 					new object[] {"five", 5, 500L, 5.5}
 				});
-			Assert.IsTrue(representationEnum.MatchesClass(received[0].ToArray()[0].GetType()));
+			ClassicAssert.IsTrue(representationEnum.MatchesClass(received[0].ToArray()[0].GetType()));
 
 			UndeployAll(_runtime);
 		}

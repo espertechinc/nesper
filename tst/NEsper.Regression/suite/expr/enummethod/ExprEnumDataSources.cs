@@ -23,7 +23,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
@@ -479,8 +479,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     @event => {
                         var result = (IDictionary<string, object>)@event.Underlying;
                         var events = (EventBean[])result.Get("melt");
-                        Assert.AreSame(e1, events[0].Underlying);
-                        Assert.AreSame(e4, events[1].Underlying);
+                        ClassicAssert.AreSame(e1, events[0].Underlying);
+                        ClassicAssert.AreSame(e4, events[1].Underlying);
                     });
 
                 env.UndeployAll();
@@ -543,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(1, @event.Get("ticksLargeLess200").Unwrap<object>().Count));
+                    @event => ClassicAssert.AreEqual(1, @event.Get("ticksLargeLess200").Unwrap<object>().Count));
 
                 env.UndeployAll();
             }
@@ -1209,7 +1209,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                                 .AssertOneGetNew()
                                 .Get(field)
                                 .UnwrapIntoArray<SupportBean_ST0>();
-                            Assert.AreEqual(2, result.Length, "Failed for field " + field);
+                            ClassicAssert.AreEqual(2, result.Length, "Failed for field " + field);
                         }
 
                         listener.Reset();
@@ -1221,7 +1221,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     listener => {
                         foreach (var field in fields) {
-                            Assert.IsNull(listener.AssertOneGetNew().Get(field));
+                            ClassicAssert.IsNull(listener.AssertOneGetNew().Get(field));
                         }
 
                         listener.Reset();
@@ -1237,7 +1237,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                                 .AssertOneGetNew()
                                 .Get(field)
                                 .UnwrapIntoArray<SupportBean_ST0>();
-                            Assert.AreEqual(0, result.Length);
+                            ClassicAssert.AreEqual(0, result.Length);
                         }
 
                         listener.Reset();

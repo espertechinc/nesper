@@ -26,6 +26,7 @@ using static com.espertech.esper.regressionlib.support.@event.SupportEventInfra;
 using static com.espertech.esper.regressionlib.support.@event.ValueWithExistsFlag;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 using SupportMarkerInterface = com.espertech.esper.regressionlib.support.bean.SupportMarkerInterface;
 
@@ -219,8 +220,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 statement => {
                     var eventType = statement.EventType;
                     foreach (var propertyName in propertyNames) {
-                        Assert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
-                        Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
+                        ClassicAssert.AreEqual(expectedPropertyType, eventType.GetPropertyType(propertyName));
+                        ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("exists_" + propertyName));
                     }
                 });
 

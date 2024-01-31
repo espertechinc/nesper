@@ -17,6 +17,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -65,71 +66,71 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             // Add some parameter-less expression
             var filterSpec = MakeFilterValues();
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[0], topNode, lockFactory);
-            Assert.IsTrue(topNode.Contains(testFilterCallback[0]));
+            ClassicAssert.IsTrue(topNode.Contains(testFilterCallback[0]));
 
             // Attempt a match
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 1);
+            ClassicAssert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Add a filter that won't match, with a single parameter matching against an int
             filterSpec = MakeFilterValues("IntPrimitive", FilterOperator.EQUAL, 100);
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[1], topNode, lockFactory);
-            Assert.IsTrue(topNode.Indizes.Count == 1);
-            Assert.IsTrue(topNode.Indizes[0].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes.Count == 1);
+            ClassicAssert.IsTrue(topNode.Indizes[0].CountExpensive == 1);
 
             // Match again
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 1);
+            ClassicAssert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Add a filter that will match
             filterSpec = MakeFilterValues("IntPrimitive", FilterOperator.EQUAL, 50);
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[2], topNode, lockFactory);
-            Assert.IsTrue(topNode.Indizes.Count == 1);
-            Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
+            ClassicAssert.IsTrue(topNode.Indizes.Count == 1);
+            ClassicAssert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
 
             // match
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 2);
+            ClassicAssert.IsTrue(matches.Count == 2);
             matches.Clear();
 
             // Add some filter against a double
             filterSpec = MakeFilterValues("DoublePrimitive", FilterOperator.LESS, 1.1);
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[3], topNode, lockFactory);
-            Assert.IsTrue(topNode.Indizes.Count == 2);
-            Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
-            Assert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes.Count == 2);
+            ClassicAssert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
+            ClassicAssert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 3);
+            ClassicAssert.IsTrue(matches.Count == 3);
             matches.Clear();
 
             filterSpec = MakeFilterValues("DoublePrimitive", FilterOperator.LESS_OR_EQUAL, 0.5);
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[4], topNode, lockFactory);
-            Assert.IsTrue(topNode.Indizes.Count == 3);
-            Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
-            Assert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
-            Assert.IsTrue(topNode.Indizes[2].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes.Count == 3);
+            ClassicAssert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
+            ClassicAssert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes[2].CountExpensive == 1);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 4);
+            ClassicAssert.IsTrue(matches.Count == 4);
             matches.Clear();
 
             // Add an filterSpec against double and string
             filterSpec = MakeFilterValues("DoublePrimitive", FilterOperator.LESS, 1.1,
                     "TheString", FilterOperator.EQUAL, "jack");
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[5], topNode, lockFactory);
-            Assert.IsTrue(topNode.Indizes.Count == 3);
-            Assert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
-            Assert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
-            Assert.IsTrue(topNode.Indizes[2].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes.Count == 3);
+            ClassicAssert.IsTrue(topNode.Indizes[0].CountExpensive == 2);
+            ClassicAssert.IsTrue(topNode.Indizes[1].CountExpensive == 1);
+            ClassicAssert.IsTrue(topNode.Indizes[2].CountExpensive == 1);
             var nextLevelSetNode = (FilterHandleSetNode) topNode.Indizes[1].Get(1.1d);
-            Assert.IsTrue(nextLevelSetNode != null);
-            Assert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
+            ClassicAssert.IsTrue(nextLevelSetNode != null);
+            ClassicAssert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 5);
+            ClassicAssert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             filterSpec = MakeFilterValues("DoublePrimitive", FilterOperator.LESS, 1.1,
@@ -137,18 +138,18 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[6], topNode, lockFactory);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 5);
+            ClassicAssert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             filterSpec = MakeFilterValues("DoublePrimitive", FilterOperator.LESS, 1.1,
                     "TheString", FilterOperator.EQUAL, "jack");
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[7], topNode, lockFactory);
-            Assert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
+            ClassicAssert.IsTrue(nextLevelSetNode.Indizes.Count == 1);
             var nodeTwo = (FilterHandleSetNode) nextLevelSetNode.Indizes[0].Get("jack");
-            Assert.IsTrue(nodeTwo.FilterCallbackCount == 2);
+            ClassicAssert.IsTrue(nodeTwo.FilterCallbackCount == 2);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 6);
+            ClassicAssert.IsTrue(matches.Count == 6);
             matches.Clear();
 
             // Try depth first
@@ -158,7 +159,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[8], topNode, lockFactory);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 7);
+            ClassicAssert.IsTrue(matches.Count == 7);
             matches.Clear();
 
             // Add an filterSpec in the middle
@@ -175,7 +176,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderAdd.Add(filterSpec, testFilterCallback[11], topNode, lockFactory);
 
             topNode.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 8);
+            ClassicAssert.IsTrue(matches.Count == 8);
             matches.Clear();
         }
 
@@ -190,7 +191,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Try a match
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 1);
+            ClassicAssert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Remove filter
@@ -198,7 +199,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 
             // Match should not be found
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 0);
+            ClassicAssert.IsTrue(matches.Count == 0);
             matches.Clear();
 
             // Add a depth-first filterSpec
@@ -228,42 +229,42 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             IndexTreeBuilderAdd.Add(filterSpecFive, testFilterCallback[5], top, lockFactory);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 5);
+            ClassicAssert.IsTrue(matches.Count == 5);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[2], filterSpecTwo[0], top);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 4);
+            ClassicAssert.IsTrue(matches.Count == 4);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[4], filterSpecFour[0], top);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 3);
+            ClassicAssert.IsTrue(matches.Count == 3);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[5], filterSpecFive[0], top);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 2);
+            ClassicAssert.IsTrue(matches.Count == 2);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[1], filterSpecOne[0], top);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 1);
+            ClassicAssert.IsTrue(matches.Count == 1);
             matches.Clear();
 
             // Remove some of the nodes
             IndexTreeBuilderRemove.Remove(eventType, testFilterCallback[3], filterSpecThree[0], top);
 
             top.MatchEvent(eventBean, matches, null);
-            Assert.IsTrue(matches.Count == 0);
+            ClassicAssert.IsTrue(matches.Count == 0);
             matches.Clear();
         }
 

@@ -23,7 +23,7 @@ using com.espertech.esper.regressionlib.framework;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
@@ -108,34 +108,34 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(e);
             }
 
-            Assert.AreEqual(3, output.Length);
+            ClassicAssert.AreEqual(3, output.Length);
             for (var i = 0; i < 3; i++) {
                 if (!eventbean) {
                     if (representationEnum.IsObjectArrayEvent()) {
                         var row = (object[])output[i];
-                        Assert.AreEqual("abc", row[0]);
+                        ClassicAssert.AreEqual("abc", row[0]);
                         var val = row[1].AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row[2]);
+                        ClassicAssert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        ClassicAssert.AreEqual(1d, row[2]);
                     }
                     else if (representationEnum.IsMapEvent()) {
                         var row = (IDictionary<string, object>)output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
+                        ClassicAssert.AreEqual("abc", row.Get("p0"));
                         var val = row.Get("p1").AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
+                        ClassicAssert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        ClassicAssert.AreEqual(1d, row.Get("p2"));
                     }
                     else {
                         var row = (GenericRecord)output[i];
-                        Assert.AreEqual("abc", row.Get("p0"));
+                        ClassicAssert.AreEqual("abc", row.Get("p0"));
                         var val = row.Get("p1").AsInt64();
-                        Assert.IsTrue(val >= 0 && val <= 11, "val=" + val);
-                        Assert.AreEqual(1d, row.Get("p2"));
+                        ClassicAssert.IsTrue(val >= 0 && val <= 11, "val=" + val);
+                        ClassicAssert.AreEqual(1d, row.Get("p2"));
                     }
                 }
                 else {
                     var row = (EventBean)output[i];
-                    Assert.AreEqual("abc", row.Get("p0"));
+                    ClassicAssert.AreEqual("abc", row.Get("p0"));
                 }
             }
 
@@ -167,7 +167,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(t);
             }
 
-            Assert.AreEqual(1, output.Length);
+            ClassicAssert.AreEqual(1, output.Length);
             env.UndeployAll();
             return output[0];
         }
@@ -177,11 +177,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             public void Run(RegressionEnvironment env)
             {
                 var resultLegacy = (MyLegacyEvent) RunAssertionBeans(env, "MyLegacyEvent");
-                Assert.AreEqual("abc", resultLegacy.Myfield);
+                ClassicAssert.AreEqual("abc", resultLegacy.Myfield);
 
 #if NOT_APPLICABLE // Java can by-pass constructor-less objects (kind of)
                 var resultNoDefCtor = (MyEventNoDefaultCtor) RunAssertionBeans(env, "MyEventNoDefaultCtor");
-                Assert.AreEqual("abc", resultNoDefCtor.Myfield);
+                ClassicAssert.AreEqual("abc", resultNoDefCtor.Myfield);
 #endif
             }
 
@@ -219,7 +219,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPException(t);
                 }
 
-                Assert.AreEqual(3, output.Length);
+                ClassicAssert.AreEqual(3, output.Length);
                 env.UndeployAll();
             }
 
@@ -321,7 +321,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPException(e);
                 }
 
-                Assert.IsTrue(countExpected <= output.Length);
+                ClassicAssert.IsTrue(countExpected <= output.Length);
                 df.Cancel();
                 env.UndeployAll();
 
@@ -344,7 +344,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPException(t);
                 }
 
-                Assert.AreEqual(5, output.Length);
+                ClassicAssert.AreEqual(5, output.Length);
                 env.UndeployAll();
 
                 // BeaconSource with delay
@@ -372,11 +372,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     }
                 });
 
-                Assert.AreEqual(2, output.Length);
+                ClassicAssert.AreEqual(2, output.Length);
 #if DEBUG
-                Assert.Less(delta, 600);
+                ClassicAssert.Less(delta, 600);
 #else
-                Assert.Less(delta, 490);
+                ClassicAssert.Less(delta, 490);
 #endif
                 env.UndeployAll();
 
@@ -402,7 +402,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPException(t);
                 }
 
-                Assert.AreEqual(2, output.Length);
+                ClassicAssert.AreEqual(2, output.Length);
                 instance.Cancel();
                 env.UndeployAll();
 

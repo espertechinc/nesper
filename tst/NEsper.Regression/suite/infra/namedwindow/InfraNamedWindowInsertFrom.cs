@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
@@ -166,9 +166,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.Milestone(0);
 
                 // populate some data
-                env.AssertRuntime(runtime => Assert.AreEqual(0, GetCount(env, path, "window", "MyWindowIWT")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, GetCount(env, path, "window", "MyWindowIWT")));
                 env.SendEventBean(new SupportBean("A1", 1));
-                env.AssertRuntime(runtime => Assert.AreEqual(1, GetCount(env, path, "window", "MyWindowIWT")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(1, GetCount(env, path, "window", "MyWindowIWT")));
                 env.SendEventBean(new SupportBean("B2", 1));
 
                 env.Milestone(1);
@@ -176,7 +176,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.SendEventBean(new SupportBean("C3", 1));
                 env.SendEventBean(new SupportBean("A4", 4));
                 env.SendEventBean(new SupportBean("C5", 4));
-                env.AssertRuntime(runtime => Assert.AreEqual(5, GetCount(env, path, "window", "MyWindowIWT")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(5, GetCount(env, path, "window", "MyWindowIWT")));
                 env.ListenerReset("window");
 
                 env.Milestone(2);
@@ -195,14 +195,14 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                             new object[] { "C5" }
                         }));
                 env.AssertListenerNotInvoked("windowTwo");
-                env.AssertRuntime(runtime => Assert.AreEqual(5, GetCount(env, path, "windowTwo", "MyWindowTwo")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(5, GetCount(env, path, "windowTwo", "MyWindowTwo")));
                 env.AssertStatement(
                     "windowTwo",
                     statement => {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             StatementType.CREATE_WINDOW,
                             statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                        Assert.AreEqual("MyWindowTwo", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                        ClassicAssert.AreEqual("MyWindowTwo", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                     });
 
                 // create window with keep-all and filter
@@ -217,7 +217,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.Milestone(3);
 
-                env.AssertRuntime(runtime => Assert.AreEqual(2, GetCount(env, path, "windowThree", "MyWindowThree")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(2, GetCount(env, path, "windowThree", "MyWindowThree")));
 
                 // create window with last-per-id
                 var stmtTextCreateFour =
@@ -231,7 +231,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.Milestone(4);
 
-                env.AssertRuntime(runtime => Assert.AreEqual(2, GetCount(env, path, "windowFour", "MyWindowFour")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(2, GetCount(env, path, "windowFour", "MyWindowFour")));
 
                 env.CompileDeploy("insert into MyWindowIWT select * from SupportBean(TheString like 'A%')", path);
                 env.CompileDeploy("insert into MyWindowTwo select * from SupportBean(TheString like 'B%')", path);
@@ -249,11 +249,11 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var received = listener.AssertOneGetNewAndReset();
                         EPAssertionUtil.AssertProps(received, fields, new object[] { "B9" });
                         if (!env.IsHA) {
-                            Assert.AreSame(env.Statement("windowTwo").EventType, received.EventType);
+                            ClassicAssert.AreSame(env.Statement("windowTwo").EventType, received.EventType);
                         }
                     });
 
-                env.AssertRuntime(runtime => Assert.AreEqual(6, GetCount(env, path, "windowTwo", "MyWindowTwo")));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(6, GetCount(env, path, "windowTwo", "MyWindowTwo")));
                 env.AssertListenerNotInvoked("window");
                 env.AssertListenerNotInvoked("windowThree");
                 env.AssertListenerNotInvoked("windowFour");
@@ -266,7 +266,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     listener => {
                         var received = listener.AssertOneGetNewAndReset();
                         EPAssertionUtil.AssertProps(received, fields, new object[] { "A8" });
-                        Assert.AreSame(env.Statement("window").EventType, received.EventType);
+                        ClassicAssert.AreSame(env.Statement("window").EventType, received.EventType);
                     });
                 env.AssertListenerNotInvoked("windowTwo");
                 env.AssertListenerNotInvoked("windowThree");
@@ -281,7 +281,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var received = listener.AssertOneGetNewAndReset();
                         EPAssertionUtil.AssertProps(received, fields, new object[] { "C7" });
                         if (!env.IsHA) {
-                            Assert.AreSame(env.GetEnumerator("windowThree").Advance().EventType, received.EventType);
+                            ClassicAssert.AreSame(env.GetEnumerator("windowThree").Advance().EventType, received.EventType);
                         }
                     });
                 env.AssertListenerNotInvoked("window");
@@ -296,7 +296,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var received = listener.AssertOneGetNewAndReset();
                         EPAssertionUtil.AssertProps(received, fields, new object[] { "D6" });
                         if (!env.IsHA) {
-                            Assert.AreSame(env.Statement("windowFour").EventType, received.EventType);
+                            ClassicAssert.AreSame(env.Statement("windowFour").EventType, received.EventType);
                         }
                     });
                 env.AssertListenerNotInvoked("window");
@@ -328,7 +328,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.AssertStatement(
                     "window",
                     statement =>
-                        Assert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
+                        ClassicAssert.IsTrue(eventRepresentationEnum.MatchesClass(statement.EventType.UnderlyingType)));
 
                 // create insert into
                 var stmtTextInsertOne = "@public insert into MyWindowIWOM select a, b from MyMapAB";
@@ -359,10 +359,10 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 model.SelectClause = SelectClause.CreateWildcard();
                 var text = eventRepresentationEnum.GetAnnotationTextForNonMap() +
                            " @public create window MyWindowIWOMTwo#keepall as select * from MyWindowIWOM insert where b=10";
-                Assert.AreEqual(text.Trim(), model.ToEPL());
+                ClassicAssert.AreEqual(text.Trim(), model.ToEPL());
 
                 var modelTwo = env.EplToModel(text);
-                Assert.AreEqual(text.Trim(), modelTwo.ToEPL());
+                ClassicAssert.AreEqual(text.Trim(), modelTwo.ToEPL());
                 modelTwo.Annotations = Arrays.AsList(
                     AnnotationPart.NameAnnotation("windowTwo"),
                     new AnnotationPart("public"));
@@ -401,7 +401,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "window",
                     iterator => {
                         var events = EPAssertionUtil.EnumeratorToArray(iterator);
-                        Assert.AreEqual("A1", events[0].Get("Id?"));
+                        ClassicAssert.AreEqual("A1", events[0].Get("Id?"));
                     });
                 env.AssertPropsPerRowIterator(
                     "window",

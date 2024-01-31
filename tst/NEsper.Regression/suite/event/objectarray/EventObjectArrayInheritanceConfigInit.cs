@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.objectarray
 {
@@ -45,29 +46,29 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             var fields = new[] { "vbase", "v1", "v2", "va", "vb" };
 
             var type = env.Runtime.EventTypeService.GetEventTypePreconfigured("SubAEvent");
-            Assert.AreEqual("base", type.PropertyDescriptors[0].PropertyName);
-            Assert.AreEqual("sub1", type.PropertyDescriptors[1].PropertyName);
-            Assert.AreEqual("suba", type.PropertyDescriptors[2].PropertyName);
-            Assert.AreEqual(3, type.PropertyDescriptors.Count);
+            ClassicAssert.AreEqual("base", type.PropertyDescriptors[0].PropertyName);
+            ClassicAssert.AreEqual("sub1", type.PropertyDescriptors[1].PropertyName);
+            ClassicAssert.AreEqual("suba", type.PropertyDescriptors[2].PropertyName);
+            ClassicAssert.AreEqual(3, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("SubBEvent");
-            Assert.AreEqual("[\"base\", \"sub1\", \"suba\", \"subb\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(4, type.PropertyDescriptors.Count);
+            ClassicAssert.AreEqual("[\"base\", \"sub1\", \"suba\", \"subb\"]", type.PropertyNames.RenderAny());
+            ClassicAssert.AreEqual(4, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub1Event");
-            Assert.AreEqual("[\"base\", \"sub1\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(2, type.PropertyDescriptors.Count);
+            ClassicAssert.AreEqual("[\"base\", \"sub1\"]", type.PropertyNames.RenderAny());
+            ClassicAssert.AreEqual(2, type.PropertyDescriptors.Count);
 
             type = env.Runtime.EventTypeService.GetEventTypePreconfigured("Sub2Event");
-            Assert.AreEqual("[\"base\", \"sub2\"]", type.PropertyNames.RenderAny());
-            Assert.AreEqual(2, type.PropertyDescriptors.Count);
+            ClassicAssert.AreEqual("[\"base\", \"sub2\"]", type.PropertyNames.RenderAny());
+            ClassicAssert.AreEqual(2, type.PropertyDescriptors.Count);
 
             env.SendEventObjectArray(new object[] { "a", "b", "x" }, "SubAEvent"); // base, sub1, suba
             EPAssertionUtil.AssertProps(
                 listeners[0].AssertOneGetNewAndReset(),
                 fields,
                 new object[] { "a", "b", null, "x", null });
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(
                 listeners[1].AssertOneGetNewAndReset(),
                 fields,
@@ -82,7 +83,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
                 listeners[0].AssertOneGetNewAndReset(),
                 fields,
                 new object[] { "f1", "f2", null, "f4", null });
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(
                 listeners[1].AssertOneGetNewAndReset(),
                 fields,
@@ -95,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             env.SendEventObjectArray(new object[] { "XBASE", "X1", "X2", "XY" }, "SubBEvent");
             object[] values = { "XBASE", "X1", null, "X2", "XY" };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[2].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
             EPAssertionUtil.AssertProps(listeners[3].AssertOneGetNewAndReset(), fields, values);
             EPAssertionUtil.AssertProps(listeners[4].AssertOneGetNewAndReset(), fields, values);
@@ -103,19 +104,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.objectarray
             env.SendEventObjectArray(new object[] { "YBASE", "Y1" }, "Sub1Event");
             values = new object[] { "YBASE", "Y1", null, null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[1].AssertOneGetNewAndReset(), fields, values);
 
             env.SendEventObjectArray(new object[] { "YBASE", "Y2" }, "Sub2Event");
             values = new object[] { "YBASE", null, "Y2", null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(listeners[1].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
+            ClassicAssert.IsFalse(listeners[1].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
             EPAssertionUtil.AssertProps(listeners[2].AssertOneGetNewAndReset(), fields, values);
 
             env.SendEventObjectArray(new object[] { "ZBASE" }, "RootEvent");
             values = new object[] { "ZBASE", null, null, null, null };
             EPAssertionUtil.AssertProps(listeners[0].AssertOneGetNewAndReset(), fields, values);
-            Assert.IsFalse(
+            ClassicAssert.IsFalse(
                 listeners[1].IsInvoked || listeners[2].IsInvoked || listeners[3].IsInvoked || listeners[4].IsInvoked);
 
             // try property not available

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -83,7 +84,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             executor.AwaitTermination(TimeSpan.FromSeconds(30));
 
             for (var i = 0; i < numThreads; i++) {
-                Assert.IsTrue(future[i].GetValue(TimeSpan.FromSeconds(5)));
+                ClassicAssert.IsTrue(future[i].GetValue(TimeSpan.FromSeconds(5)));
             }
 
             // set time to a large value
@@ -96,9 +97,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             // assert new data
             for (var i = 0; i < numStmts; i++) {
                 var count = listeners[i].CountNew;
-                Assert.AreEqual(count, totalExpected);
+                ClassicAssert.AreEqual(count, totalExpected);
                 var countOld = listeners[i].CountNew;
-                Assert.AreEqual(countOld, totalExpected);
+                ClassicAssert.AreEqual(countOld, totalExpected);
             }
         }
     }

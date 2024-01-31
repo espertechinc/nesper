@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -87,11 +87,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_a"));
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_b"));
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_c"));
-                    Assert.AreEqual("IBM", theEvent.Get("symbol_d"));
-                    Assert.IsNull(theEvent.Get("symbol_e")); // should be empty as we are doing absolute XPath
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_a"));
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_b"));
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_c"));
+                    ClassicAssert.AreEqual("IBM", theEvent.Get("symbol_d"));
+                    ClassicAssert.IsNull(theEvent.Get("symbol_e")); // should be empty as we are doing absolute XPath
                 });
 
             env.UndeployAll();

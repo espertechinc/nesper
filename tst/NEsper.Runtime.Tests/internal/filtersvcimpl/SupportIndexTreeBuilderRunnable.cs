@@ -20,6 +20,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -90,7 +91,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     unmatchedEvent +
                     "  match=" +
                     matches[0].GetHashCode());
-                Assert.IsFalse(true);
+                ClassicAssert.IsFalse(true);
             }
 
             // Fire a match
@@ -105,7 +106,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
                     matches.Count +
                     "  bean=" +
                     matchedEvent);
-                Assert.IsFalse(true);
+                ClassicAssert.IsFalse(true);
             }
 
             // Remove the same expression again

@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -59,14 +60,14 @@ namespace com.espertech.esper.regressionlib.support.subscriber
         {
             AssertStmtMultipleReceived(stmt, 1 + (expectedRStream == null ? 0 : 1));
 
-            Assert.AreEqual(1, indicateIStream.Count);
+            ClassicAssert.AreEqual(1, indicateIStream.Count);
             EPAssertionUtil.AssertPropsMap(indicateIStream[0], fields, expectedIStream);
 
             if (expectedRStream == null) {
-                Assert.IsTrue(indicateRStream.IsEmpty());
+                ClassicAssert.IsTrue(indicateRStream.IsEmpty());
             }
             else {
-                Assert.AreEqual(1, indicateRStream.Count);
+                ClassicAssert.AreEqual(1, indicateRStream.Count);
                 EPAssertionUtil.AssertPropsMap(indicateRStream[0], fields, expectedRStream);
             }
 

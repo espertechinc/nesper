@@ -10,6 +10,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -29,10 +30,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsTrue(listener.IsInvoked);
+                    ClassicAssert.IsTrue(listener.IsInvoked);
                     var theEvent = listener.GetAndResetLastNewData()[0];
-                    Assert.AreEqual("1", theEvent.Get("A"));
-                    Assert.AreEqual("1", theEvent.Get("B"));
+                    ClassicAssert.AreEqual("1", theEvent.Get("A"));
+                    ClassicAssert.AreEqual("1", theEvent.Get("B"));
                 });
 
             env.UndeployAll();

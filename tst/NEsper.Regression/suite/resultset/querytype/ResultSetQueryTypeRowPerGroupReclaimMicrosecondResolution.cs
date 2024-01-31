@@ -12,6 +12,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             EPStatement stmt,
             long count)
         {
-            Assert.AreEqual(count, EPAssertionUtil.EnumeratorCount(stmt.GetEnumerator()));
+            ClassicAssert.AreEqual(count, EPAssertionUtil.EnumeratorCount(stmt.GetEnumerator()));
         }
     }
 } // end of namespace

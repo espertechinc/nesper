@@ -11,6 +11,7 @@ using System.Text;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 // assertEquals
 
@@ -52,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 "s0",
                 listener => {
                     var received = listener.LastNewData;
-                    Assert.AreEqual(10, received.Length);
+                    ClassicAssert.AreEqual(10, received.Length);
                     listener.Reset();
                 });
 
@@ -66,7 +67,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.database
                 "s0",
                 listener => {
                     var received = listener.LastNewData;
-                    Assert.AreEqual(10, received.Length);
+                    ClassicAssert.AreEqual(10, received.Length);
                     listener.Reset();
                 });
 

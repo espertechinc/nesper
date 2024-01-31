@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -89,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         "Unique index violation, index 'IDXNAME' is a unique index and key 'b' already exists".Replace(
                             "IDXNAME",
                             indexName);
-                    Assert.AreEqual(expected, ex.Message);
+                    ClassicAssert.AreEqual(expected, ex.Message);
                 }
 
                 env.AssertPropsPerRowIterator("infra", fields, Array.Empty<object[]>());
@@ -142,7 +143,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 // test SODA
                 query = "insert into MyInfra values (\"c\", 3), (\"d\", 4)";
                 var model = env.EplToModel(query);
-                Assert.AreEqual(query, model.ToEPL());
+                ClassicAssert.AreEqual(query, model.ToEPL());
                 env.CompileExecuteFAF(model, path);
                 env.AssertPropsPerRowIterator(
                     "infra",

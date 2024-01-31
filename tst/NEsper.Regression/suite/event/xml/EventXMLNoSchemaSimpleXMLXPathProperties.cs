@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportXML;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
@@ -106,7 +106,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertThat(
                 () => {
                     var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
-                    Assert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
+                    ClassicAssert.AreEqual(EventTypeApplicationType.XML, type.Metadata.ApplicationType);
 
                     SupportEventPropUtil.AssertPropsEquals(
                         type.PropertyDescriptors.ToArray(),
@@ -147,17 +147,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.NotNull(listener.LastNewData);
+                    ClassicAssert.NotNull(listener.LastNewData);
                     var theEvent = listener.LastNewData[0];
 
-                    Assert.AreEqual(element1, theEvent.Get("xpathElement1"));
-                    Assert.AreEqual(2.0, theEvent.Get("xpathCountE21"));
-                    Assert.AreEqual("VAL3", theEvent.Get("xpathAttrString"));
-                    Assert.AreEqual(5d, theEvent.Get("xpathAttrNum"));
-                    Assert.AreEqual(true, theEvent.Get("xpathAttrBool"));
-                    Assert.AreEqual(5L, theEvent.Get("stringCastLong"));
-                    Assert.AreEqual(5d, theEvent.Get("stringCastDouble"));
-                    Assert.AreEqual(5, theEvent.Get("numCastInt"));
+                    ClassicAssert.AreEqual(element1, theEvent.Get("xpathElement1"));
+                    ClassicAssert.AreEqual(2.0, theEvent.Get("xpathCountE21"));
+                    ClassicAssert.AreEqual("VAL3", theEvent.Get("xpathAttrString"));
+                    ClassicAssert.AreEqual(5d, theEvent.Get("xpathAttrNum"));
+                    ClassicAssert.AreEqual(true, theEvent.Get("xpathAttrBool"));
+                    ClassicAssert.AreEqual(5L, theEvent.Get("stringCastLong"));
+                    ClassicAssert.AreEqual(5d, theEvent.Get("stringCastDouble"));
+                    ClassicAssert.AreEqual(5, theEvent.Get("numCastInt"));
                 });
         }
 

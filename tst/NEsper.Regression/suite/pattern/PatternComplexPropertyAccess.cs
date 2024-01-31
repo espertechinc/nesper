@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -147,14 +148,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 object theEventOne = new SupportBeanComplexProps(new int[] { 3, 4 });
                 env.SendEventBean(theEventOne);
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEventOne, @event.Get("a")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEventOne, @event.Get("a")));
 
                 env.SendEventBean(new SupportBeanComplexProps(new int[] { 6 }));
                 env.AssertListenerNotInvoked("s0");
 
                 object theEventTwo = new SupportBeanComplexProps(new int[] { 3 });
                 env.SendEventBean(theEventTwo);
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEventTwo, @event.Get("a")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEventTwo, @event.Get("a")));
 
                 env.UndeployAll();
             }
@@ -191,7 +192,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                                   " -> b=" +
                                   type +
                                   "(Indexed[0]=a.Indexed[0])]";
-                Assert.AreEqual(patternText, model.ToEPL());
+                ClassicAssert.AreEqual(patternText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -227,8 +228,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             env.AssertEventNew(
                 "s0",
                 @event => {
-                    Assert.AreSame(eventOne, @event.Get("a"));
-                    Assert.AreSame(eventTwo, @event.Get("b"));
+                    ClassicAssert.AreSame(eventOne, @event.Get("a"));
+                    ClassicAssert.AreSame(eventTwo, @event.Get("b"));
                 });
         }
     }

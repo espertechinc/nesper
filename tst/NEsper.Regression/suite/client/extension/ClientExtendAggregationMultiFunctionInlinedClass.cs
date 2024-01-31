@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
     public class ClientExtendAggregationMultiFunctionInlinedClass
@@ -387,14 +389,14 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                         var eplFAF = "select nameTrie as c0 from TableWithTrie";
                         var result = env.CompileExecuteFAF(eplFAF, path);
                         var trie = (SupportTrie<string, IList<object>>)result.Array[0].Get("c0");
-                        Assert.AreEqual(3, trie.PrefixMap("And").Count);
+                        ClassicAssert.AreEqual(3, trie.PrefixMap("And").Count);
                     });
 
                 env.AssertIterator(
                     "table",
                     iterator => {
                         var trie = (SupportTrie<string, IList<object>>)env.GetEnumerator("table").Advance().Get("nameTrie");
-                        Assert.AreEqual(3, trie.PrefixMap("And").Count);
+                        ClassicAssert.AreEqual(3, trie.PrefixMap("And").Count);
                     });
 
                 env.UndeployAll();
@@ -409,7 +411,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     @event => {
                         //var received = (IDictionary<string, IList<IDictionary<string, object>>>)@event.Get("c0");
                         var received = (IDictionary<string, IList<object>>)@event.Get("c0");
-                        Assert.AreEqual(expected.Count, received.Count);
+                        ClassicAssert.AreEqual(expected.Count, received.Count);
                         foreach (var expectedEntry in expected) {
                             var eventsExpected = (IList<IDictionary<string, object>>)expectedEntry.Value;
                             var eventsReceived = received.Get(expectedEntry.Key);
@@ -449,7 +451,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "table",
                     iterator => {
                         var trie = (SupportTrie<string, IList<object>>)iterator.Advance().Get("nameTrie");
-                        Assert.AreEqual(3, trie.PrefixMap("And").Count);
+                        ClassicAssert.AreEqual(3, trie.PrefixMap("And").Count);
                     });
 
                 // assert dependencies

@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.bean
 {
@@ -44,8 +45,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.bean
             env.AssertEventNew(
                 "s0",
                 result => {
-                    Assert.AreEqual("A", result.Get(propOneName));
-                    Assert.AreEqual(10, result.Get(propTwoName));
+                    ClassicAssert.AreEqual("A", result.Get(propOneName));
+                    ClassicAssert.AreEqual(10, result.Get(propTwoName));
                 });
 
             env.UndeployAll();

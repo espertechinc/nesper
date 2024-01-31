@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -126,10 +127,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 captive.Emitters.Get("e1").Submit(new SupportBean("x", 10));
                 captive.Emitters.Get("e1").Submit(new SupportBean("y", 11));
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     10,
                     ((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[0].Current[0]).IntPrimitive);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     11,
                     ((SupportBean)DefaultSupportCaptureOpStatic<object>.Instances[1].Current[0]).IntPrimitive);
                 DefaultSupportCaptureOpStatic<object>.Instances.Clear();
@@ -175,14 +176,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             options.DataFlowInstanceId = "myinstanceid";
             options.WithOperatorProvider(new DefaultSupportGraphOpProvider(source, capture));
             var instance = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MySelect", options);
-            Assert.AreEqual("myuserobject", instance.UserObject);
-            Assert.AreEqual("myinstanceid", instance.InstanceId);
+            ClassicAssert.AreEqual("myuserobject", instance.UserObject);
+            ClassicAssert.AreEqual("myinstanceid", instance.InstanceId);
 
             instance.Run();
 
             var result = capture.GetAndReset()[0].ToArray();
-            Assert.AreEqual(1, result.Length);
-            Assert.AreSame(events[1], result[0]);
+            ClassicAssert.AreEqual(1, result.Length);
+            ClassicAssert.AreSame(events[1], result[0]);
 
             instance.Cancel();
 

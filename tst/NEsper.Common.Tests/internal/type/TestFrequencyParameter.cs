@@ -12,6 +12,7 @@ using System.Collections.Generic;
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -36,10 +37,10 @@ namespace com.espertech.esper.common.@internal.type
         public void TestIsWildcard()
         {
             FrequencyParameter freq = new FrequencyParameter(1);
-            Assert.IsTrue(freq.IsWildcard(1, 10));
+            ClassicAssert.IsTrue(freq.IsWildcard(1, 10));
 
             freq = new FrequencyParameter(2);
-            Assert.IsFalse(freq.IsWildcard(1, 20));
+            ClassicAssert.IsFalse(freq.IsWildcard(1, 20));
         }
 
         [Test]
@@ -66,23 +67,23 @@ namespace com.espertech.esper.common.@internal.type
         public void TestContainsPoint()
         {
             FrequencyParameter freqThree = new FrequencyParameter(3);
-            Assert.IsTrue(freqThree.ContainsPoint(0));
-            Assert.IsTrue(freqThree.ContainsPoint(3));
-            Assert.IsTrue(freqThree.ContainsPoint(6));
-            Assert.IsFalse(freqThree.ContainsPoint(1));
-            Assert.IsFalse(freqThree.ContainsPoint(2));
-            Assert.IsFalse(freqThree.ContainsPoint(4));
+            ClassicAssert.IsTrue(freqThree.ContainsPoint(0));
+            ClassicAssert.IsTrue(freqThree.ContainsPoint(3));
+            ClassicAssert.IsTrue(freqThree.ContainsPoint(6));
+            ClassicAssert.IsFalse(freqThree.ContainsPoint(1));
+            ClassicAssert.IsFalse(freqThree.ContainsPoint(2));
+            ClassicAssert.IsFalse(freqThree.ContainsPoint(4));
 
             FrequencyParameter freqOne = new FrequencyParameter(1);
-            Assert.IsTrue(freqOne.ContainsPoint(1));
-            Assert.IsTrue(freqOne.ContainsPoint(2));
+            ClassicAssert.IsTrue(freqOne.ContainsPoint(1));
+            ClassicAssert.IsTrue(freqOne.ContainsPoint(2));
         }
 
         [Test]
         public void TestFormat()
         {
             FrequencyParameter freqThree = new FrequencyParameter(3);
-            Assert.AreEqual("*/3", freqThree.Formatted());
+            ClassicAssert.AreEqual("*/3", freqThree.Formatted());
         }
     }
 } // end of namespace

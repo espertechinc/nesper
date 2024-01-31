@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
 {
@@ -386,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                         .ResourcesUnpartitioned;
                     var outputProcessView = (OutputProcessView)resources.FinalView;
                     try {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             numExpectedChangeset,
                             outputProcessView.NumChangesetRows,
                             "enableOutputLimitOpt=" + enableOutputLimitOpt);

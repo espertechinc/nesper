@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.expreval;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -261,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean_S0"));
                 model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
                 env.Deploy(compiled).AddListener("s0").Milestone(0);
@@ -283,7 +284,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 var model = env.EplToModel(epl);
                 model = SerializableObjectCopier.GetInstance(env.Container).Copy(model);
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
                 env.Deploy(compiled).AddListener("s0").Milestone(0);
@@ -408,7 +409,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     foreach (var @object in objects) {
                         var key = (string)@object[0];
                         var result = @object[1];
-                        Assert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
+                        ClassicAssert.AreEqual(result, theEvent.Get(key), "key=" + key + " result=" + result);
                     }
                 });
         }

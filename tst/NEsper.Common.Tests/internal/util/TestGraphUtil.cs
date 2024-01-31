@@ -13,6 +13,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.util
             catch (GraphCircularDependencyException ex)
             {
                 // expected
-                Assert.AreEqual(msg, ex.Message);
+                ClassicAssert.AreEqual(msg, ex.Message);
             }
         }
 
@@ -134,22 +135,22 @@ namespace com.espertech.esper.common.@internal.util
                 });
 
             var merged = GraphUtil.MergeNestableMap(mapOne, mapTwo);
-            Assert.AreEqual(1, merged.Get("base1"));
-            Assert.AreEqual(5, merged.Get("base2"));
-            Assert.AreEqual(null, merged.Get("base4"));
-            Assert.AreEqual(null, merged.Get("base5"));
-            Assert.AreEqual(5, merged.Count);
+            ClassicAssert.AreEqual(1, merged.Get("base1"));
+            ClassicAssert.AreEqual(5, merged.Get("base2"));
+            ClassicAssert.AreEqual(null, merged.Get("base4"));
+            ClassicAssert.AreEqual(null, merged.Get("base5"));
+            ClassicAssert.AreEqual(5, merged.Count);
             var nested = (IDictionary<string, object>) merged.Get("base3");
-            Assert.AreEqual(2, nested.Count);
-            Assert.AreEqual(9, nested.Get("n1"));
-            Assert.AreEqual(10, nested.Get("n2"));
+            ClassicAssert.AreEqual(2, nested.Count);
+            ClassicAssert.AreEqual(9, nested.Get("n1"));
+            ClassicAssert.AreEqual(10, nested.Get("n2"));
         }
 
         [Test]
         public void TestSimpleTopDownOrder()
         {
             IDictionary<string, ICollection<string>> graph = new LinkedHashMap<string, ICollection<string>>();
-            Assert.AreEqual(0, GraphUtil.GetTopDownOrder(graph).Count);
+            ClassicAssert.AreEqual(0, GraphUtil.GetTopDownOrder(graph).Count);
 
             Add(graph, "1_1", "1");
             EPAssertionUtil.AssertEqualsExactOrder(GraphUtil.GetTopDownOrder(graph).ToArray(), new [] { "1","1_1" });

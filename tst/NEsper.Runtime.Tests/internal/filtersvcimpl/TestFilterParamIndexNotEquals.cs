@@ -17,6 +17,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -48,8 +49,8 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void TestBoolean()
         {
             FilterParamIndexNotEquals index = new FilterParamIndexNotEquals(MakeLookupable("BoolPrimitive"), lockFactory.ObtainNew());
-            Assert.AreEqual(FilterOperator.NOT_EQUAL, index.FilterOperator);
-            Assert.AreEqual("BoolPrimitive", index.Lookupable.Expression);
+            ClassicAssert.AreEqual(FilterOperator.NOT_EQUAL, index.FilterOperator);
+            ClassicAssert.AreEqual("BoolPrimitive", index.Lookupable.Expression);
 
             index.Put(false, testEvaluator);
 
@@ -75,14 +76,14 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         {
             testBean.BoolPrimitive = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private void VerifyString(FilterParamIndexBase index, string testValue, int numExpected)
         {
             testBean.TheString = testValue;
             index.MatchEvent(testEventBean, matchesList, null);
-            Assert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
+            ClassicAssert.AreEqual(numExpected, testEvaluator.GetAndResetCountInvoked());
         }
 
         private ExprFilterSpecLookupable MakeLookupable(string fieldName)

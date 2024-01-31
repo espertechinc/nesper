@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternGuardTimerWithin
@@ -112,7 +114,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     10.001,
                     Patterns.Filter(Filter.Create("SupportBean_B", filter), "b"));
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("B3", "b", events.GetEvent("B3"));
                 testCaseList.AddTest(testCase);
@@ -297,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
             {
                 // External clocking
                 SendTimer(0, env);
-                env.AssertRuntime(runtime => Assert.AreEqual(0, runtime.EventService.CurrentTime));
+                env.AssertRuntime(runtime => ClassicAssert.AreEqual(0, runtime.EventService.CurrentTime));
 
                 // Set up a timer:within
                 env.CompileDeploy(
@@ -325,7 +327,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 TryAssertion(env);
 
                 var model = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 env.UndeployAll();
             }
@@ -481,7 +483,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             long time = 24 * 60 * 60 * 1000 + 2 * 60 * 60 * 1000 + 3 * 60 * 1000 + 4 * 1000 + 5;
             SendTimer(time - 1, env);
-            env.AssertRuntime(runtime => Assert.AreEqual(time - 1, runtime.EventService.CurrentTime));
+            env.AssertRuntime(runtime => ClassicAssert.AreEqual(time - 1, runtime.EventService.CurrentTime));
             SendEvent(env);
             env.AssertListener("s0", _ => _.AssertOneGetNewAndReset());
 

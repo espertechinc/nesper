@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 
@@ -338,7 +338,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     statement => {
                         var typeSelectAll = statement.EventType;
                         AssertEventTypeDefault(typeSelectAll, true);
-                        Assert.AreEqual(typeof(object), statement.EventType.UnderlyingType);
+                        ClassicAssert.AreEqual(typeof(object), statement.EventType.UnderlyingType);
                     });
 
                 env.CompileDeploy("insert into MyVariantTwoTypedSB select * from SupportBean");
@@ -347,11 +347,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 // try wildcard
                 object eventOne = new SupportBean("E0", -1);
                 env.SendEventBean(eventOne);
-                env.AssertEventNew("s0", @event => Assert.AreSame(eventOne, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(eventOne, @event.Underlying));
 
                 object eventTwo = new SupportBeanVariantStream("E1");
                 env.SendEventBean(eventTwo);
-                env.AssertEventNew("s0", @event => Assert.AreSame(eventTwo, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(eventTwo, @event.Underlying));
 
                 env.UndeployModuleContaining("s0");
 
@@ -418,15 +418,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                         var expected = new[] { "P0", "P1", "P2", "P3", "P4", "P5", "Indexed", "Mapped", "Inneritem" };
                         var propertyNames = eventType.PropertyNames;
                         EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
-                        Assert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
-                        Assert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("P1"));
-                        Assert.AreEqual(typeof(LinkedList<object>), eventType.GetPropertyType("P2"));
-                        Assert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("P3"));
-                        Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P4"));
-                        Assert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P5"));
-                        Assert.AreEqual(typeof(int[]), eventType.GetPropertyType("Indexed"));
-                        Assert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("Mapped"));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(typeof(ISupportBaseAB), eventType.GetPropertyType("P0"));
+                        ClassicAssert.AreEqual(typeof(ISupportAImplSuperG), eventType.GetPropertyType("P1"));
+                        ClassicAssert.AreEqual(typeof(LinkedList<object>), eventType.GetPropertyType("P2"));
+                        ClassicAssert.AreEqual(typeof(IList<object>), eventType.GetPropertyType("P3"));
+                        ClassicAssert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P4"));
+                        ClassicAssert.AreEqual(typeof(ICollection<object>), eventType.GetPropertyType("P5"));
+                        ClassicAssert.AreEqual(typeof(int[]), eventType.GetPropertyType("Indexed"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, string>), eventType.GetPropertyType("Mapped"));
+                        ClassicAssert.AreEqual(
                             typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
                             eventType.GetPropertyType("Inneritem"));
                     });
@@ -440,13 +440,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P6"));
-                        Assert.AreEqual(typeof(int?), eventType.GetPropertyType("P7"));
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("P8"));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("P6"));
+                        ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("P7"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("P8"));
+                        ClassicAssert.AreEqual(
                             typeof(SupportBeanVariantOne.SupportBeanVariantOneInner),
                             eventType.GetPropertyType("P9"));
-                        Assert.AreEqual(typeof(string), eventType.GetPropertyType("P10"));
+                        ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("P10"));
                     });
 
                 var ev1 = new SupportBeanVariantOne();
@@ -483,13 +483,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
 
                 object eventOne = new SupportBean("E1", -1);
                 env.SendEventBean(eventOne);
-                env.AssertEventNew("window", @event => Assert.AreSame(eventOne, @event.Underlying));
+                env.AssertEventNew("window", @event => ClassicAssert.AreSame(eventOne, @event.Underlying));
 
                 env.Milestone(0);
 
                 object eventTwo = new SupportBeanVariantStream("E2");
                 env.SendEventBean(eventTwo);
-                env.AssertEventNew("window", @event => Assert.AreSame(eventTwo, @event.Underlying));
+                env.AssertEventNew("window", @event => ClassicAssert.AreSame(eventTwo, @event.Underlying));
 
                 env.Milestone(1);
 
@@ -498,8 +498,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.AssertListener(
                     "window",
                     listener => {
-                        Assert.AreEqual(eventThree, listener.LastNewData[0].Underlying);
-                        Assert.AreEqual(eventTwo, listener.LastOldData[0].Underlying);
+                        ClassicAssert.AreEqual(eventThree, listener.LastNewData[0].Underlying);
+                        ClassicAssert.AreEqual(eventTwo, listener.LastOldData[0].Underlying);
                         listener.Reset();
                     });
 
@@ -510,8 +510,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.AssertListener(
                     "window",
                     listener => {
-                        Assert.AreEqual(eventFour, listener.LastNewData[0].Underlying);
-                        Assert.AreEqual(eventOne, listener.LastOldData[0].Underlying);
+                        ClassicAssert.AreEqual(eventFour, listener.LastNewData[0].Underlying);
+                        ClassicAssert.AreEqual(eventOne, listener.LastOldData[0].Underlying);
                         listener.Reset();
                     });
 
@@ -600,9 +600,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     statement => {
                         // assert type metadata
                         var type = statement.EventType;
-                        Assert.AreEqual(EventTypeApplicationType.VARIANT, type.Metadata.ApplicationType);
-                        Assert.AreEqual("VarStreamAny", type.Metadata.Name);
-                        Assert.AreEqual(EventTypeTypeClass.VARIANT, type.Metadata.TypeClass);
+                        ClassicAssert.AreEqual(EventTypeApplicationType.VARIANT, type.Metadata.ApplicationType);
+                        ClassicAssert.AreEqual("VarStreamAny", type.Metadata.Name);
+                        ClassicAssert.AreEqual(EventTypeTypeClass.VARIANT, type.Metadata.TypeClass);
                     });
 
                 env.UndeployAll();
@@ -619,15 +619,15 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.CompileDeploy(
                     "insert into VarStreamAny select Symbol as TheString, Volume as IntPrimitive, Feed as Id from SupportMarketDataBean");
                 env.CompileDeploy("@name('s0') select * from VarStreamAny").AddListener("s0");
-                env.AssertStatement("s0", statement => Assert.AreEqual(0, statement.EventType.PropertyNames.Length));
+                env.AssertStatement("s0", statement => ClassicAssert.AreEqual(0, statement.EventType.PropertyNames.Length));
 
                 object eventOne = new SupportBean("E0", -1);
                 env.SendEventBean(eventOne);
-                env.AssertEventNew("s0", @event => Assert.AreSame(eventOne, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(eventOne, @event.Underlying));
 
                 object eventTwo = new SupportBean_A("E1");
                 env.SendEventBean(eventTwo);
-                env.AssertEventNew("s0", @event => Assert.AreSame(eventTwo, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(eventTwo, @event.Underlying));
 
                 env.UndeployModuleContaining("s0");
 
@@ -637,9 +637,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                     "s0",
                     statement => {
                         var eventType = statement.EventType;
-                        Assert.AreEqual(typeof(object), eventType.GetPropertyType("TheString"));
-                        Assert.AreEqual(typeof(object), eventType.GetPropertyType("Id"));
-                        Assert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
+                        ClassicAssert.AreEqual(typeof(object), eventType.GetPropertyType("TheString"));
+                        ClassicAssert.AreEqual(typeof(object), eventType.GetPropertyType("Id"));
+                        ClassicAssert.AreEqual(typeof(object), eventType.GetPropertyType("IntPrimitive"));
                     });
 
                 var fields = "TheString,Id,IntPrimitive".SplitCsv();
@@ -701,8 +701,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.AreEqual("test", @event.Get("eventConfigId"));
-                        Assert.AreEqual(1, @event.Get("IntPrimitive"));
+                        ClassicAssert.AreEqual("test", @event.Get("eventConfigId"));
+                        ClassicAssert.AreEqual(1, @event.Get("IntPrimitive"));
                     });
 
                 env.UndeployAll();
@@ -716,16 +716,16 @@ namespace com.espertech.esper.regressionlib.suite.@event.variant
             
             EPAssertionUtil.AssertEqualsAnyOrder(expected, propertyNames);
 
-            Assert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
-            Assert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
-            Assert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
-            Assert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
-            Assert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
-            Assert.AreEqual(typeof(SupportEnum?), eventType.GetPropertyType("EnumValue"));
+            ClassicAssert.AreEqual(typeof(string), eventType.GetPropertyType("TheString"));
+            ClassicAssert.AreEqual(typeof(bool?), eventType.GetPropertyType("BoolBoxed"));
+            ClassicAssert.AreEqual(typeof(int?), eventType.GetPropertyType("IntPrimitive"));
+            ClassicAssert.AreEqual(typeof(long?), eventType.GetPropertyType("LongPrimitive"));
+            ClassicAssert.AreEqual(typeof(double?), eventType.GetPropertyType("DoublePrimitive"));
+            ClassicAssert.AreEqual(typeof(SupportEnum?), eventType.GetPropertyType("EnumValue"));
             
             foreach (var expectedProp in expected) {
-                Assert.IsNotNull(eventType.GetGetter(expectedProp));
-                Assert.IsTrue(eventType.IsProperty(expectedProp));
+                ClassicAssert.IsNotNull(eventType.GetGetter(expectedProp));
+                ClassicAssert.IsTrue(eventType.IsProperty(expectedProp));
             }
 
             SupportEventPropUtil.AssertPropsEquals(

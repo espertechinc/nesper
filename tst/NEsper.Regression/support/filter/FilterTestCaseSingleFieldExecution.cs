@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.filter
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.regressionlib.support.filter
             for (var i = 0; i < testCase.Values.Length; i++) {
                 // Console.WriteLine($"Run: {i} :> {testCase.FilterExpr} :> field {testCase.FieldName}={testCase.Values[i]}");
                 SendBean(env, testCase.FieldName, testCase.Values[i]);
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     env.Listener(stmtName).IsInvokedAndReset(),
                     testCase.IsInvoked[i],
                     "Listener invocation unexpected for " +
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 
             for (var i = 0; i < testCase.Values.Length; i++) {
                 SendBean(env, testCase.FieldName, testCase.Values[i]);
-                Assert.IsFalse(initialListener.IsInvoked);
+                ClassicAssert.IsFalse(initialListener.IsInvoked);
             }
         }
 

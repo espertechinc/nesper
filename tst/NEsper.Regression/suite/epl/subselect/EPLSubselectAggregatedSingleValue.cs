@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
@@ -708,7 +709,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertListenerNotInvoked("s0");
 
                 var theEvent = SendEventMD(env, "IBM", 3);
-                env.AssertEventNew("s0", @event => Assert.AreEqual(theEvent, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreEqual(theEvent, @event.Underlying));
 
                 env.UndeployAll();
             }

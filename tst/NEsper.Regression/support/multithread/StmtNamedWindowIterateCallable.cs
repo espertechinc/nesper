@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.multithread
 {
@@ -69,7 +70,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                     for (var i = 0; i < received.Length; i++) {
                         if (received[i].Get("TheString").Equals(threadKey)) {
                             var sum = received[i].Get("sumLong").AsInt64();
-                            Assert.AreEqual(total, sum);
+                            ClassicAssert.AreEqual(total, sum);
                         }
                     }
                 }

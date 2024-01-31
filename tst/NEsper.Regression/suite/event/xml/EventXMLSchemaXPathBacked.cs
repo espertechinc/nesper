@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -130,17 +131,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsNotNull(listener.LastNewData);
+                    ClassicAssert.IsNotNull(listener.LastNewData);
                     var theEvent = listener.LastNewData[0];
 
-                    Assert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(0), theEvent.Get("nodeProp"));
-                    Assert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
-                    Assert.AreEqual(true, theEvent.Get("nested2Prop"));
-                    Assert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
-                    Assert.AreEqual(5, theEvent.Get("indexedProp"));
-                    Assert.AreEqual(3.0, theEvent.Get("customProp"));
-                    Assert.AreEqual(true, theEvent.Get("attrOneProp"));
-                    Assert.AreEqual("c", theEvent.Get("attrTwoProp"));
+                    ClassicAssert.AreSame(eventDoc.DocumentElement.ChildNodes.Item(0), theEvent.Get("nodeProp"));
+                    ClassicAssert.AreEqual("SAMPLE_V6", theEvent.Get("nested1Prop"));
+                    ClassicAssert.AreEqual(true, theEvent.Get("nested2Prop"));
+                    ClassicAssert.AreEqual("SAMPLE_V8", theEvent.Get("complexProp"));
+                    ClassicAssert.AreEqual(5, theEvent.Get("indexedProp"));
+                    ClassicAssert.AreEqual(3.0, theEvent.Get("customProp"));
+                    ClassicAssert.AreEqual(true, theEvent.Get("attrOneProp"));
+                    ClassicAssert.AreEqual("c", theEvent.Get("attrTwoProp"));
                 });
 
             env.UndeployAll();

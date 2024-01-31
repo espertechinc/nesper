@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.compat.logging;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.schedule
 {
@@ -28,7 +29,7 @@ namespace com.espertech.esper.common.@internal.schedule
             try
             {
                 new ScheduleSpec(unitValues, null, null, null);
-                Assert.IsFalse(true);
+                ClassicAssert.IsFalse(true);
             }
             catch (ArgumentException ex)
             {
@@ -54,7 +55,7 @@ namespace com.espertech.esper.common.@internal.schedule
 
             // Construct spec, test that month was replaced with wildcards
             var spec = new ScheduleSpec(unitValues, null, null, null);
-            Assert.IsTrue(spec.UnitValues.Get(ScheduleUnit.MONTHS) == null);
+            ClassicAssert.IsTrue(spec.UnitValues.Get(ScheduleUnit.MONTHS) == null);
         }
 
         [Test]

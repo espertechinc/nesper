@@ -16,7 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
@@ -202,7 +202,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 env.CompileDeploy(epl);
                 env.SendEventBean(new SupportBeanCopyMethod("a", "b"));
                 env.SendEventBean(new SupportBean());
-                env.AssertIterator("window", enumerator => Assert.AreEqual("x", enumerator.Advance().Get("ValOne")));
+                env.AssertIterator("window", enumerator => ClassicAssert.AreEqual("x", enumerator.Advance().Get("ValOne")));
 
                 env.UndeployAll();
             }
@@ -253,9 +253,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var newevents = listener.LastNewData;
                         var oldevents = listener.LastOldData;
 
-                        Assert.AreEqual(1, newevents.Length);
+                        ClassicAssert.AreEqual(1, newevents.Length);
                         EPAssertionUtil.AssertProps(newevents[0], "IntPrimitive".SplitCsv(), new object[] { 300 });
-                        Assert.AreEqual(1, oldevents.Length);
+                        ClassicAssert.AreEqual(1, oldevents.Length);
                         oldevents = EPAssertionUtil.Sort(oldevents, "TheString");
                         EPAssertionUtil.AssertPropsPerRow(
                             oldevents,
@@ -291,9 +291,9 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                         var newevents = listener.LastNewData;
                         var oldevents = listener.LastOldData;
 
-                        Assert.AreEqual(1, newevents.Length);
+                        ClassicAssert.AreEqual(1, newevents.Length);
                         EPAssertionUtil.AssertProps(newevents[0], "IntPrimitive".SplitCsv(), new object[] { 300 });
-                        Assert.AreEqual(1, oldevents.Length);
+                        ClassicAssert.AreEqual(1, oldevents.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             oldevents,
                             "TheString,IntPrimitive".SplitCsv(),

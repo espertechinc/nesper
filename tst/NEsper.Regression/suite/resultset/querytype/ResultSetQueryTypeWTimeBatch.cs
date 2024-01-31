@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
@@ -111,7 +112,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], 45d);
                     });
 
@@ -123,11 +124,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], 20d);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(1, oldEvents.Length);
+                        ClassicAssert.AreEqual(1, oldEvents.Length);
                         AssertEvent(oldEvents[0], 45d);
                     });
 
@@ -157,7 +158,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], 45d);
                     });
 
@@ -169,11 +170,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], 20d);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(1, oldEvents.Length);
+                        ClassicAssert.AreEqual(1, oldEvents.Length);
                         AssertEvent(oldEvents[0], 45d);
                     });
 
@@ -200,7 +201,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(3, newEvents.Length);
+                        ClassicAssert.AreEqual(3, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", 45d);
                         AssertEvent(newEvents[1], "IBM", 45d);
                         AssertEvent(newEvents[2], "DELL", 45d);
@@ -214,11 +215,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], "IBM", 20d);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(3, oldEvents.Length);
+                        ClassicAssert.AreEqual(3, oldEvents.Length);
                         AssertEvent(oldEvents[0], "DELL", 20d);
                         AssertEvent(oldEvents[1], "IBM", 20d);
                         AssertEvent(oldEvents[2], "DELL", 20d);
@@ -250,7 +251,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(3, newEvents.Length);
+                        ClassicAssert.AreEqual(3, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", 45d);
                         AssertEvent(newEvents[1], "IBM", 45d);
                         AssertEvent(newEvents[2], "DELL", 45d);
@@ -264,11 +265,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], "IBM", 20d);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(3, oldEvents.Length);
+                        ClassicAssert.AreEqual(3, oldEvents.Length);
                         AssertEvent(oldEvents[0], "DELL", 20d);
                         AssertEvent(oldEvents[1], "IBM", 20d);
                         AssertEvent(oldEvents[2], "DELL", 20d);
@@ -297,7 +298,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual(2, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", 30d);
                         AssertEvent(newEvents[1], "IBM", 15d);
                     });
@@ -310,12 +311,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(2, newEvents.Length);
+                        ClassicAssert.AreEqual(2, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", null);
                         AssertEvent(newEvents[1], "IBM", 20d);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(2, oldEvents.Length);
+                        ClassicAssert.AreEqual(2, oldEvents.Length);
                         AssertEvent(oldEvents[0], "DELL", 30d);
                         AssertEvent(oldEvents[1], "IBM", 15d);
                     });
@@ -389,7 +390,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(3, newEvents.Length);
+                        ClassicAssert.AreEqual(3, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", 30d, 200L);
                         AssertEvent(newEvents[1], "IBM", 15d, 500L);
                         AssertEvent(newEvents[2], "DELL", 30d, 250L);
@@ -401,11 +402,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], "IBM", 20d, 600L);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(3, oldEvents.Length);
+                        ClassicAssert.AreEqual(3, oldEvents.Length);
                         AssertEvent(oldEvents[0], "DELL", null, 200L);
                         AssertEvent(oldEvents[1], "IBM", 20d, 500L);
                         AssertEvent(oldEvents[2], "DELL", null, 250L);
@@ -438,7 +439,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(3, newEvents.Length);
+                        ClassicAssert.AreEqual(3, newEvents.Length);
                         AssertEvent(newEvents[0], "DELL", 30d, 200L);
                         AssertEvent(newEvents[1], "IBM", 15d, 500L);
                         AssertEvent(newEvents[2], "DELL", 30d, 250L);
@@ -450,11 +451,11 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                     "s0",
                     listener => {
                         var newEvents = listener.LastNewData;
-                        Assert.AreEqual(1, newEvents.Length);
+                        ClassicAssert.AreEqual(1, newEvents.Length);
                         AssertEvent(newEvents[0], "IBM", 20d, 600L);
 
                         var oldEvents = listener.LastOldData;
-                        Assert.AreEqual(3, oldEvents.Length);
+                        ClassicAssert.AreEqual(3, oldEvents.Length);
                         AssertEvent(oldEvents[0], "DELL", null, 200L);
                         AssertEvent(oldEvents[1], "IBM", 20d, 500L);
                         AssertEvent(oldEvents[2], "DELL", null, 250L);
@@ -486,9 +487,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             double? sumPrice,
             long? volume)
         {
-            Assert.AreEqual(symbol, theEvent.Get("Symbol"));
-            Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
-            Assert.AreEqual(volume, theEvent.Get("Volume"));
+            ClassicAssert.AreEqual(symbol, theEvent.Get("Symbol"));
+            ClassicAssert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
+            ClassicAssert.AreEqual(volume, theEvent.Get("Volume"));
         }
 
         private static void AssertEvent(
@@ -496,15 +497,15 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             string symbol,
             double? sumPrice)
         {
-            Assert.AreEqual(symbol, theEvent.Get("Symbol"));
-            Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
+            ClassicAssert.AreEqual(symbol, theEvent.Get("Symbol"));
+            ClassicAssert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
         }
 
         private static void AssertEvent(
             EventBean theEvent,
             double? sumPrice)
         {
-            Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
+            ClassicAssert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
         }
 
         private static void SendTimer(

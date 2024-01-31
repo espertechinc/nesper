@@ -17,6 +17,8 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
     public class EventJsonDocSamples
@@ -90,8 +92,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     "s0",
                     @event => {
                         var person = (MyLocalPersonEvent)@event.Get("person");
-                        Assert.AreEqual("Joe", person.name);
-                        Assert.AreEqual(uuid, person.id);
+                        ClassicAssert.AreEqual("Joe", person.name);
+                        ClassicAssert.AreEqual(uuid, person.id);
                     });
 
                 env.UndeployAll();

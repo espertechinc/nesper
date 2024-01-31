@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.support.context;
 using com.espertech.esper.regressionlib.support.filter;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -117,7 +118,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             deploymentIdContext,
                             "CategoryContext");
                         EPAssertionUtil.AssertEqualsExactOrder(statementNames, "s0".SplitCsv());
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             1,
                             env.Runtime.ContextPartitionService.GetContextNestingLevel(
                                 deploymentIdContext,
@@ -126,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             deploymentIdContext,
                             "CategoryContext",
                             new ContextPartitionSelectorAll());
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             2,
                             env.Runtime.ContextPartitionService.GetContextPartitionCount(
                                 deploymentIdContext,
@@ -137,14 +138,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertStatement(
                     "context",
                     statement => {
-                        Assert.IsNull(statement.GetProperty(StatementProperty.CONTEXTNAME));
-                        Assert.IsNull(statement.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
+                        ClassicAssert.IsNull(statement.GetProperty(StatementProperty.CONTEXTNAME));
+                        ClassicAssert.IsNull(statement.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
                     });
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual("CategoryContext", statement.GetProperty(StatementProperty.CONTEXTNAME));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual("CategoryContext", statement.GetProperty(StatementProperty.CONTEXTNAME));
+                        ClassicAssert.AreEqual(
                             env.DeploymentId("s0"),
                             statement.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
                     });
@@ -235,7 +236,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             depIdCtx,
                             "CtxCategory",
                             ContextPartitionSelectorAll.INSTANCE);
-                        Assert.AreEqual(2, partitions.Identifiers.Count);
+                        ClassicAssert.AreEqual(2, partitions.Identifiers.Count);
                         var descs = partitions.Identifiers.Values.ToArray();
                         var first = (ContextPartitionIdentifierCategory)descs[0];
                         var second = (ContextPartitionIdentifierCategory)descs[1];
@@ -244,7 +245,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             new object[] { first.Label, second.Label });
 
                         var desc = partitionAdmin.GetIdentifier(depIdCtx, "CtxCategory", 0);
-                        Assert.AreEqual("cat1", ((ContextPartitionIdentifierCategory)desc).Label);
+                        ClassicAssert.AreEqual("cat1", ((ContextPartitionIdentifierCategory)desc).Label);
 
                         SupportContextPropUtil.AssertContextProps(
                             env,
@@ -271,8 +272,8 @@ namespace com.espertech.esper.regressionlib.suite.context
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual("Ctx600a", statement.GetProperty(StatementProperty.CONTEXTNAME));
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual("Ctx600a", statement.GetProperty(StatementProperty.CONTEXTNAME));
+                        ClassicAssert.AreEqual(
                             env.DeploymentId("ctx"),
                             statement.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
                     });
@@ -373,9 +374,9 @@ namespace com.espertech.esper.regressionlib.suite.context
                             statement.GetSafeEnumerator(filtered),
                             fields,
                             new object[][] { new object[] { 0, "grp1", "E3", -108 } });
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             statement.GetEnumerator(new SupportSelectorCategory((ISet<string>)null)).MoveNext());
-                        Assert.IsFalse(
+                        ClassicAssert.IsFalse(
                             statement.GetEnumerator(new SupportSelectorCategory(EmptySet<string>.Instance)).MoveNext());
                     });
 
@@ -386,7 +387,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                     "s0",
                     statement => {
                         var filtered = new MySelectorFilteredCategory(null);
-                        Assert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
+                        ClassicAssert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
                         EPAssertionUtil.AssertEqualsAnyOrder(
                             new object[] { "grp1", "grp2", "grp3" },
                             filtered.Categories);
@@ -396,7 +397,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             Assert.Fail();
                         }
                         catch (InvalidContextPartitionSelector ex) {
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 ex.Message.StartsWith(
                                     "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById, ContextPartitionSelectorCategory] interfaces but received com."),
                                 "message: " + ex.Message);
@@ -457,7 +458,7 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                         AgentInstanceAssertionUtil.AssertInstanceCounts(env, "s0", 3, null, null, null);
                     });
 
@@ -504,16 +505,16 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
-                        Assert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env));
+                        ClassicAssert.AreEqual(3, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
                     });
 
                 env.UndeployModuleContaining("s0");
 
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
-                        Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
+                        ClassicAssert.AreEqual(0, SupportFilterServiceHelper.GetFilterSvcCountApprox(env));
+                        ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env));
                     });
             }
         }
@@ -567,9 +568,9 @@ namespace com.espertech.esper.regressionlib.suite.context
             env.SendEventBean(new SupportBean("E1", 4));
             env.AssertPropsNew("s0", fields, new object[] { ctx, "cat1", 5 });
 
-            env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+            env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
             env.UndeployAll();
-            env.AssertThat(() => Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
+            env.AssertThat(() => ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
         }
 
         public class ContextCategoryDeclaredExpr : RegressionExecution

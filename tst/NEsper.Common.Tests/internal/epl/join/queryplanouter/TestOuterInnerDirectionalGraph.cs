@@ -11,6 +11,7 @@ using System;
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
 {
@@ -118,10 +119,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             TryInvalidGetInner(4);
             TryInvalidGetInner(-1);
 
-            Assert.IsNull(graph.GetInner(0));
+            ClassicAssert.IsNull(graph.GetInner(0));
 
             graph.Add(0, 1);
-            Assert.IsNull(graph.GetInner(1));
+            ClassicAssert.IsNull(graph.GetInner(1));
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 1 }, graph.GetInner(0));
             graph.Add(0, 3);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 1, 3 }, graph.GetInner(0));
@@ -138,10 +139,10 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
             TryInvalidGetOuter(4);
             TryInvalidGetOuter(-1);
 
-            Assert.IsNull(graph.GetOuter(0));
+            ClassicAssert.IsNull(graph.GetOuter(0));
 
             graph.Add(0, 1);
-            Assert.IsNull(graph.GetOuter(0));
+            ClassicAssert.IsNull(graph.GetOuter(0));
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 0 }, graph.GetOuter(1));
             graph.Add(0, 3);
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { 0 }, graph.GetOuter(3));
@@ -157,18 +158,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         public void TestIsInner()
         {
             graph.Add(0, 1);
-            Assert.IsTrue(graph.IsInner(0, 1));
-            Assert.IsFalse(graph.IsInner(1, 0));
-            Assert.IsFalse(graph.IsInner(2, 0));
-            Assert.IsFalse(graph.IsInner(0, 2));
+            ClassicAssert.IsTrue(graph.IsInner(0, 1));
+            ClassicAssert.IsFalse(graph.IsInner(1, 0));
+            ClassicAssert.IsFalse(graph.IsInner(2, 0));
+            ClassicAssert.IsFalse(graph.IsInner(0, 2));
 
             graph.Add(1, 0);
-            Assert.IsTrue(graph.IsInner(0, 1));
-            Assert.IsTrue(graph.IsInner(1, 0));
+            ClassicAssert.IsTrue(graph.IsInner(0, 1));
+            ClassicAssert.IsTrue(graph.IsInner(1, 0));
 
             graph.Add(2, 0);
-            Assert.IsTrue(graph.IsInner(2, 0));
-            Assert.IsFalse(graph.IsInner(0, 2));
+            ClassicAssert.IsTrue(graph.IsInner(2, 0));
+            ClassicAssert.IsFalse(graph.IsInner(0, 2));
 
             TryInvalidIsInner(4, 0);
             TryInvalidIsInner(0, 4);
@@ -181,18 +182,18 @@ namespace com.espertech.esper.common.@internal.epl.join.queryplanouter
         public void TestIsOuter()
         {
             graph.Add(0, 1);
-            Assert.IsTrue(graph.IsOuter(0, 1));
-            Assert.IsFalse(graph.IsOuter(1, 0));
-            Assert.IsFalse(graph.IsOuter(0, 2));
-            Assert.IsFalse(graph.IsOuter(2, 0));
+            ClassicAssert.IsTrue(graph.IsOuter(0, 1));
+            ClassicAssert.IsFalse(graph.IsOuter(1, 0));
+            ClassicAssert.IsFalse(graph.IsOuter(0, 2));
+            ClassicAssert.IsFalse(graph.IsOuter(2, 0));
 
             graph.Add(1, 0);
-            Assert.IsTrue(graph.IsOuter(1, 0));
-            Assert.IsTrue(graph.IsOuter(0, 1));
+            ClassicAssert.IsTrue(graph.IsOuter(1, 0));
+            ClassicAssert.IsTrue(graph.IsOuter(0, 1));
 
             graph.Add(2, 0);
-            Assert.IsTrue(graph.IsOuter(2, 0));
-            Assert.IsFalse(graph.IsOuter(0, 2));
+            ClassicAssert.IsTrue(graph.IsOuter(2, 0));
+            ClassicAssert.IsFalse(graph.IsOuter(0, 2));
 
             TryInvalidIsInner(4, 0);
             TryInvalidIsInner(0, 4);

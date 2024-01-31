@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -93,7 +94,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendEvent(env.Runtime, 0);
 
                 // Should have fired X times
-                Assert.AreEqual(1000, listener.Count);
+                ClassicAssert.AreEqual(1000, listener.Count);
 
                 env.UndeployAll();
             }
@@ -123,8 +124,8 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 SendEvent(env.Runtime, 2); // the 2 translates to number of new events routed
 
                 // Should have fired X times
-                Assert.AreEqual(9, listener.CountReceived);
-                Assert.AreEqual(8, listener.CountRouted);
+                ClassicAssert.AreEqual(9, listener.CountReceived);
+                ClassicAssert.AreEqual(8, listener.CountRouted);
 
                 //  Num    Received         Routes      Num
                 //  2             1           2         3
@@ -154,13 +155,13 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var timeListener = new SingleRouteUpdateListener(env.Runtime);
                 env.CompileDeploy(epl).Statement("s1").AddListener(timeListener);
 
-                Assert.AreEqual(0, timeListener.Count);
-                Assert.AreEqual(0, eventListener.Count);
+                ClassicAssert.AreEqual(0, timeListener.Count);
+                ClassicAssert.AreEqual(0, eventListener.Count);
 
                 env.AdvanceTime(10000);
 
-                Assert.AreEqual(1, timeListener.Count);
-                Assert.AreEqual(1000, eventListener.Count);
+                ClassicAssert.AreEqual(1, timeListener.Count);
+                ClassicAssert.AreEqual(1000, eventListener.Count);
 
                 env.UndeployAll();
             }

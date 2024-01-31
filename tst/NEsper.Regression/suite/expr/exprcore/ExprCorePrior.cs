@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
@@ -396,8 +396,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
                     });
 
                 SendTimer(env, 0);
@@ -463,8 +463,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     listener => {
                         var oldData = listener.LastOldData;
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(5, oldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(5, oldData.Length);
                         AssertEvent(oldData[0], "D7", "D5", 5d);
                         AssertEvent(oldData[1], "D8", "D6", 6d);
                         AssertEvent(oldData[2], "D9", "D7", 7d);
@@ -490,8 +490,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
                     });
 
                 SendMarketEvent(env, "D1", 1, 0);
@@ -553,7 +553,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     "s0",
                     listener => {
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(6, oldData.Length);
+                        ClassicAssert.AreEqual(6, oldData.Length);
                         AssertEvent(oldData[0], "D5", "D3", 2d);
                     });
 
@@ -575,8 +575,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
                     });
 
                 SendTimer(env, 0);
@@ -590,10 +590,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         AssertEvent(listener.LastNewData[0], "A", null, null);
                         AssertEvent(listener.LastNewData[1], "B", null, null);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -605,9 +605,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(1, listener.LastNewData.Length);
                         AssertEvent(listener.LastNewData[0], "C", null, 1d);
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         AssertEvent(listener.LastOldData[0], "A", null, null);
                         listener.Reset();
                     });
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(4, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(4, listener.LastNewData.Length);
                         AssertEvent(listener.LastNewData[0], "D", "A", 2d);
                         AssertEvent(listener.LastNewData[1], "E", "B", 3d);
                         AssertEvent(listener.LastNewData[2], "F", "C", 4d);
@@ -646,8 +646,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
                     });
 
                 SendMarketEvent(env, "A", 1);
@@ -821,8 +821,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("prior0Symbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("prior0Price"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("prior0Symbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("prior0Price"));
                     });
 
                 SendMarketEvent(env, "A", 1);
@@ -998,8 +998,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
-                        Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("priorSymbol"));
+                        ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("priorPrice"));
                     });
 
                 SendTimer(env, 0);
@@ -1014,10 +1014,10 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastNewData.Length);
                         AssertEvent(listener.LastNewData[0], "X1", null, null);
                         AssertEvent(listener.LastNewData[1], "X1", null, 1d);
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.IsNull(listener.LastOldData);
                         listener.Reset();
                     });
 
@@ -1030,7 +1030,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         AssertEvent(listener.LastNewData[0], "X1", "A", 2d);
                         AssertEvent(listener.LastNewData[1], "X1", "B", 11d);
                         AssertEvent(listener.LastNewData[2], "X1", "C1", 12d);
@@ -1061,7 +1061,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             env.AssertEqualsNew("s0", "result", e1);
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("result")));
+                statement => ClassicAssert.AreEqual(typeof(SupportBean_S0), statement.EventType.GetPropertyType("result")));
 
             env.UndeployAll();
             path.Clear();
@@ -1147,8 +1147,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(oldData);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.IsNull(oldData);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
                     AssertEvent(newData[0], currSymbol, priorSymbol, priorPrice);
 
@@ -1162,9 +1162,9 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string priorSymbol,
             double? priorPrice)
         {
-            Assert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
-            Assert.AreEqual(priorSymbol, eventBean.Get("priorSymbol"));
-            Assert.AreEqual(priorPrice, eventBean.Get("priorPrice"));
+            ClassicAssert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
+            ClassicAssert.AreEqual(priorSymbol, eventBean.Get("priorSymbol"));
+            ClassicAssert.AreEqual(priorPrice, eventBean.Get("priorPrice"));
         }
 
         private static void AssertNewEvents(
@@ -1185,8 +1185,8 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(oldData);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.IsNull(oldData);
+                    ClassicAssert.AreEqual(1, newData.Length);
                     AssertEventProps(
                         env,
                         newData[0],
@@ -1217,15 +1217,15 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             string prior3Symbol,
             double? prior3Price)
         {
-            Assert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
-            Assert.AreEqual(prior0Symbol, eventBean.Get("prior0Symbol"));
-            Assert.AreEqual(prior0Price, eventBean.Get("prior0Price"));
-            Assert.AreEqual(prior1Symbol, eventBean.Get("prior1Symbol"));
-            Assert.AreEqual(prior1Price, eventBean.Get("prior1Price"));
-            Assert.AreEqual(prior2Symbol, eventBean.Get("prior2Symbol"));
-            Assert.AreEqual(prior2Price, eventBean.Get("prior2Price"));
-            Assert.AreEqual(prior3Symbol, eventBean.Get("prior3Symbol"));
-            Assert.AreEqual(prior3Price, eventBean.Get("prior3Price"));
+            ClassicAssert.AreEqual(currSymbol, eventBean.Get("currSymbol"));
+            ClassicAssert.AreEqual(prior0Symbol, eventBean.Get("prior0Symbol"));
+            ClassicAssert.AreEqual(prior0Price, eventBean.Get("prior0Price"));
+            ClassicAssert.AreEqual(prior1Symbol, eventBean.Get("prior1Symbol"));
+            ClassicAssert.AreEqual(prior1Price, eventBean.Get("prior1Price"));
+            ClassicAssert.AreEqual(prior2Symbol, eventBean.Get("prior2Symbol"));
+            ClassicAssert.AreEqual(prior2Price, eventBean.Get("prior2Price"));
+            ClassicAssert.AreEqual(prior3Symbol, eventBean.Get("prior3Symbol"));
+            ClassicAssert.AreEqual(prior3Price, eventBean.Get("prior3Price"));
 
             env.ListenerReset("s0");
         }
@@ -1285,12 +1285,12 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.IsNull(newData);
-                    Assert.AreEqual(1, oldData.Length);
+                    ClassicAssert.IsNull(newData);
+                    ClassicAssert.AreEqual(1, oldData.Length);
 
-                    Assert.AreEqual(currSymbol, oldData[0].Get("currSymbol"));
-                    Assert.AreEqual(priorSymbol, oldData[0].Get("priorSymbol"));
-                    Assert.AreEqual(priorPrice, oldData[0].Get("priorPrice"));
+                    ClassicAssert.AreEqual(currSymbol, oldData[0].Get("currSymbol"));
+                    ClassicAssert.AreEqual(priorSymbol, oldData[0].Get("priorSymbol"));
+                    ClassicAssert.AreEqual(priorPrice, oldData[0].Get("priorPrice"));
 
                     listener.Reset();
                 });

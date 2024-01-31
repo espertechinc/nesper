@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.framework.RegressionFlag; // INVALIDITY
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N; // assertTrue
 
 // fail
@@ -54,15 +54,15 @@ namespace com.espertech.esper.regressionlib.suite.view
                     var theEvent = enumerator.Advance();
 
                     var exceptionText = GetSyntaxExceptionProperty("", theEvent);
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         exceptionText.StartsWith("Property named '' is not a valid property name for this type"));
 
                     exceptionText = GetSyntaxExceptionProperty("-", theEvent);
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         exceptionText.StartsWith("Property named '-' is not a valid property name for this type"));
 
                     exceptionText = GetSyntaxExceptionProperty("a[]", theEvent);
-                    Assert.IsTrue(
+                    ClassicAssert.IsTrue(
                         exceptionText.StartsWith("Property named 'a[]' is not a valid property name for this type"));
                 });
 

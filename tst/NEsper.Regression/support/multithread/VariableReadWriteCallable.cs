@@ -19,7 +19,7 @@ using com.espertech.esper.runtime.client;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.support.multithread
@@ -71,7 +71,7 @@ namespace com.espertech.esper.regressionlib.support.multithread
                         new SupportBean_A(Convert.ToString(threadNum)),
                         nameof(SupportBean_A));
                     var received = selectListener.AssertOneGetNewAndReset();
-                    Assert.AreEqual(received.Get("var1"), received.Get("var2"));
+                    ClassicAssert.AreEqual(received.Get("var1"), received.Get("var2"));
                 }
             }
             catch (AssertionException ex) {

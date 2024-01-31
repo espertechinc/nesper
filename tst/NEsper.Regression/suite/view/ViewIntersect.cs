@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.view
 {
@@ -706,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         object[] result =
                             { listener.LastOldData[0].Get("TheString"), listener.LastOldData[1].Get("TheString") };
                         EPAssertionUtil.AssertEqualsAnyOrder(result, new string[] { "E5", "E6" });
@@ -987,7 +988,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsTrue(listener.IsInvoked);
+                        ClassicAssert.IsTrue(listener.IsInvoked);
                         EPAssertionUtil.AssertEqualsExactOrder((object[])null, listener.LastOldData);
                         EPAssertionUtil.AssertEqualsExactOrder(
                             new object[] { beans[0] },
@@ -1053,7 +1054,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(eventThree);
                 AssertUnderlying(env, new object[] { eventThree }, new object[] { eventThree, eventTwo });
 
-                env.AssertIterator("s0", iterator => Assert.IsFalse(iterator.MoveNext()));
+                env.AssertIterator("s0", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
 
                 env.UndeployAll();
             }

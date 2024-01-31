@@ -14,6 +14,7 @@ using com.espertech.esper.container;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -110,7 +111,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                         var name = types[i][0].ToString();
                         var desc = type.GetPropertyDescriptor(name);
                         var expected = (Type)types[i][1];
-                        Assert.AreEqual(expected, desc.PropertyType, "Failed for " + name);
+                        ClassicAssert.AreEqual(expected, desc.PropertyType, "Failed for " + name);
                     }
                 });
 

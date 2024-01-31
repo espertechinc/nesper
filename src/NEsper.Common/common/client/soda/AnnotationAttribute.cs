@@ -15,9 +15,6 @@ namespace com.espertech.esper.common.client.soda
 {
     public class AnnotationAttribute
     {
-        private string name;
-        private object value;
-
         /// <summary>
         /// Initializes a new instance of the <see cref="AnnotationAttribute"/> class.
         /// </summary>
@@ -36,19 +33,13 @@ namespace com.espertech.esper.common.client.soda
             string name,
             object value)
         {
-            this.name = name;
-            this.value = value;
+            Name = name;
+            Value = value;
         }
 
-        public string Name {
-            get => name;
-            set => name = value;
-        }
+        public string Name { get; set; }
 
         [JsonConverter(typeof(JsonConverterAbstract<object>))]
-        public object Value {
-            get => value;
-            set => this.value = value;
-        }
+        public object Value { get; set; }
     }
 }

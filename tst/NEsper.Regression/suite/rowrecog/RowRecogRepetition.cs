@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -752,7 +753,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
                 }
                 else {
                     if (match) {
-                        Assert.IsTrue(sentForType.Count == 1);
+                        ClassicAssert.IsTrue(sentForType.Count == 1);
                         expected[i] = sentForType[0];
                     }
                 }
@@ -843,7 +844,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
                     var writer = new StringWriter();
                     expanded.ToEPL(writer, RowRecogExprNodePrecedenceEnum.MINIMUM);
-                    Assert.AreEqual(after, writer.ToString());
+                    ClassicAssert.AreEqual(after, writer.ToString());
                 });
         }
     }

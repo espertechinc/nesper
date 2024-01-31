@@ -18,7 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.extend.aggfunc;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 
@@ -153,7 +153,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
 
                 env.SendEventBean(new SupportBean("E2", 0));
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         "E1 E2",
                         env.CompileExecuteFAF("select col1 from MyTable", path).Array[0].Get("col1")));
 
@@ -234,7 +234,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     "@name('s0') select irstream concatstring(TheString) as val from SupportBean#length(10) group by IntPrimitive";
                 var model = env.EplToModel(textThree);
                 env.CopyMayFail(model);
-                Assert.AreEqual(textThree, model.ToEPL());
+                ClassicAssert.AreEqual(textThree, model.ToEPL());
                 TryGrouped(env, null, model, milestone);
 
                 var textFour =
@@ -246,7 +246,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 modelTwo.FromClause = FromClause.Create(
                     FilterStream.Create("SupportBean").AddView(null, "length", Expressions.Constant(10)));
                 modelTwo.GroupByClause = GroupByClause.Create("IntPrimitive");
-                Assert.AreEqual(textFour, modelTwo.ToEPL());
+                ClassicAssert.AreEqual(textFour, modelTwo.ToEPL());
                 env.CopyMayFail(modelTwo);
                 modelTwo.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 TryGrouped(env, null, modelTwo, milestone);
@@ -358,7 +358,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.SendEventBean(new SupportBean_A("A2"));
                 env.AssertPropsNew("s0", fields, new object[] { "XX", 2 });
 
-                env.AssertThat(() => Assert.AreEqual(1, SupportSupportBeanAggregationFunctionFactory.InstanceCount));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportSupportBeanAggregationFunctionFactory.InstanceCount));
 
                 env.UndeployAll();
             }
@@ -442,7 +442,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                 env.CompileDeploy(text).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("val")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("val")));
 
                 env.SendEventBean(new SupportBean());
                 AssertPairSingleRow(env, new object[] { "a" }, new object[] { "" });

@@ -25,6 +25,7 @@ using com.espertech.esper.runtime.@internal.kernel.statement;
 
 // assertTrue
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.filter
 {
@@ -38,7 +39,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 		{
 			env.AssertStatement(
 				stmtName,
-				statement => Assert.AreEqual(count, SupportFilterServiceHelper.GetFilterSvcCountAnyType(statement)));
+				statement => ClassicAssert.AreEqual(count, SupportFilterServiceHelper.GetFilterSvcCountAnyType(statement)));
 		}
 
 		public static string GetFilterSvcToString(
@@ -124,18 +125,18 @@ namespace com.espertech.esper.regressionlib.support.filter
 				statement => {
 					var statementSPI = (EPStatementSPI)statement;
 					var multi = GetFilterSvcMultiAssertNonEmpty(statementSPI);
-					Assert.AreEqual(2, multi.Length);
-					Assert.AreEqual(opOne, multi[0].Op);
-					Assert.AreEqual(expressionOne, multi[0].Name);
-					Assert.AreEqual(opTwo, multi[1].Op);
-					Assert.AreEqual(expressionTwo, multi[1].Name);
+					ClassicAssert.AreEqual(2, multi.Length);
+					ClassicAssert.AreEqual(opOne, multi[0].Op);
+					ClassicAssert.AreEqual(expressionOne, multi[0].Name);
+					ClassicAssert.AreEqual(opTwo, multi[1].Op);
+					ClassicAssert.AreEqual(expressionTwo, multi[1].Name);
 				});
 		}
 
 		public static FilterItem GetFilterSvcSingle(EPStatement statement)
 		{
 			var @params = GetFilterSvcMultiAssertNonEmpty((EPStatementSPI)statement);
-			Assert.AreEqual(1, @params.Length);
+			ClassicAssert.AreEqual(1, @params.Length);
 			return @params[0];
 		}
 
@@ -150,8 +151,8 @@ namespace com.espertech.esper.regressionlib.support.filter
 				statement => {
 					var statementSPI = (EPStatementSPI)statement;
 					var param = GetFilterSvcSingle(statementSPI);
-					Assert.AreEqual(op, param.Op);
-					Assert.AreEqual(expression, param.Name);
+					ClassicAssert.AreEqual(op, param.Op);
+					ClassicAssert.AreEqual(expression, param.Name);
 				});
 		}
 
@@ -162,12 +163,12 @@ namespace com.espertech.esper.regressionlib.support.filter
 			var filterServiceSPI = (FilterServiceSPI)ctx.FilterService;
 			var set =
 				filterServiceSPI.Get(Collections.SingletonSet(statementId));
-			Assert.AreEqual(1, set.Count);
+			ClassicAssert.AreEqual(1, set.Count);
 			var filters = set.Values.First();
-			Assert.IsTrue(filters.ContainsKey(statementId));
-			Assert.AreEqual(1, filters.Count);
+			ClassicAssert.IsTrue(filters.ContainsKey(statementId));
+			ClassicAssert.AreEqual(1, filters.Count);
 			var paths = filters.Get(statementId);
-			Assert.AreEqual(1, paths.Count);
+			ClassicAssert.AreEqual(1, paths.Count);
 			return paths.First();
 		}
 
@@ -181,10 +182,10 @@ namespace com.espertech.esper.regressionlib.support.filter
 				statementName,
 				statement => {
 					var filtersAll = GetFilterSvcMultiAssertNonEmpty(statement, eventTypeName);
-					Assert.AreEqual(1, filtersAll.Length);
+					ClassicAssert.AreEqual(1, filtersAll.Length);
 					var filters = filtersAll[0];
-					Assert.AreEqual(1, filters.Length);
-					Assert.AreEqual(expected, filters[0]);
+					ClassicAssert.AreEqual(1, filters.Length);
+					ClassicAssert.AreEqual(expected, filters[0]);
 				});
 		}
 
@@ -274,8 +275,8 @@ namespace com.espertech.esper.regressionlib.support.filter
 				foreach (var statement in info.Statements) {
 					var list = filters.Get(((EPStatementSPI)statement).StatementId);
 					if (list != null) {
-						Assert.AreEqual(1, list.Count);
-						Assert.AreEqual(1, list[0].Length);
+						ClassicAssert.AreEqual(1, list.Count);
+						ClassicAssert.AreEqual(1, list[0].Length);
 						statements.Put(statement.Name, list[0][0]);
 					}
 				}
@@ -301,7 +302,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 				foreach (var statement in info.Statements) {
 					var list = filters.Get(((EPStatementSPI)statement).StatementId);
 					if (list != null) {
-						Assert.AreEqual(1, list.Count);
+						ClassicAssert.AreEqual(1, list.Count);
 						statements.Put(statement.Name, list[0]);
 					}
 				}
@@ -319,8 +320,8 @@ namespace com.espertech.esper.regressionlib.support.filter
 				statementName,
 				statement => {
 					var filters = GetFilterSvcMultiAssertNonEmpty(statement, eventTypeName);
-					Assert.AreEqual(1, filters.Length);
-					Assert.AreEqual(0, filters[0].Length);
+					ClassicAssert.AreEqual(1, filters.Length);
+					ClassicAssert.AreEqual(0, filters[0].Length);
 				});
 		}
 
@@ -336,7 +337,7 @@ namespace com.espertech.esper.regressionlib.support.filter
 					var typeId = SupportEventTypeHelper.GetTypeIdForName(
 						((EPStatementSPI)statement).StatementContext,
 						eventTypeName);
-					Assert.IsFalse(set.ContainsKey(typeId));
+					ClassicAssert.IsFalse(set.ContainsKey(typeId));
 				});
 		}
 
@@ -355,11 +356,11 @@ namespace com.espertech.esper.regressionlib.support.filter
 				}
 			}
 
-			Assert.IsNotNull(filters);
-			Assert.IsFalse(filters.IsEmpty());
+			ClassicAssert.IsNotNull(filters);
+			ClassicAssert.IsFalse(filters.IsEmpty());
 
 			var @params = filters.Get(spi.StatementId);
-			Assert.IsFalse(@params.IsEmpty());
+			ClassicAssert.IsFalse(@params.IsEmpty());
 
 			return @params.ToArray();
 		}
@@ -376,14 +377,14 @@ namespace com.espertech.esper.regressionlib.support.filter
 				stmtName,
 				stmt => {
 					var items = GetFilterSvcMultiAssertNonEmpty(stmt, eventType);
-					Assert.AreEqual(numEntries, items.Length);
+					ClassicAssert.AreEqual(numEntries, items.Length);
 					for (var i = 0; i < numEntries; i++) {
 						var entries = items[i];
-						Assert.AreEqual(1, entries.Length);
+						ClassicAssert.AreEqual(1, entries.Length);
 						var item = entries[0];
-						Assert.AreEqual(expression, item.Name);
-						Assert.AreEqual(@operator, item.Op);
-						Assert.AreSame(items[0][0].Index, item.Index);
+						ClassicAssert.AreEqual(expression, item.Name);
+						ClassicAssert.AreEqual(@operator, item.Op);
+						ClassicAssert.AreSame(items[0][0].Index, item.Index);
 					}
 				});
 		}
@@ -394,21 +395,21 @@ namespace com.espertech.esper.regressionlib.support.filter
 			string expression,
 			FilterOperator @operator)
 		{
-			Assert.AreEqual(numEntries, filters.Count);
+			ClassicAssert.AreEqual(numEntries, filters.Count);
 			FilterItem first = null;
 			foreach (var stmtEntry in filters) {
 				var entriesStmt = stmtEntry.Value.ToArray();
-				Assert.AreEqual(1, entriesStmt.Length);
+				ClassicAssert.AreEqual(1, entriesStmt.Length);
 				var entries = entriesStmt[0];
-				Assert.AreEqual(1, entries.Length);
+				ClassicAssert.AreEqual(1, entries.Length);
 				var item = entries[0];
-				Assert.AreEqual(expression, item.Name);
-				Assert.AreEqual(@operator, item.Op);
+				ClassicAssert.AreEqual(expression, item.Name);
+				ClassicAssert.AreEqual(@operator, item.Op);
 				if (first == null) {
 					first = item;
 				}
 
-				Assert.AreSame(first.Index, item.Index);
+				ClassicAssert.AreSame(first.Index, item.Index);
 			}
 		}
 

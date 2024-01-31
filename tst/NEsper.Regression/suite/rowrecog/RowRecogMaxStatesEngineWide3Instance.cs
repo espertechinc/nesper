@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.rowrecog
 {
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(MakeBean("A", 1, 10)); // A(10):P1->P2
             env.SendEventBean(MakeBean("B", 1, 11)); // A(10):P1->P2, B(11):P1->P2
             env.SendEventBean(MakeBean("A", 1, 12)); // A(10):P2->P3, A(12):P1->P2, B(11):P1->P2
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("B", 1, 13)); // would be: A(10):P2->P3, A(12):P1->P2, B(11):P2->P3, B(13):P1->P2
@@ -84,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             // should not overflow
             env.SendEventBean(MakeBean("B", 1, 15));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("B", 1, 16));
@@ -103,7 +104,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(MakeBean("B", 1, 17));
             env.SendEventBean(MakeBean("B", 1, 18));
             env.SendEventBean(MakeBean("A", 1, 19));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("A", 1, 20));
@@ -150,7 +151,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(new SupportBean_S0(0, "C"));
             env.SendEventBean(new SupportBean("C", 1));
             env.SendEventBean(new SupportBean_S0(0, "D"));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             env.SendEventBean(new SupportBean("D", 1));
             AssertContextEnginePool(env, "S1", handler.GetAndResetContexts(), 3, GetExpectedCountMap(env, "S1", 3));
@@ -159,7 +160,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(new SupportBean_S1(0, "D"));
             env.SendEventBean(new SupportBean("D", 1));
             env.SendEventBean(new SupportBean_S0(0, "E"));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             env.SendEventBean(new SupportBean("E", 1));
             AssertContextEnginePool(env, "S1", handler.GetAndResetContexts(), 3, GetExpectedCountMap(env, "S1", 3));
@@ -197,7 +198,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(MakeBean("A", 0, 1));
             env.SendEventBean(MakeBean("B", 0, 2));
             env.SendEventBean(MakeBean("C", 0, 3));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("D", 0, 4));
@@ -206,7 +207,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // delete A (in-sequence remove)
             env.SendEventBean(new SupportBean_S0(1, "A"));
             env.SendEventBean(MakeBean("D", 0, 5)); // now 3 states: B, C, D
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // test matching
             env.SendEventBean(MakeBean("B", 1, 6)); // now 2 states: C, D
@@ -214,7 +215,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             // no overflows
             env.SendEventBean(MakeBean("E", 0, 7));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("F", 0, 9));
@@ -222,7 +223,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
 
             // no match expected
             env.SendEventBean(MakeBean("F", 1, 10));
-            Assert.IsFalse(env.Listener("S1").IsInvoked);
+            ClassicAssert.IsFalse(env.Listener("S1").IsInvoked);
             env.AssertListenerNotInvoked("S1");
 
             env.UndeployAll();
@@ -255,19 +256,19 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.SendEventBean(MakeBean("A", 0, 1));
             env.SendEventBean(MakeBean("A", 1, 2));
             env.SendEventBean(MakeBean("B", 0, 3));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // delete A-1 (out-of-sequence remove)
             env.SendEventBean(new SupportBean_S0(1, "A"));
             env.SendEventBean(new SupportBean_S0(0, "A"));
             env.SendEventBean(MakeBean("A", 2, 4));
             env.AssertListenerNotInvoked("S1");
-            Assert.IsTrue(handler.Contexts.IsEmpty()); // states: B
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty()); // states: B
 
             // test overflow
             env.SendEventBean(MakeBean("C", 0, 5));
             env.SendEventBean(MakeBean("D", 0, 6));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("E", 0, 7));
@@ -289,7 +290,7 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             // no overflow
             env.SendEventBean(MakeBean("F", 0, 14));
             env.SendEventBean(MakeBean("G", 0, 15));
-            Assert.IsTrue(handler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(handler.Contexts.IsEmpty());
 
             // overflow
             env.SendEventBean(MakeBean("H", 0, 16));
@@ -308,16 +309,16 @@ namespace com.espertech.esper.regressionlib.suite.rowrecog
             env.AssertStatement(
                 statement,
                 stmt => {
-                    Assert.AreEqual(1, contexts.Count);
+                    ClassicAssert.AreEqual(1, contexts.Count);
                     var context = contexts[0];
-                    Assert.AreEqual(env.RuntimeURI, context.RuntimeURI);
-                    Assert.AreEqual(stmt.DeploymentId, context.DeploymentId);
-                    Assert.AreEqual(stmt.Name, context.StatementName);
+                    ClassicAssert.AreEqual(env.RuntimeURI, context.RuntimeURI);
+                    ClassicAssert.AreEqual(stmt.DeploymentId, context.DeploymentId);
+                    ClassicAssert.AreEqual(stmt.Name, context.StatementName);
                     var condition = (ConditionMatchRecognizeStatesMax)context.EngineCondition;
-                    Assert.AreEqual(max, condition.Max);
-                    Assert.AreEqual(counts.Count, condition.Counts.Count);
+                    ClassicAssert.AreEqual(max, condition.Max);
+                    ClassicAssert.AreEqual(counts.Count, condition.Counts.Count);
                     foreach (var expected in counts) {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             expected.Value,
                             condition.Counts.Get(expected.Key),
                             "failed for key " + expected.Key);

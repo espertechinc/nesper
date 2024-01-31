@@ -53,7 +53,7 @@ namespace com.espertech.esper.regressionlib.suite.client.deploy
 
 				var ex1 = Assert.Throws<EPDeployDeploymentVersionException>(
 					() => env.Runtime.DeploymentService.Rollout(Collections.SingletonList(new EPDeploymentRolloutCompiled(compiled))));
-				Assert.AreEqual(0, ex1.RolloutItemNumber);
+				ClassicAssert.AreEqual(0, ex1.RolloutItemNumber);
 				AssertMessage(ex1, versionMismatchMsg);
 
 				AssertMessage(

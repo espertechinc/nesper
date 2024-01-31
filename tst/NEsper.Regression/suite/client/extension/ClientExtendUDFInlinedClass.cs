@@ -18,6 +18,8 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.client.extension
 {
     public class ClientExtendUDFInlinedClass
@@ -266,7 +268,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     () => {
                         var ns1 = NamespaceGenerator.Create();
                         var result = env.CompileExecuteFAF(eplFAF.Replace("%NAMESPACE%", ns1), path);
-                        Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                        ClassicAssert.AreEqual(">E1<", result.Array[0].Get("c0"));
                     });
 
                 env.Milestone(0);
@@ -275,7 +277,7 @@ namespace com.espertech.esper.regressionlib.suite.client.extension
                     () => {
                         var ns2 = NamespaceGenerator.Create();
                         var result = env.CompileExecuteFAF(eplFAF.Replace("%NAMESPACE%", ns2), path);
-                        Assert.AreEqual(">E1<", result.Array[0].Get("c0"));
+                        ClassicAssert.AreEqual(">E1<", result.Array[0].Get("c0"));
                     });
 
                 env.UndeployAll();

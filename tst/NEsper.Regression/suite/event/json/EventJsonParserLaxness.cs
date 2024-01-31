@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -128,19 +129,19 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 SendAssert(
                     env,
                     new JObject(new JProperty("carray", new JObject())).ToString(),
-                    @event => Assert.IsNull(@event.Get("carray")));
+                    @event => ClassicAssert.IsNull(@event.Get("carray")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("carray", "abc")).ToString(),
-                    @event => Assert.IsNull(@event.Get("carray")));
+                    @event => ClassicAssert.IsNull(@event.Get("carray")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cobject", new JArray())).ToString(),
-                    @event => Assert.IsNull(@event.Get("cobject")));
+                    @event => ClassicAssert.IsNull(@event.Get("cobject")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cobject", "abc")).ToString(),
-                    @event => Assert.IsNull(@event.Get("cobject")));
+                    @event => ClassicAssert.IsNull(@event.Get("cobject")));
 
                 env.UndeployAll();
             }
@@ -158,27 +159,27 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 SendAssert(
                     env,
                     new JObject(new JProperty("cbool", "true")).ToString(),
-                    @event => Assert.IsTrue((bool)@event.Get("cbool")));
+                    @event => ClassicAssert.IsTrue((bool)@event.Get("cbool")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cbool", "false")).ToString(),
-                    @event => Assert.IsFalse((bool)@event.Get("cbool")));
+                    @event => ClassicAssert.IsFalse((bool)@event.Get("cbool")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cboola1", new JArray("true"))).ToString(),
-                    @event => Assert.IsTrue((bool)((object[])@event.Get("cboola1"))[0]));
+                    @event => ClassicAssert.IsTrue((bool)((object[])@event.Get("cboola1"))[0]));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cboola2", new JArray(new JArray("true")))).ToString(),
-                    @event => Assert.IsTrue((bool)((object[][])@event.Get("cboola2"))[0][0]));
+                    @event => ClassicAssert.IsTrue((bool)((object[][])@event.Get("cboola2"))[0][0]));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cbool", new JObject())).ToString(),
-                    @event => Assert.IsNull(@event.Get("cbool")));
+                    @event => ClassicAssert.IsNull(@event.Get("cbool")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cbool", new JArray())).ToString(),
-                    @event => Assert.IsNull(@event.Get("cbool")));
+                    @event => ClassicAssert.IsNull(@event.Get("cbool")));
 
                 env.AssertThat(
                     () => {
@@ -223,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         "s0",
                         @event => {
                             var value = @event.Get(propertyName);
-                            Assert.IsNotNull(null, "Null for property " + propertyName);
+                            ClassicAssert.IsNotNull(null, "Null for property " + propertyName);
                             if (propertyName.EndsWith("a2")) {
                                 AssertAsNumber(propertyName, 1, ((object[][])value)[0][0]);
                             }
@@ -253,7 +254,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                         }
                         else {
                             type = TypeHelper.GetPrimitiveTypeForName(typeName).GetBoxedType();
-                            Assert.IsNotNull(type, "Unrecognized type " + typeName);
+                            ClassicAssert.IsNotNull(type, "Unrecognized type " + typeName);
                         }
 
                         var expected = "Failed to parse json member name '" +
@@ -261,7 +262,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                                        "' as a " +
                                        type.Name +
                                        "-type from value 'x': NumberFormatException";
-                        Assert.IsTrue(ex.Message.StartsWith(expected));
+                        ClassicAssert.IsTrue(ex.Message.StartsWith(expected));
                     }
                 }
 
@@ -269,11 +270,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 SendAssert(
                     env,
                     new JObject(new JProperty("cint", new JObject())).ToString(),
-                    @event => Assert.IsNull(@event.Get("cint")));
+                    @event => ClassicAssert.IsNull(@event.Get("cint")));
                 SendAssert(
                     env,
                     new JObject(new JProperty("cint", new JArray())).ToString(),
-                    @event => Assert.IsNull(@event.Get("cint")));
+                    @event => ClassicAssert.IsNull(@event.Get("cint")));
 
                 env.UndeployAll();
             }
@@ -350,7 +351,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             string json,
             object expected)
         {
-            SendAssert(env, json, @event => Assert.AreEqual(expected, @event.Get("p1")));
+            SendAssert(env, json, @event => ClassicAssert.AreEqual(expected, @event.Get("p1")));
         }
 
         private static void SendAssert(
@@ -382,28 +383,28 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             object actual)
         {
             if (propertyName.Contains("byte")) {
-                Assert.AreEqual(expected.AsByte(), actual.AsByte());
+                ClassicAssert.AreEqual(expected.AsByte(), actual.AsByte());
             }
             else if (propertyName.Contains("short")) {
-                Assert.AreEqual(expected.AsInt16(), actual.AsInt16());
+                ClassicAssert.AreEqual(expected.AsInt16(), actual.AsInt16());
             }
             else if (propertyName.Contains("int")) {
-                Assert.AreEqual(expected.AsInt32(), actual.AsInt32());
+                ClassicAssert.AreEqual(expected.AsInt32(), actual.AsInt32());
             }
             else if (propertyName.Contains("long")) {
-                Assert.AreEqual(expected.AsInt64(), actual.AsInt64());
+                ClassicAssert.AreEqual(expected.AsInt64(), actual.AsInt64());
             }
             else if (propertyName.Contains("double")) {
-                Assert.AreEqual(expected.AsDouble(), actual.AsDouble(), 0.1);
+                ClassicAssert.AreEqual(expected.AsDouble(), actual.AsDouble(), 0.1);
             }
             else if (propertyName.Contains("float")) {
-                Assert.AreEqual(expected.AsFloat(), actual.AsFloat(), 0.1);
+                ClassicAssert.AreEqual(expected.AsFloat(), actual.AsFloat(), 0.1);
             }
             else if (propertyName.Contains("decimal")) {
-                Assert.AreEqual(expected.AsDecimal(), actual.AsDecimal());
+                ClassicAssert.AreEqual(expected.AsDecimal(), actual.AsDecimal());
             }
             else if (propertyName.Contains("bigint")) {
-                Assert.AreEqual(expected.AsBigInteger(), actual.AsBigInteger());
+                ClassicAssert.AreEqual(expected.AsBigInteger(), actual.AsBigInteger());
             }
             else {
                 Assert.Fail("Not recognized '" + propertyName + "'");

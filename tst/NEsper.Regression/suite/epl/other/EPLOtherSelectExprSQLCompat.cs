@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -53,8 +54,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     received => {
-                        Assert.AreEqual("E1", received.Get("val1"));
-                        Assert.AreEqual(10, received.Get("val2"));
+                        ClassicAssert.AreEqual("E1", received.Get("val1"));
+                        ClassicAssert.AreEqual(10, received.Get("val2"));
                     });
 
                 env.UndeployAll();

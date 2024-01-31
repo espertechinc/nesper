@@ -18,6 +18,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.infra
 {
@@ -115,7 +116,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
 
                     var fragmentName = "lvl1.lvl2.`lvl3`";
                     AssertPropertyFragment(@event, fragmentName);
-                    Assert.IsNotNull(@event.EventType.GetFragmentType(fragmentName));
+                    ClassicAssert.IsNotNull(@event.EventType.GetFragmentType(fragmentName));
                 });
 
             env.UndeployModuleContaining("s0");
@@ -126,22 +127,22 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             string value,
             string name)
         {
-            Assert.AreEqual(value, @event.Get(name));
+            ClassicAssert.AreEqual(value, @event.Get(name));
             var eventType = @event.EventType;
-            Assert.IsNotNull(eventType.GetPropertyType(name));
-            Assert.IsTrue(eventType.IsProperty(name));
-            Assert.IsNotNull(eventType.GetGetter(name));
+            ClassicAssert.IsNotNull(eventType.GetPropertyType(name));
+            ClassicAssert.IsTrue(eventType.IsProperty(name));
+            ClassicAssert.IsNotNull(eventType.GetGetter(name));
         }
 
         private void AssertPropertyFragment(
             EventBean @event,
             string name)
         {
-            Assert.IsNotNull(@event.Get(name));
+            ClassicAssert.IsNotNull(@event.Get(name));
             var eventType = @event.EventType;
-            Assert.IsNotNull(eventType.GetPropertyType(name));
-            Assert.IsTrue(eventType.IsProperty(name));
-            Assert.IsNotNull(eventType.GetGetter(name));
+            ClassicAssert.IsNotNull(eventType.GetPropertyType(name));
+            ClassicAssert.IsTrue(eventType.IsProperty(name));
+            ClassicAssert.IsNotNull(eventType.GetGetter(name));
         }
 
         public class SupportLvl3

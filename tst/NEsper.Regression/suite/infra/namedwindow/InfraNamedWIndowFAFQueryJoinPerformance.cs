@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -50,7 +51,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var prepared = env.Runtime.FireAndForgetService.PrepareQuery(compiled);
             for (var i = 0; i < 100; i++) {
                 var result = prepared.Execute();
-                Assert.AreEqual(1000, result.Array.Length);
+                ClassicAssert.AreEqual(1000, result.Array.Length);
             }
 
             var end = PerformanceObserver.MilliTime;

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -93,10 +94,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.AreEqual(1, listener.LastNewData.Length);
-                    Assert.AreSame(eventA, listener.LastNewData[0].Get("streamA"));
-                    Assert.AreSame(eventB, listener.LastNewData[0].Get("streamB"));
-                    Assert.AreSame(eventC, listener.LastNewData[0].Get("streamC"));
+                    ClassicAssert.AreEqual(1, listener.LastNewData.Length);
+                    ClassicAssert.AreSame(eventA, listener.LastNewData[0].Get("streamA"));
+                    ClassicAssert.AreSame(eventB, listener.LastNewData[0].Get("streamB"));
+                    ClassicAssert.AreSame(eventC, listener.LastNewData[0].Get("streamC"));
                     listener.Reset();
                 });
         }
@@ -163,7 +164,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                           "where streamA.Id=streamB.Id " +
                           "and streamB.Id=streamC.Id " +
                           "and streamA.Id=streamC.Id";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0").Milestone(0);

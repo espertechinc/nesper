@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.client.SupportCompileDeployUtil;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
@@ -85,7 +85,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 throw new EPRuntimeException(e);
             }
 
-            Assert.IsNull(insertRunnable.Exception);
+            ClassicAssert.IsNull(insertRunnable.Exception);
 
             // shutdown delete
             foreach (var deleteCallable in callables) {
@@ -103,8 +103,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                 countDeleted += deleteCallable.NumDeletes;
             }
 
-            Assert.IsTrue(insertRunnable.NumInserts > 1000);
-            Assert.IsTrue(countDeleted > 100);
+            ClassicAssert.IsTrue(insertRunnable.NumInserts > 1000);
+            ClassicAssert.IsTrue(countDeleted > 100);
 
             env.UndeployAll();
         }
@@ -148,7 +148,7 @@ namespace com.espertech.esper.regressionlib.suite.multithread
                         queryDelete.SetObject(1, next);
                         var queryResult = env.Runtime.FireAndForgetService.ExecuteQuery(queryDelete);
                         var numDeleted = queryResult.Array.Length;
-                        Assert.AreEqual(1, numDeleted);
+                        ClassicAssert.AreEqual(1, numDeleted);
                         numDeletes++;
                     }
                 }

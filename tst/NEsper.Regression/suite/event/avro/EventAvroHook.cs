@@ -29,6 +29,7 @@ using NEsper.Avro.Util.Support;
 using static com.espertech.esper.common.@internal.bytecodemodel.model.expression.CodegenExpressionBuilder;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.avro
 {
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 env.CompileDeploy(epl).AddListener("s0");
 
                 var schema = env.RuntimeAvroSchemaByDeployment("s0", "MyEventOut");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "{\"type\":\"record\",\"name\":\"MyEventOut\",\"fields\":[{\"name\":\"isodate\",\"type\":\"string\"}]}",
                     schema.ToString());
 
@@ -149,7 +150,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 env.SendEventBean(new SupportBean_S0(10));
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(
+                    @event => ClassicAssert.AreEqual(
                         "{\"sb\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}",
                         SupportAvroUtil.AvroToJson(@event)));
 
@@ -181,7 +182,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.avro
                 env.SendEventBean(new SupportBean("E1", 10));
 
                 var eventBean = env.GetEnumerator("NamedWindow").Advance();
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "{\"sb\":{\"SupportBeanSchema\":{\"TheString\":\"E1\",\"IntPrimitive\":10}}}",
                     SupportAvroUtil.AvroToJson(eventBean));
 

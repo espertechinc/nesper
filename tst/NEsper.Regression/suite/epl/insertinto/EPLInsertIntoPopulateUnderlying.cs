@@ -28,7 +28,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static NEsper.Avro.Extensions.TypeBuilder;
 
 using SupportBean_N = com.espertech.esper.regressionlib.support.bean.SupportBean_N;
@@ -213,8 +213,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var theEvent = (SupportBeanCtorTwo)@event.Underlying;
-                        Assert.IsNotNull(theEvent.St0);
-                        Assert.IsNotNull(theEvent.St1);
+                        ClassicAssert.IsNotNull(theEvent.St0);
+                        ClassicAssert.IsNotNull(theEvent.St1);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -227,9 +227,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var eventOne = (SupportBeanCtorOne)@event.Underlying;
-                        Assert.AreEqual("E1", eventOne.TheString);
-                        Assert.AreEqual(99, eventOne.IntPrimitive);
-                        Assert.AreEqual((int?)5, eventOne.IntBoxed);
+                        ClassicAssert.AreEqual("E1", eventOne.TheString);
+                        ClassicAssert.AreEqual(99, eventOne.IntPrimitive);
+                        ClassicAssert.AreEqual((int?)5, eventOne.IntBoxed);
                     });
 
                 // test Ctor accepting same types
@@ -244,8 +244,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var result = (SupportEventWithCtorSameType)@event.Underlying;
-                        Assert.AreEqual(1, result.B1.IntPrimitive);
-                        Assert.AreEqual(2, result.B2.IntPrimitive);
+                        ClassicAssert.AreEqual(1, result.B1.IntPrimitive);
+                        ClassicAssert.AreEqual(2, result.B2.IntPrimitive);
                     });
 
                 env.UndeployAll();
@@ -268,10 +268,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var three = (SupportBeanCtorThree)@event.Underlying;
-                        Assert.AreEqual("E0", three.St0.Id);
-                        Assert.AreEqual(2, three.St1.Length);
-                        Assert.AreEqual("E1", three.St1[0].Id);
-                        Assert.AreEqual("E2", three.St1[1].Id);
+                        ClassicAssert.AreEqual("E0", three.St0.Id);
+                        ClassicAssert.AreEqual(2, three.St1.Length);
+                        ClassicAssert.AreEqual("E1", three.St1[0].Id);
+                        ClassicAssert.AreEqual("E2", three.St1[1].Id);
                     });
 
                 env.UndeployAll();
@@ -295,8 +295,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var theEvent = (SupportBeanObject)@event.Underlying;
-                        Assert.AreSame(n1, theEvent.One);
-                        Assert.AreSame(s01, theEvent.Two);
+                        ClassicAssert.AreSame(n1, theEvent.One);
+                        ClassicAssert.AreSame(s01, theEvent.Two);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -311,8 +311,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var theEvent = (SupportBeanObject)@event.Underlying;
-                        Assert.AreSame(n1, theEvent.One);
-                        Assert.AreSame(s01, theEvent.Two);
+                        ClassicAssert.AreSame(n1, theEvent.One);
+                        ClassicAssert.AreSame(s01, theEvent.Two);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -327,8 +327,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var theEvent = (SupportBeanObject)@event.Underlying;
-                        Assert.AreSame(n1, theEvent.One);
-                        Assert.AreSame(s01, theEvent.Two);
+                        ClassicAssert.AreSame(n1, theEvent.One);
+                        ClassicAssert.AreSame(s01, theEvent.Two);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -342,7 +342,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var eventLocal = (MyLocalTarget)@event.Underlying;
-                        Assert.AreEqual(1, eventLocal.Value);
+                        ClassicAssert.AreEqual(1, eventLocal.Value);
                     });
                 env.UndeployAll();
             }
@@ -521,7 +521,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var received = (SupportBean)@event.Underlying;
-                        Assert.AreEqual("E1", received.TheString);
+                        ClassicAssert.AreEqual("E1", received.TheString);
                         SupportBean.Compare(
                             received,
                             "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,EnumValue"
@@ -549,7 +549,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var received = (SupportBean)@event.Underlying;
-                        Assert.AreEqual("E1", received.TheString);
+                        ClassicAssert.AreEqual("E1", received.TheString);
                         SupportBean.Compare(
                             received,
                             "IntPrimitive,IntBoxed,LongPrimitive,LongBoxed,BoolPrimitive,CharPrimitive,BytePrimitive,FloatPrimitive,DoublePrimitive,ShortPrimitive,EnumValue"
@@ -633,9 +633,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var theEvent = (SupportBeanComplexProps)@event.Underlying;
-                        Assert.AreEqual(-2, theEvent.ArrayProperty[1]);
-                        Assert.AreEqual(20, theEvent.ObjectArray[1]);
-                        Assert.AreEqual("myval", theEvent.MapProperty.Get("mykey"));
+                        ClassicAssert.AreEqual(-2, theEvent.ArrayProperty[1]);
+                        ClassicAssert.AreEqual(20, theEvent.ObjectArray[1]);
+                        ClassicAssert.AreEqual("myval", theEvent.MapProperty.Get("mykey"));
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -650,8 +650,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertEventNew(
                     "s0",
                     @event => {
-                        Assert.IsTrue(@event.Underlying is SupportBeanInterfaceProps);
-                        Assert.AreEqual(typeof(SupportBeanInterfaceProps), @event.EventType.UnderlyingType);
+                        ClassicAssert.IsTrue(@event.Underlying is SupportBeanInterfaceProps);
+                        ClassicAssert.AreEqual(typeof(SupportBeanInterfaceProps), @event.EventType.UnderlyingType);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -666,7 +666,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var eventThree = (SupportBeanComplexProps)@event.Underlying;
-                        Assert.AreEqual("111", eventThree.Nested.NestedValue);
+                        ClassicAssert.AreEqual("111", eventThree.Nested.NestedValue);
                     });
                 env.UndeployModuleContaining("s0");
 
@@ -680,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var eventFour = (SupportBeanArrayCollMap)@event.Underlying;
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             "NestedValue",
                             ((SupportBeanComplexProps.SupportBeanSpecialGetterNested)eventFour.AnyObject).NestedValue);
                     });
@@ -696,7 +696,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var received = (SupportBean)@event.Underlying;
-                        Assert.AreEqual(0, received.IntPrimitive);
+                        ClassicAssert.AreEqual(0, received.IntPrimitive);
                     });
 
                 var bean = new SupportBean("A", 1);
@@ -706,7 +706,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var received = (SupportBean)@event.Underlying;
-                        Assert.AreEqual(20, received.IntPrimitive);
+                        ClassicAssert.AreEqual(20, received.IntPrimitive);
                     });
 
                 env.UndeployAll();
@@ -753,8 +753,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.CompileDeploy(stmtTextOne).AddListener("s0").SetSubscriber("s0");
 
                 env.SendEventMap(new Dictionary<string, object>(), "MyMap");
-                env.AssertEventNew("s0", @event => { Assert.AreEqual("abc", @event.Get("TheString")); });
-                env.AssertSubscriber("s0", subscriber => Assert.AreEqual("abc", subscriber.AssertOneGetNewAndReset()));
+                env.AssertEventNew("s0", @event => { ClassicAssert.AreEqual("abc", @event.Get("TheString")); });
+                env.AssertSubscriber("s0", subscriber => ClassicAssert.AreEqual("abc", subscriber.AssertOneGetNewAndReset()));
                 env.UndeployModuleContaining("s0");
 
                 // test factory method fully-qualified
@@ -807,11 +807,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                     "s0",
                     @event => {
                         var outEvent = (FinalEventValid)@event.Underlying;
-                        Assert.AreEqual(1, outEvent.StartEvent.Id);
-                        Assert.AreEqual("G1", outEvent.StartEvent.P00);
-                        Assert.AreEqual(2, outEvent.EndEvent.Length);
-                        Assert.AreEqual(2, outEvent.EndEvent[0].IntPrimitive);
-                        Assert.AreEqual(3, outEvent.EndEvent[1].IntPrimitive);
+                        ClassicAssert.AreEqual(1, outEvent.StartEvent.Id);
+                        ClassicAssert.AreEqual("G1", outEvent.StartEvent.P00);
+                        ClassicAssert.AreEqual(2, outEvent.EndEvent.Length);
+                        ClassicAssert.AreEqual(2, outEvent.EndEvent[0].IntPrimitive);
+                        ClassicAssert.AreEqual(3, outEvent.EndEvent[1].IntPrimitive);
                     });
 
                 // Test invalid case of non-array destination insert
@@ -920,9 +920,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                         throw new IllegalStateException("Unrecognized enum " + eventRepresentationEnum);
                     }
 
-                    Assert.AreEqual("G1", startEventOne.Get("Id"));
-                    Assert.AreEqual(2, endEventOne.Get("val"));
-                    Assert.AreEqual(3, endEventTwo.Get("val"));
+                    ClassicAssert.AreEqual("G1", startEventOne.Get("Id"));
+                    ClassicAssert.AreEqual(2, endEventOne.Get("val"));
+                    ClassicAssert.AreEqual(3, endEventTwo.Get("val"));
                 });
 
             // Test invalid case of non-array destination insert
@@ -1089,9 +1089,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "s0",
                 @event => {
                     var theEvent = (SupportBeanCtorOne)@event.Underlying;
-                    Assert.AreEqual(theString, theEvent.TheString);
-                    Assert.AreEqual(null, theEvent.IntBoxed);
-                    Assert.AreEqual(intBoxed, (int?)theEvent.IntPrimitive);
+                    ClassicAssert.AreEqual(theString, theEvent.TheString);
+                    ClassicAssert.AreEqual(null, theEvent.IntBoxed);
+                    ClassicAssert.AreEqual(intBoxed, (int?)theEvent.IntPrimitive);
                 });
         }
 
@@ -1110,10 +1110,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 "s0",
                 @event => {
                     var theEvent = (SupportBeanCtorOne)@event.Underlying;
-                    Assert.AreEqual(theString, theEvent.TheString);
-                    Assert.AreEqual(intBoxed, theEvent.IntBoxed);
-                    Assert.AreEqual(boolPrimitive, theEvent.BoolPrimitive);
-                    Assert.AreEqual(intPrimitive, theEvent.IntPrimitive);
+                    ClassicAssert.AreEqual(theString, theEvent.TheString);
+                    ClassicAssert.AreEqual(intBoxed, theEvent.IntBoxed);
+                    ClassicAssert.AreEqual(boolPrimitive, theEvent.BoolPrimitive);
+                    ClassicAssert.AreEqual(intPrimitive, theEvent.IntPrimitive);
                 });
         }
 
@@ -1128,7 +1128,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                               " select IntPrimitive as intVal, TheString as stringVal, DoubleBoxed as doubleVal from SupportBean";
             env.CompileDeploy(stmtTextOne).AddListener("s0");
 
-            env.AssertThat(() => Assert.AreSame(env.Statement("select").EventType, env.Statement("s0").EventType));
+            env.AssertThat(() => ClassicAssert.AreSame(env.Statement("select").EventType, env.Statement("s0").EventType));
 
             var bean = new SupportBean();
             bean.IntPrimitive = 1000;

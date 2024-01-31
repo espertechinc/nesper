@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.supportunit.bean;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.logging;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.bean.introspect
 {

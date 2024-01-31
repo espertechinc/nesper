@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.join.rep;
 using com.espertech.esper.common.@internal.supportunit.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.join.assemble
 {
@@ -53,11 +54,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             optAssemblyNode.Process(resultMultipleEvents, resultFinalRows, null);
 
             // check generated row
-            Assert.AreEqual(1, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(1, parentNode.RowsList.Count);
             EventBean[] row = parentNode.RowsList[0];
-            Assert.AreEqual(4, row.Length);
+            ClassicAssert.AreEqual(4, row.Length);
             Node nodeTwo = resultMultipleEvents[1][1];
-            Assert.AreEqual(nodeTwo.Events.First(), row[1]);
+            ClassicAssert.AreEqual(nodeTwo.Events.First(), row[1]);
         }
 
         [Test]
@@ -70,11 +71,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             optAssemblyNode.Process(resultMultipleEvents, resultFinalRows, null);
 
             // check generated row
-            Assert.AreEqual(1, parentNode.RowsList.Count);
+            ClassicAssert.AreEqual(1, parentNode.RowsList.Count);
             EventBean[] row = parentNode.RowsList[0];
-            Assert.AreEqual(4, row.Length);
+            ClassicAssert.AreEqual(4, row.Length);
             Node node = resultSingleEvent[1][0];
-            Assert.AreEqual(node.Events.First(), row[1]);
+            ClassicAssert.AreEqual(node.Events.First(), row[1]);
         }
 
         [Test]
@@ -107,11 +108,11 @@ namespace com.espertech.esper.common.@internal.epl.join.assemble
             nodeUnderTest.Result(childRow, 3, myEvent, myNode, resultFinalRows, null);
 
             // assert parent node got the row
-            Assert.AreEqual(1, mockParentNode.RowsList.Count);
+            ClassicAssert.AreEqual(1, mockParentNode.RowsList.Count);
             EventBean[] resultRow = mockParentNode.RowsList[0];
 
             // assert the node has added his event to the row
-            Assert.AreEqual(myEvent, resultRow[1]);
+            ClassicAssert.AreEqual(myEvent, resultRow[1]);
         }
     }
 } // end of namespace

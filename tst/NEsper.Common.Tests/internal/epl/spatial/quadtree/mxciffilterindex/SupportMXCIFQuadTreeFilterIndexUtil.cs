@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilterindex
 {
@@ -84,8 +85,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
         {
             BoundingBox bb = tree.Root.Bb;
             AssertCollect(tree, bb.MinX, bb.MinY, bb.MaxX - bb.MinX, bb.MaxY - bb.MinY, expected);
-            Assert.AreEqual(expected.Length == 0 ? 0 : expected.SplitCsv().Length, MXCIFQuadTreeFilterIndexCount.Count(tree));
-            Assert.AreEqual(expected.Length == 0, MXCIFQuadTreeFilterIndexEmpty.IsEmpty(tree));
+            ClassicAssert.AreEqual(expected.Length == 0 ? 0 : expected.SplitCsv().Length, MXCIFQuadTreeFilterIndexCount.Count(tree));
+            ClassicAssert.AreEqual(expected.Length == 0, MXCIFQuadTreeFilterIndexEmpty.IsEmpty(tree));
         }
 
         internal static void AssertCollect(
@@ -113,8 +114,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
                 joiner.Add(value);
             }
 
-            Assert.AreEqual(expected, joiner.ToString());
-            Assert.IsTrue((expected.Length == 0 ? 0 : expected.SplitCsv().Length) <= MXCIFQuadTreeFilterIndexCount.Count(tree));
+            ClassicAssert.AreEqual(expected, joiner.ToString());
+            ClassicAssert.IsTrue((expected.Length == 0 ? 0 : expected.SplitCsv().Length) <= MXCIFQuadTreeFilterIndexCount.Count(tree));
         }
 
         internal static void Compare(
@@ -125,11 +126,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.mxciffilteri
             object expected,
             XYWHRectangleWValue rectangle)
         {
-            Assert.AreEqual(x, rectangle.X);
-            Assert.AreEqual(y, rectangle.Y);
-            Assert.AreEqual(width, rectangle.W);
-            Assert.AreEqual(height, rectangle.H);
-            Assert.AreEqual(expected, rectangle.Value);
+            ClassicAssert.AreEqual(x, rectangle.X);
+            ClassicAssert.AreEqual(y, rectangle.Y);
+            ClassicAssert.AreEqual(width, rectangle.W);
+            ClassicAssert.AreEqual(height, rectangle.H);
+            ClassicAssert.AreEqual(expected, rectangle.Value);
         }
     }
 } // end of namespace

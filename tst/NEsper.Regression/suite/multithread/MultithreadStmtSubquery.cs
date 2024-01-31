@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.multithread;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -65,14 +66,14 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             // assert new data
             var resultNewData = listener.NewDataListFlattened;
-            Assert.AreEqual(totalExpected, resultNewData.Length);
+            ClassicAssert.AreEqual(totalExpected, resultNewData.Length);
 
             ISet<int> values = new HashSet<int>();
             foreach (var theEvent in resultNewData) {
                 values.Add(theEvent.Get("value").AsInt32());
             }
 
-            Assert.AreEqual(totalExpected, values.Count, "Unexpected duplicates");
+            ClassicAssert.AreEqual(totalExpected, values.Count, "Unexpected duplicates");
 
             listener.Reset();
             env.UndeployAll();

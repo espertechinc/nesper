@@ -10,6 +10,7 @@ using System;
 using com.espertech.esper.common.@internal.supportunit.geom;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
 {
@@ -24,8 +25,8 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var bbOne = BoundingBox.From(one.X, one.Y, one.Width, one.Height);
             var bbTwo = BoundingBox.From(two.X, two.Y, two.Width, two.Height);
 
-            Assert.AreEqual(expected, bbOne.IntersectsBoxIncludingEnd(two.X, two.Y, two.Width, two.Height));
-            Assert.AreEqual(expected, bbTwo.IntersectsBoxIncludingEnd(one.X, one.Y, one.Width, one.Height));
+            ClassicAssert.AreEqual(expected, bbOne.IntersectsBoxIncludingEnd(two.X, two.Y, two.Width, two.Height));
+            ClassicAssert.AreEqual(expected, bbTwo.IntersectsBoxIncludingEnd(one.X, one.Y, one.Width, one.Height));
         }
 
         private void RunAssertionQuadrant(
@@ -40,26 +41,26 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         {
             if (!bb.ContainsPoint(x, y))
             {
-                Assert.IsNull(expected);
-                Assert.IsFalse(bbNW.ContainsPoint(x, y));
-                Assert.IsFalse(bbNE.ContainsPoint(x, y));
-                Assert.IsFalse(bbSW.ContainsPoint(x, y));
-                Assert.IsFalse(bbSE.ContainsPoint(x, y));
+                ClassicAssert.IsNull(expected);
+                ClassicAssert.IsFalse(bbNW.ContainsPoint(x, y));
+                ClassicAssert.IsFalse(bbNE.ContainsPoint(x, y));
+                ClassicAssert.IsFalse(bbSW.ContainsPoint(x, y));
+                ClassicAssert.IsFalse(bbSE.ContainsPoint(x, y));
                 return;
             }
 
             var received = bb.GetQuadrant(x, y);
-            Assert.AreEqual(expected, received);
-            Assert.AreEqual(expected == QuadrantEnum.NW, bbNW.ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.NE, bbNE.ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.SW, bbSW.ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.SE, bbSE.ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected, received);
+            ClassicAssert.AreEqual(expected == QuadrantEnum.NW, bbNW.ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.NE, bbNE.ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.SW, bbSW.ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.SE, bbSE.ContainsPoint(x, y));
 
             var subdivided = bb.Subdivide();
-            Assert.AreEqual(expected == QuadrantEnum.NW, subdivided[0].ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.NE, subdivided[1].ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.SW, subdivided[2].ContainsPoint(x, y));
-            Assert.AreEqual(expected == QuadrantEnum.SE, subdivided[3].ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.NW, subdivided[0].ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.NE, subdivided[1].ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.SW, subdivided[2].ContainsPoint(x, y));
+            ClassicAssert.AreEqual(expected == QuadrantEnum.SE, subdivided[3].ContainsPoint(x, y));
         }
 
         private void RunAssertionQuadrantAppliesMulti(
@@ -77,11 +78,11 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             bool intersectsSW,
             bool intersectsSE)
         {
-            Assert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(x, y, width, height));
-            Assert.AreEqual(intersectsNW, bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(intersectsNE, bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(intersectsSW, bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(intersectsSE, bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(x, y, width, height));
+            ClassicAssert.AreEqual(intersectsNW, bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(intersectsNE, bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(intersectsSW, bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(intersectsSE, bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
         }
 
         private void RunAssertionQuadrantAppliesNone(
@@ -95,12 +96,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             BoundingBox bbSW,
             BoundingBox bbSE)
         {
-            Assert.AreEqual(QuadrantAppliesEnum.NONE, bb.GetQuadrantApplies(x, y, width, height));
-            Assert.IsFalse(bb.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsFalse(bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsFalse(bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsFalse(bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsFalse(bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.NONE, bb.GetQuadrantApplies(x, y, width, height));
+            ClassicAssert.IsFalse(bb.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsFalse(bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsFalse(bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsFalse(bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsFalse(bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
         }
 
         private void RunAssertionQuadrantAppliesAll(
@@ -114,12 +115,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             BoundingBox bbSW,
             BoundingBox bbSE)
         {
-            Assert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(x, y, width, height));
-            Assert.IsTrue(bb.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsTrue(bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsTrue(bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsTrue(bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.IsTrue(bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(x, y, width, height));
+            ClassicAssert.IsTrue(bb.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsTrue(bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsTrue(bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsTrue(bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.IsTrue(bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
         }
 
         private void RunAssertionQuadrantAppliesOne(
@@ -134,12 +135,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             BoundingBox bbSE,
             QuadrantAppliesEnum expected)
         {
-            Assert.AreEqual(expected, bb.GetQuadrantApplies(x, y, width, height));
-            Assert.IsTrue(bb.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(expected == QuadrantAppliesEnum.NW, bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(expected == QuadrantAppliesEnum.NE, bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(expected == QuadrantAppliesEnum.SW, bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
-            Assert.AreEqual(expected == QuadrantAppliesEnum.SE, bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(expected, bb.GetQuadrantApplies(x, y, width, height));
+            ClassicAssert.IsTrue(bb.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(expected == QuadrantAppliesEnum.NW, bbNW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(expected == QuadrantAppliesEnum.NE, bbNE.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(expected == QuadrantAppliesEnum.SW, bbSW.IntersectsBoxIncludingEnd(x, y, width, height));
+            ClassicAssert.AreEqual(expected == QuadrantAppliesEnum.SE, bbSE.IntersectsBoxIncludingEnd(x, y, width, height));
         }
 
         private Rectangle2D<double> Rect(
@@ -156,22 +157,22 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
         {
             var bb = new BoundingBox(10, 20, 40, 60);
 
-            Assert.IsTrue(bb.ContainsPoint(10, 20));
-            Assert.IsTrue(bb.ContainsPoint(39.9999, 59.9999));
+            ClassicAssert.IsTrue(bb.ContainsPoint(10, 20));
+            ClassicAssert.IsTrue(bb.ContainsPoint(39.9999, 59.9999));
 
-            Assert.IsFalse(bb.ContainsPoint(40, 60));
-            Assert.IsFalse(bb.ContainsPoint(10, 100));
-            Assert.IsFalse(bb.ContainsPoint(100, 10));
+            ClassicAssert.IsFalse(bb.ContainsPoint(40, 60));
+            ClassicAssert.IsFalse(bb.ContainsPoint(10, 100));
+            ClassicAssert.IsFalse(bb.ContainsPoint(100, 10));
         }
 
         [Test]
         public void TestFrom()
         {
             var bb = BoundingBox.From(10, 20, 4, 15);
-            Assert.AreEqual(10d, bb.MinX);
-            Assert.AreEqual(20d, bb.MinY);
-            Assert.AreEqual(14d, bb.MaxX);
-            Assert.AreEqual(35d, bb.MaxY);
+            ClassicAssert.AreEqual(10d, bb.MinX);
+            ClassicAssert.AreEqual(20d, bb.MinY);
+            ClassicAssert.AreEqual(14d, bb.MaxX);
+            ClassicAssert.AreEqual(35d, bb.MaxY);
         }
 
         [Test]
@@ -241,9 +242,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var bbSW = new BoundingBox(bb.MinX, bb.MinY + h, bb.MinX + w, bb.MaxY);
             var bbSE = new BoundingBox(bb.MinX + w, bb.MinY + h, bb.MaxX, bb.MaxY);
 
-            Assert.AreEqual(QuadrantAppliesEnum.NW, bb.GetQuadrantApplies(10, 20, 1, 1));
-            Assert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(10, 20, 40, 60));
-            Assert.AreEqual(QuadrantAppliesEnum.NONE, bb.GetQuadrantApplies(0, 0, 1, 1));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.NW, bb.GetQuadrantApplies(10, 20, 1, 1));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.SOME, bb.GetQuadrantApplies(10, 20, 40, 60));
+            ClassicAssert.AreEqual(QuadrantAppliesEnum.NONE, bb.GetQuadrantApplies(0, 0, 1, 1));
 
             // within single
             RunAssertionQuadrantAppliesOne(11, 21, 1, 1, bb, bbNW, bbNE, bbSW, bbSE, QuadrantAppliesEnum.NW);
@@ -326,14 +327,14 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
                 }
                 else if (result == QuadrantAppliesEnum.SOME)
                 {
-                    Assert.IsTrue((nw ? 1 : 0) + (ne ? 1 : 0) + (sw ? 1 : 0) + (se ? 1 : 0) > 1);
+                    ClassicAssert.IsTrue((nw ? 1 : 0) + (ne ? 1 : 0) + (sw ? 1 : 0) + (se ? 1 : 0) > 1);
                 }
                 else
                 {
-                    Assert.AreEqual(result == QuadrantAppliesEnum.NW, nw);
-                    Assert.AreEqual(result == QuadrantAppliesEnum.NE, ne);
-                    Assert.AreEqual(result == QuadrantAppliesEnum.SW, sw);
-                    Assert.AreEqual(result == QuadrantAppliesEnum.SE, se);
+                    ClassicAssert.AreEqual(result == QuadrantAppliesEnum.NW, nw);
+                    ClassicAssert.AreEqual(result == QuadrantAppliesEnum.NE, ne);
+                    ClassicAssert.AreEqual(result == QuadrantAppliesEnum.SW, sw);
+                    ClassicAssert.AreEqual(result == QuadrantAppliesEnum.SE, se);
                 }
             }
         }
@@ -344,7 +345,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var bb = new BoundingBox(0, 0, 100, 100);
             var node = bb.TreeForDepth(3);
             var swNwNw = node.se.nw.nw.bb;
-            Assert.IsTrue(swNwNw.Equals(new BoundingBox(50, 50, 50 + 100 / 2 / 2 / 2.0, 50 + 100 / 2 / 2 / 2.0)));
+            ClassicAssert.IsTrue(swNwNw.Equals(new BoundingBox(50, 50, 50 + 100 / 2 / 2 / 2.0, 50 + 100 / 2 / 2 / 2.0)));
         }
 
         [Test]
@@ -354,12 +355,12 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.core
             var node = bb.TreeForPath(new [] { "se","nw","ne","sw" });
             var inner = node.se.nw.ne.sw.bb;
             var tree = bb.TreeForDepth(4);
-            Assert.IsTrue(inner.Equals(tree.se.nw.ne.sw.bb));
+            ClassicAssert.IsTrue(inner.Equals(tree.se.nw.ne.sw.bb));
 
-            Assert.AreEqual(node.nw, node.GetQuadrant(QuadrantEnum.NW));
-            Assert.AreEqual(node.ne, node.GetQuadrant(QuadrantEnum.NE));
-            Assert.AreEqual(node.sw, node.GetQuadrant(QuadrantEnum.SW));
-            Assert.AreEqual(node.se, node.GetQuadrant(QuadrantEnum.SE));
+            ClassicAssert.AreEqual(node.nw, node.GetQuadrant(QuadrantEnum.NW));
+            ClassicAssert.AreEqual(node.ne, node.GetQuadrant(QuadrantEnum.NE));
+            ClassicAssert.AreEqual(node.sw, node.GetQuadrant(QuadrantEnum.SW));
+            ClassicAssert.AreEqual(node.se, node.GetQuadrant(QuadrantEnum.SE));
         }
     }
 } // end of namespace

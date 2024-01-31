@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
@@ -112,13 +112,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.AssertListener(
                     "count",
-                    listener => { Assert.AreEqual(4L, listener.GetAndResetDataListsFlattened().First[3].Get("cnt")); });
+                    listener => { ClassicAssert.AreEqual(4L, listener.GetAndResetDataListsFlattened().First[3].Get("cnt")); });
                 env.ListenerReset("create");
 
                 env.SendEventBean(new SupportBean_S0(0));
                 env.AssertListener(
                     "count",
-                    listener => Assert.AreEqual(0L, listener.AssertOneGetNewAndReset().Get("cnt")));
+                    listener => ClassicAssert.AreEqual(0L, listener.AssertOneGetNewAndReset().Get("cnt")));
                 env.AssertPropsPerRowLastNew(
                     "delete",
                     "TheString,IntPrimitive".SplitCsv(),
@@ -603,26 +603,26 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             var stmtTextCreateOne = outputType.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedSTAG)) +
                                     "@name('createOne') @public create window MyWindowSTAG#keepall as select TheString as a1, IntPrimitive as b1 from SupportBean";
             env.CompileDeploy(stmtTextCreateOne, path).AddListener("createOne");
-            Assert.AreEqual(0, GetCount(env, "createOne", "MyWindowSTAG"));
+            ClassicAssert.AreEqual(0, GetCount(env, "createOne", "MyWindowSTAG"));
             env.AssertStatement(
                 "createOne",
-                statement => Assert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
 
             // create window two
             var stmtTextCreateTwo = outputType.GetAnnotationTextWJsonProvided(typeof(MyLocalJsonProvidedSTAGTwo)) +
                                     " @name('createTwo') @public create window MyWindowSTAGTwo#keepall as select TheString as a2, IntPrimitive as b2 from SupportBean";
             env.CompileDeploy(stmtTextCreateTwo, path).AddListener("createTwo");
-            Assert.AreEqual(0, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
+            ClassicAssert.AreEqual(0, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
             env.AssertStatement(
                 "createTwo",
-                statement => Assert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
+                statement => ClassicAssert.IsTrue(outputType.MatchesClass(statement.EventType.UnderlyingType)));
 
             // create delete stmt
             var stmtTextDelete = "@name('delete') on MyWindowSTAG delete from MyWindowSTAGTwo where a1 = a2";
             env.CompileDeploy(stmtTextDelete, path).AddListener("delete");
             env.AssertStatement(
                 "delete",
-                statement => Assert.AreEqual(
+                statement => ClassicAssert.AreEqual(
                     StatementType.ON_DELETE,
                     statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -638,13 +638,13 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertPropsNew("createTwo", fieldsTwo, new object[] { "E1", -10 });
             env.AssertPropsPerRowIterator("createTwo", fieldsTwo, new object[][] { new object[] { "E1", -10 } });
             env.AssertListenerNotInvoked("createOne");
-            Assert.AreEqual(1, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
+            ClassicAssert.AreEqual(1, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
 
             SendSupportBean(env, "E2", 5);
             env.AssertPropsNew("createOne", fieldsOne, new object[] { "E2", 5 });
             env.AssertPropsPerRowIterator("createOne", fieldsOne, new object[][] { new object[] { "E2", 5 } });
             env.AssertListenerNotInvoked("createTwo");
-            Assert.AreEqual(1, GetCount(env, "createOne", "MyWindowSTAG"));
+            ClassicAssert.AreEqual(1, GetCount(env, "createOne", "MyWindowSTAG"));
 
             SendSupportBean(env, "E3", -1);
             env.AssertPropsNew("createTwo", fieldsTwo, new object[] { "E3", -1 });
@@ -653,7 +653,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 fieldsTwo,
                 new object[][] { new object[] { "E1", -10 }, new object[] { "E3", -1 } });
             env.AssertListenerNotInvoked("createOne");
-            Assert.AreEqual(2, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
+            ClassicAssert.AreEqual(2, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
 
             SendSupportBean(env, "E3", 1);
             env.AssertPropsNew("createOne", fieldsOne, new object[] { "E3", 1 });
@@ -663,8 +663,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 new object[][] { new object[] { "E2", 5 }, new object[] { "E3", 1 } });
             env.AssertPropsOld("createTwo", fieldsTwo, new object[] { "E3", -1 });
             env.AssertPropsPerRowIterator("createTwo", fieldsTwo, new object[][] { new object[] { "E1", -10 } });
-            Assert.AreEqual(2, GetCount(env, "createOne", "MyWindowSTAG"));
-            Assert.AreEqual(1, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
+            ClassicAssert.AreEqual(2, GetCount(env, "createOne", "MyWindowSTAG"));
+            ClassicAssert.AreEqual(1, GetCount(env, "createTwo", "MyWindowSTAGTwo"));
 
             env.UndeployModuleContaining("delete");
             env.UndeployModuleContaining("insert");
@@ -720,7 +720,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             string statementName,
             string windowName)
         {
-            env.AssertThat(() => Assert.AreEqual(expected, GetIndexCount(env, statementName, windowName)));
+            env.AssertThat(() => ClassicAssert.AreEqual(expected, GetIndexCount(env, statementName, windowName)));
         }
 
         public class MyLocalJsonProvidedSTAG

@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
@@ -298,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 model.RowLimitClause = RowLimitClause.Create(1);
 
                 var epl = "select irstream * from SupportBean#length_batch(3) limit 1";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");

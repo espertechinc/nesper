@@ -11,6 +11,7 @@ using com.espertech.esper.common.client.scopetest;
 using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.collection
 {
@@ -31,7 +32,7 @@ namespace com.espertech.esper.common.@internal.collection
         public void TestEmpty()
         {
             var enumerator = SuperEnumerator.For(Make(null), Make(null));
-            Assert.IsFalse(enumerator.MoveNext());
+            ClassicAssert.IsFalse(enumerator.MoveNext());
         }
 
         [Test]

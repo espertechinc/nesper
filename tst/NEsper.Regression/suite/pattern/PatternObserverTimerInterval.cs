@@ -18,6 +18,8 @@ using com.espertech.esper.regressionlib.support.patternassert;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternObserverTimerInterval
@@ -113,7 +115,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 PatternExpr pattern = Patterns.TimerInterval(1.999d);
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("B1");
                 testCaseList.AddTest(testCase);

@@ -15,6 +15,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
 {
@@ -89,7 +90,7 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             var values = PointRegionQuadTreeRowIndexQuery.QueryRange(quadTree, x, y, width, height);
             if (ids == null || ids.Length == 0)
             {
-                Assert.IsTrue(values == null);
+                ClassicAssert.IsTrue(values == null);
             }
             else
             {
@@ -108,9 +109,9 @@ namespace com.espertech.esper.common.@internal.epl.spatial.quadtree.prqdrowindex
             string expected,
             XYPointMultiType point)
         {
-            Assert.AreEqual(x, point.X);
-            Assert.AreEqual(y, point.Y);
-            Assert.AreEqual(expected, point.Multityped.RenderAny());
+            ClassicAssert.AreEqual(x, point.X);
+            ClassicAssert.AreEqual(y, point.Y);
+            ClassicAssert.AreEqual(expected, point.Multityped.RenderAny());
         }
     }
 } // end of namespace

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.client;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -63,8 +64,8 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             SupportCompileDeployUtil.ThreadSleep(1000);
 
             // assert
-            Assert.IsNull(myRunnable.exception);
-            Assert.AreEqual(numEvents, listener.total);
+            ClassicAssert.IsNull(myRunnable.exception);
+            ClassicAssert.AreEqual(numEvents, listener.total);
 
             env.UndeployAll();
         }

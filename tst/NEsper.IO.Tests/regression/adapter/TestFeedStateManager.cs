@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esperio.regression.adapter
 {
@@ -132,37 +133,37 @@ namespace com.espertech.esperio.regression.adapter
 		private void Start()
 		{
 			_stateManager.Start();
-			Assert.AreEqual(AdapterState.STARTED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.STARTED, _stateManager.State);
 		}
 
 		private void Open()
 		{
 			_stateManager = new AdapterStateManager();
-			Assert.AreEqual(AdapterState.OPENED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.OPENED, _stateManager.State);
 		}
 
 		private void Destroy()
 		{
 			_stateManager.Destroy();
-			Assert.AreEqual(AdapterState.DESTROYED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.DESTROYED, _stateManager.State);
 		}
 
 		private void Stop()
 		{
 			_stateManager.Stop();
-			Assert.AreEqual(AdapterState.OPENED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.OPENED, _stateManager.State);
 		}
 
 		private void Pause()
 		{
 			_stateManager.Pause();
-			Assert.AreEqual(AdapterState.PAUSED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.PAUSED, _stateManager.State);
 		}
 
 		private void Resume()
 		{
 			_stateManager.Resume();
-			Assert.AreEqual(AdapterState.STARTED, _stateManager.State);
+			ClassicAssert.AreEqual(AdapterState.STARTED, _stateManager.State);
 		}
 	}
 } // end of namespace

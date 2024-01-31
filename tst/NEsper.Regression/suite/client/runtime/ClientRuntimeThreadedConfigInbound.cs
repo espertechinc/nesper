@@ -23,6 +23,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -144,17 +145,17 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
 
             var end = PerformanceObserver.MicroTime;
             var delta = (end - start) / 1000;
-            Assert.Less(delta, 500);
+            ClassicAssert.Less(delta, 500);
 
             Thread.Sleep(1000);
 
             foreach (var listener in Arrays.AsList(listenerMap, listenerBean, listenerXML, listenerOA, listenerJson)) {
-                Assert.AreEqual(4, listener.NewEvents.Count);
+                ClassicAssert.AreEqual(4, listener.NewEvents.Count);
             }
 
             var spi = (EPRuntimeSPI)env.Runtime;
-            Assert.AreEqual(0, spi.ServicesContext.ThreadingService.InboundQueue.Count);
-            Assert.IsNotNull(spi.ServicesContext.ThreadingService.InboundThreadPool);
+            ClassicAssert.AreEqual(0, spi.ServicesContext.ThreadingService.InboundQueue.Count);
+            ClassicAssert.IsNotNull(spi.ServicesContext.ThreadingService.InboundThreadPool);
 
             env.UndeployAll();
         }

@@ -19,6 +19,8 @@ using com.espertech.esper.regressionlib.support.client;
 
 // DEFAULT_RUNTIME_URI
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.client.instrument
 {
     public class ClientInstrumentAudit
@@ -86,16 +88,16 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual(1, callback.Audits.Count);
+                        ClassicAssert.AreEqual(1, callback.Audits.Count);
                         var cb = callback.Audits[0];
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             "SupportBean(TheString=...) inserted SupportBean[SupportBean(\"E1\", 1)]",
                             cb.Message);
-                        Assert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
-                        Assert.AreEqual("ABC", cb.StatementName);
-                        Assert.AreEqual(env.RuntimeURI, cb.RuntimeURI);
-                        Assert.AreEqual(AuditEnum.STREAM, cb.Category);
-                        Assert.AreEqual(1, cb.RuntimeTime);
+                        ClassicAssert.AreEqual(env.DeploymentId("ABC"), cb.DeploymentId);
+                        ClassicAssert.AreEqual("ABC", cb.StatementName);
+                        ClassicAssert.AreEqual(env.RuntimeURI, cb.RuntimeURI);
+                        ClassicAssert.AreEqual(AuditEnum.STREAM, cb.Category);
+                        ClassicAssert.AreEqual(1, cb.RuntimeTime);
                     });
                 AuditPath.AuditCallback = null;
                 env.UndeployAll();
@@ -160,8 +162,8 @@ namespace com.espertech.esper.regressionlib.suite.client.instrument
                 env.AssertEventNew(
                     "ABC",
                     @event => {
-                        Assert.AreEqual(5000, @event.Get("val0"));
-                        Assert.AreEqual(50, @event.Get("val1"));
+                        ClassicAssert.AreEqual(5000, @event.Get("val0"));
+                        ClassicAssert.AreEqual(50, @event.Get("val1"));
                     });
                 env.UndeployAll();
 

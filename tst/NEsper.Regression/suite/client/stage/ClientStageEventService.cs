@@ -22,7 +22,7 @@ using NEsper.Avro.Core;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
@@ -168,7 +168,7 @@ namespace com.espertech.esper.regressionlib.suite.client.stage
             string typename,
             object underlying)
         {
-            Assert.IsNotNull(env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Underlying);
+            ClassicAssert.IsNotNull(env.ListenerStage("ST", "s0").AssertOneGetNewAndReset().Underlying);
         }
     }
 } // end of namespace

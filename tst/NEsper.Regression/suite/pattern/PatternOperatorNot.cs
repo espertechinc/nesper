@@ -16,6 +16,8 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternOperatorNot
@@ -94,7 +96,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     .Add(Patterns.NotFilter("SupportBean_G", "g"));
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
@@ -187,7 +189,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     .Add(Patterns.NotFilter("SupportBean_G", "g"));
                 model.FromClause = FromClause.Create(PatternStream.Create(pattern));
                 model = env.CopyMayFail(model);
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));

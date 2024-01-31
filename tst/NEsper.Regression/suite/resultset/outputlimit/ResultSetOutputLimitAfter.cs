@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
@@ -118,7 +119,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
                 model.OutputLimitClause = OutputLimitClause.Create(Expressions.TimePeriod(0, 0, 0, 5, 0))
                     .WithAfterTimePeriodExpression(Expressions.TimePeriod(0, 0, 0, 20, 0));
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
             }
         }
 
@@ -176,7 +177,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 model.SelectClause = SelectClause.Create("TheString");
                 model.FromClause = FromClause.Create(FilterStream.Create("SupportBean").AddView("keepall"));
                 model.OutputLimitClause = OutputLimitClause.CreateAfter(3);
-                Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
+                ClassicAssert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
 
                 env.CompileDeploy(model).AddListener("s0");
@@ -193,7 +194,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertPropsNew("s0", fields, new object[] { "E5" });
 
                 model = env.EplToModel("select TheString from SupportBean#keepall output after 3 events");
-                Assert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
+                ClassicAssert.AreEqual("select TheString from SupportBean#keepall output after 3 events ", model.ToEPL());
 
                 env.UndeployAll();
             }
@@ -280,8 +281,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 env.AssertRuntime(
                     runtime => {
                         var depId = env.DeploymentId("s0");
-                        Assert.AreEqual(true, runtime.VariableService.GetVariableValue(depId, "myvar1"));
-                        Assert.AreEqual(true, runtime.VariableService.GetVariableValue(depId, "myvar2"));
+                        ClassicAssert.AreEqual(true, runtime.VariableService.GetVariableValue(depId, "myvar1"));
+                        ClassicAssert.AreEqual(true, runtime.VariableService.GetVariableValue(depId, "myvar2"));
                     });
 
                 env.UndeployAll();

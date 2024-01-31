@@ -19,6 +19,7 @@ using com.espertech.esper.compat.logging;
 using com.espertech.esper.runtime.@internal.timer;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
 {
@@ -59,11 +60,11 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             SupportScheduleCallback[] callbacks,
             int[] results)
         {
-            Assert.IsTrue(callbacks.Length == results.Length);
+            ClassicAssert.IsTrue(callbacks.Length == results.Length);
 
             for (var i = 0; i < callbacks.Length; i++)
             {
-                Assert.AreEqual(results[i], callbacks[i].ClearAndGetOrderTriggered());
+                ClassicAssert.AreEqual(results[i], callbacks[i].ClearAndGetOrderTriggered());
             }
         }
 
@@ -116,7 +117,7 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
         public void TestAddTwice()
         {
             service.Add(100, callbacks[0], slots[0][0]);
-            Assert.IsTrue(service.IsScheduled(callbacks[0]));
+            ClassicAssert.IsTrue(service.IsScheduled(callbacks[0]));
             service.Add(100, callbacks[0], slots[0][0]);
 
             service.Add(
@@ -149,34 +150,34 @@ namespace com.espertech.esper.runtime.@internal.schedulesvcimpl
             service.Add(20, callbacks[2], slots[1][0]);
             service.Add(20, callbacks[1], slots[0][1]);
             service.Add(21, callbacks[0], slots[0][0]);
-            Assert.IsTrue(service.IsScheduled(callbacks[3]));
-            Assert.IsTrue(service.IsScheduled(callbacks[0]));
+            ClassicAssert.IsTrue(service.IsScheduled(callbacks[3]));
+            ClassicAssert.IsTrue(service.IsScheduled(callbacks[0]));
 
             // Evaluate before the within time, expect not results
             startTime += 19;
             service.Time = startTime;
             EvaluateSchedule();
             CheckCallbacks(callbacks, new[] { 0, 0, 0, 0, 0 });
-            Assert.IsTrue(service.IsScheduled(callbacks[3]));
+            ClassicAssert.IsTrue(service.IsScheduled(callbacks[3]));
 
             // Evaluate exactly on the within time, expect a result
             startTime += 1;
             service.Time = startTime;
             EvaluateSchedule();
             CheckCallbacks(callbacks, new[] { 0, 1, 2, 3, 0 });
-            Assert.IsFalse(service.IsScheduled(callbacks[3]));
+            ClassicAssert.IsFalse(service.IsScheduled(callbacks[3]));
 
             // Evaluate after already evaluated once, no result
             startTime += 1;
             service.Time = startTime;
             EvaluateSchedule();
             CheckCallbacks(callbacks, new[] { 4, 0, 0, 0, 0 });
-            Assert.IsFalse(service.IsScheduled(callbacks[3]));
+            ClassicAssert.IsFalse(service.IsScheduled(callbacks[3]));
 
             startTime += 1;
             service.Time = startTime;
             EvaluateSchedule();
-            Assert.AreEqual(0, callbacks[3].ClearAndGetOrderTriggered());
+            ClassicAssert.AreEqual(0, callbacks[3].ClearAndGetOrderTriggered());
 
             // Adding the same callback more than once should cause an exception
             service.Add(20, callbacks[0], slots[0][0]);

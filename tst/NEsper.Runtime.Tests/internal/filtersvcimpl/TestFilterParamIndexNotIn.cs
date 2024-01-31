@@ -19,6 +19,7 @@ using com.espertech.esper.compat.threading.locks;
 using com.espertech.esper.runtime.@internal.support;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.runtime.@internal.filtersvcimpl
 {
@@ -52,7 +53,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
         public void TestIndex()
         {
             FilterParamIndexNotIn index = new FilterParamIndexNotIn(MakeLookupable("LongBoxed"), new SlimReaderWriterLock());
-            Assert.AreEqual(FilterOperator.NOT_IN_LIST_OF_VALUES, index.FilterOperator);
+            ClassicAssert.AreEqual(FilterOperator.NOT_IN_LIST_OF_VALUES, index.FilterOperator);
 
             index.Put(new HashableMultiKey(new object[] { 2L, 5L }), testEvaluators[0]);
             index.Put(new HashableMultiKey(new object[] { 3L, 4L, 5L }), testEvaluators[1]);
@@ -68,11 +69,11 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             Verify(index, 6L, new bool[] { true, true, true, true });
 
             HashableMultiKey inList = new HashableMultiKey(new object[] { 3L, 4L, 5L });
-            Assert.AreEqual(testEvaluators[1], index.Get(inList));
-            Assert.IsTrue(index.ReadWriteLock != null);
+            ClassicAssert.AreEqual(testEvaluators[1], index.Get(inList));
+            ClassicAssert.IsTrue(index.ReadWriteLock != null);
             index.Remove(inList);
             index.Remove(inList);
-            Assert.AreEqual(null, index.Get(inList));
+            ClassicAssert.AreEqual(null, index.Get(inList));
 
             // now that {3,4,5} is removed, verify results again
             Verify(index, 0L, new bool[] { true, false, true, true });
@@ -86,7 +87,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             try
             {
                 index.Put("a", testEvaluators[0]);
-                Assert.IsTrue(false);
+                ClassicAssert.IsTrue(false);
             }
             catch (Exception)
             {
@@ -100,7 +101,7 @@ namespace com.espertech.esper.runtime.@internal.filtersvcimpl
             index.MatchEvent(testEventBean, matchesList, null);
             for (int i = 0; i < expected.Length; i++)
             {
-                Assert.AreEqual(expected[i], testEvaluators[i].GetAndResetCountInvoked() == 1);
+                ClassicAssert.AreEqual(expected[i], testEvaluators[i].GetAndResetCountInvoked() == 1);
             }
         }
 

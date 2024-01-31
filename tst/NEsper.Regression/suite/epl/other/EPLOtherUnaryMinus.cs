@@ -10,6 +10,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -25,7 +26,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
             env.SendEventBean(new SupportBean("E1", 10));
 
             env.AssertThat(
-                () => Assert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v")));
+                () => ClassicAssert.AreEqual(1d, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("s0"), "v")));
             env.AssertPropsNew(
                 "s0",
                 new[] { "c0", "c1" },

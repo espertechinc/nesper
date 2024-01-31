@@ -12,6 +12,8 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.util.SupportXML; // sendXMLEvent
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
     public class EventXMLNoSchemaNestedXMLDOMGetter
@@ -72,24 +74,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("", theEvent.Get("type"));
-                    Assert.AreEqual("", theEvent.Get("element1"));
+                    ClassicAssert.AreEqual("", theEvent.Get("type"));
+                    ClassicAssert.AreEqual("", theEvent.Get("element1"));
                 });
 
             SendXMLEvent(env, "<a><b></b></a>", eventTypeName);
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.IsNull(theEvent.Get("type"));
-                    Assert.IsNull(theEvent.Get("element1"));
+                    ClassicAssert.IsNull(theEvent.Get("type"));
+                    ClassicAssert.IsNull(theEvent.Get("element1"));
                 });
 
             SendXMLEvent(env, "<a><b><c>text</c></b></a>", eventTypeName);
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual("text", theEvent.Get("type"));
-                    Assert.AreEqual("text", theEvent.Get("element1"));
+                    ClassicAssert.AreEqual("text", theEvent.Get("type"));
+                    ClassicAssert.AreEqual("text", theEvent.Get("element1"));
                 });
 
             env.UndeployAll();

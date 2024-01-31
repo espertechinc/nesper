@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.support.expreval;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
@@ -299,7 +299,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
+                    statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
                 epl = "@name('s1') select 5 in (ArrayProperty) as result from SupportBeanComplexProps";
                 env.CompileDeploy(epl).AddListener("s1");
@@ -684,7 +684,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.CompileDeploy(epl).AddListener("s0");
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
+                    statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
                 SendAndAssert(env, 1, 2, 3, 4L, false);
                 SendAndAssert(env, 1, 1, 3, 4L, true);
@@ -708,7 +708,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
+                    statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
                 SendAndAssert(env, 1, 2f, 3d, 4L, false);
                 SendAndAssert(env, 1, 1f, 3d, 4L, true);
@@ -730,7 +730,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var builder = new SupportEvalBuilder("SupportBean")
                     .WithExpressions(fields, "IntPrimitive between ShortBoxed and LongBoxed")
                     .WithStatementConsumer(
-                        stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
+                        stmt => ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
 
                 builder.WithAssertion(MakeBean(1, 2, 3L)).Expect(fields, false);
                 builder.WithAssertion(MakeBean(2, 2, 3L)).Expect(fields, true);
@@ -778,7 +778,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 var epl = model.ToEPL();
                 epl = epl.Replace("IntPrimitive between 2 and 4 as rc", "IntPrimitive in [2:4] as rc");
                 epl = epl.Replace("IntPrimitive not between 2 and 4 as nrc", "IntPrimitive not in [2:4] as nrc");
-                Assert.AreEqual(eplOne, epl);
+                ClassicAssert.AreEqual(eplOne, epl);
 
                 // test range reversed
                 var eplTwo =
@@ -822,7 +822,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
+                    statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
                 SendAndAssert(env, 1, 2f, 3d, false);
                 SendAndAssert(env, 2, 2f, 3d, true);
@@ -928,7 +928,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var fields = "c0".SplitCsv();
             var builder = new SupportEvalBuilder("SupportBean")
                 .WithExpressions(fields, expr)
-                .WithStatementConsumer(stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
+                .WithStatementConsumer(stmt => ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
 
             for (var i = 0; i < input.Length; i++) {
                 builder.WithAssertion(MakeSupportBeanEvent(input[i])).Expect(fields, result[i]);
@@ -947,7 +947,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var fields = "c0".SplitCsv();
             var builder = new SupportEvalBuilder("SupportBean")
                 .WithExpressions(fields, expression)
-                .WithStatementConsumer(stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
+                .WithStatementConsumer(stmt => ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
 
             for (var i = 0; i < input.Length; i++) {
                 builder.WithAssertion(new SupportBean(input[i], i)).Expect(fields, result[i]);
@@ -965,24 +965,24 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             bool?[] result)
         {
             var compiled = env.Compile(model, new CompilerArguments(env.Configuration));
-            Assert.AreEqual(epl, model.ToEPL());
+            ClassicAssert.AreEqual(epl, model.ToEPL());
 
             var objectmodel = env.EplToModel(epl);
             objectmodel = env.CopyMayFail(objectmodel);
-            Assert.AreEqual(epl, objectmodel.ToEPL());
+            ClassicAssert.AreEqual(epl, objectmodel.ToEPL());
 
             env.Deploy(compiled).AddListener("s0");
 
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
+                statement => ClassicAssert.AreEqual(typeof(bool?), statement.EventType.GetPropertyType("result")));
 
             for (var i = 0; i < input.Length; i++) {
                 SendSupportBeanEvent(env, input[i]);
                 var index = i;
                 env.AssertEventNew(
                     "s0",
-                    theEvent => Assert.AreEqual(
+                    theEvent => ClassicAssert.AreEqual(
                         result[index],
                         theEvent.Get("result"),
                         "Wrong result for " + input[index]));
@@ -1000,7 +1000,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
             var fields = "c0".SplitCsv();
             var builder = new SupportEvalBuilder("SupportBean")
                 .WithExpressions(fields, expr)
-                .WithStatementConsumer(stmt => Assert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
+                .WithStatementConsumer(stmt => ClassicAssert.AreEqual(typeof(bool?), stmt.EventType.GetPropertyType("c0")));
 
             for (var i = 0; i < input.Length; i++) {
                 builder.WithAssertion(MakeSupportBeanEvent(input[i])).Expect(fields, result[i]);

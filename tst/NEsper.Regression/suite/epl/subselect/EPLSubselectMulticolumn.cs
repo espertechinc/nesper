@@ -14,6 +14,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
 {
@@ -184,14 +185,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         for (var i = 0; i < rows.Length; i++) {
                             var message = "Failed assertion for " + rows[i][0];
                             var prop = statement.EventType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType, message);
-                            Assert.AreEqual(rows[i][2], prop.IsFragment, message);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, message);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, message);
+                            ClassicAssert.AreEqual(rows[i][2], prop.IsFragment, message);
                         }
 
                         var fragmentType = statement.EventType.GetFragmentType("subrow");
-                        Assert.IsFalse(fragmentType.IsIndexed);
-                        Assert.IsFalse(fragmentType.IsNative);
+                        ClassicAssert.IsFalse(fragmentType.IsIndexed);
+                        ClassicAssert.IsFalse(fragmentType.IsNative);
                         rows = new object[][] {
                             new object[] { "v1", typeof(int?) },
                             new object[] { "v2", typeof(int?) },
@@ -201,8 +202,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                         for (var i = 0; i < rows.Length; i++) {
                             var message = "Failed assertion for " + rows[i][0];
                             var prop = fragmentType.FragmentType.PropertyDescriptors[i];
-                            Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                            Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                            ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, message);
+                            ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, message);
                         }
                     });
 
@@ -213,8 +214,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "s0",
                     row => {
                         EPAssertionUtil.AssertProps(row, fields, new object[] { "T1", null, null });
-                        Assert.IsNull(row.Get("subrow.v3"));
-                        Assert.IsNull(row.Get("subrow.v4"));
+                        ClassicAssert.IsNull(row.Get("subrow.v3"));
+                        ClassicAssert.IsNull(row.Get("subrow.v4"));
                     });
 
                 var sb1 = new SupportBean("T1", 10);
@@ -249,8 +250,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 "s0",
                 statement => {
                     var fragmentType = statement.EventType.GetFragmentType("subrow");
-                    Assert.IsFalse(fragmentType.IsIndexed);
-                    Assert.IsFalse(fragmentType.IsNative);
+                    ClassicAssert.IsFalse(fragmentType.IsIndexed);
+                    ClassicAssert.IsFalse(fragmentType.IsNative);
                     var rows = new object[][] {
                         new object[] { "v1", typeof(string) },
                         new object[] { "v2", typeof(int?) },
@@ -258,8 +259,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     for (var i = 0; i < rows.Length; i++) {
                         var message = "Failed assertion for " + rows[i][0];
                         var prop = fragmentType.FragmentType.PropertyDescriptors[i];
-                        Assert.AreEqual(rows[i][0], prop.PropertyName, message);
-                        Assert.AreEqual(rows[i][1], prop.PropertyType, message);
+                        ClassicAssert.AreEqual(rows[i][0], prop.PropertyName, message);
+                        ClassicAssert.AreEqual(rows[i][1], prop.PropertyType, message);
                     }
                 });
 

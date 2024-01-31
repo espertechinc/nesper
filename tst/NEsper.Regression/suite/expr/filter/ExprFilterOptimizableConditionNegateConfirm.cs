@@ -29,6 +29,7 @@ using static com.espertech.esper.regressionlib.support.filter.SupportFilterPlanH
 using static com.espertech.esper.regressionlib.support.filter.SupportFilterServiceHelper;
 using static com.espertech.esper.regressionlib.support.stage.SupportStageUtil; // stageIt, unstageIt
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.filter
 {
@@ -1413,7 +1414,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                         typesPerStream,
                         typeAliases);
 
-                Assert.IsTrue(ExprNodeUtilityCompare.DeepEquals(expectedNode, receivedNode, true));
+                ClassicAssert.IsTrue(ExprNodeUtilityCompare.DeepEquals(expectedNode, receivedNode, true));
             }
 
             public ISet<RegressionFlag> Flags()
@@ -1737,7 +1738,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                 StageIt(env, "P1", deploymentId);
 
                 env.StageService.GetStage("P1").EventService.SendEventBean(new SupportBean("E1", 1), "SupportBean");
-                Assert.IsFalse(env.ListenerStage("P1", "s0").IsInvokedAndReset());
+                ClassicAssert.IsFalse(env.ListenerStage("P1", "s0").IsInvokedAndReset());
 
                 UnstageIt(env, "P1", deploymentId);
 
@@ -1774,7 +1775,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.filter
                     Assert.Fail(e.Message);
                 }
 
-                Assert.AreEqual(0, future.Current.Length);
+                ClassicAssert.AreEqual(0, future.Current.Length);
 
                 df.Cancel();
                 env.UndeployAll();

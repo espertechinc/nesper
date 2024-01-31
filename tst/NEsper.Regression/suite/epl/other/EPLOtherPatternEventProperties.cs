@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean = com.espertech.esper.common.@internal.support.SupportBean;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
@@ -68,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 object theEvent = new SupportBean();
                 env.SendEventBean(theEvent);
 
-                env.AssertEventNew("s0", @event => Assert.AreSame(theEvent, @event.Get("a")));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(theEvent, @event.Get("a")));
 
                 env.UndeployAll();
             }
@@ -85,8 +85,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreSame(eventOne, eventBean.Get("a"));
-                        Assert.IsNull(eventBean.Get("b"));
+                        ClassicAssert.AreSame(eventOne, eventBean.Get("a"));
+                        ClassicAssert.IsNull(eventBean.Get("b"));
                     });
 
                 object eventTwo = SupportBeanComplexProps.MakeDefaultBean();
@@ -94,8 +94,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreSame(eventTwo, eventBean.Get("b"));
-                        Assert.IsNull(eventBean.Get("a"));
+                        ClassicAssert.AreSame(eventTwo, eventBean.Get("b"));
+                        ClassicAssert.IsNull(eventBean.Get("a"));
                     });
 
                 env.UndeployAll();
@@ -116,10 +116,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreSame(theEvent, eventBean.Get("a"));
-                        Assert.AreSame(theEvent, eventBean.Get("myEvent"));
-                        Assert.AreEqual(1, eventBean.Get("MyInt"));
-                        Assert.AreEqual("test", eventBean.Get("a.TheString"));
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("a"));
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("myEvent"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("MyInt"));
+                        ClassicAssert.AreEqual("test", eventBean.Get("a.TheString"));
                     });
 
                 env.UndeployAll();
@@ -140,14 +140,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreSame(theEvent, eventBean.Get("b"));
-                        Assert.AreEqual("Simple", eventBean.Get("simple"));
-                        Assert.AreEqual(1, eventBean.Get("Indexed"));
-                        Assert.AreEqual("NestedValue", eventBean.Get("NestedValue"));
-                        Assert.IsNull(eventBean.Get("a"));
-                        Assert.IsNull(eventBean.Get("myAEvent"));
-                        Assert.IsNull(eventBean.Get("MyInt"));
-                        Assert.IsNull(eventBean.Get("a.TheString"));
+                        ClassicAssert.AreSame(theEvent, eventBean.Get("b"));
+                        ClassicAssert.AreEqual("Simple", eventBean.Get("simple"));
+                        ClassicAssert.AreEqual(1, eventBean.Get("Indexed"));
+                        ClassicAssert.AreEqual("NestedValue", eventBean.Get("NestedValue"));
+                        ClassicAssert.IsNull(eventBean.Get("a"));
+                        ClassicAssert.IsNull(eventBean.Get("myAEvent"));
+                        ClassicAssert.IsNull(eventBean.Get("MyInt"));
+                        ClassicAssert.IsNull(eventBean.Get("a.TheString"));
                     });
 
                 var eventTwo = new SupportBean();
@@ -157,13 +157,13 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertEventNew(
                     "s0",
                     eventBean => {
-                        Assert.AreEqual(2, eventBean.Get("MyInt"));
-                        Assert.AreEqual("test2", eventBean.Get("a.TheString"));
-                        Assert.IsNull(eventBean.Get("b"));
-                        Assert.IsNull(eventBean.Get("myBEvent"));
-                        Assert.IsNull(eventBean.Get("simple"));
-                        Assert.IsNull(eventBean.Get("Indexed"));
-                        Assert.IsNull(eventBean.Get("NestedValue"));
+                        ClassicAssert.AreEqual(2, eventBean.Get("MyInt"));
+                        ClassicAssert.AreEqual("test2", eventBean.Get("a.TheString"));
+                        ClassicAssert.IsNull(eventBean.Get("b"));
+                        ClassicAssert.IsNull(eventBean.Get("myBEvent"));
+                        ClassicAssert.IsNull(eventBean.Get("simple"));
+                        ClassicAssert.IsNull(eventBean.Get("Indexed"));
+                        ClassicAssert.IsNull(eventBean.Get("NestedValue"));
                     });
 
                 env.UndeployAll();

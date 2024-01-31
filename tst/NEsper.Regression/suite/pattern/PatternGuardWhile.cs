@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
     public class PatternGuardWhile
@@ -120,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 PatternExpr every = Patterns.Every(Patterns.Filter(Filter.Create("SupportBean_B"), "b"));
                 PatternExpr patternGuarded = Patterns.WhileGuard(every, guardExpr);
                 model.FromClause = FromClause.Create(PatternStream.Create(patternGuarded));
-                Assert.AreEqual(text, model.ToEPL());
+                ClassicAssert.AreEqual(text, model.ToEPL());
                 testCase = new EventExpressionCase(model);
                 testCase.Add("B1", "b", events.GetEvent("B1"));
                 testCase.Add("B2", "b", events.GetEvent("B2"));
@@ -152,7 +154,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 env.Milestone(0);
 
                 env.SendEventBean(new SupportBean("B1", 100));
-                env.AssertListener("s0", listener => Assert.AreEqual(2, listener.GetAndResetLastNewData().Length));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(2, listener.GetAndResetLastNewData().Length));
 
                 env.RuntimeSetVariable("var", "myVariable", false);
 

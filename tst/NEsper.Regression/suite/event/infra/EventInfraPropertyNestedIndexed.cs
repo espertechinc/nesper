@@ -24,7 +24,7 @@ using com.espertech.esper.regressionlib.support.util;
 using NEsper.Avro.Extensions;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.support.SupportEventPropUtil;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
@@ -204,7 +204,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                 statement => {
                     var eventType = statement.EventType;
                     foreach (var property in fields) {
-                        Assert.AreEqual(
+                        ClassicAssert.AreEqual(
                             property.StartsWith("exists") ? typeof(bool?) : typeof(int?),
                             Boxing.GetBoxedType(eventType.GetPropertyType(property)));
                     }
@@ -255,24 +255,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
             EPAssertionUtil.AssertEqualsAnyOrder(new[] { "L1" }, eventType.PropertyNames);
 
             foreach (var prop in Arrays.AsList("L1[0]", "L1[0].Lvl1", "L1[0].L2", "L1[0].L2[0]", "L1[0].L2[0].Lvl2")) {
-                Assert.IsNotNull(eventType.GetGetter(prop));
-                Assert.IsTrue(eventType.IsProperty(prop));
+                ClassicAssert.IsNotNull(eventType.GetGetter(prop));
+                ClassicAssert.IsTrue(eventType.IsProperty(prop));
             }
 
-            Assert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("L1"), nestedClass));
+            ClassicAssert.IsTrue(TypeHelper.IsSubclassOrImplementsInterface(eventType.GetPropertyType("L1"), nestedClass));
             foreach (var prop in Arrays.AsList("L1[0].Lvl1", "L1[0].L2[0].Lvl2", "L1[0].L2[0].L3[0].Lvl3")) {
-                Assert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType(prop)));
+                ClassicAssert.AreEqual(typeof(int?), Boxing.GetBoxedType(eventType.GetPropertyType(prop)));
             }
 
             var lvl1Fragment = eventType.GetFragmentType("L1");
-            Assert.IsTrue(lvl1Fragment.IsIndexed);
+            ClassicAssert.IsTrue(lvl1Fragment.IsIndexed);
             var isNative = typeName.Equals(BEAN_TYPENAME);
-            Assert.AreEqual(isNative, lvl1Fragment.IsNative);
-            Assert.AreEqual(fragmentTypeName, lvl1Fragment.FragmentType.Name);
+            ClassicAssert.AreEqual(isNative, lvl1Fragment.IsNative);
+            ClassicAssert.AreEqual(fragmentTypeName, lvl1Fragment.FragmentType.Name);
 
             var lvl2Fragment = eventType.GetFragmentType("L1[0].L2");
-            Assert.IsTrue(lvl2Fragment.IsIndexed);
-            Assert.AreEqual(isNative, lvl2Fragment.IsNative);
+            ClassicAssert.IsTrue(lvl2Fragment.IsIndexed);
+            ClassicAssert.AreEqual(isNative, lvl2Fragment.IsNative);
 
             var received = eventType.GetPropertyDescriptor("L1");
 
@@ -307,9 +307,9 @@ namespace com.espertech.esper.regressionlib.suite.@event.infra
                          "L1[0].L2.L4",
                          "L1[0].L2[0].xx",
                          "L1[0].L2[0].L3[0].lvl5")) {
-                Assert.AreEqual(false, eventType.IsProperty(prop));
-                Assert.AreEqual(null, eventType.GetPropertyType(prop));
-                Assert.IsNull(eventType.GetPropertyDescriptor(prop));
+                ClassicAssert.AreEqual(false, eventType.IsProperty(prop));
+                ClassicAssert.AreEqual(null, eventType.GetPropertyType(prop));
+                ClassicAssert.IsNull(eventType.GetPropertyDescriptor(prop));
             }
         }
 

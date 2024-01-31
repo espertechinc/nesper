@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -96,25 +97,25 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertListener(
                 "s0",
                 listener => {
-                    Assert.IsNotNull(listener.LastNewData);
+                    ClassicAssert.IsNotNull(listener.LastNewData);
                     var theEvent = listener.LastNewData[0];
 
-                    Assert.AreEqual(element1, theEvent.Get("element1"));
-                    Assert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
-                    Assert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
-                    Assert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
+                    ClassicAssert.AreEqual(element1, theEvent.Get("element1"));
+                    ClassicAssert.AreEqual("VAL4-1", theEvent.Get("nestedElement"));
+                    ClassicAssert.AreEqual("VAL21-2", theEvent.Get("mappedElement"));
+                    ClassicAssert.AreEqual("VAL21-2", theEvent.Get("indexedElement"));
 
 #if true
-                    Assert.AreEqual(null, theEvent.Get("invalidelement"));
-                    Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
+                    ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
 #else
                     if (isInvalidReturnsEmptyString) {
-                        Assert.AreEqual("", theEvent.Get("invalidelement"));
-                        Assert.AreEqual("", theEvent.Get("invalidattribute"));
+                        ClassicAssert.AreEqual("", theEvent.Get("invalidelement"));
+                        ClassicAssert.AreEqual("", theEvent.Get("invalidattribute"));
                     }
                     else {
-                        Assert.AreEqual(null, theEvent.Get("invalidelement"));
-                        Assert.AreEqual(null, theEvent.Get("invalidattribute"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("invalidelement"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("invalidattribute"));
                     }
 #endif
                 });

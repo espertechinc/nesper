@@ -9,6 +9,7 @@
 using com.espertech.esper.common.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.type
 {
@@ -29,8 +30,8 @@ namespace com.espertech.esper.common.@internal.type
         public void TestIsWildcard()
         {
             // Wildcard is expected to make only a best-guess effort, not be perfect
-            Assert.IsTrue(listParam.IsWildcard(5, 5));
-            Assert.IsFalse(listParam.IsWildcard(6, 10));
+            ClassicAssert.IsTrue(listParam.IsWildcard(5, 5));
+            ClassicAssert.IsFalse(listParam.IsWildcard(6, 10));
         }
 
         [Test]
@@ -43,18 +44,18 @@ namespace com.espertech.esper.common.@internal.type
         [Test]
         public void TestContainsPoint()
         {
-            Assert.IsTrue(listParam.ContainsPoint(0));
-            Assert.IsFalse(listParam.ContainsPoint(1));
-            Assert.IsFalse(listParam.ContainsPoint(2));
-            Assert.IsTrue(listParam.ContainsPoint(3));
-            Assert.IsFalse(listParam.ContainsPoint(4));
-            Assert.IsTrue(listParam.ContainsPoint(5));
+            ClassicAssert.IsTrue(listParam.ContainsPoint(0));
+            ClassicAssert.IsFalse(listParam.ContainsPoint(1));
+            ClassicAssert.IsFalse(listParam.ContainsPoint(2));
+            ClassicAssert.IsTrue(listParam.ContainsPoint(3));
+            ClassicAssert.IsFalse(listParam.ContainsPoint(4));
+            ClassicAssert.IsTrue(listParam.ContainsPoint(5));
         }
 
         [Test]
         public void TestFormat()
         {
-            Assert.AreEqual("5, */3", listParam.Formatted());
+            ClassicAssert.AreEqual("5, */3", listParam.Formatted());
         }
     }
 } // end of namespace

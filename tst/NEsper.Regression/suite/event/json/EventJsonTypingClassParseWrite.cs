@@ -21,7 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.framework.SupportMessageAssertUtil; // AssertMessage
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
@@ -121,10 +121,10 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 JObject json)
             {
                 var result = (MyLocalEventNestedRecursive)@event.Get("local");
-                Assert.AreEqual("a", result.id);
-                Assert.AreEqual("b", result.child.id);
+                ClassicAssert.AreEqual("a", result.id);
+                ClassicAssert.AreEqual("b", result.child.id);
                 var rendered = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType).Render(@event);
-                Assert.AreEqual(json.ToString(), rendered);
+                ClassicAssert.AreEqual(json.ToString(), rendered);
             }
 
             private void AssertDepthThree(
@@ -133,11 +133,11 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 JObject json)
             {
                 var result = (MyLocalEventNestedRecursive)@event.Get("local");
-                Assert.AreEqual("a", result.id);
-                Assert.AreEqual("b", result.child.id);
-                Assert.AreEqual("c", result.child.child.id);
+                ClassicAssert.AreEqual("a", result.id);
+                ClassicAssert.AreEqual("b", result.child.id);
+                ClassicAssert.AreEqual("c", result.child.child.id);
                 var rendered = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType).Render(@event);
-                Assert.AreEqual(json.ToString(), rendered);
+                ClassicAssert.AreEqual(json.ToString(), rendered);
             }
 
             private JObject MakeNested(string csv)
@@ -366,12 +366,12 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 object[] c0Coll)
             {
                 var result = (MyLocalEventWArrayColl)@event.Get("local");
-                Assert.AreEqual(c0, result.c0);
+                ClassicAssert.AreEqual(c0, result.c0);
                 EPAssertionUtil.AssertEqualsExactOrder(c0Arr, result.c0Arr);
                 EPAssertionUtil.AssertEqualsExactOrder(c0Arr2Dim, result.c0Arr2Dim);
                 EPAssertionUtil.AssertEqualsExactOrder(c0Coll, result.c0Coll.ToArray());
                 var rendered = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType).Render(@event);
-                Assert.AreEqual(json.ToString(), rendered);
+                ClassicAssert.AreEqual(json.ToString(), rendered);
             }
 
             private JObject MakeJson(
@@ -438,7 +438,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     milestone);
 
                 var uri = new Uri("ftp://ftp.is.co.za/rfc/rfc1808.txt");
-                Assert.AreEqual(uri, new Uri(uri.ToString()));
+                ClassicAssert.AreEqual(uri, new Uri(uri.ToString()));
 
                 RunAssertion(
                     env,
@@ -528,14 +528,14 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 object expected)
             {
                 var result = (MyLocalVMType)@event.Get("local");
-                Assert.AreEqual(expected, result.C0);
+                ClassicAssert.AreEqual(expected, result.C0);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { expected }, result.C0Array);
                 EPAssertionUtil.AssertEqualsExactOrder(
                     new object[][] { new object[] { expected } },
                     result.C0Array2Dim);
                 EPAssertionUtil.AssertEqualsExactOrder(new object[] { expected }, result.C0Collection);
                 var rendered = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType).Render(@event);
-                Assert.AreEqual(json, rendered);
+                ClassicAssert.AreEqual(json, rendered);
             }
 
             public ISet<RegressionFlag> Flags()
@@ -621,7 +621,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 RegressionEnvironment env,
                 EventBean @event)
             {
-                Assert.IsNull(CollectionValue(@event, local => local.c0));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c0));
                 AssertJson(env, @event, "{\"local\":{\"c0\":null}}");
             }
 
@@ -799,17 +799,17 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                 RegressionEnvironment env,
                 EventBean @event)
             {
-                Assert.IsNull(CollectionValue(@event, local => local.c0));
-                Assert.IsNull(CollectionValue(@event, local => local.c1));
-                Assert.IsNull(CollectionValue(@event, local => local.c2));
-                Assert.IsNull(CollectionValue(@event, local => local.c3));
-                Assert.IsNull(CollectionValue(@event, local => local.c4));
-                Assert.IsNull(CollectionValue(@event, local => local.c5));
-                Assert.IsNull(CollectionValue(@event, local => local.c6));
-                Assert.IsNull(CollectionValue(@event, local => local.c7));
-                Assert.IsNull(CollectionValue(@event, local => local.c8));
-                Assert.IsNull(CollectionValue(@event, local => local.c9));
-                Assert.IsNull(CollectionValue(@event, local => local.c10));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c0));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c1));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c2));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c3));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c4));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c5));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c6));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c7));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c8));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c9));
+                ClassicAssert.IsNull(CollectionValue(@event, local => local.c10));
                 AssertJson(
                     env,
                     @event,
@@ -873,7 +873,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
             string json)
         {
             var rendered = env.Runtime.RenderEventService.GetJSONRenderer(@event.EventType).Render(@event);
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 json
                     .RegexReplaceAll(" ", "")
                     .RegexReplaceAll("\n", ""),

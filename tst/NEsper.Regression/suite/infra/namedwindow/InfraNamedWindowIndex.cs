@@ -11,6 +11,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -28,8 +29,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
             env.AssertStatement(
                 "idx",
                 statement => {
-                    Assert.AreEqual(StatementType.CREATE_INDEX, statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                    Assert.AreEqual("I1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    ClassicAssert.AreEqual(StatementType.CREATE_INDEX, statement.GetProperty(StatementProperty.STATEMENTTYPE));
+                    ClassicAssert.AreEqual("I1", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                 });
 
             env.SendEventBean(new SupportBean("E0", 1));

@@ -7,6 +7,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.util
 {
@@ -73,14 +74,14 @@ namespace com.espertech.esper.common.@internal.util
             {
                 string text = "Expected match for pattern '" + pattern +
                         "' and string '" + stringMatching[i] + "'";
-                Assert.IsTrue(helper.CompareTo(stringMatching[i]), text);
+                ClassicAssert.IsTrue(helper.CompareTo(stringMatching[i]), text);
             }
 
             for (int i = 0; i < stringNotMatching.Length; i++)
             {
                 string text = "Expected mismatch for pattern '" + pattern +
                         "' and string '" + stringNotMatching[i] + "'";
-                Assert.IsFalse(helper.CompareTo(stringNotMatching[i]), text);
+                ClassicAssert.IsFalse(helper.CompareTo(stringNotMatching[i]), text);
             }
         }
     }

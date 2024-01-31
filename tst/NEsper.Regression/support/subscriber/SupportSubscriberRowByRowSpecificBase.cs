@@ -13,6 +13,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.subscriber
 {
@@ -63,7 +64,7 @@ namespace com.espertech.esper.regressionlib.support.subscriber
 
         public void AssertNoneReceived()
         {
-            Assert.IsTrue(indicate.IsEmpty());
+            ClassicAssert.IsTrue(indicate.IsEmpty());
             AssertStmtNoneReceived();
         }
     }

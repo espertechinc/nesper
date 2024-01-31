@@ -21,6 +21,8 @@ using com.espertech.esper.regressionlib.support.util;
 using static com.espertech.esper.regressionlib.support.util.LambdaAssertionUtil;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.expr.enummethod
 {
     public class ExprEnumDistinct
@@ -120,7 +122,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.enummethod
                     "s0",
                     @event => {
                         var collection = (ICollection<SupportEventWithManyArray>)@event.Get("c0");
-                        Assert.AreEqual(2, collection.Count);
+                        ClassicAssert.AreEqual(2, collection.Count);
                     });
 
                 env.UndeployAll();

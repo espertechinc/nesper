@@ -22,7 +22,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.script;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.regressionlib.support.util.SupportAdminUtil;
 
 namespace com.espertech.esper.regressionlib.suite.epl.script
@@ -187,7 +187,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
 
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(IList<string>), statement.EventType.GetPropertyType("c0")));
+                    statement => ClassicAssert.AreEqual(typeof(IList<string>), statement.EventType.GetPropertyType("c0")));
 
                 env.UndeployAll();
             }
@@ -373,7 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
                 }
 
                 // execution problem
@@ -384,7 +384,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
                 }
 
                 // execution problem
@@ -460,7 +460,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Unexpected exception executing script 'abc' for statement '"));
                 }
 
                 env.UndeployAll();
@@ -721,10 +721,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.AssertStatement(
                 "script",
                 statement => {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         StatementType.CREATE_EXPRESSION,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE));
-                    Assert.AreEqual("myScriptReturnsEvents", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
+                    ClassicAssert.AreEqual("myScriptReturnsEvents", statement.GetProperty(StatementProperty.CREATEOBJECTNAME));
                 });
 
             env.CompileDeploy(
@@ -841,7 +841,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 .AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("val0")));
+                statement => ClassicAssert.AreEqual(typeof(SupportBean), statement.EventType.GetPropertyType("val0")));
 
             env.SendEventBean(new SupportBean());
             env.AssertPropsNew(
@@ -863,7 +863,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy(epl).AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("val0")));
+                statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("val0")));
 
             env.SendEventBean(new SupportBean());
             env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { 9, 4 });
@@ -904,7 +904,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy(epl).AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
+                statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("c0")));
 
             env.SendEventBean(new SupportBean());
             env.AssertPropsNew("s0", "c0".SplitCsv(), new object[] { "x" });
@@ -949,8 +949,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 "s0",
                 outEvent => {
                     foreach (var col in Arrays.AsList("callOne()", "callTwo(1)", "callThree(1,2)")) {
-                        Assert.AreEqual(typeof(int?), outEvent.EventType.GetPropertyType(col));
-                        Assert.AreEqual(1, outEvent.Get(col));
+                        ClassicAssert.AreEqual(typeof(int?), outEvent.EventType.GetPropertyType(col));
+                        ClassicAssert.AreEqual(1, outEvent.Get(col));
                     }
                 });
 
@@ -978,7 +978,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.CompileDeploy(epl).AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("val0")));
+                statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("val0")));
 
             env.SendEventBean(new SupportBean());
             env.AssertPropsNew("s0", "val0".SplitCsv(), new object[] { 2 });
@@ -1006,7 +1006,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
                 .AddListener("s0");
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(expectedType, statement.EventType.GetPropertyType("val")));
+                statement => ClassicAssert.AreEqual(expectedType, statement.EventType.GetPropertyType("val")));
 
             for (var row = 0; row < testdata.Length; row++) {
                 var theEvent = testdata[row][0];
@@ -1032,7 +1032,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.SendEventBean(new SupportBean());
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(type, statement.EventType.GetPropertyType("getResultOne()")));
+                statement => ClassicAssert.AreEqual(type, statement.EventType.GetPropertyType("getResultOne()")));
             env.AssertEqualsNew("s0", "getResultOne()", value);
 
             env.UndeployAll();
@@ -1085,8 +1085,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(type, statement.EventType.GetPropertyType("val0"));
-                    Assert.AreEqual(type, statement.EventType.GetPropertyType("val1"));
+                    ClassicAssert.AreEqual(type, statement.EventType.GetPropertyType("val0"));
+                    ClassicAssert.AreEqual(type, statement.EventType.GetPropertyType("val1"));
                 });
             env.AssertPropsNew("s0", "val0,val1".SplitCsv(), new object[] { value, value });
 
@@ -1141,7 +1141,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.script
             catch (EPCompileException ex)
             {
                 StringAssert.Contains(part, ex.Message);
-                //Assert.IsTrue(ex.Message.Contains(part), "Message not containing text '" + part + "' : " + ex.Message);
+                //ClassicAssert.IsTrue(ex.Message.Contains(part), "Message not containing text '" + part + "' : " + ex.Message);
             }
         }
     }

@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.support.epl;
 using com.espertech.esper.regressionlib.support.patternassert;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
@@ -630,7 +630,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendBeanEvent(env, "E1", 12);
                 env.AssertPropsNew("s0", fields, new object[] { "E1", 33 });
                 env.AssertRuntime(
-                    runtime => Assert.AreEqual(false, env.Runtime.VariableService.GetVariableValue(null, "varoutone")));
+                    runtime => ClassicAssert.AreEqual(false, env.Runtime.VariableService.GetVariableValue(null, "varoutone")));
 
                 env.Milestone(1);
 
@@ -638,7 +638,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                 SendBeanEvent(env, "E2", 20);
                 env.AssertPropsNew("s0", fields, new object[] { "E2", 20 });
                 env.AssertRuntime(
-                    runtime => Assert.AreEqual(false, env.Runtime.VariableService.GetVariableValue(null, "varoutone")));
+                    runtime => ClassicAssert.AreEqual(false, env.Runtime.VariableService.GetVariableValue(null, "varoutone")));
 
                 SendBeanEvent(env, "E1", 13);
                 SendBeanEvent(env, "E2", 21);
@@ -1079,12 +1079,12 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(2, result.First.Length);
+                        ClassicAssert.AreEqual(2, result.First.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.First,
                             fields,
                             new object[][] { new object[] { "JOIN_KEY", 1.0 }, new object[] { "JOIN_KEY", 2.0 } });
-                        Assert.AreEqual(2, result.Second.Length);
+                        ClassicAssert.AreEqual(2, result.Second.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.Second,
                             fields,
@@ -1219,7 +1219,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var newData = listener.LastNewData;
-                        Assert.AreEqual(3, newData.Length);
+                        ClassicAssert.AreEqual(3, newData.Length);
                         EPAssertionUtil.AssertPropsPerRowAnyOrder(
                             newData,
                             fields,
@@ -1260,8 +1260,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     listener => {
                         var newData = listener.LastNewData;
                         var oldData = listener.LastOldData;
-                        Assert.AreEqual(5, newData.Length);
-                        Assert.AreEqual(5, oldData.Length);
+                        ClassicAssert.AreEqual(5, newData.Length);
+                        ClassicAssert.AreEqual(5, oldData.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             newData,
                             fields,
@@ -1304,7 +1304,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     "s0",
                     listener => {
                         var result = listener.DataListsFlattened;
-                        Assert.AreEqual(3, result.First.Length);
+                        ClassicAssert.AreEqual(3, result.First.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.First,
                             fields,
@@ -1312,7 +1312,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                                 new object[] { "SYM1", 1.0 }, new object[] { "SYM1", 2.0 },
                                 new object[] { "SYM1", null }
                             });
-                        Assert.AreEqual(3, result.Second.Length);
+                        ClassicAssert.AreEqual(3, result.Second.Length);
                         EPAssertionUtil.AssertPropsPerRow(
                             result.Second,
                             fields,
@@ -1507,9 +1507,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
                 });
 
             SendMDEvent(env, SYMBOL_DELL, 10);
@@ -1612,9 +1612,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
                 });
 
             SendMDEvent(env, SYMBOL_DELL, 10);
@@ -1642,9 +1642,9 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
             env.AssertStatement(
                 "s0",
                 statement => {
-                    Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
-                    Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
+                    ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Symbol"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("mySum"));
+                    ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("myAvg"));
                 });
 
             SendMDEvent(env, SYMBOL_IBM, 70);
@@ -2180,16 +2180,16 @@ namespace com.espertech.esper.regressionlib.suite.resultset.outputlimit
                     var oldData = listener.LastOldData;
                     var newData = listener.LastNewData;
 
-                    Assert.AreEqual(1, oldData.Length);
-                    Assert.AreEqual(1, newData.Length);
+                    ClassicAssert.AreEqual(1, oldData.Length);
+                    ClassicAssert.AreEqual(1, newData.Length);
 
-                    Assert.AreEqual(symbol, oldData[0].Get("Symbol"));
-                    Assert.AreEqual(oldSum, oldData[0].Get("mySum"));
-                    Assert.AreEqual(oldAvg, oldData[0].Get("myAvg"));
+                    ClassicAssert.AreEqual(symbol, oldData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(oldSum, oldData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(oldAvg, oldData[0].Get("myAvg"));
 
-                    Assert.AreEqual(symbol, newData[0].Get("Symbol"));
-                    Assert.AreEqual(newSum, newData[0].Get("mySum"));
-                    Assert.AreEqual(newAvg, newData[0].Get("myAvg"), "newData myAvg wrong");
+                    ClassicAssert.AreEqual(symbol, newData[0].Get("Symbol"));
+                    ClassicAssert.AreEqual(newSum, newData[0].Get("mySum"));
+                    ClassicAssert.AreEqual(newAvg, newData[0].Get("myAvg"), "newData myAvg wrong");
 
                     listener.Reset();
                 });

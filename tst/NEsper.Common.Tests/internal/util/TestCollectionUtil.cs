@@ -18,7 +18,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.util.CollectionUtil;
 
 namespace com.espertech.esper.common.@internal.util
@@ -81,15 +81,15 @@ namespace com.espertech.esper.common.@internal.util
                 delimiter = "|";
             }
 
-            Assert.AreEqual(expected, stringBuilder.ToString());
+            ClassicAssert.AreEqual(expected, stringBuilder.ToString());
         }
         
         private void TryAddStringArr(
             string[] expected,
             object result)
         {
-            Assert.IsTrue(result.GetType().IsArray);
-            Assert.AreEqual(typeof(string), result.GetType().GetElementType());
+            ClassicAssert.IsTrue(result.GetType().IsArray);
+            ClassicAssert.AreEqual(typeof(string), result.GetType().GetElementType());
             EPAssertionUtil.AssertEqualsExactOrder(expected, (string[]) result);
         }
 
@@ -117,13 +117,13 @@ namespace com.espertech.esper.common.@internal.util
         [Test]
         public void TestArrayAllNull()
         {
-            Assert.IsTrue(IsArrayAllNull(null));
-            Assert.IsTrue(IsArrayAllNull(new Object[0]));
-            Assert.IsTrue(IsArrayAllNull(new Object[] {null}));
-            Assert.IsTrue(IsArrayAllNull(new Object[] {null, null}));
+            ClassicAssert.IsTrue(IsArrayAllNull(null));
+            ClassicAssert.IsTrue(IsArrayAllNull(new Object[0]));
+            ClassicAssert.IsTrue(IsArrayAllNull(new Object[] {null}));
+            ClassicAssert.IsTrue(IsArrayAllNull(new Object[] {null, null}));
 
-            Assert.IsFalse(IsArrayAllNull(new Object[] {"a", null}));
-            Assert.IsFalse(IsArrayAllNull(new Object[] {null, "b"}));
+            ClassicAssert.IsFalse(IsArrayAllNull(new Object[] {"a", null}));
+            ClassicAssert.IsFalse(IsArrayAllNull(new Object[] {null, "b"}));
         }
 
         [Test]
@@ -132,35 +132,35 @@ namespace com.espertech.esper.common.@internal.util
             String a = "a";
             String b = "b";
 
-            Assert.IsTrue(IsArraySameReferences(new Object[0], new Object[0]));
-            Assert.IsTrue(IsArraySameReferences(new Object[] {a}, new Object[] {a}));
-            Assert.IsTrue(IsArraySameReferences(new Object[] {a, b}, new Object[] {a, b}));
+            ClassicAssert.IsTrue(IsArraySameReferences(new Object[0], new Object[0]));
+            ClassicAssert.IsTrue(IsArraySameReferences(new Object[] {a}, new Object[] {a}));
+            ClassicAssert.IsTrue(IsArraySameReferences(new Object[] {a, b}, new Object[] {a, b}));
 
-            Assert.IsFalse(IsArraySameReferences(new Object[] { }, new Object[] {b}));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] { }));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] {b}));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] {b, a}));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {a, b}, new Object[] {a}));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {a, b}, new Object[] {b, a}));
-            Assert.IsFalse(IsArraySameReferences(new Object[] {new String(new char[] {'a'})}, new Object[] {new String(new char[] {'a'})}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] { }, new Object[] {b}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] { }));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] {b}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {a}, new Object[] {b, a}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {a, b}, new Object[] {a}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {a, b}, new Object[] {b, a}));
+            ClassicAssert.IsFalse(IsArraySameReferences(new Object[] {new String(new char[] {'a'})}, new Object[] {new String(new char[] {'a'})}));
         }
 
         [Test]
         public void TestGetMapValueChecked()
         {
-            Assert.IsNull(GetMapValueChecked(null, "x"));
-            Assert.IsNull(GetMapValueChecked("b", "x"));
-            Assert.IsNull(GetMapValueChecked(EmptyDictionary<string, object>.Instance, "x"));
-            Assert.AreEqual("y", GetMapValueChecked(Collections.SingletonDataMap("x", "y"), "x"));
+            ClassicAssert.IsNull(GetMapValueChecked(null, "x"));
+            ClassicAssert.IsNull(GetMapValueChecked("b", "x"));
+            ClassicAssert.IsNull(GetMapValueChecked(EmptyDictionary<string, object>.Instance, "x"));
+            ClassicAssert.AreEqual("y", GetMapValueChecked(Collections.SingletonDataMap("x", "y"), "x"));
         }
 
         [Test]
         public void TestGetMapKeyExistsChecked()
         {
-            Assert.IsFalse(GetMapKeyExistsChecked(null, "x"));
-            Assert.IsFalse(GetMapKeyExistsChecked("b", "x"));
-            Assert.IsFalse(GetMapKeyExistsChecked(EmptyDictionary<string, object>.Instance, "x"));
-            Assert.IsTrue(GetMapKeyExistsChecked(Collections.SingletonDataMap("x", "y"), "x"));
+            ClassicAssert.IsFalse(GetMapKeyExistsChecked(null, "x"));
+            ClassicAssert.IsFalse(GetMapKeyExistsChecked("b", "x"));
+            ClassicAssert.IsFalse(GetMapKeyExistsChecked(EmptyDictionary<string, object>.Instance, "x"));
+            ClassicAssert.IsTrue(GetMapKeyExistsChecked(Collections.SingletonDataMap("x", "y"), "x"));
         }
 
         [Test]
@@ -198,7 +198,7 @@ namespace com.espertech.esper.common.@internal.util
             TryAddStringArr(new [] { "a" }, CollectionUtil.AddArrays(null, new[] { "a" }));
             TryAddStringArr(new [] { "b" }, CollectionUtil.AddArrays(new[] { "b" }, null));
             TryAddStringArr(new [] { "a","b","c","d" }, CollectionUtil.AddArrays(new[] { "a", "b" }, new[] { "c", "d" }));
-            Assert.AreEqual(null, CollectionUtil.AddArrays(null, null));
+            ClassicAssert.AreEqual(null, CollectionUtil.AddArrays(null, null));
 
             var result = CollectionUtil.AddArrays(new[] { 1, 2 }, new[] { 3, 4 });
             EPAssertionUtil.AssertEqualsExactOrder(new[] { 1, 2, 3, 4 }, (int[]) result);
@@ -210,7 +210,7 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (ArgumentException ex)
             {
-                Assert.AreEqual("Parameter is not an array: a", ex.Message);
+                ClassicAssert.AreEqual("Parameter is not an array: a", ex.Message);
             }
 
             try
@@ -220,7 +220,7 @@ namespace com.espertech.esper.common.@internal.util
             }
             catch (ArgumentException ex)
             {
-                Assert.AreEqual("Parameter is not an array: b", ex.Message);
+                ClassicAssert.AreEqual("Parameter is not an array: b", ex.Message);
             }
         }
 
@@ -233,7 +233,7 @@ namespace com.espertech.esper.common.@internal.util
                 e[i] = new MapEventBean(null);
             }
 
-            Assert.IsFalse(e[0].Equals(e[1]));
+            ClassicAssert.IsFalse(e[0].Equals(e[1]));
 
             object[][] testData = {
                 new object[] {new EventBean[] { }, new EventBean[] { }, "P2"},
@@ -260,11 +260,11 @@ namespace com.espertech.esper.common.@internal.util
 
                 if (expectedObj.Equals("P1"))
                 {
-                    Assert.IsTrue(result == p1);
+                    ClassicAssert.IsTrue(result == p1);
                 }
                 else if (expectedObj.Equals("P2"))
                 {
-                    Assert.IsTrue(result == p2);
+                    ClassicAssert.IsTrue(result == p2);
                 }
                 else
                 {
@@ -327,9 +327,9 @@ namespace com.espertech.esper.common.@internal.util
                 var left = (string[]) testdata[i][0];
                 var right = (string[]) testdata[i][1];
                 var expected = (bool) testdata[i][2];
-                Assert.AreEqual(expected, CollectionUtil.SortCompare(left, right), "Failed for input " + left.RenderAny());
-                Assert.IsTrue(Equals(left, (string[]) testdata[i][0]));
-                Assert.IsTrue(Equals(right, (string[]) testdata[i][1]));
+                ClassicAssert.AreEqual(expected, CollectionUtil.SortCompare(left, right), "Failed for input " + left.RenderAny());
+                ClassicAssert.IsTrue(Equals(left, (string[]) testdata[i][0]));
+                ClassicAssert.IsTrue(Equals(right, (string[]) testdata[i][1]));
             }
         }
 
@@ -358,7 +358,7 @@ namespace com.espertech.esper.common.@internal.util
                 //                " received " + received.RenderAny());
                 //}
 
-                Assert.AreNotSame(input, expected);
+                ClassicAssert.AreNotSame(input, expected);
             }
         }
 
@@ -379,7 +379,7 @@ namespace com.espertech.esper.common.@internal.util
             {
                 string expected = (string) testdata[i][1];
                 string[] input = (string[]) testdata[i][0];
-                Assert.AreEqual(expected, CollectionUtil.ToString(ToSet(input)), "Failed for input " + input);
+                ClassicAssert.AreEqual(expected, CollectionUtil.ToString(ToSet(input)), "Failed for input " + input);
             }
         }
     }

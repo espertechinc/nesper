@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -99,8 +100,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 () => {
                     var type = env.Runtime.EventTypeService.GetEventTypePreconfigured(eventTypeName);
                     SupportEventTypeAssertionUtil.AssertConsistency(type);
-                    Assert.IsNull(type.GetFragmentType("nested1"));
-                    Assert.IsNull(type.GetFragmentType("nested1.nested2"));
+                    ClassicAssert.IsNull(type.GetFragmentType("nested1"));
+                    ClassicAssert.IsNull(type.GetFragmentType("nested1.nested2"));
                 });
 
             var doc = SupportXML.MakeDefaultEvent("ABC");

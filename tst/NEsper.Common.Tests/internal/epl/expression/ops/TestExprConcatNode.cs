@@ -17,6 +17,7 @@ using com.espertech.esper.common.@internal.type;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.epl.expression.ops
 {
@@ -59,7 +60,7 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             foreach (var threadPair in threads)
             {
                 threadPair.First.Join();
-                Assert.IsFalse(threadPair.Second.IsFail);
+                ClassicAssert.IsFalse(threadPair.Second.IsFail);
             }
         }
 
@@ -99,8 +100,8 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
         [Test]
         public void TestEqualsNode()
         {
-            Assert.IsTrue(concatNode.EqualsNode(concatNode, false));
-            Assert.IsFalse(concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
+            ClassicAssert.IsTrue(concatNode.EqualsNode(concatNode, false));
+            ClassicAssert.IsFalse(concatNode.EqualsNode(new ExprMathNode(MathArithTypeEnum.DIVIDE, false, false), false));
         }
 
         [Test]
@@ -109,12 +110,12 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             concatNode.AddChildNode(new SupportExprNode("x"));
             concatNode.AddChildNode(new SupportExprNode("y"));
             SupportExprNodeUtil.Validate(container, concatNode);
-            Assert.AreEqual(typeof(string), concatNode.Forge.EvaluationType);
-            Assert.AreEqual("xy", concatNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual(typeof(string), concatNode.Forge.EvaluationType);
+            ClassicAssert.AreEqual("xy", concatNode.Forge.ExprEvaluator.Evaluate(null, false, null));
 
             concatNode.AddChildNode(new SupportExprNode("z"));
             SupportExprNodeUtil.Validate(container, concatNode);
-            Assert.AreEqual("xyz", concatNode.Forge.ExprEvaluator.Evaluate(null, false, null));
+            ClassicAssert.AreEqual("xyz", concatNode.Forge.ExprEvaluator.Evaluate(null, false, null));
         }
 
         [Test]
@@ -130,9 +131,9 @@ namespace com.espertech.esper.common.@internal.epl.expression.ops
             concatNode = new ExprConcatNode();
             concatNode.AddChildNode(new SupportExprNode("a"));
             concatNode.AddChildNode(new SupportExprNode("b"));
-            Assert.AreEqual("\"a\"||\"b\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(concatNode));
+            ClassicAssert.AreEqual("\"a\"||\"b\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(concatNode));
             concatNode.AddChildNode(new SupportExprNode("c"));
-            Assert.AreEqual("\"a\"||\"b\"||\"c\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(concatNode));
+            ClassicAssert.AreEqual("\"a\"||\"b\"||\"c\"", ExprNodeUtilityPrint.ToExpressionStringMinPrecedenceSafe(concatNode));
         }
 
         [Test]

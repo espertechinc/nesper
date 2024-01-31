@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
     /// <summary>
@@ -63,7 +65,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     nameof(SupportBean);
                 var modelCreate = env.EplToModel(stmtTextCreate);
                 env.CompileDeploy(modelCreate, path).AddListener("create");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "@name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean",
                     modelCreate.ToEPL());
 
@@ -80,7 +82,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "@name('select') select irstream key, value*2 as value from MyWindow(key is not null)";
                 var modelSelect = env.EplToModel(stmtTextSelectOne);
                 env.CompileDeploy(modelSelect, path).AddListener("select");
-                Assert.AreEqual(stmtTextSelectOne, modelSelect.ToEPL());
+                ClassicAssert.AreEqual(stmtTextSelectOne, modelSelect.ToEPL());
 
                 // send events
                 SendSupportBean(env, "E1", 10L);
@@ -96,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
                 var modelDelete = env.EplToModel(stmtTextDelete);
                 env.CompileDeploy(modelDelete, path).AddListener("delete");
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "@name('delete') on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key",
                     modelDelete.ToEPL());
 
@@ -157,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 var stmtTextCreate =
                     "@Name('create') @public create window MyWindow#keepall as select TheString as key, LongBoxed as value from SupportBean";
-                Assert.AreEqual(stmtTextCreate, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextCreate, model.ToEPL());
                 env.CompileDeploy(model, path).AddListener("create");
 
                 var stmtTextInsert =
@@ -173,7 +175,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                     .Add(multi, "value");
                 model.FromClause = FromClause.Create(FilterStream.Create("MyWindow", Expressions.IsNotNull("value")));
                 var eplSelect = "select irstream key, value*2 as value from MyWindow(value is not null)";
-                Assert.AreEqual(eplSelect, model.ToEPL());
+                ClassicAssert.AreEqual(eplSelect, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("select"));
                 env.CompileDeploy(model, path).AddListener("select");
@@ -194,7 +196,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 model.WhereClause = Expressions.EqProperty("s0.Symbol", "s1.key");
 
                 var stmtTextDelete = "on SupportMarketDataBean as s0 delete from MyWindow as s1 where s0.Symbol=s1.key";
-                Assert.AreEqual(stmtTextDelete, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextDelete, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("ondelete"));
                 env.CompileDeploy(model, path).AddListener("ondelete");
@@ -222,7 +224,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 model.SelectClause = SelectClause.CreateStreamWildcard("s1");
 
                 var stmtTextOnSelect = "on SupportBean_B as s0 select s1.* from MyWindow as s1 where s0.Id=s1.key";
-                Assert.AreEqual(stmtTextOnSelect, model.ToEPL());
+                ClassicAssert.AreEqual(stmtTextOnSelect, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("onselect"));
                 env.CompileDeploy(model, path).AddListener("onselect");
@@ -255,7 +257,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
                 clause.WithColumn(new SchemaColumnDesc("a2", "double"));
                 clause.WithColumn(new SchemaColumnDesc("a3", "int"));
                 model.CreateWindow = clause;
-                Assert.AreEqual(expected, model.ToEPL());
+                ClassicAssert.AreEqual(expected, model.ToEPL());
             }
         }
 

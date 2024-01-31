@@ -15,6 +15,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.join
 {
@@ -143,10 +144,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(3, listener.LastNewData.Length);
+                        ClassicAssert.AreEqual(3, listener.LastNewData.Length);
                         var received = new object[3];
                         for (var i = 0; i < 3; i++) {
-                            Assert.AreSame(s0, listener.LastNewData[i].Get("s0"));
+                            ClassicAssert.AreSame(s0, listener.LastNewData[i].Get("s0"));
                             received[i] = listener.LastNewData[i].Get("s1");
                         }
 
@@ -218,8 +219,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
                     "s0",
                     statement => {
                         var type = statement.EventType;
-                        Assert.AreEqual(typeof(SupportBean_S0), type.GetPropertyType("s0"));
-                        Assert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("s1"));
+                        ClassicAssert.AreEqual(typeof(SupportBean_S0), type.GetPropertyType("s0"));
+                        ClassicAssert.AreEqual(typeof(SupportBean_S1), type.GetPropertyType("s1"));
                     });
                 env.UndeployAll();
             }
@@ -256,8 +257,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.join
             SupportBean_S0 expectedS0,
             SupportBean_S1 expectedS1)
         {
-            Assert.AreSame(expectedS0, receivedEvent.Get("s0"));
-            Assert.AreSame(expectedS1, receivedEvent.Get("s1"));
+            ClassicAssert.AreSame(expectedS0, receivedEvent.Get("s0"));
+            ClassicAssert.AreSame(expectedS1, receivedEvent.Get("s1"));
         }
 
         private static void SendEvent(

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.support.bookexample;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.epl.contained
@@ -300,7 +301,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.contained
                 // with where-clause
                 stmtText = "@name('s0') select * from AccountEvent[select * from wallets where currency=\"USD\"]";
                 var model = env.EplToModel(stmtText);
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
             }
         }
 

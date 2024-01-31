@@ -18,6 +18,7 @@ using static
     com.espertech.esper.regressionlib.suite.pattern.PatternOperatorFollowedByMax4Prevent; // assertContextEnginePool
 // getExpectedCountMap
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
 {
@@ -67,7 +68,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
             env.SendEventBean(new SupportBean_B("B2"));
             env.AssertPropsPerRowLastNew("A", fields, new object[][] { new object[] { "A4", "B2" } });
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.MilestoneInc(milestone);
 
@@ -92,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 new object[][] { new object[] { "A5", "B3" }, new object[] { "A6", "B3" } });
 
             env.SendEventBean(new SupportBean_B("B4"));
-            Assert.IsFalse(env.Listener("A").IsInvoked);
+            ClassicAssert.IsFalse(env.Listener("A").IsInvoked);
 
             env.MilestoneInc(milestone);
 
@@ -106,7 +107,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 "A",
                 fields,
                 new object[][] { new object[] { "A20", "B5" }, new object[] { "A21", "B5" } });
-            Assert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
+            ClassicAssert.IsTrue(SupportConditionHandlerFactory.LastHandler.Contexts.IsEmpty());
 
             env.UndeployAll();
         }

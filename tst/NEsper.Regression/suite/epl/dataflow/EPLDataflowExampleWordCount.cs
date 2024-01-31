@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.dataflow;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -49,11 +50,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 throw new EPException(t);
             }
 
-            Assert.AreEqual(1, received.Length);
+            ClassicAssert.AreEqual(1, received.Length);
             var stats = (MyWordCountStats)received[0];
-            Assert.AreEqual(2, stats.Lines);
-            Assert.AreEqual(6, stats.Words);
-            Assert.AreEqual(23, stats.Chars);
+            ClassicAssert.AreEqual(2, stats.Lines);
+            ClassicAssert.AreEqual(6, stats.Words);
+            ClassicAssert.AreEqual(23, stats.Chars);
 
             env.UndeployAll();
         }

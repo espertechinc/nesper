@@ -19,7 +19,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using static com.espertech.esper.common.@internal.util.CollectionUtil; // appendArrayConditional
 using static com.espertech.esper.regressionlib.support.util.IndexBackingTableInfo;
 
@@ -699,7 +699,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                             }
                             catch (EPCompileException ex) {
                                 // no assertion, expected
-                                Assert.IsTrue(ex.Message.Contains("index hint busted"));
+                                ClassicAssert.IsTrue(ex.Message.Contains("index hint busted"));
                             }
                         });
                     continue;

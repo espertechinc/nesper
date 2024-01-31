@@ -22,6 +22,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -73,7 +74,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 throw new EPException(e);
             }
 
-            Assert.AreEqual(100, listener.NewEvents.Count);
+            ClassicAssert.AreEqual(100, listener.NewEvents.Count);
             listener.NewEvents.Clear();
 
             // destroy all statements
@@ -89,7 +90,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 throw new EPException(e);
             }
 
-            Assert.AreEqual(1, listener.NewEvents.Count);
+            ClassicAssert.AreEqual(1, listener.NewEvents.Count);
 
             env.UndeployAll();
         }

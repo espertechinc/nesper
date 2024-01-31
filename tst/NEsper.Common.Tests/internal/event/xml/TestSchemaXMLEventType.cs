@@ -14,6 +14,7 @@ using com.espertech.esper.common.client.configuration.common;
 using com.espertech.esper.common.@internal.xmlxsd.core;
 using com.espertech.esper.container;
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.common.@internal.@event.xml
 {
@@ -50,45 +51,45 @@ namespace com.espertech.esper.common.@internal.@event.xml
         [Test]
         public void TestSimpleProperties()
         {
-            Assert.AreEqual("SAMPLE_V6", eventSchemaOne.Get("prop4"));
+            ClassicAssert.AreEqual("SAMPLE_V6", eventSchemaOne.Get("prop4"));
         }
 
         [Test]
         public void TestNestedProperties()
         {
-            Assert.AreEqual(true, eventSchemaOne.Get("nested1.prop2"));
-            Assert.AreEqual(typeof(bool), eventSchemaOne.Get("nested1.prop2").GetType());
+            ClassicAssert.AreEqual(true, eventSchemaOne.Get("nested1.prop2"));
+            ClassicAssert.AreEqual(typeof(bool), eventSchemaOne.Get("nested1.prop2").GetType());
         }
 
         [Test]
         public void TestMappedProperties()
         {
-            Assert.AreEqual("SAMPLE_V8", eventSchemaOne.Get("nested3.nested4('a').prop5[1]"));
-            Assert.AreEqual("SAMPLE_V11", eventSchemaOne.Get("nested3.nested4('c').prop5[1]"));
+            ClassicAssert.AreEqual("SAMPLE_V8", eventSchemaOne.Get("nested3.nested4('a').prop5[1]"));
+            ClassicAssert.AreEqual("SAMPLE_V11", eventSchemaOne.Get("nested3.nested4('c').prop5[1]"));
         }
 
         [Test]
         public void TestIndexedProperties()
         {
-            Assert.AreEqual(5, eventSchemaOne.Get("nested1.nested2.prop3[2]"));
-            Assert.AreEqual(typeof(int?), eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
+            ClassicAssert.AreEqual(5, eventSchemaOne.Get("nested1.nested2.prop3[2]"));
+            ClassicAssert.AreEqual(typeof(int?), eventSchemaOne.EventType.GetPropertyType("nested1.nested2.prop3[2]"));
         }
 
         [Test]
         public void TestCustomProperty()
         {
-            Assert.AreEqual(typeof(double?), eventSchemaOne.EventType.GetPropertyType("customProp"));
-            Assert.AreEqual(3.0d, eventSchemaOne.Get("customProp"));
+            ClassicAssert.AreEqual(typeof(double?), eventSchemaOne.EventType.GetPropertyType("customProp"));
+            ClassicAssert.AreEqual(3.0d, eventSchemaOne.Get("customProp"));
         }
 
         [Test]
         public void TestAttrProperty()
         {
-            Assert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
-            Assert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
+            ClassicAssert.AreEqual(true, eventSchemaOne.Get("prop4.attr2"));
+            ClassicAssert.AreEqual(typeof(bool?), eventSchemaOne.EventType.GetPropertyType("prop4.attr2"));
 
-            Assert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].id"));
-            Assert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
+            ClassicAssert.AreEqual("c", eventSchemaOne.Get("nested3.nested4[2].id"));
+            ClassicAssert.AreEqual(typeof(string), eventSchemaOne.EventType.GetPropertyType("nested3.nested4[1].id"));
         }
 
         [Test]

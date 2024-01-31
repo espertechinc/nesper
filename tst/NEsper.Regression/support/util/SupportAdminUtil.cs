@@ -18,6 +18,7 @@ using com.espertech.esper.runtime.@internal.kernel.stage;
 using com.espertech.esper.runtime.@internal.kernel.statement;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -32,7 +33,7 @@ namespace com.espertech.esper.regressionlib.support.util
                 stmtname,
                 statement => {
                     var stmt = (EPStatementSPI)statement;
-                    Assert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
+                    ClassicAssert.AreEqual(flag, stmt.StatementContext.IsStatelessSelect);
                 });
         }
 

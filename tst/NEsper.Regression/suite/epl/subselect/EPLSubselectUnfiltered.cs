@@ -17,6 +17,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.epl;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.epl.subselect
@@ -285,8 +286,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS3"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS4"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS3"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS4"));
                     });
 
                 // test no event, should return null
@@ -295,8 +296,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(null, theEvent.Get("idS3"));
-                        Assert.AreEqual(null, theEvent.Get("idS4"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("idS3"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("idS4"));
                     });
 
                 // send one event
@@ -306,8 +307,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(-1, theEvent.Get("idS3"));
-                        Assert.AreEqual(null, theEvent.Get("idS4"));
+                        ClassicAssert.AreEqual(-1, theEvent.Get("idS3"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("idS4"));
                     });
 
                 // send one event
@@ -317,8 +318,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(-1, theEvent.Get("idS3"));
-                        Assert.AreEqual(-2, theEvent.Get("idS4"));
+                        ClassicAssert.AreEqual(-1, theEvent.Get("idS3"));
+                        ClassicAssert.AreEqual(-2, theEvent.Get("idS4"));
                     });
 
                 // send second event
@@ -328,8 +329,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertEventNew(
                     "s0",
                     theEvent => {
-                        Assert.AreEqual(-1, theEvent.Get("idS3"));
-                        Assert.AreEqual(null, theEvent.Get("idS4"));
+                        ClassicAssert.AreEqual(-1, theEvent.Get("idS3"));
+                        ClassicAssert.AreEqual(null, theEvent.Get("idS4"));
                     });
 
                 env.SendEventBean(new SupportBean_S3(-2));
@@ -339,10 +340,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                     "s0",
                     listener => {
                         var events = listener.NewDataListFlattened;
-                        Assert.AreEqual(3, events.Length);
+                        ClassicAssert.AreEqual(3, events.Length);
                         for (var i = 0; i < events.Length; i++) {
-                            Assert.AreEqual(null, events[i].Get("idS3"));
-                            Assert.AreEqual(null, events[i].Get("idS4"));
+                            ClassicAssert.AreEqual(null, events[i].Get("idS3"));
+                            ClassicAssert.AreEqual(null, events[i].Get("idS4"));
                         }
                     });
 
@@ -414,7 +415,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
 
                 var stmtText =
                     "select (select prior(0,Id) from SupportBean_S1#length(1000)) as idS1 from SupportBean_S0";
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
@@ -448,7 +449,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // check type
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("idS1")));
+                    statement => ClassicAssert.AreEqual(typeof(double?), statement.EventType.GetPropertyType("idS1")));
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean_S0(0));
@@ -479,7 +480,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // check type
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1")));
+                    statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1")));
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean_S0(0));
@@ -613,7 +614,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 // check type
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Value")));
+                    statement => ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("Value")));
 
                 // test no event, should return null
                 env.SendEventBean(new SupportBean_S0(1));
@@ -642,8 +643,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1_0"));
-                        Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1_1"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1_0"));
+                        ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1_1"));
                     });
 
                 // test no event, should return null
@@ -678,7 +679,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             // check type
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(columnName)));
+                statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(columnName)));
 
             // test no event, should return null
             env.SendEventBean(new SupportBean_S0(0));
@@ -706,7 +707,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             // check type
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1")));
+                statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType("idS1")));
 
             // test no event, should return null
             env.SendEventBean(new SupportBean_S0(0));
@@ -736,7 +737,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.subselect
             // check type
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(columnName)));
+                statement => ClassicAssert.AreEqual(typeof(int?), statement.EventType.GetPropertyType(columnName)));
 
             // test no event, should return null
             env.SendEventBean(new SupportBean_S0(0));

@@ -14,6 +14,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.other
 {
@@ -128,7 +129,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 model.FromClause = fromClause;
                 model = env.CopyMayFail(model);
 
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -142,8 +143,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
 
                 env.UndeployAll();
@@ -158,7 +159,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 var model = env.EplToModel(stmtText);
                 model = env.CopyMayFail(model);
 
-                Assert.AreEqual(stmtText, model.ToEPL());
+                ClassicAssert.AreEqual(stmtText, model.ToEPL());
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
 
@@ -172,8 +173,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
 
                 env.UndeployAll();
@@ -196,8 +197,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreSame(theEvent, listener.LastNewData[0].Underlying); // receive 'a' as new data
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
 
                 env.UndeployAll();
@@ -225,7 +226,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count); // insert into unchanged
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count); // insert into unchanged
                         listener.Reset();
                     });
 
@@ -233,14 +234,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("d", listener.LastNewData[0].Get("TheString")); // insert into unchanged
-                        Assert.IsNull(listener.LastOldData); // receive no old data in insert into
+                        ClassicAssert.AreEqual("d", listener.LastNewData[0].Get("TheString")); // insert into unchanged
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no old data in insert into
                     });
 
                 env.UndeployAll();
@@ -272,14 +273,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreSame("a", listener.LastNewData[0].Get("TheString")); // receive 'a' as new data
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("a", listener.LastNewData[0].Get("TheString")); // insert into unchanged
-                        Assert.IsNull(listener.LastOldData); // receive no old data in insert into
+                        ClassicAssert.AreEqual("a", listener.LastNewData[0].Get("TheString")); // insert into unchanged
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no old data in insert into
                     });
 
                 env.UndeployAll();
@@ -308,9 +309,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData[0].Get("aID")); // receive 'a' as new data
-                        Assert.AreEqual(1, listener.LastNewData[0].Get("bID"));
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreEqual(1, listener.LastNewData[0].Get("aID")); // receive 'a' as new data
+                        ClassicAssert.AreEqual(1, listener.LastNewData[0].Get("bID"));
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                     });
 
                 env.UndeployAll();
@@ -324,14 +325,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.CompileDeploy("@name('s0') select istream * from SupportBean#length(1)").AddListener("s0");
 
                 var eventOne = SendEvent(env, "a", 2);
-                env.AssertEventNew("s0", @event => Assert.AreSame(eventOne, @event.Underlying));
+                env.AssertEventNew("s0", @event => ClassicAssert.AreSame(eventOne, @event.Underlying));
 
                 var eventTwo = SendEvent(env, "b", 2);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreSame(eventTwo, listener.LastNewData[0].Underlying);
-                        Assert.IsNull(listener.LastOldData); // receive no old data, just istream events
+                        ClassicAssert.AreSame(eventTwo, listener.LastNewData[0].Underlying);
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no old data, just istream events
                     });
 
                 env.UndeployAll();
@@ -359,14 +360,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual("b", listener.LastNewData[0].Get("TheString"));
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual("b", listener.LastNewData[0].Get("TheString"));
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
                 env.AssertListener(
                     "ii",
                     listener => {
-                        Assert.AreEqual("a", listener.LastNewData[0].Get("TheString"));
-                        Assert.IsNull(listener.LastOldData);
+                        ClassicAssert.AreEqual("a", listener.LastNewData[0].Get("TheString"));
+                        ClassicAssert.IsNull(listener.LastOldData);
                     });
 
                 env.UndeployAll();
@@ -390,9 +391,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.other
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.LastNewData[0].Get("aID")); // receive 'a' as new data
-                        Assert.AreEqual(1, listener.LastNewData[0].Get("bID"));
-                        Assert.IsNull(listener.LastOldData); // receive no more old data
+                        ClassicAssert.AreEqual(1, listener.LastNewData[0].Get("aID")); // receive 'a' as new data
+                        ClassicAssert.AreEqual(1, listener.LastNewData[0].Get("bID"));
+                        ClassicAssert.IsNull(listener.LastOldData); // receive no more old data
                         listener.Reset();
                     });
 

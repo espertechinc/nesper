@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -57,7 +58,7 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             {
                 var resourceManager = env.Container.ResourceManager();
                 var schemaStream = resourceManager.GetResourceAsStream("regression/simpleSchemaWithRestriction.xsd");
-                Assert.IsNotNull(schemaStream);
+                ClassicAssert.IsNotNull(schemaStream);
                 var schemaTextSimpleSchemaWithRestriction = schemaStream.ConsumeStream();
                 var epl = "@public @buseventtype " +
                           "@XMLSchema(RootElementName='order', SchemaText='" +
@@ -89,8 +90,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "s0",
                 listener => {
                     var theEvent = listener.LastNewData[0];
-                    Assert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
-                    Assert.AreEqual(202.1d, theEvent.Get("order_amount"));
+                    ClassicAssert.AreEqual(typeof(double), theEvent.Get("order_amount").GetType());
+                    ClassicAssert.AreEqual(202.1d, theEvent.Get("order_amount"));
                     listener.Reset();
                 });
 

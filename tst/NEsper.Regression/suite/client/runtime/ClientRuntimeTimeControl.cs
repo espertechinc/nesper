@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -56,9 +57,9 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(2, listener.NewDataList.Count);
-                        Assert.AreEqual(1500L, listener.NewDataList[0][0].Get("ct"));
-                        Assert.AreEqual(3000L, listener.NewDataList[1][0].Get("ct"));
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1500L, listener.NewDataList[0][0].Get("ct"));
+                        ClassicAssert.AreEqual(3000L, listener.NewDataList[1][0].Get("ct"));
                         listener.Reset();
                     });
 
@@ -66,8 +67,8 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
-                        Assert.AreEqual(4500L, listener.NewDataList[0][0].Get("ct"));
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(4500L, listener.NewDataList[0][0].Get("ct"));
                         listener.Reset();
                     });
 
@@ -75,39 +76,39 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(3, listener.NewDataList.Count);
-                        Assert.AreEqual(6000L, listener.NewDataList[0][0].Get("ct"));
-                        Assert.AreEqual(7500L, listener.NewDataList[1][0].Get("ct"));
-                        Assert.AreEqual(9000L, listener.NewDataList[2][0].Get("ct"));
+                        ClassicAssert.AreEqual(3, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(6000L, listener.NewDataList[0][0].Get("ct"));
+                        ClassicAssert.AreEqual(7500L, listener.NewDataList[1][0].Get("ct"));
+                        ClassicAssert.AreEqual(9000L, listener.NewDataList[2][0].Get("ct"));
                         listener.Reset();
                     });
 
                 env.AdvanceTimeSpan(10499);
-                env.AssertListener("s0", listener => Assert.AreEqual(0, listener.NewDataList.Count));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(0, listener.NewDataList.Count));
 
                 env.AdvanceTimeSpan(10499);
-                env.AssertListener("s0", listener => Assert.AreEqual(0, listener.NewDataList.Count));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(0, listener.NewDataList.Count));
 
                 env.AdvanceTimeSpan(10500);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
-                        Assert.AreEqual(10500L, listener.NewDataList[0][0].Get("ct"));
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(10500L, listener.NewDataList[0][0].Get("ct"));
                         listener.Reset();
                     });
 
                 env.AdvanceTimeSpan(10500);
-                env.AssertListener("s0", listener => Assert.AreEqual(0, listener.NewDataList.Count));
+                env.AssertListener("s0", listener => ClassicAssert.AreEqual(0, listener.NewDataList.Count));
 
                 env.AdvanceTimeSpan(14000, 200);
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(14000, env.EventService.CurrentTime);
-                        Assert.AreEqual(2, listener.NewDataList.Count);
-                        Assert.AreEqual(12100L, listener.NewDataList[0][0].Get("ct"));
-                        Assert.AreEqual(13700L, listener.NewDataList[1][0].Get("ct"));
+                        ClassicAssert.AreEqual(14000, env.EventService.CurrentTime);
+                        ClassicAssert.AreEqual(2, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(12100L, listener.NewDataList[0][0].Get("ct"));
+                        ClassicAssert.AreEqual(13700L, listener.NewDataList[1][0].Get("ct"));
                     });
 
                 env.UndeployAll();
@@ -121,39 +122,39 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                 var runtimeSPI = (EPEventServiceSPI)env.EventService;
 
                 env.AdvanceTime(0);
-                Assert.IsNull(env.EventService.NextScheduledTime);
+                ClassicAssert.IsNull(env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, Array.Empty<object[]>());
 
                 env.CompileDeploy("@name('s0') select * from pattern[timer:interval(2 sec)]");
-                Assert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][] { new object[] { "s0", 2000L } });
 
                 env.CompileDeploy("@name('s2') select * from pattern[timer:interval(150 msec)]");
-                Assert.AreEqual(150L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(150L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(
                     runtimeSPI.StatementNearestSchedules,
                     new object[][] { new object[] { "s2", 150L }, new object[] { "s0", 2000L } });
 
                 env.UndeployModuleContaining("s2");
-                Assert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][] { new object[] { "s0", 2000L } });
 
                 env.CompileDeploy("@name('s3') select * from pattern[timer:interval(3 sec) and timer:interval(4 sec)]");
-                Assert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(2000L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(
                     runtimeSPI.StatementNearestSchedules,
                     new object[][] { new object[] { "s0", 2000L }, new object[] { "s3", 3000L } });
 
                 env.AdvanceTime(2500);
-                Assert.AreEqual(3000L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(3000L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][] { new object[] { "s3", 3000L } });
 
                 env.AdvanceTime(3500);
-                Assert.AreEqual(4000L, (long)env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(4000L, (long)env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, new object[][] { new object[] { "s3", 4000L } });
 
                 env.AdvanceTime(4500);
-                Assert.AreEqual(null, env.EventService.NextScheduledTime);
+                ClassicAssert.AreEqual(null, env.EventService.NextScheduledTime);
                 AssertSchedules(runtimeSPI.StatementNearestSchedules, Array.Empty<object[]>());
 
                 env.UndeployAll();
@@ -169,7 +170,7 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             IDictionary<DeploymentIdNamePair, long> schedules,
             object[][] expected)
         {
-            Assert.AreEqual(expected.Length, schedules.Count);
+            ClassicAssert.AreEqual(expected.Length, schedules.Count);
 
             ISet<int?> matchNumber = new HashSet<int?>();
             foreach (var entry in schedules) {

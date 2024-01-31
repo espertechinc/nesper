@@ -17,6 +17,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -28,10 +29,10 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 "@name('flow') create dataflow MyGraph " +
                 "DefaultSupportSourceOp -> outstream<SupportBean> {} " +
                 "DefaultSupportCaptureOp(outstream) {}");
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 StatementType.CREATE_DATAFLOW,
                 env.Statement("flow").GetProperty(StatementProperty.STATEMENTTYPE));
-            Assert.AreEqual("MyGraph", env.Statement("flow").GetProperty(StatementProperty.CREATEOBJECTNAME));
+            ClassicAssert.AreEqual("MyGraph", env.Statement("flow").GetProperty(StatementProperty.CREATEOBJECTNAME));
 
 
             var source =
@@ -47,25 +48,25 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
             instance.Run();
 
             var stats = instance.Statistics.OperatorStatistics;
-            Assert.AreEqual(2, stats.Count);
+            ClassicAssert.AreEqual(2, stats.Count);
 
             var sourceStat = stats[0];
-            Assert.AreEqual("DefaultSupportSourceOp", sourceStat.OperatorName);
-            Assert.AreEqual(0, sourceStat.OperatorNumber);
-            Assert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", sourceStat.OperatorPrettyPrint);
-            Assert.AreEqual(2, sourceStat.SubmittedOverallCount);
+            ClassicAssert.AreEqual("DefaultSupportSourceOp", sourceStat.OperatorName);
+            ClassicAssert.AreEqual(0, sourceStat.OperatorNumber);
+            ClassicAssert.AreEqual("DefaultSupportSourceOp#0() -> outstream<SupportBean>", sourceStat.OperatorPrettyPrint);
+            ClassicAssert.AreEqual(2, sourceStat.SubmittedOverallCount);
             EPAssertionUtil.AssertEqualsExactOrder(new[] { 2L }, sourceStat.SubmittedPerPortCount);
-            Assert.IsTrue(sourceStat.TimeOverall > 0);
-            Assert.AreEqual(sourceStat.TimeOverall, sourceStat.TimePerPort[0]);
+            ClassicAssert.IsTrue(sourceStat.TimeOverall > 0);
+            ClassicAssert.AreEqual(sourceStat.TimeOverall, sourceStat.TimePerPort[0]);
 
             var destStat = stats[1];
-            Assert.AreEqual("DefaultSupportCaptureOp", destStat.OperatorName);
-            Assert.AreEqual(1, destStat.OperatorNumber);
-            Assert.AreEqual("DefaultSupportCaptureOp#1(outstream)", destStat.OperatorPrettyPrint);
-            Assert.AreEqual(0, destStat.SubmittedOverallCount);
-            Assert.AreEqual(0, destStat.SubmittedPerPortCount.Length);
-            Assert.AreEqual(0, destStat.TimeOverall);
-            Assert.AreEqual(0, destStat.TimePerPort.Length);
+            ClassicAssert.AreEqual("DefaultSupportCaptureOp", destStat.OperatorName);
+            ClassicAssert.AreEqual(1, destStat.OperatorNumber);
+            ClassicAssert.AreEqual("DefaultSupportCaptureOp#1(outstream)", destStat.OperatorPrettyPrint);
+            ClassicAssert.AreEqual(0, destStat.SubmittedOverallCount);
+            ClassicAssert.AreEqual(0, destStat.SubmittedPerPortCount.Length);
+            ClassicAssert.AreEqual(0, destStat.TimeOverall);
+            ClassicAssert.AreEqual(0, destStat.TimePerPort.Length);
 
             env.UndeployAll();
         }

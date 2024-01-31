@@ -13,7 +13,7 @@ using com.espertech.esper.compat;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -462,9 +462,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(new SupportBean("E1", 0));
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual("E1", ViewExpressionWindow.LocalUDF.GetKey());
-                        Assert.AreEqual(0, (int)ViewExpressionWindow.LocalUDF.GetExpiryCount());
-                        Assert.IsNotNull(ViewExpressionWindow.LocalUDF.GetViewref());
+                        ClassicAssert.AreEqual("E1", ViewExpressionWindow.LocalUDF.GetKey());
+                        ClassicAssert.AreEqual(0, (int)ViewExpressionWindow.LocalUDF.GetExpiryCount());
+                        ClassicAssert.IsNotNull(ViewExpressionWindow.LocalUDF.GetViewref());
                     });
 
                 env.SendEventBean(new SupportBean("E2", 0));
@@ -473,9 +473,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.SendEventBean(new SupportBean("E3", 0));
                 env.AssertThat(
                     () => {
-                        Assert.AreEqual("E3", ViewExpressionWindow.LocalUDF.GetKey());
-                        Assert.AreEqual(0, (int)ViewExpressionWindow.LocalUDF.GetExpiryCount());
-                        Assert.IsNotNull(ViewExpressionWindow.LocalUDF.GetViewref());
+                        ClassicAssert.AreEqual("E3", ViewExpressionWindow.LocalUDF.GetKey());
+                        ClassicAssert.AreEqual(0, (int)ViewExpressionWindow.LocalUDF.GetExpiryCount());
+                        ClassicAssert.IsNotNull(ViewExpressionWindow.LocalUDF.GetViewref());
                     });
 
                 env.UndeployAll();

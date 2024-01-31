@@ -19,6 +19,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -96,13 +97,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                 "insert",
                 statement => {
                     var fragmentTypeNested1 = statement.EventType.GetFragmentType("nested1simple");
-                    Assert.IsFalse(fragmentTypeNested1.IsIndexed);
-                    Assert.AreEqual(0, fragmentTypeNested1.FragmentType.PropertyDescriptors.Count);
+                    ClassicAssert.IsFalse(fragmentTypeNested1.IsIndexed);
+                    ClassicAssert.AreEqual(0, fragmentTypeNested1.FragmentType.PropertyDescriptors.Count);
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested1.FragmentType);
 
                     var fragmentTypeNested4 = statement.EventType.GetFragmentType("nested4array");
-                    Assert.IsTrue(fragmentTypeNested4.IsIndexed);
-                    Assert.AreEqual(0, fragmentTypeNested4.FragmentType.PropertyDescriptors.Count);
+                    ClassicAssert.IsTrue(fragmentTypeNested4.IsIndexed);
+                    ClassicAssert.AreEqual(0, fragmentTypeNested4.FragmentType.PropertyDescriptors.Count);
                     SupportEventTypeAssertionUtil.AssertConsistency(fragmentTypeNested4.FragmentType);
                 });
 
@@ -132,24 +133,24 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
                     SupportEventTypeAssertionUtil.AssertConsistency(wildcardStmtEvent);
 
                     var eventType = wildcardStmtEvent.EventType.GetFragmentType("nested1simple");
-                    Assert.IsFalse(eventType.IsIndexed);
-                    Assert.IsFalse(eventType.IsNative);
-                    Assert.AreEqual("MyNestedEvent", eventType.FragmentType.Name);
-                    Assert.IsTrue(wildcardStmtEvent.Get("nested1simple") is XmlNode);
-                    Assert.AreEqual(
+                    ClassicAssert.IsFalse(eventType.IsIndexed);
+                    ClassicAssert.IsFalse(eventType.IsNative);
+                    ClassicAssert.AreEqual("MyNestedEvent", eventType.FragmentType.Name);
+                    ClassicAssert.IsTrue(wildcardStmtEvent.Get("nested1simple") is XmlNode);
+                    ClassicAssert.AreEqual(
                         "SAMPLE_V1",
                         ((EventBean)wildcardStmtEvent.GetFragment("nested1simple")).Get("prop1"));
 
                     eventType = wildcardStmtEvent.EventType.GetFragmentType("nested4array");
-                    Assert.IsTrue(eventType.IsIndexed);
-                    Assert.IsFalse(eventType.IsNative);
-                    Assert.AreEqual("MyNestedArrayEvent", eventType.FragmentType.Name);
+                    ClassicAssert.IsTrue(eventType.IsIndexed);
+                    ClassicAssert.IsFalse(eventType.IsNative);
+                    ClassicAssert.AreEqual("MyNestedArrayEvent", eventType.FragmentType.Name);
                     var eventsArray = (EventBean[])wildcardStmtEvent.GetFragment("nested4array");
-                    Assert.AreEqual(3, eventsArray.Length);
-                    Assert.AreEqual("SAMPLE_V8", eventsArray[0].Get("prop5[1]"));
-                    Assert.AreEqual("SAMPLE_V9", eventsArray[1].Get("prop5[0]"));
-                    Assert.AreEqual(typeof(XmlNodeList), wildcardStmtEvent.EventType.GetPropertyType("nested4array"));
-                    Assert.IsTrue(wildcardStmtEvent.Get("nested4array") is XmlNodeList);
+                    ClassicAssert.AreEqual(3, eventsArray.Length);
+                    ClassicAssert.AreEqual("SAMPLE_V8", eventsArray[0].Get("prop5[1]"));
+                    ClassicAssert.AreEqual("SAMPLE_V9", eventsArray[1].Get("prop5[0]"));
+                    ClassicAssert.AreEqual(typeof(XmlNodeList), wildcardStmtEvent.EventType.GetPropertyType("nested4array"));
+                    ClassicAssert.IsTrue(wildcardStmtEvent.Get("nested4array") is XmlNodeList);
                 });
 
             env.UndeployAll();

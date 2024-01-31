@@ -15,7 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.resultset.querytype
@@ -488,8 +488,8 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1.0, listener.LastNewData[0].Get("Price"));
-                        Assert.IsTrue(listener.LastNewData[0].Underlying is SupportMarketDataBean);
+                        ClassicAssert.AreEqual(1.0, listener.LastNewData[0].Get("Price"));
+                        ClassicAssert.IsTrue(listener.LastNewData[0].Underlying is SupportMarketDataBean);
                     });
 
                 env.UndeployAll();
@@ -506,7 +506,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
                 SendEvent(env, "A", 1);
                 env.AssertListener(
                     "s0",
-                    listener => Assert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("Price")));
+                    listener => ClassicAssert.AreEqual(1.0, env.Listener("s0").LastNewData[0].Get("Price")));
 
                 env.UndeployAll();
             }
@@ -570,7 +570,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
             var fields = "mySum".SplitCsv();
             env.AssertStatement(
                 "s0",
-                statement => Assert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
+                statement => ClassicAssert.AreEqual(typeof(long?), statement.EventType.GetPropertyType("mySum")));
             env.AssertPropsPerRowIteratorAnyOrder(
                 "s0",
                 new string[] { "mySum" },
@@ -743,7 +743,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             env.AssertListener(
                 "s0",
-                listener => Assert.AreEqual(expected, listener.GetAndResetLastNewData()[0].Get("mySum")));
+                listener => ClassicAssert.AreEqual(expected, listener.GetAndResetLastNewData()[0].Get("mySum")));
         }
 
         private static void AssertAPrice(
@@ -752,7 +752,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.querytype
         {
             env.AssertListener(
                 "s0",
-                listener => Assert.AreEqual(expected, listener.GetAndResetLastNewData()[0].Get("aprice")));
+                listener => ClassicAssert.AreEqual(expected, listener.GetAndResetLastNewData()[0].Get("aprice")));
         }
 
         public class MyHelper

@@ -24,6 +24,7 @@ using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.runtime.@internal.kernel.service;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.variable
 {
@@ -233,8 +234,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
                 executorService.Shutdown();
 
-                Assert.AreEqual(1, values.Count);
-                Assert.AreEqual("hello", values[0]);
+                ClassicAssert.AreEqual(1, values.Count);
+                ClassicAssert.AreEqual("hello", values[0]);
 
                 env.UndeployAll();
             }
@@ -533,7 +534,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy(
                     "@Name('s0') create constant variable com.espertech.esper.compat.DateTimeEx START_TIME = com.espertech.esper.compat.DateTimeEx.NowUtc()");
                 
-                env.AssertIterator("s0", en => Assert.IsNotNull(en.Advance().Get("START_TIME")));
+                env.AssertIterator("s0", en => ClassicAssert.IsNotNull(en.Advance().Get("START_TIME")));
                 env.UndeployModuleContaining("s0");
 
                 // test array constant
@@ -542,7 +543,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 env.CompileDeploy("@name('s0') select var_strings from SupportBean", path);
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(string[]), statement.EventType.GetPropertyType("var_strings")));
+                    statement => ClassicAssert.AreEqual(typeof(string[]), statement.EventType.GetPropertyType("var_strings")));
                 env.UndeployModuleContaining("s0");
 
                 TryAssertionArrayVar(env, path, "var_strings");
@@ -675,11 +676,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             {
                 var runtimeSPI = (EPVariableServiceSPI)env.Runtime.VariableService;
                 var types = runtimeSPI.VariableTypeAll;
-                Assert.AreEqual(typeof(int?), types.Get(new DeploymentIdNamePair(null, "var1")));
-                Assert.AreEqual(typeof(string), types.Get(new DeploymentIdNamePair(null, "var2")));
+                ClassicAssert.AreEqual(typeof(int?), types.Get(new DeploymentIdNamePair(null, "var1")));
+                ClassicAssert.AreEqual(typeof(string), types.Get(new DeploymentIdNamePair(null, "var2")));
 
-                Assert.AreEqual(typeof(int?), runtimeSPI.GetVariableType(null, "var1"));
-                Assert.AreEqual(typeof(string), runtimeSPI.GetVariableType(null, "var2"));
+                ClassicAssert.AreEqual(typeof(int?), runtimeSPI.GetVariableType(null, "var1"));
+                ClassicAssert.AreEqual(typeof(string), runtimeSPI.GetVariableType(null, "var2"));
 
                 var stmtTextSet = "on SupportBean set var1 = IntPrimitive, var2 = TheString";
                 env.CompileDeploy(stmtTextSet);
@@ -722,7 +723,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableNotFoundException ex) {
                     // expected
-                    Assert.AreEqual("Variable by name 'dummy' has not been declared", ex.Message);
+                    ClassicAssert.AreEqual("Variable by name 'dummy' has not been declared", ex.Message);
                 }
 
                 // try variable not found
@@ -733,12 +734,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableNotFoundException ex) {
                     // expected
-                    Assert.AreEqual("Variable by name 'dummy2' has not been declared", ex.Message);
+                    ClassicAssert.AreEqual("Variable by name 'dummy2' has not been declared", ex.Message);
                 }
 
                 // create new variable on the fly
                 env.CompileDeploy("@name('create') create variable int dummy = 20 + 20");
-                Assert.AreEqual(40, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "dummy"));
+                ClassicAssert.AreEqual(40, env.Runtime.VariableService.GetVariableValue(env.DeploymentId("create"), "dummy"));
 
                 // try type coercion
                 try {
@@ -747,7 +748,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableValueException ex) {
                     // expected
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.String",
                         ex.Message);
                 }
@@ -758,7 +759,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableValueException ex) {
                     // expected
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable 'dummy' of declared type " + typeof(int?).CleanName() + " cannot be assigned a value of type System.Int64",
                         ex.Message);
                 }
@@ -769,7 +770,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 }
                 catch (VariableValueException ex) {
                     // expected
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Variable 'var2' of declared type System.String cannot be assigned a value of type System.Int32",
                         ex.Message);
                 }
@@ -954,17 +955,17 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             string[] names,
             object[] values)
         {
-            Assert.AreEqual(names.Length, values.Length);
+            ClassicAssert.AreEqual(names.Length, values.Length);
 
             // assert one-by-one
             for (var i = 0; i < names.Length; i++) {
-                Assert.AreEqual(values[i], env.Runtime.VariableService.GetVariableValue(null, names[i]));
+                ClassicAssert.AreEqual(values[i], env.Runtime.VariableService.GetVariableValue(null, names[i]));
             }
 
             // get and assert all
             var all = env.Runtime.VariableService.GetVariableValueAll();
             for (var i = 0; i < names.Length; i++) {
-                Assert.AreEqual(values[i], all.Get(new DeploymentIdNamePair(null, names[i])));
+                ClassicAssert.AreEqual(values[i], all.Get(new DeploymentIdNamePair(null, names[i])));
             }
 
             // get by request
@@ -975,7 +976,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
 
             var valueSet = env.Runtime.VariableService.GetVariableValue(nameSet);
             for (var i = 0; i < names.Length; i++) {
-                Assert.AreEqual(values[i], valueSet.Get(new DeploymentIdNamePair(null, names[i])));
+                ClassicAssert.AreEqual(values[i], valueSet.Get(new DeploymentIdNamePair(null, names[i])));
             }
         }
 
@@ -1002,7 +1003,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.Fail();
             }
             catch (VariableConstantValueException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     ex.Message,
                     "Variable by name '" +
                     variableName +
@@ -1017,7 +1018,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
                 Assert.Fail();
             }
             catch (VariableConstantValueException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     ex.Message,
                     "Variable by name '" +
                     variableName +
@@ -1062,7 +1063,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.variable
             env.AssertThat(
                 () => {
                     var item = SupportFilterServiceHelper.GetFilterSvcSingle(env.Statement("s0"));
-                    Assert.IsTrue(item.Op != FilterOperator.BOOLEAN_EXPRESSION);
+                    ClassicAssert.IsTrue(item.Op != FilterOperator.BOOLEAN_EXPRESSION);
                 });
 
             env.UndeployModuleContaining("s0");

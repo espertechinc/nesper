@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.filter;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.context
 {
@@ -250,11 +251,11 @@ namespace com.espertech.esper.regressionlib.suite.context
                             fields,
                             expected);
                         filtered = new SupportSelectorFilteredInitTerm("S0_2");
-                        Assert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
+                        ClassicAssert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
 
                         // test always-false filter - compare context partition info
                         filtered = new SupportSelectorFilteredInitTerm(null);
-                        Assert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
+                        ClassicAssert.IsFalse(statement.GetEnumerator(filtered).MoveNext());
                         EPAssertionUtil.AssertEqualsAnyOrder(new object[] { 1000L }, filtered.ContextsStartTimes);
                         EPAssertionUtil.AssertEqualsAnyOrder(new object[] { "S0_1" }, filtered.P00PropertyValues);
 
@@ -263,7 +264,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                             Assert.Fail();
                         }
                         catch (InvalidContextPartitionSelector ex) {
-                            Assert.IsTrue(
+                            ClassicAssert.IsTrue(
                                 ex.Message.StartsWith(
                                     "Invalid context partition selector, expected an implementation class of any of [ContextPartitionSelectorAll, ContextPartitionSelectorFiltered, ContextPartitionSelectorById] interfaces but received com."),
                                 "message: " + ex.Message);
@@ -864,14 +865,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         1,
                         SupportScheduleHelper.ScheduleCountOverall(env.Runtime))); // from the context
 
                 // now started
                 SendTimeEvent(env, "2002-05-1T09:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         2,
                         SupportScheduleHelper.ScheduleCountOverall(env.Runtime))); // context + pattern
                 env.AssertListenerNotInvoked("s0");
@@ -887,7 +888,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 SendTimeEvent(env, "2002-05-1T17:00:00.000");
                 env.ListenerReset("s0"); // it is not well defined whether the listener does get fired or not
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         1,
                         SupportScheduleHelper.ScheduleCountOverall(env.Runtime))); // from the context
 
@@ -896,7 +897,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // now started
                 SendTimeEvent(env, "2002-05-2T09:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         2,
                         SupportScheduleHelper.ScheduleCountOverall(env.Runtime))); // context + pattern
                 env.AssertListenerNotInvoked("s0");
@@ -927,14 +928,14 @@ namespace com.espertech.esper.regressionlib.suite.context
                     path);
                 env.AddListener("s0");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         0,
                         SupportFilterServiceHelper.GetFilterSvcCountApprox(env))); // from the context
 
                 // now started
                 SendTimeEvent(env, "2002-05-1T09:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         2,
                         SupportFilterServiceHelper.GetFilterSvcCountApprox(env))); // from the context
 
@@ -955,7 +956,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // now gone
                 SendTimeEvent(env, "2002-05-1T17:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         0,
                         SupportFilterServiceHelper.GetFilterSvcCountApprox(env))); // from the context
 
@@ -969,7 +970,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // now started
                 SendTimeEvent(env, "2002-05-2T09:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         2,
                         SupportFilterServiceHelper.GetFilterSvcCountApprox(env))); // from the context
                 env.AssertListenerNotInvoked("s0");
@@ -990,7 +991,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 // now gone
                 SendTimeEvent(env, "2002-05-2T17:00:00.000");
                 env.AssertThat(
-                    () => Assert.AreEqual(
+                    () => ClassicAssert.AreEqual(
                         0,
                         SupportFilterServiceHelper.GetFilterSvcCountApprox(env))); // from the context
 
@@ -1218,7 +1219,7 @@ namespace com.espertech.esper.regressionlib.suite.context
             {
                 var compiled = env.CompileFAF("select * from MyWindow", path);
                 var result = env.Runtime.FireAndForgetService.ExecuteQuery(compiled);
-                Assert.AreEqual(numRows, result.Array.Length);
+                ClassicAssert.AreEqual(numRows, result.Array.Length);
             }
         }
 
@@ -1314,14 +1315,14 @@ namespace com.espertech.esper.regressionlib.suite.context
         {
             public void Run(RegressionEnvironment env)
             {
-                env.AssertThat(() => Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
                 var path = new RegressionPath();
 
                 SendTimeEvent(env, "2002-05-1T09:15:00.000");
                 env.CompileDeploy(
                     "@name('context') @public create context NineToFive as start (0, 9, *, *, *) end (0, 17, *, *, *)",
                     path);
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
 
                 env.Milestone(0);
 
@@ -1347,22 +1348,22 @@ namespace com.espertech.esper.regressionlib.suite.context
 
                 SendTimeAndAssert(env, "2002-05-2T17:00:00.000", false, "A,B");
 
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
                 env.UndeployModuleContaining("A");
 
                 env.Milestone(4);
 
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
                 env.UndeployModuleContaining("B");
 
                 env.Milestone(5);
 
-                env.AssertThat(() => Assert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(1, SupportContextMgmtHelper.GetContextCount(env)));
                 env.UndeployModuleContaining("context");
 
                 env.Milestone(6);
 
-                env.AssertThat(() => Assert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
+                env.AssertThat(() => ClassicAssert.AreEqual(0, SupportContextMgmtHelper.GetContextCount(env)));
             }
         }
 
@@ -1543,7 +1544,7 @@ namespace com.espertech.esper.regressionlib.suite.context
                 "@name('s0') context Ctx select * from SupportBean";
 
             SendTimeEvent(env, pairs[0].Start);
-            Assert.IsNull(pairs[0].End);
+            ClassicAssert.IsNull(pairs[0].End);
             env.CompileDeploy(epl).AddListener("s0");
             SendEventAndAssert(env, pairs[0].IsExpected);
 
@@ -1569,8 +1570,8 @@ namespace com.espertech.esper.regressionlib.suite.context
 
         private static void AssertContextEventType(EventType eventType)
         {
-            Assert.AreEqual(0, eventType.PropertyNames.Length);
-            Assert.AreEqual("stmt0_ctxout_NineToFive_1", eventType.Name);
+            ClassicAssert.AreEqual(0, eventType.PropertyNames.Length);
+            ClassicAssert.AreEqual("stmt0_ctxout_NineToFive_1", eventType.Name);
         }
 
         private static void SendTimeAndAssert(

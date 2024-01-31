@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.xml
 {
@@ -92,13 +93,13 @@ namespace com.espertech.esper.regressionlib.suite.@event.xml
             env.AssertEventNew(
                 "s0",
                 theEvent => {
-                    Assert.AreEqual(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
-                    Assert.AreEqual(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(root.DocumentElement.ChildNodes.Item(0), theEvent.Get("type?"));
+                    ClassicAssert.AreEqual(root.DocumentElement.ChildNodes.Item(2), theEvent.Get("dyn[1]?"));
+                    ClassicAssert.AreEqual(
                         root.DocumentElement.ChildNodes.Item(3).ChildNodes.Item(0),
                         theEvent.Get("nested.nes2?"));
-                    Assert.AreEqual(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
-                    Assert.IsNull(theEvent.Get("other?"));
+                    ClassicAssert.AreEqual(root.DocumentElement.ChildNodes.Item(4), theEvent.Get("map('a')?"));
+                    ClassicAssert.IsNull(theEvent.Get("other?"));
                     SupportEventTypeAssertionUtil.AssertConsistency(theEvent);
                 });
 

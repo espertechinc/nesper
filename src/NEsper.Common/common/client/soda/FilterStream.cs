@@ -17,7 +17,7 @@ namespace com.espertech.esper.common.client.soda
     /// </summary>
     public class FilterStream : ProjectedStream
     {
-        private Filter filter;
+        private Filter _filter;
 
         /// <summary>
         /// Ctor.
@@ -107,7 +107,7 @@ namespace com.espertech.esper.common.client.soda
         public FilterStream(Filter filter)
             : base(new List<View>(), null)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
@@ -120,7 +120,7 @@ namespace com.espertech.esper.common.client.soda
             string name)
             : base(new List<View>(), name)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
@@ -135,7 +135,7 @@ namespace com.espertech.esper.common.client.soda
             IList<View> views)
             : base(views, name)
         {
-            this.filter = filter;
+            this._filter = filter;
         }
 
         /// <summary>
@@ -143,20 +143,20 @@ namespace com.espertech.esper.common.client.soda
         /// </summary>
         /// <returns>filter</returns>
         public Filter Filter {
-            get => filter;
-            set => filter = value;
+            get => _filter;
+            set => _filter = value;
         }
 
         public override void ToEPLProjectedStream(
             TextWriter writer,
             EPStatementFormatter formatter)
         {
-            filter.ToEPL(writer, formatter);
+            _filter.ToEPL(writer, formatter);
         }
 
         public override void ToEPLProjectedStreamType(TextWriter writer)
         {
-            writer.Write(filter.EventTypeName);
+            writer.Write(_filter.EventTypeName);
         }
     }
 } // end of namespace

@@ -15,6 +15,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.expr.exprcore
 {
@@ -290,11 +291,11 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v1"));
-                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v2"));
-                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v3"));
-                        Assert.AreEqual(typeof(BigInteger?), statement.EventType.GetPropertyType("v4"));
-                        Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v5"));
+                        ClassicAssert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v1"));
+                        ClassicAssert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v2"));
+                        ClassicAssert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v3"));
+                        ClassicAssert.AreEqual(typeof(BigInteger?), statement.EventType.GetPropertyType("v4"));
+                        ClassicAssert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("v5"));
                     });
 
                 SendBigNumEvent(env, 1, 2);
@@ -312,7 +313,7 @@ namespace com.espertech.esper.regressionlib.suite.expr.exprcore
                     2);
                 env.AssertStatement(
                     "s0",
-                    statement => Assert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("avgRate")));
+                    statement => ClassicAssert.AreEqual(typeof(decimal?), statement.EventType.GetPropertyType("avgRate")));
                 SendBigNumEvent(env, 0, 5);
                 env.AssertEventNew(
                     "s0",

@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -89,10 +90,10 @@ namespace com.espertech.esper.regressionlib.suite.multithread
 
             for (var i = 0; i < numEvents; i++) {
                 var theEventReceived = listener[i].AssertOneGetNewAndReset();
-                Assert.NotNull(theEventReceived);
+                ClassicAssert.NotNull(theEventReceived);
                 var theEventValue = theEventReceived.Get("a");
-                Assert.NotNull(theEventValue);
-                Assert.IsInstanceOf<SupportBean>(theEventValue);
+                ClassicAssert.NotNull(theEventValue);
+                ClassicAssert.IsInstanceOf<SupportBean>(theEventValue);
             }
 
             env.UndeployAll();

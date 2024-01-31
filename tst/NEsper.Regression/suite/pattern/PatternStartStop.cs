@@ -17,7 +17,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBeanComplexProps = com.espertech.esper.regressionlib.support.bean.SupportBeanComplexProps;
 
 namespace com.espertech.esper.regressionlib.suite.pattern
@@ -76,7 +76,7 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                     env.SendEventBean(new SupportBean());
                     env.SendEventBean(SupportBeanComplexProps.MakeDefaultBean());
-                    Assert.IsFalse(listener.IsInvoked);
+                    ClassicAssert.IsFalse(listener.IsInvoked);
 
                     env.Deploy(compiled).AddListener("s0");
                 }
@@ -93,14 +93,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 var compiled = env.Compile(epl);
                 env.Deploy(compiled).AddListener("s0");
                 var stmt = env.Statement("s0");
-                Assert.AreEqual(StatementType.SELECT, stmt.GetProperty(StatementProperty.STATEMENTTYPE));
-                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTNAME));
-                Assert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
+                ClassicAssert.AreEqual(StatementType.SELECT, stmt.GetProperty(StatementProperty.STATEMENTTYPE));
+                ClassicAssert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTNAME));
+                ClassicAssert.IsNull(stmt.GetProperty(StatementProperty.CONTEXTDEPLOYMENTID));
 
                 // Pattern started when created
-                Assert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
+                ClassicAssert.IsFalse(env.Statement("s0").GetEnumerator().MoveNext());
                 var safe = env.Statement("s0").GetSafeEnumerator();
-                Assert.IsFalse(safe.MoveNext());
+                ClassicAssert.IsFalse(safe.MoveNext());
                 safe.Dispose();
 
                 // Stop pattern
@@ -109,17 +109,17 @@ namespace com.espertech.esper.regressionlib.suite.pattern
 
                 env.UndeployModuleContaining("s0");
                 SendEvent(env);
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 // Start pattern
                 env.Deploy(compiled).AddListener("s0");
-                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+                ClassicAssert.IsFalse(env.GetEnumerator("s0").MoveNext());
 
                 // Send event
                 var theEvent = SendEvent(env);
-                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                ClassicAssert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
                 safe = env.Statement("s0").GetSafeEnumerator();
-                Assert.AreSame(theEvent, safe.Advance().Get("tag"));
+                ClassicAssert.AreSame(theEvent, safe.Advance().Get("tag"));
                 safe.Dispose();
 
                 // Stop pattern
@@ -132,14 +132,14 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     stmt.GetEnumerator();
                 }
                 catch (IllegalStateException ex) {
-                    Assert.AreEqual("Statement has already been undeployed", ex.Message);
+                    ClassicAssert.AreEqual("Statement has already been undeployed", ex.Message);
                 }
 
-                Assert.IsFalse(listener.IsInvoked);
+                ClassicAssert.IsFalse(listener.IsInvoked);
 
                 // Start again, iterator is zero
                 env.Deploy(compiled);
-                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+                ClassicAssert.IsFalse(env.GetEnumerator("s0").MoveNext());
                 env.UndeployAll();
             }
 
@@ -161,25 +161,25 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                 // Add listener
                 var listener = new SupportUpdateListener();
                 env.Statement("s0").AddListener(listener);
-                Assert.IsNull(env.Listener("s0").LastNewData);
-                Assert.IsFalse(env.GetEnumerator("s0").MoveNext());
+                ClassicAssert.IsNull(env.Listener("s0").LastNewData);
+                ClassicAssert.IsFalse(env.GetEnumerator("s0").MoveNext());
 
                 // Send event
                 var theEvent = SendEvent(env);
-                Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
-                Assert.AreSame(theEvent, env.Statement("s0").First().Get("tag"));
+                ClassicAssert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
+                ClassicAssert.AreSame(theEvent, env.Statement("s0").First().Get("tag"));
 
                 // Remove listener
                 env.Statement("s0").RemoveListener(listener);
                 theEvent = SendEvent(env);
-                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-                Assert.IsNull(listener.LastNewData);
+                ClassicAssert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                ClassicAssert.IsNull(listener.LastNewData);
 
                 // Add listener back
                 env.Statement("s0").AddListener(listener);
                 theEvent = SendEvent(env);
-                Assert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
-                Assert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
+                ClassicAssert.AreSame(theEvent, env.GetEnumerator("s0").Advance().Get("tag"));
+                ClassicAssert.AreEqual(theEvent, listener.GetAndResetLastNewData()[0].Get("tag"));
 
                 env.UndeployAll();
             }
@@ -207,12 +207,12 @@ namespace com.espertech.esper.regressionlib.suite.pattern
                     "s0",
                     eventBean => {
                         if (theEvent is SupportBean) {
-                            Assert.AreSame(theEvent, eventBean.Get("a"));
-                            Assert.IsNull(eventBean.Get("b"));
+                            ClassicAssert.AreSame(theEvent, eventBean.Get("a"));
+                            ClassicAssert.IsNull(eventBean.Get("b"));
                         }
                         else {
-                            Assert.AreSame(theEvent, eventBean.Get("b"));
-                            Assert.IsNull(eventBean.Get("a"));
+                            ClassicAssert.AreSame(theEvent, eventBean.Get("b"));
+                            ClassicAssert.IsNull(eventBean.Get("a"));
                         }
                     });
             }

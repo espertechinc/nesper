@@ -14,6 +14,7 @@ using com.espertech.esper.regressionlib.framework;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.@event.json
 {
@@ -61,8 +62,8 @@ namespace com.espertech.esper.regressionlib.suite.@event.json
                     @event => {
                         var getterMapped = @event.EventType.GetGetter("prop('x')");
 
-                        Assert.AreEqual("y", getterMapped.Get(@event));
-                        Assert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
+                        ClassicAssert.AreEqual("y", getterMapped.Get(@event));
+                        ClassicAssert.IsNull(@event.EventType.GetGetter("prop.somefield?"));
                     });
 
                 env.UndeployAll();

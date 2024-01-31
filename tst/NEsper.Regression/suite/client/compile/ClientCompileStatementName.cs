@@ -14,6 +14,7 @@ using com.espertech.esper.compiler.client.option;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.compile
 {
@@ -46,14 +47,14 @@ namespace com.espertech.esper.regressionlib.suite.client.compile
                 var compiled = env.Compile(epl, args);
 
                 var ctx = MyStatementNameResolver.Contexts[0];
-                Assert.AreEqual(epl, ctx.EplSupplier.Invoke());
-                Assert.AreEqual(null, ctx.StatementName);
-                Assert.AreEqual(null, ctx.ModuleName);
-                Assert.AreEqual(0, ctx.Annotations.Length);
-                Assert.AreEqual(0, ctx.StatementNumber);
+                ClassicAssert.AreEqual(epl, ctx.EplSupplier.Invoke());
+                ClassicAssert.AreEqual(null, ctx.StatementName);
+                ClassicAssert.AreEqual(null, ctx.ModuleName);
+                ClassicAssert.AreEqual(0, ctx.Annotations.Length);
+                ClassicAssert.AreEqual(0, ctx.StatementNumber);
 
                 env.Deploy(compiled);
-                env.AssertStatement("hello", statement => Assert.AreEqual("hello", statement.Name));
+                env.AssertStatement("hello", statement => ClassicAssert.AreEqual("hello", statement.Name));
                 env.UndeployAll();
             }
 

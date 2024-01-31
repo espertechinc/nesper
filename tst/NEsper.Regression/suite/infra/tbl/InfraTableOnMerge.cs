@@ -16,6 +16,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.tbl
 {
@@ -632,7 +633,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 output => {
                     var burn = output.Get("burn").AsBoxedDouble();
                     if (expected == null) {
-                        Assert.IsNull(burn);
+                        ClassicAssert.IsNull(burn);
                     }
                     else {
                         Assert.That(expected.Value, Is.EqualTo(burn).Within(1e-10));
@@ -679,7 +680,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.tbl
                 var expectedString = expected[i] ? key : null;
                 env.AssertEventNew(
                     "s0",
-                    @event => Assert.AreEqual(expectedString, @event.Get("c0"), "failed for key '" + key + "'"));
+                    @event => ClassicAssert.AreEqual(expectedString, @event.Get("c0"), "failed for key '" + key + "'"));
             }
         }
 

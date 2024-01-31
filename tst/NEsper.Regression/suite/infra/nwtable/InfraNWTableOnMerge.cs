@@ -29,7 +29,7 @@ using NEsper.Avro.Extensions;
 using Newtonsoft.Json.Linq;
 
 using NUnit.Framework;
-
+using NUnit.Framework.Legacy;
 using SupportBean_A = com.espertech.esper.regressionlib.support.bean.SupportBean_A;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
@@ -408,7 +408,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     Assert.Fail();
                 }
                 catch (Exception ex) {
-                    Assert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
+                    ClassicAssert.IsTrue(ex.Message.Contains("Array length 3 less than index 10 for property 'doublearray'"));
                 }
 
                 // index returned null
@@ -555,7 +555,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     env.AssertPropsPerRowIterator("create", fields, new object[][] { new object[] { "A", 10 } });
                 }
                 else {
-                    env.AssertIterator("create", iterator => Assert.IsFalse(iterator.MoveNext()));
+                    env.AssertIterator("create", iterator => ClassicAssert.IsFalse(iterator.MoveNext()));
                 }
 
                 env.UndeployAll();
@@ -597,7 +597,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.CompileDeploy(stmtTextMerge, path).AddListener("merge");
                 env.AssertStatement(
                     "merge",
-                    statement => Assert.AreEqual(
+                    statement => ClassicAssert.AreEqual(
                         StatementType.ON_MERGE,
                         statement.GetProperty(StatementProperty.STATEMENTTYPE)));
 
@@ -750,7 +750,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                     () => {
                         var windowType = env.Statement("Window").EventType;
                         var onType = env.Statement("on").EventType;
-                        Assert.AreSame(windowType, onType);
+                        ClassicAssert.AreSame(windowType, onType);
                     });
                 env.AddListener("on");
 
@@ -759,8 +759,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 env.AssertThat(
                     () => {
                         var onEvent = env.Listener("on").AssertOneGetNewAndReset();
-                        Assert.AreEqual("E1", onEvent.Get("p0"));
-                        Assert.AreSame(onEvent.EventType, env.Statement("on").EventType);
+                        ClassicAssert.AreEqual("E1", onEvent.Get("p0"));
+                        ClassicAssert.AreSame(onEvent.EventType, env.Statement("on").EventType);
                     });
 
                 env.Milestone(0);
@@ -1343,21 +1343,21 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                 var result = subscriber.InsertStreamList[0];
                 if (eventRepresentationEnum.IsObjectArrayEvent() || !namedWindow) {
                     var row = (object[])result[0][0];
-                    Assert.AreEqual("X4", row[0]);
+                    ClassicAssert.AreEqual("X4", row[0]);
                     var theEvent = (EventBean)row[1];
-                    Assert.AreEqual("Y4", theEvent.Get("in1"));
+                    ClassicAssert.AreEqual("Y4", theEvent.Get("in1"));
                 }
                 else if (eventRepresentationEnum.IsMapEvent()) {
                     var map = (IDictionary<string, object>)result[0][0];
-                    Assert.AreEqual("X4", map.Get("c1"));
+                    ClassicAssert.AreEqual("X4", map.Get("c1"));
                     var theEvent = (EventBean)map.Get("c2");
-                    Assert.AreEqual("Y4", theEvent.Get("in1"));
+                    ClassicAssert.AreEqual("Y4", theEvent.Get("in1"));
                 }
                 else if (eventRepresentationEnum.IsAvroEvent()) {
                     var avro = (GenericRecord)result[0][0];
-                    Assert.AreEqual("X4", avro.Get("c1"));
+                    ClassicAssert.AreEqual("X4", avro.Get("c1"));
                     var theEvent = (GenericRecord)avro.Get("c2");
-                    Assert.AreEqual("Y4", theEvent.Get("in1"));
+                    ClassicAssert.AreEqual("Y4", theEvent.Get("in1"));
                 }
 
                 env.UndeployAll();

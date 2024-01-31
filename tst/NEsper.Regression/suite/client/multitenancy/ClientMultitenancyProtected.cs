@@ -15,6 +15,7 @@ using com.espertech.esper.compat.collections;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.multitenancy
 {
@@ -72,14 +73,14 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             string deploymentId,
             object expected)
         {
-            Assert.AreEqual(expected, env.Runtime.DeploymentService.GetStatement(deploymentId, "s0").First().Get("c0"));
+            ClassicAssert.AreEqual(expected, env.Runtime.DeploymentService.GetStatement(deploymentId, "s0").First().Get("c0"));
         }
 
         private static void AssertContextNoRow(
             RegressionEnvironment env,
             string deploymentId)
         {
-            Assert.IsFalse(env.Runtime.DeploymentService.GetStatement(deploymentId, "s0").GetEnumerator().MoveNext());
+            ClassicAssert.IsFalse(env.Runtime.DeploymentService.GetStatement(deploymentId, "s0").GetEnumerator().MoveNext());
         }
 
         private static void AssertContext(
@@ -87,7 +88,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             string deploymentId,
             long expected)
         {
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 expected,
                 env.Runtime.DeploymentService.GetStatement(deploymentId, "s0").First().Get("cnt"));
         }
@@ -97,7 +98,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
             string deploymentId,
             int expected)
         {
-            Assert.AreEqual(
+            ClassicAssert.AreEqual(
                 expected,
                 env.Runtime.DeploymentService.GetStatement(deploymentId, "create").First().Get("myvar"));
         }
@@ -139,10 +140,10 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
 
                 env.Undeploy(idOne);
                 AssertRowsNamedWindow(env, idTwo, "B");
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "create"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "create"));
 
                 env.Undeploy(idTwo);
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
             }
 
 
@@ -179,11 +180,11 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
 
                 env.AdvanceTime(20000);
 
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "create"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "create"));
                 AssertVariable(env, idTwo, 22);
 
                 env.Undeploy(idTwo);
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idTwo, "create"));
             }
 
 
@@ -260,7 +261,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 AssertSelect(env, idTwo, 30);
 
                 env.Undeploy(idOne);
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "s0"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "s0"));
 
                 env.SendEventBean(new SupportBean("E3", 30));
 
@@ -292,7 +293,7 @@ namespace com.espertech.esper.regressionlib.suite.client.multitenancy
                 AssertSelect(env, idTwo, 2);
 
                 env.Undeploy(idOne);
-                Assert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "s0"));
+                ClassicAssert.IsNull(env.Runtime.DeploymentService.GetStatement(idOne, "s0"));
 
                 AssertSelect(env, idTwo, 2);
 

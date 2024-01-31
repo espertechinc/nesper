@@ -16,6 +16,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.runtime.client.scopetest;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.client.runtime
 {
@@ -388,10 +389,10 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
                     continue;
                 }
 
-                Assert.IsFalse(env.Listener(names[i]).IsInvoked);
+                ClassicAssert.IsFalse(env.Listener(names[i]).IsInvoked);
             }
 
-            Assert.AreEqual(stringValue, env.Listener(names[index]).AssertOneGetNewAndReset().Get("TheString"));
+            ClassicAssert.AreEqual(stringValue, env.Listener(names[index]).AssertOneGetNewAndReset().Get("TheString"));
         }
 
         private static void AssertPrio(
@@ -400,11 +401,11 @@ namespace com.espertech.esper.regressionlib.suite.client.runtime
             int[] prioValues)
         {
             var events = listener.NewDataListFlattened;
-            Assert.AreEqual(prioValues.Length, events.Length);
+            ClassicAssert.AreEqual(prioValues.Length, events.Length);
             for (var i = 0; i < prioValues.Length; i++) {
-                Assert.AreEqual(prioValues[i], events[i].Get("prio"));
+                ClassicAssert.AreEqual(prioValues[i], events[i].Get("prio"));
                 if (theString != null) {
-                    Assert.AreEqual(theString, events[i].Get("TheString"));
+                    ClassicAssert.AreEqual(theString, events[i].Get("TheString"));
                 }
             }
 

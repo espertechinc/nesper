@@ -21,6 +21,7 @@ using com.espertech.esper.regressionlib.framework;
 
 using static com.espertech.esper.regressionlib.support.epl.SupportStaticMethodLib; // sleep
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 {
@@ -188,8 +189,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
 
                 env.UndeployAll();
             }
@@ -244,8 +245,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -276,8 +277,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 dfOne.Start();
                 Sleep(200);
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -311,14 +312,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (EPDataFlowExecutionException ex) {
-                    Assert.IsTrue(ex.InnerException.InnerException is MyRuntimeException);
-                    Assert.AreEqual(
+                    ClassicAssert.IsTrue(ex.InnerException.InnerException is MyRuntimeException);
+                    ClassicAssert.AreEqual(
                         "Support-graph-source generated exception: TestException",
                         ex.InnerException.Message);
                 }
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -374,11 +375,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (EPDataFlowCancellationException ex) {
-                    Assert.AreEqual("Data flow 'MyDataFlowOne' execution was cancelled", ex.Message);
+                    ClassicAssert.AreEqual("Data flow 'MyDataFlowOne' execution was cancelled", ex.Message);
                 }
 
-                Assert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -416,14 +417,14 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
 
                 dfOne.Start();
-                Assert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
 
                 dfOne.Cancel();
 
                 latchOne.CountDown();
                 Sleep(100);
-                Assert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
-                Assert.AreEqual(0, output.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.CANCELLED, dfOne.State);
+                ClassicAssert.AreEqual(0, output.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -453,7 +454,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (IllegalStateException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Data flow 'MyDataFlowOne' instance has not been executed, please use join after start or run",
                         ex.Message);
                 }
@@ -470,7 +471,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (IllegalStateException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Data flow 'MyDataFlowOne' instance has been cancelled and cannot be run or started",
                         ex.Message);
                 }
@@ -480,7 +481,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (IllegalStateException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "Data flow 'MyDataFlowOne' instance has been cancelled and cannot be run or started",
                         ex.Message);
                 }
@@ -526,11 +527,11 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
 
                 dfOne.Start();
                 Sleep(50);
-                Assert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
 
                 latchOne.CountDown();
                 Sleep(200);
-                Assert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
 
                 latchTwo.CountDown();
                 try {
@@ -540,8 +541,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(2, future.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(2, future.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -584,7 +585,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     Assert.Fail();
                 }
                 catch (UnsupportedOperationException ex) {
-                    Assert.AreEqual(
+                    ClassicAssert.AreEqual(
                         "The data flow 'MyDataFlowOne' has zero or multiple sources and requires the use of the start method instead",
                         ex.Message);
                 }
@@ -599,8 +600,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(2, future.GetAndReset().Count);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(2, future.GetAndReset().Count);
                 env.UndeployAll();
             }
 
@@ -631,12 +632,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(source, future));
                 var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-                Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
-                Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
+                ClassicAssert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
+                ClassicAssert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
 
                 dfOne.Start();
                 Sleep(100);
-                Assert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.RUNNING, dfOne.State);
 
                 latch.CountDown();
                 try {
@@ -646,12 +647,12 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     throw new EPRuntimeException(e);
                 }
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(1, future.GetAndReset()[0].Count);
-                Assert.AreEqual(2, source.CurrentCount);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(1, future.GetAndReset()[0].Count);
+                ClassicAssert.AreEqual(2, source.CurrentCount);
 
                 dfOne.Cancel();
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 env.UndeployAll();
             }
 
@@ -682,8 +683,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(source, future));
                 var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-                Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
-                Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
+                ClassicAssert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
+                ClassicAssert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
 
                 var joiningRunnable = new MyJoiningRunnable(dfOne);
                 var joiningThread = new Thread(joiningRunnable.Run);
@@ -710,9 +711,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 unlatchingThread.Start();
                 dfOne.Run();
 
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(1, future.GetAndReset()[0].Count);
-                Assert.AreEqual(2, source.CurrentCount);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(1, future.GetAndReset()[0].Count);
+                ClassicAssert.AreEqual(2, source.CurrentCount);
 
                 try {
                     joiningThread.Join();
@@ -749,18 +750,18 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(future));
                 var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-                Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
-                Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
+                ClassicAssert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
+                ClassicAssert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
 
                 // has not run
                 Sleep(1000);
-                Assert.IsFalse(future.IsDone());
+                ClassicAssert.IsFalse(future.IsDone());
 
                 // blocking run
                 dfOne.Run();
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
                 try {
-                    Assert.AreEqual(1, future.Get().Length);
+                    ClassicAssert.AreEqual(1, future.Get().Length);
                 }
                 catch (Exception ex) {
                     throw new EPRuntimeException(ex);
@@ -801,8 +802,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     env.DeploymentId("flow"),
                     "MyDataFlowOne",
                     options);
-                Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
-                Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
+                ClassicAssert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
+                ClassicAssert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
 
                 var unlatchingThread = new Thread(
                     () => {
@@ -824,9 +825,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 // blocking run
                 unlatchingThread.Start();
                 dfOne.Run();
-                Assert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
-                Assert.AreEqual(1, future.GetAndReset()[0].Count);
-                Assert.AreEqual(2, source.CurrentCount);
+                ClassicAssert.AreEqual(EPDataFlowState.COMPLETE, dfOne.State);
+                ClassicAssert.AreEqual(1, future.GetAndReset()[0].Count);
+                ClassicAssert.AreEqual(2, source.CurrentCount);
                 try {
                     unlatchingThread.Join();
                 }
@@ -859,9 +860,9 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                     new EPDataFlowInstantiationOptions().WithOperatorProvider(
                         new DefaultSupportGraphOpProvider(future));
                 var dfOne = env.Runtime.DataFlowService.Instantiate(env.DeploymentId("flow"), "MyDataFlowOne", options);
-                Assert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
-                Assert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
-                Assert.IsFalse(future.IsDone());
+                ClassicAssert.AreEqual("MyDataFlowOne", dfOne.DataFlowName);
+                ClassicAssert.AreEqual(EPDataFlowState.INSTANTIATED, dfOne.State);
+                ClassicAssert.IsFalse(future.IsDone());
 
                 // non-blocking run, spinning wait
                 dfOne.Start();
@@ -873,7 +874,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 }
 
                 try {
-                    Assert.AreEqual(1, future.Get().Length);
+                    ClassicAssert.AreEqual(1, future.Get().Length);
                 }
                 catch (Exception ex) {
                     throw new EPRuntimeException(ex);
@@ -906,7 +907,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.Fail();
             }
             catch (IllegalStateException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
                     ex.Message);
             }
@@ -916,7 +917,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 Assert.Fail();
             }
             catch (IllegalStateException ex) {
-                Assert.AreEqual(
+                ClassicAssert.AreEqual(
                     "Data flow 'MyDataFlowOne' instance has already completed, please use instantiate to run the data flow again",
                     ex.Message);
             }

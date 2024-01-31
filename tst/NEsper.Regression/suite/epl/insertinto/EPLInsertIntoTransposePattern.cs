@@ -14,6 +14,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.epl.insertinto
 {
     public class EPLInsertIntoTransposePattern
@@ -126,8 +128,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertStatement(
                     "i1",
                     statement => {
-                        Assert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("a"));
-                        Assert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("b"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("a"));
+                        ClassicAssert.AreEqual(typeof(IDictionary<string, object>), statement.EventType.GetPropertyType("b"));
                     });
 
                 var stmtTextTwo = "@name('s0') select a.Id, b.Id from MyStreamABMap";
@@ -135,8 +137,8 @@ namespace com.espertech.esper.regressionlib.suite.epl.insertinto
                 env.AssertStatement(
                     "s0",
                     statement => {
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a.Id"));
-                        Assert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b.Id"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("a.Id"));
+                        ClassicAssert.AreEqual(typeof(string), statement.EventType.GetPropertyType("b.Id"));
                     });
 
                 var eventOne = MakeMap(new[] { new object[] { "Id", "A1" } });

@@ -8,7 +8,6 @@
 
 using System;
 using System.Collections.Generic;
-using Newtonsoft.Json;
 
 namespace com.espertech.esper.compat.collections
 {

@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 
 namespace com.espertech.esper.regressionlib.suite.view
@@ -167,9 +168,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(4, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(4, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[0], events[1], events[2], events[3] },
                             listener.OldDataListFlattened);
@@ -195,9 +196,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[4], events[5] },
                             listener.OldDataListFlattened);
@@ -216,9 +217,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[6], events[7] },
                             listener.OldDataListFlattened);
@@ -428,7 +429,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.AreEqual(1, listener.NewDataList.Count);
+                        ClassicAssert.AreEqual(1, listener.NewDataList.Count);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[0], events[1], events[2] },
                             listener.NewDataListFlattened);
@@ -474,9 +475,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         AssertData(listener.LastOldData[0], 5d, null, null);
                         AssertData(listener.LastOldData[1], 6d, null, 5d);
                         AssertData(listener.LastOldData[2], 7d, null, 6d);
@@ -531,7 +532,7 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
+                        ClassicAssert.IsNull(listener.LastNewData);
                         var oldData = listener.LastOldData;
                         AssertData(oldData[0], 10d, null, null, null, null, null);
                         AssertData(oldData[1], 20d, null, 10d, null, null, null);
@@ -634,9 +635,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(2, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(2, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[2], events[12] },
                             listener.OldDataListFlattened);
@@ -652,9 +653,9 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.OldDataList.Count);
-                        Assert.AreEqual(3, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.OldDataList.Count);
+                        ClassicAssert.AreEqual(3, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[1], events[11], events[21] },
                             listener.OldDataListFlattened);
@@ -665,8 +666,8 @@ namespace com.espertech.esper.regressionlib.suite.view
                 env.AssertListener(
                     "s0",
                     listener => {
-                        Assert.IsNull(listener.LastNewData);
-                        Assert.AreEqual(1, listener.LastOldData.Length);
+                        ClassicAssert.IsNull(listener.LastNewData);
+                        ClassicAssert.AreEqual(1, listener.LastOldData.Length);
                         EPAssertionUtil.AssertEqualsExactOrderUnderlying(
                             new object[] { events[32] },
                             listener.OldDataListFlattened);
@@ -690,16 +691,16 @@ namespace com.espertech.esper.regressionlib.suite.view
             double? prevPrice,
             double? priorPrice)
         {
-            Assert.AreEqual(price, theEvent.Get("Price"));
-            Assert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
-            Assert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
+            ClassicAssert.AreEqual(price, theEvent.Get("Price"));
+            ClassicAssert.AreEqual(prevPrice, theEvent.Get("prevPrice"));
+            ClassicAssert.AreEqual(priorPrice, theEvent.Get("priorPrice"));
         }
 
         private static void AssertData(
             EventBean theEvent,
             double? sumPrice)
         {
-            Assert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
+            ClassicAssert.AreEqual(sumPrice, theEvent.Get("sumPrice"));
         }
 
         private static void SendCurrentTime(
@@ -761,11 +762,11 @@ namespace com.espertech.esper.regressionlib.suite.view
             long? prevCountPrice,
             object[] prevWindowPrice)
         {
-            Assert.AreEqual(price, @event.Get("Price"));
-            Assert.AreEqual(prevPrice, @event.Get("prevPrice"));
-            Assert.AreEqual(priorPrice, @event.Get("priorPrice"));
-            Assert.AreEqual(prevtailPrice, @event.Get("prevtailPrice"));
-            Assert.AreEqual(prevCountPrice, @event.Get("prevCountPrice"));
+            ClassicAssert.AreEqual(price, @event.Get("Price"));
+            ClassicAssert.AreEqual(prevPrice, @event.Get("prevPrice"));
+            ClassicAssert.AreEqual(priorPrice, @event.Get("priorPrice"));
+            ClassicAssert.AreEqual(prevtailPrice, @event.Get("prevtailPrice"));
+            ClassicAssert.AreEqual(prevCountPrice, @event.Get("prevCountPrice"));
             EPAssertionUtil.AssertEqualsExactOrder(prevWindowPrice, @event.Get("prevWindowPrice").Unwrap<object>());
         }
 
@@ -775,7 +776,7 @@ namespace com.espertech.esper.regressionlib.suite.view
         {
             env.AssertListener(
                 "s0",
-                listener => { Assert.AreEqual(listener.AssertOneGetNewAndReset().Underlying, underlying); });
+                listener => { ClassicAssert.AreEqual(listener.AssertOneGetNewAndReset().Underlying, underlying); });
         }
     }
 } // end of namespace

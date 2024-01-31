@@ -20,6 +20,7 @@ using com.espertech.esper.regressionlib.support.bean;
 using com.espertech.esper.regressionlib.support.util;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.nwtable
 {
@@ -501,7 +502,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
                         Log.Error("Failed to process:" + ex.Message, ex);
                         if (assertion.EventSendAssertion == null) {
                             // no assertion, expected
-                            Assert.IsTrue(ex.Message.Contains("index hint busted"));
+                            ClassicAssert.IsTrue(ex.Message.Contains("index hint busted"));
                             continue;
                         }
 
@@ -762,8 +763,8 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
             var result = env.CompileExecuteFAF(faf, path);
-            Assert.AreEqual(1, result.Array.Length);
-            Assert.AreEqual(expectedId, result.Array[0].Get("Id"));
+            ClassicAssert.AreEqual(1, result.Array.Length);
+            ClassicAssert.AreEqual(expectedId, result.Array[0].Get("Id"));
         }
 
         private static void AssertFAFNot(
@@ -773,7 +774,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.nwtable
         {
             var faf = "@Hint('index(MyInfraIndex, bust)') select * from MyInfra where " + epl;
             var result = env.CompileExecuteFAF(faf, path);
-            Assert.AreEqual(0, result.Array.Length);
+            ClassicAssert.AreEqual(0, result.Array.Length);
         }
     }
 } // end of namespace

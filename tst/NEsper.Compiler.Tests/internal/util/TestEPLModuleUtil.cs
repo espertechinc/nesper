@@ -10,6 +10,8 @@ using System;
 using System.Collections.Generic;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.compiler.@internal.util
 {
 	[TestFixture]
@@ -51,16 +53,16 @@ namespace com.espertech.esper.compiler.@internal.util
 			params EPLModuleParseItem[] expecteds)
 		{
 			var result = EPLModuleUtil.Parse(epl);
-			Assert.AreEqual(result.Count, expecteds.Length);
+			ClassicAssert.AreEqual(result.Count, expecteds.Length);
 			for (int i = 0; i < expecteds.Length; i++) {
 				string message = "failed at epl:\n-----\n" + epl + "-----\nfailed at module Item #"+ i;
-				Assert.AreEqual(expecteds[i].Expression, result[i].Expression, message);
-				Assert.AreEqual(expecteds[i].LineNum, result[i].LineNum, message);
-				Assert.AreEqual(expecteds[i].StartChar, result[i].StartChar, message);
-				Assert.AreEqual(expecteds[i].EndChar, result[i].EndChar, message);
-				Assert.AreEqual(expecteds[i].LineNumEnd, result[i].LineNumEnd, message);
-				Assert.AreEqual(expecteds[i].LineNumContent, result[i].LineNumContent, message);
-				Assert.AreEqual(expecteds[i].LineNumContentEnd, result[i].LineNumContentEnd, message);
+				ClassicAssert.AreEqual(expecteds[i].Expression, result[i].Expression, message);
+				ClassicAssert.AreEqual(expecteds[i].LineNum, result[i].LineNum, message);
+				ClassicAssert.AreEqual(expecteds[i].StartChar, result[i].StartChar, message);
+				ClassicAssert.AreEqual(expecteds[i].EndChar, result[i].EndChar, message);
+				ClassicAssert.AreEqual(expecteds[i].LineNumEnd, result[i].LineNumEnd, message);
+				ClassicAssert.AreEqual(expecteds[i].LineNumContent, result[i].LineNumContent, message);
+				ClassicAssert.AreEqual(expecteds[i].LineNumContentEnd, result[i].LineNumContentEnd, message);
 			}
 		}
 	}

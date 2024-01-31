@@ -18,6 +18,7 @@ using com.espertech.esper.regressionlib.support.util;
 using com.espertech.esper.runtime.client;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.multithread
 {
@@ -90,9 +91,9 @@ namespace com.espertech.esper.regressionlib.suite.multithread
             //log.info(".trySend result=" + Arrays.toString(result));
 
             // assert result
-            Assert.AreEqual(numEvents * numThreads, events.Length);
+            ClassicAssert.AreEqual(numEvents * numThreads, events.Length);
             for (var i = 0; i < numEvents * numThreads; i++) {
-                Assert.AreEqual(result[i], (long)i + 1);
+                ClassicAssert.AreEqual(result[i], (long)i + 1);
             }
 
             runtime.Destroy();

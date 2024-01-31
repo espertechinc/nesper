@@ -12,6 +12,7 @@ using com.espertech.esper.common.@internal.support;
 using com.espertech.esper.regressionlib.framework;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 {
@@ -92,7 +93,7 @@ namespace com.espertech.esper.regressionlib.suite.infra.namedwindow
 
                 env.SendEventBean(new SupportBean("E1", 1));
                 env.AssertRuntime(
-                    runtime => Assert.AreEqual(
+                    runtime => ClassicAssert.AreEqual(
                         1L,
                         runtime.VariableService.GetVariableValue(
                             env.DeploymentId("assign"),

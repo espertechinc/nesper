@@ -14,6 +14,7 @@ using com.espertech.esper.common.@internal.epl.join.support;
 using com.espertech.esper.compat.collections;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
 
 namespace com.espertech.esper.regressionlib.support.util
 {
@@ -72,83 +73,83 @@ namespace com.espertech.esper.regressionlib.support.util
 
 	    public static void AssertSubquery(QueryPlanIndexDescSubquery subquery, int subqueryNum, string tableName, string indexBackingClass) {
 	        if (indexBackingClass == null) {
-	            Assert.AreEqual(0, subquery.Tables.Length);
+	            ClassicAssert.AreEqual(0, subquery.Tables.Length);
 	            return;
 	        }
-	        Assert.AreEqual(tableName, subquery.Tables[0].IndexName);
-	        Assert.AreEqual(subqueryNum, subquery.SubqueryNum);
-	        Assert.AreEqual(indexBackingClass, subquery.Tables[0].IndexDesc);
+	        ClassicAssert.AreEqual(tableName, subquery.Tables[0].IndexName);
+	        ClassicAssert.AreEqual(subqueryNum, subquery.SubqueryNum);
+	        ClassicAssert.AreEqual(indexBackingClass, subquery.Tables[0].IndexDesc);
 	    }
 
 	    public static void AssertSubqueryBackingAndReset(int subqueryNum, string tableName, string indexBackingClass) {
-	        Assert.AreEqual(1, SUBQUERIES.Count);
+	        ClassicAssert.AreEqual(1, SUBQUERIES.Count);
 	        var subquery = SUBQUERIES[0];
 	        AssertSubquery(subquery, subqueryNum, tableName, indexBackingClass);
 	        Reset();
 	    }
 
 	    public static QueryPlanIndexDescSubquery AssertSubqueryAndReset() {
-	        Assert.AreEqual(1, SUBQUERIES.Count);
+	        ClassicAssert.AreEqual(1, SUBQUERIES.Count);
 	        var subquery = SUBQUERIES[0];
 	        Reset();
 	        return subquery;
 	    }
 
 	    public static void AssertOnExprTableAndReset(string indexName, string indexDescription) {
-	        Assert.AreEqual(1, ONEXPRS.Count);
+	        ClassicAssert.AreEqual(1, ONEXPRS.Count);
 	        var onexp = ONEXPRS[0];
 	        if (indexDescription != null) {
-	            Assert.AreEqual(indexDescription, onexp.Tables[0].IndexDesc);
-	            Assert.AreEqual(indexName, onexp.Tables[0].IndexName); // can be null
+	            ClassicAssert.AreEqual(indexDescription, onexp.Tables[0].IndexDesc);
+	            ClassicAssert.AreEqual(indexName, onexp.Tables[0].IndexName); // can be null
 	        } else {
-	            Assert.IsNull(onexp.Tables);
-	            Assert.IsNull(onexp.TableLookupStrategy);
+	            ClassicAssert.IsNull(onexp.Tables);
+	            ClassicAssert.IsNull(onexp.TableLookupStrategy);
 	        }
 	        Reset();
 	    }
 
 	    public static QueryPlanIndexDescOnExpr AssertOnExprAndReset() {
-	        Assert.IsTrue(ONEXPRS.Count == 1);
+	        ClassicAssert.IsTrue(ONEXPRS.Count == 1);
 	        var onexp = ONEXPRS[0];
 	        Reset();
 	        return onexp;
 	    }
 
 	    public static void AssertFAFAndReset(string tableName, string indexBackingClassStartsWith) {
-	        Assert.IsTrue(FAFSNAPSHOTS.Count == 1);
+	        ClassicAssert.IsTrue(FAFSNAPSHOTS.Count == 1);
 	        var fafdesc = FAFSNAPSHOTS[0];
-	        Assert.AreEqual(tableName, fafdesc.Tables[0].IndexName);
+	        ClassicAssert.AreEqual(tableName, fafdesc.Tables[0].IndexName);
 	        var name = fafdesc.Tables[0].IndexDesc;
 	        if (indexBackingClassStartsWith != null) {
-	            Assert.IsTrue(name.StartsWith(indexBackingClassStartsWith));
+	            ClassicAssert.IsTrue(name.StartsWith(indexBackingClassStartsWith));
 	        }
 	        Reset();
 	    }
 
 	    public static void AssertJoinOneStreamAndReset(bool unique) {
-	        Assert.IsTrue(JOINS.Count == 1);
+	        ClassicAssert.IsTrue(JOINS.Count == 1);
 	        var join = JOINS[0];
 	        var first = join.IndexSpecs[1];
 	        var firstName = first.Items.Keys.First();
 	        var index = first.Items.Get(firstName);
-	        Assert.AreEqual(unique, index.IsUnique);
+	        ClassicAssert.AreEqual(unique, index.IsUnique);
 	        Reset();
 	    }
 
 	    public static QueryPlanForge AssertJoinAndReset() {
-	        Assert.IsTrue(JOINS.Count == 1);
+	        ClassicAssert.IsTrue(JOINS.Count == 1);
 	        var join = JOINS[0];
 	        Reset();
 	        return join;
 	    }
 
 	    public static void AssertJoinAllStreamsAndReset(bool unique) {
-	        Assert.IsTrue(JOINS.Count == 1);
+	        ClassicAssert.IsTrue(JOINS.Count == 1);
 	        var join = JOINS[0];
 	        foreach (var index in join.IndexSpecs) {
 	            var firstName = index.Items.Keys.First();
 	            var indexDesc = index.Items.Get(firstName);
-	            Assert.AreEqual(unique, indexDesc.IsUnique);
+	            ClassicAssert.AreEqual(unique, indexDesc.IsUnique);
 	        }
 	        Reset();
 	    }

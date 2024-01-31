@@ -15,6 +15,8 @@ using com.espertech.esper.regressionlib.framework;
 using com.espertech.esper.regressionlib.support.bean;
 
 using NUnit.Framework;
+using NUnit.Framework.Legacy;
+
 namespace com.espertech.esper.regressionlib.suite.resultset.orderby
 {
     public class ResultSetOrderByAggregateGrouped
@@ -125,7 +127,7 @@ namespace com.espertech.esper.regressionlib.suite.resultset.orderby
                           "group by Symbol " +
                           "output every 6 events " +
                           "order by sum(Price), Symbol";
-                Assert.AreEqual(epl, model.ToEPL());
+                ClassicAssert.AreEqual(epl, model.ToEPL());
 
                 model.Annotations = Collections.SingletonList(AnnotationPart.NameAnnotation("s0"));
                 env.CompileDeploy(model).AddListener("s0");
