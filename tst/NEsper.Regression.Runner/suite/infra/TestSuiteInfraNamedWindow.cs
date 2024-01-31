@@ -642,6 +642,7 @@ namespace com.espertech.esper.regressionrun.suite.infra
             public void WithRightOuterJoinLateStart() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithRightOuterJoinLateStart());
 
             [Test, RunInApplicationDomain]
+            [Parallelizable(ParallelScope.None)]
             public void WithJoinIndexChoice() => RegressionRunner.Run(_session, InfraNamedWindowJoin.WithJoinIndexChoice());
         }
     }
