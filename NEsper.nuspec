@@ -12,7 +12,7 @@
     <requireLicenseAcceptance>false</requireLicenseAcceptance>
     <description>A component for complex event processing (CEP).  NEsper enables rapid development of applications that process large volumes of incoming messages or events, regardless of whether incoming messages are historical or real-time in nature.  NEsper filters and analyze events in various ways, and respond to conditions of interest with minimal latency.</description>
     <summary>A component for complex event processing (CEP).</summary>
-    <copyright>Copyright (C) 2006-2017 EsperTech. All rights reserved.</copyright>
+    <copyright>Copyright (C) 2006-2024 EsperTech. All rights reserved.</copyright>
     <tags>esper esp cep</tags>
     <title>NEsper</title>
     <dependencies>
