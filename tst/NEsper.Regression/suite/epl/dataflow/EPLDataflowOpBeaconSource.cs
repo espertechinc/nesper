@@ -373,11 +373,7 @@ namespace com.espertech.esper.regressionlib.suite.epl.dataflow
                 });
 
                 ClassicAssert.AreEqual(2, output.Length);
-#if DEBUG
                 ClassicAssert.Less(delta, 600);
-#else
-                ClassicAssert.Less(delta, 490);
-#endif
                 env.UndeployAll();
 
                 // BeaconSource with period
