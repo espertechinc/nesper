@@ -61,10 +61,12 @@ namespace com.espertech.esper.common.@internal.context.util
             get => _lock.IsWriterLockHeld;
         }
 
+#if DEBUG
         public bool Trace {
             get => _lock.Trace;
             set => _lock.Trace = value;
         }
+#endif
 
         public IDisposable AcquireReadLock()
         {
